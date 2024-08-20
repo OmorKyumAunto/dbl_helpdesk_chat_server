@@ -346,7 +346,7 @@ if(isEmpty(reqData.email)){
 
 
 // list
-router.get('/list', verifyToken, async (req, res) => {
+router.get('/list', async (req, res) => {
   let { offset = 0, limit = 10, key = '' } = req.query;
 
   try {
@@ -371,7 +371,7 @@ router.get('/list', verifyToken, async (req, res) => {
 
 
 //details
-router.get('/details/:id',verifyToken,
+router.get('/details/:id',
   async (req, res) => {
     
     let id = req.params.id
@@ -404,7 +404,7 @@ router.get('/details/:id',verifyToken,
 
 
 //delete
-router.delete('/delete/:id',verifyToken,async (req, res) => {
+router.delete('/delete/:id',async (req, res) => {
 
     let id = req.params.id
   
@@ -452,7 +452,7 @@ router.delete('/delete/:id',verifyToken,async (req, res) => {
 
 
 //update
-router.put('/update/:id', verifyToken, 
+router.put('/update/:id', 
   async (req, res) => {
     
    let id = req.params.id

@@ -10,16 +10,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// app.use((req, res, next) => {
-//     res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-//     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-//     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-//     res.header("Access-Control-Allow-Credentials", "true");
-//     if (req.method === "OPTIONS") {
-//         return res.status(200).end();
-//     }
-//     next();
-// });
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.header("Access-Control-Allow-Credentials", "true");
+    if (req.method === "OPTIONS") {
+        return res.status(200).end();
+    }
+    next();
+});
 
 
 const api_redirect_path = require("./api/api");
@@ -29,6 +29,17 @@ const api_version = 1.0;
 
 
 app.use('/api', api_redirect_path);
+
+
+
+
 app.listen(port, async () => {
     console.log(`DBL backend running port ${port}`);
 });
+
+
+
+
+
+
+

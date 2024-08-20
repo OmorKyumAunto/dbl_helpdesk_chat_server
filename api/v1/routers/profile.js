@@ -15,9 +15,9 @@ router.get('/me', verifyToken, async (req, res) => {
    let id = 1
   let data = await employeeModel.me(id)
   
-    return res.status(500).send({
+    return res.status(200).send({
       success: false,
-      status: 500,
+      status: 200,
       message: "Profile data.",
       data: data[0]
     });

@@ -7,23 +7,48 @@ const userModel = require('../models/user')
 
 
 
+// router.use(async function (req, res, next) {
+
+//     const token = req.headers['x-access-token'];
+
+//     try {
+//         if (token) {
+//             const decoded = jwt.verify(token, "dbl", { algorithm: 'HS256' });
+//             req.user = decoded;
+//             next();
+//         } else {
+//             return res.status(400).json({
+//                 success: false,
+//                 status: 400,
+//                 message: "Unauthorized Request"
+//             });
+//         }
+//     } catch (err) {
+//         return res.status(400).json({
+//             success: false,
+//             status: 400,
+//             message: "Invalid Token or Timeout. Please Login First"
+//         });
+//     }
+// });
 router.use(async function (req, res, next) {
-
     const token = req.headers['x-access-token'];
-
+    console.log('Received Token:', token);
     try {
         if (token) {
             const decoded = jwt.verify(token, "M360ICTMusicLibrary", { algorithm: 'HS256' });
+            console.log('Decoded Token:', decoded);
             req.user = decoded;
             next();
         } else {
-            return res.status(400).json({
+            return res.status(401).json({
                 success: false,
-                status: 400,
+                status: 401,
                 message: "Unauthorized Request"
             });
         }
     } catch (err) {
+        console.error('Token Verification Error:', err);
         return res.status(400).json({
             success: false,
             status: 400,

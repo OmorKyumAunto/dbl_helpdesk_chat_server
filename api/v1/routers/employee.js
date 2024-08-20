@@ -198,7 +198,7 @@ const employeeModel = require('../models/employee');
 
 // employee_id  (number) ,name, department,designation,email,contact_no,joining_date, unit_name (get api),
 
-router.post('/add', verifyToken,async (req, res) => {
+router.post('/add',async (req, res) => {
     
   // body data
   let reqData = {

@@ -1,14 +1,65 @@
 const { connectionDblystem } = require('../connections/connection');
-const queries = require('../queries/employee');
+const queries = require('../queries/asset');
 const moment = require("moment");
 const isEmpty = require("is-empty");
 const e = require('express');
+const assetAssignModel = require('../models/asset-assign');
+
+let addNew = async (reqData = {}, assignData = {}) => {
+    console.log("first", reqData);
+
+    return new Promise((resolve, reject) => {
+        connectionDblystem.getConnection(async (err, conn) => {
+            if (err) {
+                console.error("Connection Error:", err);
+                return reject(err);
+            }
+
+            try {
+                await conn.beginTransaction();
+
+                // Destructuring result correctly
+                const [result] = await conn.query(queries.addNew(), [reqData]);
+
+            
+
+        
+
+                let finalResult = result;
+
+                const current_date = new Date();
+                const current_time = moment(current_date).format("YYYY-MM-DD HH:mm:ss");
+                const created_at = current_time;
+
+                const assetdata = {
+                    asset_id: finalResult.insertId,
+                    employee_id: assignData.employee_id,
+                    unit_name: assignData.unit_name,
+                    assign_date: assignData.assign_date,
+                    created_at: created_at
+                };
+                console.log("Asset Data:", assetdata);
+
+                const assetData = await assetAssignModel.addNew(assetdata, conn);
+
+                await conn.commit();
+                conn.release();
+                resolve(finalResult);
+
+            } catch (error) {
+                console.error("Error during transaction:", error);
+                await conn.rollback();
+                conn.release();
+                resolve([]);
+            }
+        });
+    });
+};
 
 
 
 
-
-let addNew = async (info) => {
+let addNew2 = async (info) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.addNew(), [info], (error, result, fields) => {
             if (error) reject(error)
@@ -40,6 +91,17 @@ let getList = async (offset, limit, key) => {
   
 
 
+
+let getLastData = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getLastData(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+  
+
 let getById = async (id = 0) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getById(), [id], (error, result, fields) => {
@@ -53,14 +115,8 @@ let getById = async (id = 0) => {
 
 
 
-let me = async (id = 0) => {
-    return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.me(), [id], (error, result, fields) => {
-            if (error) reject(error)
-            else resolve(result)
-        });
-    });
-}
+
+
 
 
 
@@ -212,7 +268,9 @@ module.exports = {
    getByArtistId,
    updateByAlbum,
    getArtistListByAlbumId,
-   me
+   addNew2,
+   getLastData
+   
    
   
 }

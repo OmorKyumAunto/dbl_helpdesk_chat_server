@@ -1,5 +1,4 @@
-let table_name = "dbl_employee";
-let table_name2 = "new_admin";
+let table_name = "dbl_asset";
 
 
 
@@ -16,18 +15,17 @@ let getList = (offset, limit, key) => {
     let searchCondition = key ? `AND LOWER(name) LIKE LOWER('%${key}%')` : '';
     return `SELECT * FROM ${table_name} WHERE status = 1 ${searchCondition} LIMIT ${limit} OFFSET ${offset}`;
   }
+
+  let getLastData = () => {
+    
+    return `SELECT * FROM ${table_name} where  status = 1 order by id desc  `;
+  }
+  
   
 
 let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ? and status = 1 `;
 }
-
-
-
-let me = () => {
-    return `SELECT id,name,email,status FROM ${table_name2} where  id = ? and status = 1 `;
-}
-
 
 
 
@@ -62,6 +60,6 @@ module.exports = {
     updateById,
     updateByAlbum,
     getArtistListByAlbumId,
-    me
+    getLastData
 
 }

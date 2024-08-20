@@ -1,5 +1,5 @@
 const { connectionDblystem } = require('../connections/connection');
-const queries = require('../queries/employee');
+const queries = require('../queries/asset-assign');
 const moment = require("moment");
 const isEmpty = require("is-empty");
 const e = require('express');
@@ -53,14 +53,8 @@ let getById = async (id = 0) => {
 
 
 
-let me = async (id = 0) => {
-    return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.me(), [id], (error, result, fields) => {
-            if (error) reject(error)
-            else resolve(result)
-        });
-    });
-}
+
+
 
 
 
@@ -211,8 +205,7 @@ module.exports = {
    updateById,
    getByArtistId,
    updateByAlbum,
-   getArtistListByAlbumId,
-   me
+   getArtistListByAlbumId
    
   
 }

@@ -94,7 +94,7 @@ router.post('/login',async (req, res) => {
       });
     }
     
-  
+  console.log("first",existingByUserInfo[0])
     // Check password
     const isPasswordValid = await bcrypt.compare(reqData.password, existingByUserInfo[0].password);
     if (!isPasswordValid) {
@@ -107,8 +107,8 @@ router.post('/login',async (req, res) => {
 
 
     // Create and sign a JWT token
-    const token = jwt.sign({ userName : existingByUserInfo.name,userId: existingByUserInfo.id, email: existingByUserInfo.email },keyData.secretKey, {'expiresIn':'1h'});
-  
+    const token = jwt.sign({ userName : existingByUserInfo.name,userId: existingByUserInfo.id, email: existingByUserInfo.email },keyData.secretKey, {'expiresIn':'5h'});
+  console.log("sss",token)
     // Respond with the token
     return res.status(200).send({
       "success": true,

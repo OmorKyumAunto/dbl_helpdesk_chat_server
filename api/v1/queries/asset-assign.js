@@ -1,5 +1,4 @@
-let table_name = "dbl_employee";
-let table_name2 = "new_admin";
+let table_name = "dbl_asset_assign";
 
 
 
@@ -19,15 +18,8 @@ let getList = (offset, limit, key) => {
   
 
 let getById = () => {
-    return `SELECT * FROM ${table_name} where  id = ? and status = 1 `;
+    return `SELECT * FROM ${table_name} where  asset_id = ? and status = 1 `;
 }
-
-
-
-let me = () => {
-    return `SELECT id,name,email,status FROM ${table_name2} where  id = ? and status = 1 `;
-}
-
 
 
 
@@ -61,7 +53,6 @@ module.exports = {
     getById,
     updateById,
     updateByAlbum,
-    getArtistListByAlbumId,
-    me
+    getArtistListByAlbumId
 
 }

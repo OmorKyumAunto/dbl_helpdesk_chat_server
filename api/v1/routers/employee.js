@@ -25,72 +25,83 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // API to upload Excel file and save data
+const xlsxDateToJSDate = (serial) => {
+  const epoch = new Date(Date.UTC(0, 0, serial - 1)); 
+  return new Date(epoch.getTime() + epoch.getTimezoneOffset() * 60000);
+};
+
 router.post('/upload', upload.single('file'), async (req, res) => {
-    if (!req.file) {
-        return res.status(400).send({
-            success: false,
-            status: 400,
-            message: 'No file uploaded.'
-        });
-    }
+  if (!req.file) {
+      return res.status(400).send({
+          success: false,
+          status: 400,
+          message: 'No file uploaded.'
+      });
+  }
 
-    try {
-        const workbook = xlsx.readFile(req.file.path);
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const data = xlsx.utils.sheet_to_json(worksheet);
+  try {
+      const workbook = xlsx.readFile(req.file.path);
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const data = xlsx.utils.sheet_to_json(worksheet);
 
-        // Iterate through each row and save to database
-        for (let row of data) {
-            let reqData = {
-                employee_id: row['Employee id'],
-                name: row['Name'],
-                department: row['Department'],
-                designation: row['Designation'],
-                email: row['Email'],
-                contact_no: row['Contact no'],
-                joining_date: row['Joining date'],
-                unit_name: row['Unit name']
-                
-            };
+      // Iterate through each row and save to database
+      for (let row of data) {
+          let joining_date = row['Joining date'];
+          if (typeof joining_date === 'number') {
+              joining_date = xlsxDateToJSDate(joining_date).toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD'
+          }
 
-            // Perform validation checks here...
-console.log("first",reqData)
-            // Check for duplicates
-            let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
-            if (checkDuplicate.length) {
-                return res.status(400).send({
-                    success: false,
-                    status: 400,
-                    message: `Employee ID ${reqData.employee_id} already exists.`
-                });
-            }
+          let reqData = {
+              employee_id: row['Employee id'],
+              name: row['Name'],
+              department: row['Department'],
+              designation: row['Designation'],
+              email: row['Email'],
+              contact_no: row['Contact no'],
+              joining_date: joining_date,
+              unit_name: row['Unit name']
+          };
 
-            // Save to database
-            let result = await employeeModel.addNew(reqData);
-            if (result.affectedRows == undefined || result.affectedRows < 1) {
-                return res.status(500).send({
-                    success: false,
-                    status: 500,
-                    message: 'Something went wrong in the database.'
-                });
-            }
-        }
+          console.log("first", reqData);
 
-        return res.status(201).send({
-            success: true,
-            status: 201,
-            message: 'All employees added successfully.'
-        });
+          // Perform validation checks here...
 
-    } catch (error) {
-        return res.status(500).send({
-            success: false,
-            status: 500,
-            message: 'Error processing the file.',
-            error: error.message
-        });
-    }
+          // Check for duplicates
+          let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
+          if (checkDuplicate.length) {
+              return res.status(400).send({
+                  success: false,
+                  status: 400,
+                  message: `Employee ID ${reqData.employee_id} already exists.`
+              });
+          }
+
+          // Save to database
+          let result = await employeeModel.addNew(reqData);
+          if (result.affectedRows == undefined || result.affectedRows < 1) {
+              return res.status(500).send({
+                  success: false,
+                  status: 500,
+                  message: 'Something went wrong in the database.'
+              });
+          }
+      }
+
+      return res.status(201).send({
+          success: true,
+          status: 201,
+          message: 'All employees added successfully.'
+      });
+
+  } catch (error) {
+      return res.status(500).send({
+          success: false,
+          status: 500,
+          message: 'Error processing the file.',
+          error: error.message
+      });
+  }
 });
 
 

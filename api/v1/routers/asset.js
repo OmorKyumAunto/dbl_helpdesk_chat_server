@@ -22,6 +22,8 @@ router.post('/add',async (req, res) => {
       "po_number":req.body.po_number,
       "asset_history":req.body.asset_history,
       "unit_name":req.body.unit_name,
+      "model":req.body.model,
+      "specification":req.body.specification,
       "is_assign":req.body.is_assign,
       "employee_id":req.body.employee_id,
       "assign_date":req.body.assign_date
@@ -106,6 +108,35 @@ if(isEmpty(reqData.unit_name)){
 });
 } 
 
+// unit validation
+if(isEmpty(reqData.unit_name)){
+  return res.status(400).send({
+      "success": false,
+      "status": 400,
+      "message":"Unit name  cannot be empty."
+});
+} 
+
+
+  // unit validation
+  if(isEmpty(reqData.model)){
+    return res.status(400).send({
+        "success": false,
+        "status": 400,
+        "message":"Model  cannot be empty."
+  });
+  } 
+
+  // unit validation
+  if(isEmpty(reqData.specification)){
+    return res.status(400).send({
+        "success": false,
+        "status": 400,
+        "message":"Specification cannot be empty."
+  });
+  } 
+
+
 // if is_assign employee
 
 // yes =1 , no = 0
@@ -149,7 +180,9 @@ if(reqData.is_assign === 1){
   asset_history: reqData.asset_history,
   is_assign: reqData.is_assign,
   remarks : 'assigned',
-  unit_name : reqData.unit_name
+  unit_name : reqData.unit_name,
+  model : reqData.model,
+  specification : reqData.specification
 }
 
 let result = await assetModel.addNew2(data);
@@ -186,7 +219,9 @@ return res.status(201).send({
   po_number: reqData.po_number,
   asset_history: reqData.asset_history,
   is_assign: reqData.is_assign,
-  unit_name : reqData.unit_name
+  unit_name : reqData.unit_name,
+  model : reqData.model,
+  specification : reqData.specification,
 }
 
   let result = await assetModel.addNew2(data2);
@@ -356,6 +391,8 @@ router.put('/update/:id',
         "po_number":req.body.po_number,
         "asset_history":req.body.asset_history,
         "unit_name":req.body.unit_name,
+        "model":req.body.model,
+        "specification":req.body.specification,
         "assign_update": req.body.assign_update,
         "employee_id":req.body.employee_id,
         "assign_date":req.body.assign_date
@@ -389,7 +426,7 @@ router.put('/update/:id',
   
     }
   
-  
+
     // check name
     if(existingDataById[0].category != reqData.category){
         willWeUpdate = 1
@@ -447,22 +484,26 @@ router.put('/update/:id',
   }
 
 
-
-
-   // check contact_no
-   if(existingDataById[0].unit_name != reqData.unit_name){
-    willWeUpdate = 1
-    updateData.unit_name = reqData.unit_name
-
-  }
-
-
  
 
    // check unit_name
    if(existingDataById[0].unit_name != reqData.unit_name){
     willWeUpdate = 1
     updateData.unit_name = reqData.unit_name
+
+  }
+
+     // check unit_name
+     if(existingDataById[0].model != reqData.model){
+      willWeUpdate = 1
+      updateData.model = reqData.model
+  
+    }
+
+       // check unit_name
+   if(existingDataById[0].specification != reqData.specification){
+    willWeUpdate = 1
+    updateData.specification = reqData.specification
 
   }
 
@@ -505,12 +546,14 @@ if(reqData.assign_update == 1){
 
 
 let updateEmployeeData = {
+  asset_id : id,
   employee_id : reqData.employee_id,
   assign_date : reqData.assign_date
 }
 
 
-let result2 = await assetAssignModel.updateById(id,updateEmployeeData);
+
+let result2 = await assetAssignModel.addNew(updateEmployeeData);
 
 if (result2.affectedRows == undefined || result2.affectedRows < 1) {
   return res.status(500).send({
@@ -525,6 +568,7 @@ if (result2.affectedRows == undefined || result2.affectedRows < 1) {
 
   
   if (willWeUpdate == 1) {
+
 
     let result = await assetModel.updateById(id,updateData);
   

@@ -14,7 +14,7 @@ let getByEmployee = () => {
 
 let getList = (offset, limit, key) => {
     let searchCondition = key ? `AND LOWER(name) LIKE LOWER('%${key}%')` : '';
-    return `SELECT * FROM ${table_name} WHERE status = 1 ${searchCondition} LIMIT ${limit} OFFSET ${offset}`;
+    return `SELECT * FROM ${table_name} WHERE status = 1 ${searchCondition} order by id desc LIMIT ${limit} OFFSET ${offset}`;
   }
   
 

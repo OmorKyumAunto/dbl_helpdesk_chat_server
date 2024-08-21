@@ -10,7 +10,7 @@ const employeeModel = require('../models/employee');
 
 
 // list
-router.get('/me', verifyToken, async (req, res) => {
+router.get('/me', async (req, res) => {
 
    let id = 1
   let data = await employeeModel.me(id)

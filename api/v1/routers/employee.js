@@ -8,195 +8,91 @@ const e = require("express");
 const employeeModel = require('../models/employee');
 
 
+const multer = require('multer');
+const xlsx = require('xlsx');
+const path = require('path');
 
-//add
-// router.post('/add', verifyToken,async (req, res) => {
-    
-//     // body data
-//     let reqData = {
-//         "title": req.body.title,
-//         "release_year":req.body.release_year,
-//         "genre_id":req.body.genre_id,
-//         "artist_id":req.body.artist_id
-//     }
+// Configure Multer for file upload
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/'); // Set the destination folder
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname)); // Generate a unique filename
+    }
+});
 
-//     let current_date = new Date(); 
-//     let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
-//     reqData.created_at = current_time;
-//     reqData.updated_at = current_time;
+const upload = multer({ storage: storage });
 
+// API to upload Excel file and save data
+router.post('/upload', upload.single('file'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).send({
+            success: false,
+            status: 400,
+            message: 'No file uploaded.'
+        });
+    }
 
-//     // default 1 because this system has only one role
-//     reqData.created_by = 1
-//     reqData.updated_by = 1
+    try {
+        const workbook = xlsx.readFile(req.file.path);
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const data = xlsx.utils.sheet_to_json(worksheet);
 
+        // Iterate through each row and save to database
+        for (let row of data) {
+            let reqData = {
+                employee_id: row['Employee ID'],
+                name: row['Name'],
+                department: row['Department'],
+                designation: row['Designation'],
+                email: row['Email'],
+                contact_no: row['Contact No'],
+                joining_date: row['Joining Date'],
+                unit_name: row['Unit Name'],
+                created_at: moment().format('YYYY-MM-DD HH:mm:ss')
+            };
 
-//     // check album title empty or not and check length
-//     if(isEmpty(reqData.title)){
-//         return res.status(400).send({
-//           "success": false,
-//           "status": 400,
-//           "message":"Album title cannot be empty."
-//         });
-//     }else if(reqData.title.length > 50){
-//         return res.status(400).send({
-//           "success": false,
-//           "status": 400,
-//           "message":"Album title should be maximum 50 character."
-//         });
-//     }
+            // Perform validation checks here...
 
-//     // title existing database
-//     let existingTitle = await albumModel.getByTitle(reqData.title)
-//     if(!isEmpty(existingTitle)){
-//         return res.status(409).send({
-//             "success": false,
-//             "status": 409,
-//             "message":"This title already exists."
-//           });
-//     }
+            // Check for duplicates
+            let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
+            if (checkDuplicate.length) {
+                return res.status(400).send({
+                    success: false,
+                    status: 400,
+                    message: `Employee ID ${reqData.employee_id} already exists.`
+                });
+            }
 
+            // Save to database
+            let result = await employeeModel.addNew(reqData);
+            if (result.affectedRows == undefined || result.affectedRows < 1) {
+                return res.status(500).send({
+                    success: false,
+                    status: 500,
+                    message: 'Something went wrong in the database.'
+                });
+            }
+        }
 
+        return res.status(201).send({
+            success: true,
+            status: 201,
+            message: 'All employees added successfully.'
+        });
 
-//     // check valid release year
-//     if(isEmpty(reqData.release_year)){
-//         return res.status(400).send({
-//           "success": false,
-//           "status": 400,
-//           "message":"Album release year cannot be empty."
-//         });
-//     }else if(reqData.release_year < 1){
-//         return res.status(400).send({
-//           "success": false,
-//           "status": 400,
-//           "message":"Please give positive number."
-//         });
-//     }else if(reqData.release_year > current_date.getFullYear()){
-//         return res.status(400).send({
-//           "success": false,
-//           "status": 400,
-//           "message":"Please give valid year witch is equal this year or less than."
-//         });
-//     }
+    } catch (error) {
+        return res.status(500).send({
+            success: false,
+            status: 500,
+            message: 'Error processing the file.',
+            error: error.message
+        });
+    }
+});
 
-
-//     // genre validation
-//     if(isEmpty(reqData.genre_id)){
-//         return res.status(400).send({
-//             "success": false,
-//             "status": 400,
-//             "message":"Genre id cannot be empty."
-//           });
-//     }else if(reqData.genre_id < 1){
-//         return res.status(400).send({
-//           "success": false,
-//           "status": 400,
-//           "message":"Please give positive number."
-//         });
-//     }
-
-
-//     // check existing genre id in db
-//     let existingByGenreId = await genreModel.getById(reqData.genre_id)
-//     if(isEmpty(existingByGenreId)){
-//         return res.status(404).send({
-//             "success": false,
-//             "status": 404,
-//             "message": "This genre id not found."
-//         });
-//     }
-
-
-
-//     // validate artist id and artist id can be single or multiple
-//     if(isEmpty(reqData.artist_id)){
-//       return res.status(400).send({
-//             "success": false,
-//             "status": 400,
-//             "message": "Artist id should not be empty."
-//       });
-//     }else if(reqData.artist_id < 1){
-//         return res.status(400).send({
-//             "success": false,
-//             "status": 400,
-//             "message": "Artist id should be positive number."
-//       });
-//     }else if(!Array.isArray(reqData.artist_id)){
-//         return res.status(400).send({
-//             "success": false,
-//             "status": 400,
-//             "message": "Artist id should be array."
-//       });
-//     }
-
-//     // check this artist existing in db
-//     let artistDataById = []
-//     for (let artistId = 0; artistId < reqData.artist_id.length; artistId++) {
-//         const artist_data = reqData.artist_id[artistId];
-        
-//         let existingByArtistId = await artistModel.getById(artist_data)
-//         if(isEmpty(existingByArtistId)){
-//             return res.status(404).send({
-//                 "success": false,
-//                 "status": 404,
-//                 "message": `This artist no ${artistId+1} id not found. `
-//         });
-//     }
-
-
-//     artistDataById.push(artist_data)
-
-//     // check duplicate artist id
-//     let checkArtistIdISDuplicate = await duplicateCheckInArray(artistDataById)
-//     if(checkArtistIdISDuplicate.result == true){
-//         return res.status(409).send({
-//             "success": false,
-//             "status": 409,
-//             "message": "Duplicate value found."
-//       });
-//      }
-
-//      validateArtistId = artistDataById
-
-//  }
- 
-
-//   let albumData ={
-//     title : reqData.title,
-//     release_year : reqData.release_year,
-//     genre_id : reqData.genre_id,
-//     created_at: reqData.created_at,
-//     updated_at: reqData.updated_at,
-//     created_by : reqData.created_by,
-//     updated_by : reqData.updated_by
-//   }
-
-
-    
-//     // save in database album and artist wise album table using transaction
-//     let result = await albumModel.addNew(albumData,validateArtistId);
-
-
-//     if (result.affectedRows == undefined || result.affectedRows < 1) {
-//       return res.status(500).send({
-//           "success": true,
-//           "status": 500,
-//           "message": "Something Wrong in system database."
-//       });
-//   }
-
-//   return res.status(201).send({
-//       "success": true,
-//       "status": 201,
-//       "message": "Album added Successfully."
-//   });
-   
-
-
-// });
-
-
-// employee_id  (number) ,name, department,designation,email,contact_no,joining_date, unit_name (get api),
 
 router.post('/add',async (req, res) => {
     
@@ -346,7 +242,7 @@ if(isEmpty(reqData.email)){
 
 
 // list
-router.get('/list', async (req, res) => {
+router.get('/list',async (req, res) => {
   let { offset = 0, limit = 10, key = '' } = req.query;
 
   try {

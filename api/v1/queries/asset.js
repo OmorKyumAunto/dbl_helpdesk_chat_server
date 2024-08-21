@@ -13,10 +13,18 @@ let getByEmployee = () => {
 
 let getList = (offset, limit, key) => {
     let searchCondition = key ? `AND LOWER(name) LIKE LOWER('%${key}%')` : '';
-    return `SELECT * FROM ${table_name} WHERE status = 1 ${searchCondition} LIMIT ${limit} OFFSET ${offset}`;
+    return `SELECT * FROM ${table_name} WHERE status = 1 ${searchCondition} order by id desc LIMIT ${limit} OFFSET ${offset}`;
   }
 
-  let getLastData = () => {
+
+
+let distributedAssetList = (offset, limit, key) => {
+    let searchCondition = key ? `AND LOWER(name) LIKE LOWER('%${key}%')` : '';
+    return `SELECT * FROM ${table_name} WHERE status = 1  and is_assign = 1 ${searchCondition} order by id desc LIMIT ${limit} OFFSET ${offset}`;
+}
+
+
+let getLastData = () => {
     
     return `SELECT * FROM ${table_name} where  status = 1 order by id desc  `;
   }
@@ -28,20 +36,67 @@ let getById = () => {
 }
 
 
-
-
-
-
-
-
-
-
+let getByIdAssign = () => {
+    return `SELECT * FROM ${table_name} where  id = ?  and is_assign = 1 and status = 1 `;
+}
 
 
 
 const updateById = () => {
     return `UPDATE ${table_name} SET ? WHERE id = ?`;
 }
+
+
+let getListOfDashboard = () => {
+  return `SELECT count(id) as total_asset FROM dbl_asset WHERE status = 1`; 
+};
+  
+let getListOfDashboard2 = () => {
+    return `SELECT count(id) as total_employee FROM dbl_employee WHERE status = 1`; 
+};
+
+let getListOfDashboard3 = () => {
+    return `SELECT count(id) as total_assign_asset FROM dbl_asset WHERE status = 1 and is_assign = 1`; 
+};
+
+
+
+let getListOfDashboardGraph = () => {
+    return `
+      SELECT 
+        MONTH(created_at) as month,
+        COUNT(id) as total_assign_asset 
+      FROM 
+        dbl_asset 
+      WHERE 
+        status = 1 
+        AND is_assign = 1 
+        AND created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+      GROUP BY 
+        MONTH(created_at)
+      ORDER BY 
+        MONTH(created_at) DESC
+    `;
+  };
+  
+  
+  let getListOfDashboardGraph2 = () => {
+    return `
+      SELECT 
+        MONTH(created_at) as month,
+        COUNT(id) as total_asset 
+      FROM 
+        dbl_asset 
+      WHERE 
+        status = 1 
+        AND created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+      GROUP BY 
+        MONTH(created_at)
+      ORDER BY 
+        MONTH(created_at) DESC
+    `;
+  };
+
 
 const updateByAlbum = () => {
     return `UPDATE ${table_name} SET ? WHERE id = ?`;
@@ -60,6 +115,13 @@ module.exports = {
     updateById,
     updateByAlbum,
     getArtistListByAlbumId,
-    getLastData
+    getLastData,
+    distributedAssetList,
+    getByIdAssign,
+    getListOfDashboard,
+    getListOfDashboard2,
+    getListOfDashboard3,
+    getListOfDashboardGraph,
+    getListOfDashboardGraph2
 
 }

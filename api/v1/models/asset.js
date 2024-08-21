@@ -90,6 +90,15 @@ let getList = async (offset, limit, key) => {
   }
   
 
+  let distributedAssetList = async (offset, limit, key) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.distributedAssetList(offset, limit, key), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+  
 
 
 let getLastData = async () => {
@@ -113,15 +122,69 @@ let getById = async (id = 0) => {
 
 
 
+let getByIdAssign = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByIdAssign(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
 
 
 
 
 
 
+let getListOfDashboard = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getListOfDashboard(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+
+  let getListOfDashboard2 = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getListOfDashboard2(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+
+  let getListOfDashboard3 = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getListOfDashboard3(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+  
+  
 
 
+  let getListOfDashboardGraph = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getListOfDashboardGraph(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  };
+  
 
+  let getListOfDashboardGraph2 = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getListOfDashboardGraph2(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  };
+  
 
 
 
@@ -269,7 +332,14 @@ module.exports = {
    updateByAlbum,
    getArtistListByAlbumId,
    addNew2,
-   getLastData
+   getLastData,
+   distributedAssetList,
+   getByIdAssign,
+   getListOfDashboard,
+   getListOfDashboard2,
+   getListOfDashboard3,
+   getListOfDashboardGraph,
+   getListOfDashboardGraph2
    
    
   

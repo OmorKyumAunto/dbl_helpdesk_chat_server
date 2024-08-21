@@ -11,7 +11,7 @@ const employeeModel = require('../models/employee');
 
 
 
-router.post('/add', verifyToken,async (req, res) => {
+router.post('/add',async (req, res) => {
     
   // body data
   let reqData = {
@@ -212,7 +212,7 @@ return res.status(201).send({
 
 
 // list
-router.get('/list', verifyToken, async (req, res) => {
+router.get('/list', async (req, res) => {
   let { offset = 0, limit = 10, key = '' } = req.query;
 
     let result = await assetModel.getList(offset, limit, key);
@@ -230,7 +230,7 @@ router.get('/list', verifyToken, async (req, res) => {
 
 
 //details
-router.get('/details/:id',verifyToken,
+router.get('/details/:id',
   async (req, res) => {
     
     let id = req.params.id
@@ -247,11 +247,10 @@ router.get('/details/:id',verifyToken,
         });
   
       } 
+
    // get assign data
    let assignDataByAssetId = await assetAssignModel.getById(result[0].id)
-
-   if(assignDataByAssetId.length){
- 
+   if(!isEmpty(assignDataByAssetId)){
      result[0].employee_id = assignDataByAssetId[0].employee_id,
      result[0].assign_date = assignDataByAssetId[0].assign_date
    }else{
@@ -259,21 +258,26 @@ router.get('/details/:id',verifyToken,
     result[0].assign_date =  ""
    }
 
-   if(assignDataByAssetId[0].employee_id){
-    let employeeData = await employeeModel.getById(assignDataByAssetId[0].employee_id)
-    console.log("first",employeeData[0])
-    result[0].employee_name = employeeData[0].name,
-    result[0].employee_id_no = employeeData[0].employee_id,
-    result[0].employee_department = employeeData[0].department,
-    result[0].employee_designation = employeeData[0].designation,
-    result[0].employee_unit = employeeData[0].unit_name
-   }
-    result[0].employee_name = "",
-    result[0].employee_id_no = "",
-    result[0].employee_department = "",
-    result[0].employee_designation = "",
-    result[0].employee_unit = ""
-   
+   if(!isEmpty(assignDataByAssetId)){
+  let employeeData = await employeeModel.getById(assignDataByAssetId[0].employee_id)
+
+
+    if(!isEmpty(employeeData)){
+      result[0].employee_name = employeeData[0].name,
+      result[0].employee_id_no = employeeData[0].employee_id,
+      result[0].employee_department = employeeData[0].department,
+      result[0].employee_designation = employeeData[0].designation,
+      result[0].employee_unit = employeeData[0].unit_name
+    }else{
+      result[0].employee_name = "",
+        result[0].employee_id_no = "",
+        result[0].employee_department = "",
+        result[0].employee_designation = "",
+        result[0].employee_unit = ""
+      
+    }
+      
+    }
 
 
   return res.status(200).send({
@@ -290,19 +294,19 @@ router.get('/details/:id',verifyToken,
 
 
 //delete
-router.delete('/delete/:id',verifyToken,async (req, res) => {
+router.delete('/delete/:id',async (req, res) => {
 
     let id = req.params.id
   
     // get id wise data form db 
-    let existingById = await employeeModel.getById(id);
+    let existingById = await assetModel.getById(id);
   
     // check this id already existing in database or not
     if (isEmpty(existingById)) {
       return res.status(404).send({
         success: false,
         status: 404,
-        message: "Employee data not found."
+        message: "Asset data not found."
       });
   
     } 
@@ -315,7 +319,7 @@ router.delete('/delete/:id',verifyToken,async (req, res) => {
      }
   
       // get id wise data form db 
-      let result = await employeeModel.updateById(id,data);
+      let result = await assetModel.updateById(id,data);
   
        if (result.affectedRows == undefined || result.affectedRows < 1) {
            return res.status(500).send({
@@ -329,7 +333,7 @@ router.delete('/delete/:id',verifyToken,async (req, res) => {
        return res.status(200).send({
            "success": true,
            "status": 200,
-           "message": "Employee successfully deleted."
+           "message": "Asset successfully deleted."
        });
     
   
@@ -338,21 +342,23 @@ router.delete('/delete/:id',verifyToken,async (req, res) => {
 
 
 //update
-router.put('/update/:id', verifyToken, 
+router.put('/update/:id', 
   async (req, res) => {
     
    let id = req.params.id
   
       // body data
       let reqData = {
-        "employee_id": req.body.employee_id,
-        "name":req.body.name,
-        "department":req.body.department,
-        "designation":req.body.designation,
-        "email":req.body.email,
-        "contact_no":req.body.contact_no,
-        "joining_date":req.body.joining_date,
+        "name": req.body.name,
+        "category":req.body.category,
+        "purchase_date":req.body.purchase_date,
+        "serial_number":req.body.serial_number,
+        "po_number":req.body.po_number,
+        "asset_history":req.body.asset_history,
         "unit_name":req.body.unit_name,
+        "assign_update": req.body.assign_update,
+        "employee_id":req.body.employee_id,
+        "assign_date":req.body.assign_date
       }
 
   
@@ -361,12 +367,12 @@ router.put('/update/:id', verifyToken,
 
 
     // get artist all list
-    let existingDataById = await employeeModel.getById(id)
+    let existingDataById = await assetModel.getById(id)
     if (isEmpty(existingDataById)) {
       return res.status(404).send({
           "success": false,
           "status": 404,
-          "message": "Employee data not found",
+          "message": "Asset data not found",
       });
   } 
 
@@ -377,65 +383,31 @@ router.put('/update/:id', verifyToken,
   
   
     // check employee_id
-    if(existingDataById[0].employee_id != reqData.employee_id){
-        willWeUpdate = 1
-        updateData.employee_id = reqData.employee_id
-  
-    }
-  
-  
-    // check name
     if(existingDataById[0].name != reqData.name){
         willWeUpdate = 1
         updateData.name = reqData.name
   
     }
-
-    // check department
-      if(existingDataById[0].department != reqData.department){
+  
+  
+    // check name
+    if(existingDataById[0].category != reqData.category){
         willWeUpdate = 1
-        updateData.department = reqData.department
-    
-     }
-
-    // check designation
-    if(existingDataById[0].designation != reqData.designation){
-      willWeUpdate = 1
-      updateData.designation = reqData.designation
+        updateData.category = reqData.category
   
     }
 
-
-
-   // check email
-   if(existingDataById[0].email != reqData.email){
-    willWeUpdate = 1
-    updateData.email = reqData.email
-
-  }
-
-
-
-
-   // check contact_no
-   if(existingDataById[0].contact_no != reqData.contact_no){
-    willWeUpdate = 1
-    updateData.contact_no = reqData.contact_no
-
-  }
-
-
-   // check contact_no
-   if(existingDataById[0].joining_date != reqData.joining_date){
+      // check contact_no
+   if(existingDataById[0].purchase_date != reqData.purchase_date){
 
     current_time = moment(); 
-    if (!moment(reqData.joining_date, "YYYY-MM-DD", true).isValid()) {
+    if (!moment(reqData.purchase_date, "YYYY-MM-DD", true).isValid()) {
       return res.status(400).send({
         success: false,
         status: 400,
         message: "Invalid date."
       });
-    } else if (current_time.isBefore(moment(reqData.joining_date, "YYYY-MM-DD"))) {
+    } else if (current_time.isBefore(moment(reqData.purchase_date, "YYYY-MM-DD"))) {
       return res.status(400).send({
         success: false,
         status: 400,
@@ -450,6 +422,43 @@ router.put('/update/:id', verifyToken,
   }
 
 
+
+    // check serial_number
+      if(existingDataById[0].serial_number != reqData.serial_number){
+        willWeUpdate = 1
+        updateData.serial_number = reqData.serial_number
+    
+     }
+
+    // check po_number
+    if(existingDataById[0].po_number != reqData.po_number){
+      willWeUpdate = 1
+      updateData.po_number = reqData.po_number
+  
+    }
+
+
+
+   // check email
+   if(existingDataById[0].asset_history != reqData.asset_history){
+    willWeUpdate = 1
+    updateData.asset_history = reqData.asset_history
+
+  }
+
+
+
+
+   // check contact_no
+   if(existingDataById[0].unit_name != reqData.unit_name){
+    willWeUpdate = 1
+    updateData.unit_name = reqData.unit_name
+
+  }
+
+
+ 
+
    // check unit_name
    if(existingDataById[0].unit_name != reqData.unit_name){
     willWeUpdate = 1
@@ -457,102 +466,7 @@ router.put('/update/:id', verifyToken,
 
   }
 
-    // // artist id update
-    // //check artist id empty or not
-    // if(isEmpty(reqData.artist_id)){
-    //     return res.status(400).send({
-    //           "success": false,
-    //           "status": 400,
-    //           "message": "Artist id should not be empty."
-    //     });
-    //   }else if(reqData.artist_id < 1){
-    //       return res.status(400).send({
-    //           "success": false,
-    //           "status": 400,
-    //           "message": "Artist id should be positive number."
-    //     });
-    //   }else if(!Array.isArray(reqData.artist_id)){
-    //       return res.status(400).send({
-    //           "success": false,
-    //           "status": 400,
-    //           "message": "Artist id should be array."
-    //     });
-    //   }
-
-    // // check duplicate value this artist id array
-    // let tempId = []
-
-    // for (let index = 0; index < reqData.artist_id.length; index++) {
-
-    //     let data = reqData.artist_id[index]
-
-    //     // check this artist id existing in database
-    //     let existingByArtistId = await artistModel.getById(data)
-    //     if(isEmpty(existingByArtistId)){
-    //         return res.status(404).send({
-    //             "success": false,
-    //             "status": 404,
-    //             "message": `This artist no ${index+1} id not found. `
-    //     });
-    //    }
-
-    //     tempId.push(data)
-
-    //     //duplicate check in array
-    //     let checkArtistIdISDuplicate = await duplicateCheckInArray(tempId)
-    //     if (checkArtistIdISDuplicate.result) {
-    //         return res.status(409).send({
-    //             success: false,
-    //             status: 409,
-    //             message: `Duplicate artist id position no: ${index + 1}.`,
-    //         });
-    //     }
-
-
-    // }
-
-    // let artistArrayId = tempId  // assign data
-
-
-    // // get album wise artist table album id wise artist id find
-    // let getByArtistIdInAlbum = await albumWiseArtistModel.getByArtistId(reqData.id)
-    // if (isEmpty(getByArtistIdInAlbum)) {
-    //     return res.status(404).send({
-    //         success: false,
-    //         status: 404,
-    //         message: "Artist id not found.",
-    //     });
-    // }
-
-
-    // // each artist_id store in artistId with table id and artist id to update artist id purpose
-    // let artistId = []
-    // for (let index = 0; index < getByArtistIdInAlbum.length; index++) {
-    //     artistId.push({
-    //         id: getByArtistIdInAlbum[index].id,
-    //         artist_id: getByArtistIdInAlbum[index].artist_id
-    //     })
-
-    // }
-
-
-    // // this place will be check get separate artist request new artist id and old artist id find
-    // // new artist id has this array artistArrayId and previous db artist id has this array artistId
-
-    // let addedArr = [];
-    // let deletedArr = [];
-    
-    // // Use Sets for faster lookups
-    // const artistArrayIdSet = new Set(artistArrayId);
-    // const artistIdSet = new Set(artistId);
-    
-    // // Find deleted items
-    // deletedArr = artistId.filter(id => !artistArrayIdSet.has(id));
-    
-    // // Find added items
-    // addedArr = artistArrayId.filter(id => !artistIdSet.has(id));
-    
-
+   
     if (isError == 1) {
       return res.status(400).send({
           "success": false,
@@ -560,12 +474,63 @@ router.put('/update/:id', verifyToken,
           "message": errorMessage
       });
   }
+
+
+if(reqData.assign_update == 1){
+
+  // employee validation
+  if(isEmpty(reqData.employee_id)){
+    return res.status(400).send({
+        "success": false,
+        "status": 400,
+        "message":"Employee id cannot be empty."
+  });
+  }
+
+
+
+ if (!moment(reqData.assign_date, "YYYY-MM-DD", true).isValid()) {
+  return res.status(400).send({
+    success: false,
+    status: 400,
+    message: "Invalid assign date."
+  });
+} else if (current_time.isBefore(moment(reqData.assign_date, "YYYY-MM-DD"))) {
+  return res.status(400).send({
+    success: false,
+    status: 400,
+    message: "Invalid assign date."
+  });
+}
+
+
+let updateEmployeeData = {
+  employee_id : reqData.employee_id,
+  assign_date : reqData.assign_date
+}
+
+
+let result2 = await assetAssignModel.updateById(id,updateEmployeeData);
+
+if (result2.affectedRows == undefined || result2.affectedRows < 1) {
+  return res.status(500).send({
+      "success": true,
+      "status": 500,
+      "message": "Something Wrong in system database."
+  });
+}
+
+return res.status(201).send({
+  "success": true,
+  "status": 201,
+  "message": "Asset Successfully updated"
+});
+}
+
   
   if (willWeUpdate == 1) {
-  console.log("id",reqData.id)
-  console.log("data",updateData)
-        
-    let result = await employeeModel.updateById(id,updateData);
+
+    let result = await assetModel.updateById(id,updateData);
   
   
     if (result.affectedRows == undefined || result.affectedRows < 1) {
@@ -595,85 +560,198 @@ router.put('/update/:id', verifyToken,
 });
 
 
+// assign employee
+router.put('/assign-employee/:id',async(req,res) =>{
+
+  let id = req.params.id
+  let reqData = {
+    "employee_id": req.body.employee_id,
+    "assign_date":req.body.assign_date
+  }
+
+  let current_date = new Date(); 
+  let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
 
 
-// album wise artist list
-router.post('/album-wise-artist-list', verifyToken, [
-    // Example body validations
-    check('album_id').isInt().withMessage('Please provide a valid album id.')
-  ],
-  async (req, res) => {
-    // Handle the request only if there are no validation errors
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-  
-    let album_id = req.body.album_id
-  
-    // Existing id on database
-    let existingDataById = await albumModel.getById(album_id)
-    if (isEmpty(existingDataById)) {
+   // get id wise data form db 
+   let result = await assetModel.getById(id);;
+
+   // check this id already existing in database or not
+   if (isEmpty(result)) {
       return res.status(404).send({
-        "success": false,
-        "status": 404,
-        "message": "Album data not found",
+        success: false,
+        status: 404,
+        message: "Asset data not found."
       });
+
+    } 
+
+
+    // employee validation
+    if(isEmpty(reqData.employee_id)){
+      return res.status(400).send({
+          "success": false,
+          "status": 400,
+          "message":"Employee id cannot be empty."
+    });
     }
 
 
-    
-    // get album wise artist list
-    let artistList = await albumModel.getArtistListByAlbumId(album_id);
 
-    // get genre id by title
-    let genreData = await genreModel.getById(existingDataById[0].genre_id)
-    if(isEmpty(genreData)){
-        existingDataById[0].genre_title = ""
-    }else{
-        existingDataById[0].genre_title = genreData[0].title
+  if (!moment(reqData.assign_date, "YYYY-MM-DD", true).isValid()) {
+    return res.status(400).send({
+      success: false,
+      status: 400,
+      message: "Invalid assign date."
+    });
+  } 
+
+  let assignEmployeeData = {
+    asset_id : id,
+    employee_id : reqData.employee_id,
+    assign_date : reqData.assign_date,
+    created_at : current_time
+  }
+
+  let updateRemarks = await assetModel.updateById(id,{is_assign : 1 ,remarks:'assigned'});
+
+  let result2 = await assetAssignModel.addNew(assignEmployeeData);
+
+if (result2.affectedRows == undefined || result2.affectedRows < 1) {
+  return res.status(500).send({
+      "success": true,
+      "status": 500,
+      "message": "Something Wrong in system database."
+  });
+}
+
+return res.status(201).send({
+  "success": true,
+  "status": 201,
+  "message": "Employee assign Successfully Done."
+});
+
+
+});
+
+
+
+//distributed asset list
+router.get('/distributed-asset', async (req, res) => {
+  let { offset = 0, limit = 10, key = '' } = req.query;
+
+  let result = await assetModel.distributedAssetList(offset, limit, key);
+
+  for (let i = 0; i < result.length; i++) {
+    const resultId = result[i].id;
+
+    // Get assign data
+    let assignDataByAssetId = await assetAssignModel.getById(resultId);
+
+    if (!isEmpty(assignDataByAssetId)) {
+      result[i].employee_id = assignDataByAssetId[0].employee_id;
+      result[i].assign_date = assignDataByAssetId[0].assign_date;
+
+      // Get employee data based on the employee_id from assignDataByAssetId
+      let employeeData = await employeeModel.getById(assignDataByAssetId[0].employee_id);
+
+      if (!isEmpty(employeeData)) {
+        result[i].employee_name = employeeData[0].name;
+        result[i].employee_id_no = employeeData[0].employee_id;
+        result[i].employee_department = employeeData[0].department;
+        result[i].employee_designation = employeeData[0].designation;
+        result[i].employee_unit = employeeData[0].unit_name;
+      } else {
+        result[i].employee_name = "";
+        result[i].employee_id_no = "";
+        result[i].employee_department = "";
+        result[i].employee_designation = "";
+        result[i].employee_unit = "";
+      }
+    } else {
+      result[i].employee_id = "";
+      result[i].assign_date = "";
+      result[i].employee_name = "";
+      result[i].employee_id_no = "";
+      result[i].employee_department = "";
+      result[i].employee_designation = "";
+      result[i].employee_unit = "";
     }
-   
+  }
 
-    let singer = []
-    singer.push(...artistList)
-    existingDataById[0].singer = singer
+  return res.status(200).send({
+    success: true,
+    status: 200,
+    message: "Distributed asset list.",
+    data: result,
+  });
+});
+
+
+//details
+router.get('/distributed-details/:id',
+  async (req, res) => {
     
+    let id = req.params.id
 
+    // get id wise data form db 
+    let result = await assetModel.getByIdAssign(id);;
+
+     // check this id already existing in database or not
+     if (isEmpty(result)) {
+        return res.status(404).send({
+          success: false,
+          status: 404,
+          message: "Asset data not found."
+        });
   
-    return res.status(200).send({
+      } 
+
+   // get assign data
+   let assignDataByAssetId = await assetAssignModel.getById(result[0].id)
+   if(!isEmpty(assignDataByAssetId)){
+     result[0].employee_id = assignDataByAssetId[0].employee_id,
+     result[0].assign_date = assignDataByAssetId[0].assign_date
+   }else{
+    result[0].employee_id = ""
+    result[0].assign_date =  ""
+   }
+
+   if(!isEmpty(assignDataByAssetId)){
+  let employeeData = await employeeModel.getById(assignDataByAssetId[0].employee_id)
+
+
+    if(!isEmpty(employeeData)){
+      result[0].employee_name = employeeData[0].name,
+      result[0].employee_id_no = employeeData[0].employee_id,
+      result[0].employee_department = employeeData[0].department,
+      result[0].employee_designation = employeeData[0].designation,
+      result[0].employee_unit = employeeData[0].unit_name
+    }else{
+      result[0].employee_name = "",
+        result[0].employee_id_no = "",
+        result[0].employee_department = "",
+        result[0].employee_designation = "",
+        result[0].employee_unit = ""
+      
+    }
+      
+    }
+
+
+  return res.status(200).send({
       success: true,
       status: 200,
-      count: existingDataById.length,
-      message: "Album wise artist list.",
-      data: existingDataById[0]
-    });
-  
+      message: "Asset details.",
+      data: result[0],
+  });
+      
+    
 });
-  
 
 
 
 
-// check duplicate value common function
-let duplicateCheckInArray = async (arrayData = []) => {
-    let set = new Set();
-  
-    for (let element of arrayData) {
-      if (set.has(element)) {
-        return {
-          result: true,
-          message: "Duplicate value found.",
-        };
-      }
-      set.add(element);
-    }
-  
-    return {
-      result: false,
-      message: "Duplicate value not found.",
-    };
-};
 
 
 module.exports = router;  

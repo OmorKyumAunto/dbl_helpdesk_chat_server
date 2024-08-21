@@ -22,20 +22,11 @@ let getById = () => {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
 const updateById = () => {
-    return `UPDATE ${table_name} SET ? WHERE id = ?`;
+    return `UPDATE ${table_name} SET ? WHERE asset_id = ?`;
 }
+
+
 
 const updateByAlbum = () => {
     return `UPDATE ${table_name} SET ? WHERE id = ?`;

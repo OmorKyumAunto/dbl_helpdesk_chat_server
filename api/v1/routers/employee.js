@@ -43,19 +43,19 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         // Iterate through each row and save to database
         for (let row of data) {
             let reqData = {
-                employee_id: row['Employee ID'],
+                employee_id: row['Employee id'],
                 name: row['Name'],
                 department: row['Department'],
                 designation: row['Designation'],
                 email: row['Email'],
-                contact_no: row['Contact No'],
-                joining_date: row['Joining Date'],
-                unit_name: row['Unit Name'],
-                created_at: moment().format('YYYY-MM-DD HH:mm:ss')
+                contact_no: row['Contact no'],
+                joining_date: row['Joining date'],
+                unit_name: row['Unit name']
+                
             };
 
             // Perform validation checks here...
-
+console.log("first",reqData)
             // Check for duplicates
             let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
             if (checkDuplicate.length) {

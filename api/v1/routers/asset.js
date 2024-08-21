@@ -792,6 +792,94 @@ router.get('/distributed-details/:id',
 
 
 
+const multer = require('multer');
+const xlsx = require('xlsx');
+const path = require('path');
+
+// Configure Multer for file upload
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null, 'uploads/asset/'); // Set the destination folder
+  },
+  filename: function (req, file, cb) {
+      cb(null, Date.now() + path.extname(file.originalname)); // Generate a unique filename
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// API to upload Excel file and save data
+const xlsxDateToJSDate = (serial) => {
+const epoch = new Date(Date.UTC(0, 0, serial - 1)); 
+return new Date(epoch.getTime() + epoch.getTimezoneOffset() * 60000);
+};
+
+router.post('/upload-asset', upload.single('file'), async (req, res) => {
+if (!req.file) {
+    return res.status(400).send({
+        success: false,
+        status: 400,
+        message: 'No file uploaded.'
+    });
+}
+
+try {
+    const workbook = xlsx.readFile(req.file.path);
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const data = xlsx.utils.sheet_to_json(worksheet);
+
+    // Iterate through each row and save to database
+    for (let row of data) {
+        let purchase_date = row['Purchase date'];
+        if (typeof purchase_date === 'number') {
+          purchase_date = xlsxDateToJSDate(purchase_date).toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD'
+        }
+
+        let reqData = {
+            name: row['Name'],
+            category: row['Category'],
+            purchase_date: purchase_date,
+            serial_number: row['Serial number'],
+            po_number: row['PO number'],
+            asset_history: row['Asset history'],
+            model: row['Model'],
+            specification: row['Specification'],
+            unit_name: row['Unit name']
+        };
+
+        console.log("first", reqData);
+
+
+        // Save to database
+        let result = await assetModel.addNew2(reqData);
+        if (result.affectedRows == undefined || result.affectedRows < 1) {
+            return res.status(500).send({
+                success: false,
+                status: 500,
+                message: 'Something went wrong in the database.'
+            });
+        }
+    }
+
+    return res.status(201).send({
+        success: true,
+        status: 201,
+        message: 'All asset added successfully.'
+    });
+
+} catch (error) {
+    return res.status(500).send({
+        success: false,
+        status: 500,
+        message: 'Error processing the file.',
+        error: error.message
+    });
+}
+});
+
+
+
 
 
 module.exports = router;  

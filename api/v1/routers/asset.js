@@ -248,9 +248,9 @@ return res.status(201).send({
 
 // list
 router.get('/list', async (req, res) => {
-  let { offset = 0, limit = 10, key = '' } = req.query;
+  let { offset = 0, limit = 10, key = '' ,unit_name=''} = req.query;
 
-    let result = await assetModel.getList(offset, limit, key);
+    let result = await assetModel.getList(offset, limit, key,unit_name);
 
  
     return res.status(200).send({

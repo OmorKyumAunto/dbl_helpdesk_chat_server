@@ -12,10 +12,21 @@ let getByEmployee = () => {
 }
 
 
-let getList = (offset, limit, key) => {
-    let searchCondition = key ? `AND LOWER(name) LIKE LOWER('%${key}%')` : '';
-    return `SELECT * FROM ${table_name} WHERE status = 1 ${searchCondition} order by id desc LIMIT ${limit} OFFSET ${offset}`;
-  }
+let getList = (offset, limit, key, unit_name) => {
+    let searchCondition = '';
+
+    if (key) {
+        searchCondition += `AND (LOWER(name) LIKE LOWER('%${key}%')) `;
+    }
+
+    if (unit_name) {
+        searchCondition += `AND LOWER(unit_name) LIKE LOWER('%${unit_name}%') `;
+    }
+
+    return `SELECT * FROM ${table_name} WHERE status = 1 ${searchCondition} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+}
+
+
   
 
 let getById = () => {

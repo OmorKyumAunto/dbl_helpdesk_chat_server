@@ -417,7 +417,7 @@ router.put('/update/:id',
   
     
     willWeUpdate = 1
-    updateData.joining_date = reqData.joining_date
+    updateData.purchase_date = reqData.purchase_date
 
   }
 
@@ -520,11 +520,7 @@ if (result2.affectedRows == undefined || result2.affectedRows < 1) {
   });
 }
 
-return res.status(201).send({
-  "success": true,
-  "status": 201,
-  "message": "Asset Successfully updated"
-});
+
 }
 
   
@@ -545,7 +541,7 @@ return res.status(201).send({
     return res.status(200).send({
         "success": true,
         "status": 200,
-        "message": "Employee successfully updated."
+        "message": "Asset successfully updated."
     });
   
   

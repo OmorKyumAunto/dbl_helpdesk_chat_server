@@ -848,7 +848,7 @@ try {
             unit_name: row['Unit name']
         };
 
-        console.log("first", reqData);
+     
 
 
         // Save to database

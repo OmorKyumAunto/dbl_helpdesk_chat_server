@@ -63,7 +63,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
               unit_name: row['Unit name']
           };
 
-          console.log("first", reqData);
+         
 
           // Perform validation checks here...
 
@@ -220,7 +220,7 @@ if(isEmpty(reqData.email)){
 
   // // check duplicate 
      let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
-     console.log("first",checkDuplicate)
+  
      if (checkDuplicate.length) {
        return res.status(404).send({
          "success": false,
@@ -583,9 +583,7 @@ router.put('/update/:id',
   }
   
   if (willWeUpdate == 1) {
-  console.log("id",reqData.id)
-  console.log("data",updateData)
-        
+
     let result = await employeeModel.updateById(id,updateData);
   
   

@@ -33,7 +33,7 @@ const userModel = require('../models/user')
 // });
 router.use(async function (req, res, next) {
     const token = req.headers['x-access-token'];
-    console.log('Received Token:', token);
+
     try {
         if (token) {
             const decoded = jwt.verify(token, "M360ICTMusicLibrary", { algorithm: 'HS256' });

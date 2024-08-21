@@ -6,7 +6,6 @@ const e = require('express');
 const assetAssignModel = require('../models/asset-assign');
 
 let addNew = async (reqData = {}, assignData = {}) => {
-    console.log("first", reqData);
 
     return new Promise((resolve, reject) => {
         connectionDblystem.getConnection(async (err, conn) => {
@@ -38,7 +37,7 @@ let addNew = async (reqData = {}, assignData = {}) => {
                     assign_date: assignData.assign_date,
                     created_at: created_at
                 };
-                console.log("Asset Data:", assetdata);
+  
 
                 const assetData = await assetAssignModel.addNew(assetdata, conn);
 

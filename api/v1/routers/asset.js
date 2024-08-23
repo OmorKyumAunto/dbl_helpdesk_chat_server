@@ -553,7 +553,7 @@ let updateEmployeeData = {
 
 
 
-let result2 = await assetAssignModel.addNew(updateEmployeeData);
+let result2 = await assetAssignModel.updateById(id,updateEmployeeData);
 
 if (result2.affectedRows == undefined || result2.affectedRows < 1) {
   return res.status(500).send({

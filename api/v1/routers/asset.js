@@ -250,6 +250,7 @@ return res.status(201).send({
 router.get('/list', async (req, res) => {
   let { offset = 0, limit = 10, key = '' ,unit=''} = req.query;
 
+  
     let result = await assetModel.getList(offset, limit, key,unit);
 
  

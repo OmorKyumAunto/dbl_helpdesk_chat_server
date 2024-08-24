@@ -11,15 +11,15 @@ let getByEmployee = () => {
 }
 
 
-let getList = (offset, limit, key, unit_name) => {
+let getList = (offset, limit, key, unit) => {
     let searchCondition = ''; 
 
     if (key) {
         searchCondition += `AND LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) = LOWER('${key}') OR LOWER(model) = LOWER('${key}')`;
     }
 
-    if (unit_name) {
-        searchCondition += `AND LOWER(unit_name) LIKE LOWER('%${unit_name}%') `;
+    if (unit) {
+        searchCondition += `AND LOWER(unit_name) LIKE LOWER('%${unit}%') `;
     }
 
     return `SELECT * FROM ${table_name} WHERE status = 1 ${searchCondition} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;

@@ -12,10 +12,10 @@ let getByEmployee = () => {
 
 
 let getList = (offset, limit, key, unit_name) => {
-    let searchCondition = ''; // Initialize as an empty string
+    let searchCondition = ''; 
 
     if (key) {
-        searchCondition += `AND LOWER(name) LIKE LOWER('%${key}%') `;
+        searchCondition += `AND LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) = LOWER('${key}') OR LOWER(model) = LOWER('${key}')`;
     }
 
     if (unit_name) {

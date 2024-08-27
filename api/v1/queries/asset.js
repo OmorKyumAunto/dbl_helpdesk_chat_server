@@ -27,10 +27,19 @@ let getList = (offset, limit, key, unit ) => {
 
 
 
+let getTotalList = () => {
+   return `SELECT * FROM ${table_name} where  status = 1 order by id desc`;
+}
+
 
 let distributedAssetList = (offset, limit, key) => {
     let searchCondition = key ? `AND LOWER(name) LIKE LOWER('%${key}%')` : '';
     return `SELECT * FROM ${table_name} WHERE status = 1  and is_assign = 1 ${searchCondition} order by id desc LIMIT ${limit} OFFSET ${offset}`;
+}
+
+
+let distributedTotalAssetList = () => {
+  return `SELECT * FROM ${table_name} WHERE status = 1 and is_assign = 1 `;
 }
 
 
@@ -132,6 +141,9 @@ module.exports = {
     getListOfDashboard2,
     getListOfDashboard3,
     getListOfDashboardGraph,
-    getListOfDashboardGraph2
+    getListOfDashboardGraph2,
+    getTotalList,
+    distributedTotalAssetList
+
 
 }

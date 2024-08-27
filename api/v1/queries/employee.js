@@ -29,7 +29,7 @@ let getList = (offset, limit, key, unit) => {
 
 
 
-let getList22 = () => {
+let getTotalList = () => {
     return `SELECT * FROM ${table_name} where status = 1 order by id desc`;
 }
 
@@ -79,6 +79,6 @@ module.exports = {
     updateByAlbum,
     getArtistListByAlbumId,
     me,
-    getList22
+    getTotalList
 
 }

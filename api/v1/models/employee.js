@@ -39,10 +39,20 @@ let getList = async (offset, limit, key,unit) => {
   }
   
 
+  let getTotalList = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getTotalList(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+   
+
   
   let getList22 = async () => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getList22(), (error, result, fields) => {
+      connectionDblystem.query(queries.getTotalList(), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -223,7 +233,8 @@ module.exports = {
    updateByAlbum,
    getArtistListByAlbumId,
    me,
-   getList22
+   getList22,
+   getTotalList
    
   
 }

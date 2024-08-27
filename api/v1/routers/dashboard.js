@@ -69,7 +69,7 @@ router.get('/dashboard-graph-data', async (req, res) => {
       success: true,
       status: 200,
       message: "Dashboard data.",
-      data: data,
+      data: data.reverse(),
     });
   } catch (error) {
     return res.status(500).send({

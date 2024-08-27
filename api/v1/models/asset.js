@@ -89,6 +89,18 @@ let getList = async (offset, limit, key,unit) => {
   }
   
 
+
+let getTotalList = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getTotalList(), (error, result, fields) => {
+        if (error) reject(error)
+        else resolve(result);
+      });
+  });
+}
+  
+
+
   let distributedAssetList = async (offset, limit, key) => {
     return new Promise((resolve, reject) => {
       connectionDblystem.query(queries.distributedAssetList(offset, limit, key), (error, result, fields) => {
@@ -98,7 +110,15 @@ let getList = async (offset, limit, key,unit) => {
     });
   }
   
-
+  let distributedAssetTotalList = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.distributedTotalAssetList(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+  
 
 let getLastData = async () => {
     return new Promise((resolve, reject) => {
@@ -338,7 +358,9 @@ module.exports = {
    getListOfDashboard2,
    getListOfDashboard3,
    getListOfDashboardGraph,
-   getListOfDashboardGraph2
+   getListOfDashboardGraph2,
+   getTotalList,
+   distributedAssetTotalList
    
    
   

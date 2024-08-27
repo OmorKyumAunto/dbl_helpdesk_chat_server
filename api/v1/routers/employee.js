@@ -265,30 +265,43 @@ router.get('/list',async (req, res) => {
  let { offset, limit , key, unit}  = reqData;
 
 
-  try {
+
     let result = await employeeModel.getList(offset, limit, key, unit);
+
+    let countResult = await employeeModel.getTotalList();
 
     return res.status(200).send({
       success: true,
       status: 200,
       message: "Employee List.",
-      count: result.length,
+      total: countResult.length,
       data: result
     });
-  } catch (error) {
-    return res.status(500).send({
-      success: false,
-      status: 500,
-      message: "Error retrieving employee list.",
-      error: error.message
+ 
+  
+});
+
+
+// list
+router.get('/all-list',async (req, res) => {
+
+
+    let result = await employeeModel.getTotalList();
+
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Employee List.",
+      total: result.length,
+      data: result
     });
-  }
+ 
+  
 });
 
 
 // list
 router.get('/list-2',async (req, res) => {
-  console.log("first")
   let result = await employeeModel.getList22();
 
     return res.status(200).send({

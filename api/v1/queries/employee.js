@@ -8,7 +8,7 @@ let addNew = () => {
 }
 
 let getByEmployee = () => {
-    return `SELECT * FROM ${table_name} where  employee_id = ? and status != 0`;
+    return `SELECT * FROM ${table_name} where employee_id = ? and status != 0`;
 }
 
 
@@ -20,15 +20,20 @@ let getList = (offset, limit, key, unit) => {
     }
 
     if (unit) {
-        searchCondition += `AND LOWER(unit_name) LIKE LOWER('%${unit}%') `;
+        searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit}%') `;
     }
 
-    return `SELECT * FROM ${table_name} WHERE status = 1 ${searchCondition} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+    return `SELECT * FROM ${table_name} WHERE status = 1 ${searchCondition} ORDER BY id desc LIMIT ${limit} OFFSET ${offset}`;
 }
 
 
-  
 
+
+let getList22 = () => {
+    return `SELECT * FROM ${table_name} where status = 1 order by id desc`;
+}
+
+  
 let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ? and status = 1 `;
 }
@@ -73,6 +78,7 @@ module.exports = {
     updateById,
     updateByAlbum,
     getArtistListByAlbumId,
-    me
+    me,
+    getList22
 
 }

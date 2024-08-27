@@ -39,6 +39,16 @@ let getList = async (offset, limit, key,unit) => {
   }
   
 
+  
+  let getList22 = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getList22(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+  
 
 let getById = async (id = 0) => {
     return new Promise((resolve, reject) => {
@@ -212,7 +222,8 @@ module.exports = {
    getByArtistId,
    updateByAlbum,
    getArtistListByAlbumId,
-   me
+   me,
+   getList22
    
   
 }

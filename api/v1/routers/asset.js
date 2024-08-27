@@ -248,12 +248,17 @@ return res.status(201).send({
 
 // list
 router.get('/list', async (req, res) => {
-  let { offset = 0, limit = 10, key = '' ,unit=''} = req.query;
 
-  
-    let result = await assetModel.getList(offset, limit, key,unit);
-
+  let reqData = {
+    "limit": req.query.limit || 50,
+    "offset": req.query.offset || 0,
+    "key": req.query.key,
+    "unit": req.query.unit,
+}
+ let { offset, limit , key,unit} = reqData;
  
+ let result = await assetModel.getList(offset, limit, key,unit);
+
     return res.status(200).send({
       success: true,
       status: 200,
@@ -695,7 +700,7 @@ router.get('/distributed-asset', async (req, res) => {
 
       // Get employee data based on the employee_id from assignDataByAssetId
       let employeeData = await employeeModel.getById(assignDataByAssetId[0].employee_id);
-
+console.log("first",employeeData)
       if (!isEmpty(employeeData)) {
         result[i].employee_name = employeeData[0].name;
         result[i].employee_id_no = employeeData[0].employee_id;

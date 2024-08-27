@@ -16,7 +16,7 @@ let getList = (offset, limit, key, unit) => {
     let searchCondition = '';
 
     if (key) {
-        searchCondition += `AND (LOWER(name) LIKE LOWER('%${key}%')) `;
+        searchCondition += ` AND (LOWER(employee_id) LIKE LOWER('%${key}%') OR LOWER(name) LIKE LOWER('%${key}%'))`;
     }
 
     if (unit) {

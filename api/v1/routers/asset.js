@@ -254,10 +254,11 @@ router.get('/list', async (req, res) => {
     "offset": req.query.offset || 0,
     "key": req.query.key,
     "unit": req.query.unit,
+    "type": req.query.type,
 }
- let { offset, limit , key,unit} = reqData;
+ let { offset, limit , key,unit, type } = reqData;
 
- let result = await assetModel.getList(offset, limit, key,unit);
+ let result = await assetModel.getList(offset, limit, key,unit,type);
 
  let totalCount = await assetModel.getTotalList();
 
@@ -702,9 +703,16 @@ return res.status(201).send({
 
 //distributed asset list
 router.get('/distributed-asset', async (req, res) => {
-  let { offset = 0, limit = 10, key = '' } = req.query;
+  let reqData = {
+    "limit": req.query.limit || 50,
+    "offset": req.query.offset || 0,
+    "key": req.query.key,
+    "unit": req.query.unit,
+    "type": req.query.type,
+}
+ let { offset, limit , key,unit ,type} = reqData;
 
-  let result = await assetModel.distributedAssetList(offset, limit, key);
+  let result = await assetModel.distributedAssetList(offset, limit, key, unit,type);
   let totalResult = await assetModel.distributedAssetTotalList();
 
   for (let i = 0; i < result.length; i++) {
@@ -752,6 +760,8 @@ router.get('/distributed-asset', async (req, res) => {
     data: result,
   });
 });
+
+
 
 
 //distributed asset list

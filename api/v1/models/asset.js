@@ -79,9 +79,9 @@ let getByExistsEmployee = async(employee_id = "") => {
 
 
 
-let getList = async (offset, limit, key,unit) => {
+let getList = async (offset, limit, key,unit,type) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getList(offset, limit, key,unit), (error, result, fields) => {
+      connectionDblystem.query(queries.getList(offset, limit, key,unit,type), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -101,9 +101,9 @@ let getTotalList = async () => {
   
 
 
-  let distributedAssetList = async (offset, limit, key) => {
+  let distributedAssetList = async (offset, limit, key, unit ,type) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.distributedAssetList(offset, limit, key), (error, result, fields) => {
+      connectionDblystem.query(queries.distributedAssetList(offset, limit, key, unit,type), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });

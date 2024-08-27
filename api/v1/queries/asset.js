@@ -1,5 +1,6 @@
 let table_name = "dbl_asset";
 
+let table_name2 = "dbl_asset_assign";
 
 
 let addNew = () => {
@@ -11,15 +12,18 @@ let getByEmployee = () => {
 }
 
 
-let getList = (offset, limit, key, unit ) => {
+let getList = (offset, limit, key, unit, type ) => {
   let searchCondition = '';
 
   if (key) {
-      searchCondition += `AND (LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) LIKE LOWER('%${key}%')) `;
+      searchCondition += `AND (LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) LIKE LOWER('%${key}%') OR UPPER(serial_number) LIKE UPPER('%${key}%')) `;
   }
 
   if (unit) {
       searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit}%') `;
+  }
+  if (type) {
+    searchCondition += `AND lower(remarks) LIKE lower('%${type}%') `;
   }
 
   return `SELECT * FROM ${table_name} WHERE status = 1 ${searchCondition} ORDER BY id desc LIMIT ${limit} OFFSET ${offset}`;
@@ -32,10 +36,23 @@ let getTotalList = () => {
 }
 
 
-let distributedAssetList = (offset, limit, key) => {
-    let searchCondition = key ? `AND LOWER(name) LIKE LOWER('%${key}%')` : '';
-    return `SELECT * FROM ${table_name} WHERE status = 1  and is_assign = 1 ${searchCondition} order by id desc LIMIT ${limit} OFFSET ${offset}`;
+let distributedAssetList = (offset, limit, key, unit) => {
+  // Initialize searchCondition as an empty string
+  let searchCondition = '';
+
+  // Add key search condition if key is provided
+  if (key) {
+      searchCondition += ` AND LOWER(name) LIKE LOWER('%${key}%')`;
+  }
+
+  // Add unit search condition if unit is provided
+  if (unit) {
+    searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit}%') `;
+  }
+
+  return `SELECT * FROM ${table_name} WHERE status = 1 AND is_assign = 1 ${searchCondition} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
 }
+
 
 
 let distributedTotalAssetList = () => {

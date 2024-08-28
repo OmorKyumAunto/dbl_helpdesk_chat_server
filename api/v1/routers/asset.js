@@ -260,13 +260,13 @@ router.get('/list', async (req, res) => {
 
  let result = await assetModel.getList(offset, limit, key,unit,type);
 
-// let totalCount = await assetModel.getTotalList();
+ let totalCount = await assetModel.getTotalList();
 
     return res.status(200).send({
       success: true,
       status: 200,
       message: "Asset List.",
-      total: result.length,
+      total: totalCount.length,
       data: result
     });
   

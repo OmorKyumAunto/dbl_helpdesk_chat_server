@@ -723,7 +723,7 @@ router.get('/distributed-asset', async (req, res) => {
  let { offset, limit , key,unit ,type} = reqData;
 
   let result = await assetModel.distributedAssetList(offset, limit, key, unit,type);
-  let totalResult = await assetModel.distributedAssetTotalList();
+  let totalResult = await assetModel.distributedAssetTotalList(key, unit,type);
 
   for (let i = 0; i < result.length; i++) {
     const resultId = result[i].id;
@@ -766,7 +766,7 @@ router.get('/distributed-asset', async (req, res) => {
     success: true,
     status: 200,
     message: "Distributed asset list.",
-    total : result.length,
+    total : totalResult.length,
     data: result,
   });
 });

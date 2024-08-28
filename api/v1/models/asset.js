@@ -110,9 +110,9 @@ let getTotalList = async (key, unit, type) => {
     });
   }
   
-  let distributedAssetTotalList = async () => {
+  let distributedAssetTotalList = async (key, unit,type) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.distributedTotalAssetList(), (error, result, fields) => {
+      connectionDblystem.query(queries.distributedTotalAssetList(key, unit,type), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });

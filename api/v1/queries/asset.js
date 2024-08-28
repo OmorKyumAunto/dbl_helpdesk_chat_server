@@ -71,8 +71,21 @@ let distributedAssetList = (offset, limit, key, unit) => {
 
 
 
-let distributedTotalAssetList = () => {
-  return `SELECT * FROM ${table_name} WHERE status = 1 and is_assign = 1 `;
+let distributedTotalAssetList = (key, unit,type) => {
+ // Initialize searchCondition as an empty string
+ let searchCondition = '';
+
+ // Add key search condition if key is provided
+ if (key) {
+     searchCondition += ` AND LOWER(employee_id_no) LIKE LOWER('%${key}%') OR LOWER(employee_name) LIKE LOWER('%${key}%') OR LOWER(serial_number) LIKE LOWER('%${key}%') `;
+ }
+
+ // Add unit search condition if unit is provided
+ if (unit) {
+   searchCondition += `AND UPPER(employee_unit) LIKE UPPER('%${unit}%') `;
+ }
+
+ return `SELECT * FROM ${table_view} WHERE status = 1 AND is_assign = 1 ${searchCondition} ORDER BY id DESC `;
 }
 
 

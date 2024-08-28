@@ -255,22 +255,28 @@ router.get('/list', async (req, res) => {
     "key": req.query.key,
     "unit": req.query.unit,
     "type": req.query.type,
-}
- let { offset, limit , key,unit, type } = reqData;
-
- let result = await assetModel.getList(offset, limit, key,unit,type);
-
- let totalCount = await assetModel.getTotalList();
-
-    return res.status(200).send({
-      success: true,
-      status: 200,
-      message: "Asset List.",
-      total: totalCount.length,
-      data: result
-    });
+  };
   
+  let { offset, limit, key, unit, type } = reqData;
+
+  let result = await assetModel.getList(offset, limit, key, unit, type);
+  let totalCount = await assetModel.getTotalList();
+
+  // Check if any of the query parameters are provided
+  let hasFilters = key || unit || type;
+  
+  let test = hasFilters ? result.length : totalCount.length;
+
+  return res.status(200).send({
+    success: true,
+    status: 200,
+    message: "Asset List.",
+    total: test,
+    data: result
+  });
+
 });
+
 
 
 // total list

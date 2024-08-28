@@ -50,7 +50,7 @@ let distributedAssetList = (offset, limit, key, unit) => {
 
   // Add unit search condition if unit is provided
   if (unit) {
-    searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit}%') `;
+    searchCondition += `AND UPPER(employee_unit) LIKE UPPER('%${unit}%') `;
   }
 
   return `SELECT * FROM ${table_view} WHERE status = 1 AND is_assign = 1 ${searchCondition} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;

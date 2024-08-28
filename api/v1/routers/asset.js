@@ -260,13 +260,13 @@ router.get('/list', async (req, res) => {
 
  let result = await assetModel.getList(offset, limit, key,unit,type);
 
- let totalCount = await assetModel.getTotalList();
+// let totalCount = await assetModel.getTotalList();
 
     return res.status(200).send({
       success: true,
       status: 200,
       message: "Asset List.",
-      count: totalCount.length,
+      total: result.length,
       data: result
     });
   
@@ -756,7 +756,7 @@ router.get('/distributed-asset', async (req, res) => {
     success: true,
     status: 200,
     message: "Distributed asset list.",
-    total : totalResult.length,
+    total : result.length,
     data: result,
   });
 });

@@ -274,7 +274,7 @@ router.get('/list',async (req, res) => {
       success: true,
       status: 200,
       message: "Employee List.",
-      total: countResult.length,
+      total: result.length,
       data: result
     });
  

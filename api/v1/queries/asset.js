@@ -2,6 +2,9 @@ let table_name = "dbl_asset";
 
 let table_name2 = "dbl_asset_assign";
 
+let table_view = "employee_asset_assign_view";
+
+
 
 let addNew = () => {
     return `INSERT INTO ${table_name} SET ?`;
@@ -42,7 +45,7 @@ let distributedAssetList = (offset, limit, key, unit) => {
 
   // Add key search condition if key is provided
   if (key) {
-      searchCondition += ` AND LOWER(name) LIKE LOWER('%${key}%')`;
+      searchCondition += ` AND LOWER(employee_id_no) LIKE LOWER('%${key}%') OR LOWER(employee_name) LIKE LOWER('%${key}%') OR LOWER(serial_number) LIKE LOWER('%${key}%') `;
   }
 
   // Add unit search condition if unit is provided
@@ -50,7 +53,7 @@ let distributedAssetList = (offset, limit, key, unit) => {
     searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit}%') `;
   }
 
-  return `SELECT * FROM ${table_name} WHERE status = 1 AND is_assign = 1 ${searchCondition} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+  return `SELECT * FROM ${table_view} WHERE status = 1 AND is_assign = 1 ${searchCondition} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
 }
 
 

@@ -257,8 +257,8 @@ if(isEmpty(reqData.email)){
 router.get('/list',async (req, res) => {
 
   let reqData = {
-    "limit": req.query.limit || 50,
-    "offset": req.query.offset || 0,
+    "limit": req.query.limit,
+    "offset": req.query.offset,
     "key": req.query.key,
     "unit": req.query.unit,
 }

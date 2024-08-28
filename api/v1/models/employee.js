@@ -39,9 +39,9 @@ let getList = async (offset, limit, key,unit,type) => {
   }
   
 
-  let getTotalList = async () => {
+  let getTotalList = async (key, unit) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getTotalList(), (error, result, fields) => {
+      connectionDblystem.query(queries.getTotalList(key, unit), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });

@@ -29,8 +29,18 @@ let getList = (offset, limit, key, unit) => {
 
 
 
-let getTotalList = () => {
-    return `SELECT * FROM ${table_name} where status = 1 order by id desc`;
+let getTotalList = (key, unit) => {
+    let searchCondition = '';
+
+    if (key) {
+        searchCondition += ` AND (LOWER(employee_id) LIKE LOWER('%${key}%') OR LOWER(name) LIKE LOWER('%${key}%'))`;
+    }
+
+    if (unit) {
+        searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit}%') `;
+    }
+
+    return `SELECT * FROM ${table_name} WHERE status = 1 ${searchCondition} ORDER BY id desc`;
 }
 
   

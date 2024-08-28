@@ -268,7 +268,7 @@ router.get('/list',async (req, res) => {
 
     let result = await employeeModel.getList(offset, limit, key, unit);
 
-    let countResult = await employeeModel.getTotalList();
+    let countResult = await employeeModel.getTotalList(key, unit);
 
     return res.status(200).send({
       success: true,

@@ -250,8 +250,8 @@ return res.status(201).send({
 router.get('/list', async (req, res) => {
 
   let reqData = {
-    "limit": req.query.limit ,
-    "offset": req.query.offset ,
+    "limit": req.query.limit || 50,
+    "offset": req.query.offset || 0,
     "key": req.query.key,
     "unit": req.query.unit,
     "type": req.query.type,
@@ -704,8 +704,8 @@ return res.status(201).send({
 //distributed asset list
 router.get('/distributed-asset', async (req, res) => {
   let reqData = {
-    "limit": req.query.limit ,
-    "offset": req.query.offset,
+    "limit": req.query.limit || 50,
+    "offset": req.query.offset || 0,
     "key": req.query.key,
     "unit": req.query.unit,
     "type": req.query.type,

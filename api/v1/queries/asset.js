@@ -34,8 +34,21 @@ let getList = (offset, limit, key, unit, type ) => {
 
 
 
-let getTotalList = () => {
-   return `SELECT * FROM ${table_name} where  status = 1 order by id desc`;
+let getTotalList = (key, unit, type) => {
+  let searchCondition = '';
+
+  if (key) {
+      searchCondition += `AND (LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) LIKE LOWER('%${key}%') OR UPPER(serial_number) LIKE UPPER('%${key}%')) `;
+  }
+
+  if (unit) {
+      searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit}%') `;
+  }
+  if (type) {
+    searchCondition += `AND lower(remarks) LIKE lower('%${type}%') `;
+  }
+
+  return `SELECT * FROM ${table_name} WHERE status = 1 ${searchCondition} ORDER BY id desc `;
 }
 
 

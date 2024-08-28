@@ -250,7 +250,7 @@ return res.status(201).send({
 router.get('/list', async (req, res) => {
 
   let reqData = {
-    "limit": req.query.limit || 50,
+    "limit": req.query.limit || 100,
     "offset": req.query.offset || 0,
     "key": req.query.key,
     "unit": req.query.unit,
@@ -260,21 +260,25 @@ router.get('/list', async (req, res) => {
   let { offset, limit, key, unit, type } = reqData;
 
   let result = await assetModel.getList(offset, limit, key, unit, type);
-  let totalCount = await assetModel.getTotalList();
+  let totalCount = await assetModel.getTotalList(key, unit, type);
 
-  // Check if any of the query parameters are provided
-  let hasFilters = key || unit || type;
-  
-  let test = hasFilters ? result.length : totalCount.length;
+  // Log the incoming request data
+  // console.log("first", reqData);
+
+  // // Determine if any filter is provided
+  // let hasFilters = key !== undefined || unit !== undefined || type !== undefined;
+
+  // // Choose the total count based on the presence of filters
+  // let test = hasFilters ? result.length : totalCount.length;
 
   return res.status(200).send({
     success: true,
     status: 200,
     message: "Asset List.",
-    total: test,
+    total: totalCount.length,
     data: result
   });
-
+  
 });
 
 

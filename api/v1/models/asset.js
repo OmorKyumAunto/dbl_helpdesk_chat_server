@@ -79,9 +79,9 @@ let getByExistsEmployee = async(employee_id = "") => {
 
 
 
-let getList = async (offset, limit, key,unit) => {
+let getList = async (offset, limit, key,unit,type) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getList(offset, limit, key,unit), (error, result, fields) => {
+      connectionDblystem.query(queries.getList(offset, limit, key,unit,type), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -89,16 +89,36 @@ let getList = async (offset, limit, key,unit) => {
   }
   
 
-  let distributedAssetList = async (offset, limit, key) => {
+
+let getTotalList = async (key, unit, type) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.distributedAssetList(offset, limit, key), (error, result, fields) => {
+      connectionDblystem.query(queries.getTotalList(key, unit, type), (error, result, fields) => {
+        if (error) reject(error)
+        else resolve(result);
+      });
+  });
+}
+  
+
+
+  let distributedAssetList = async (offset, limit, key, unit ,type) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.distributedAssetList(offset, limit, key, unit,type), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
     });
   }
   
-
+  let distributedAssetTotalList = async (key, unit,type) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.distributedTotalAssetList(key, unit,type), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+  
 
 let getLastData = async () => {
     return new Promise((resolve, reject) => {
@@ -338,7 +358,9 @@ module.exports = {
    getListOfDashboard2,
    getListOfDashboard3,
    getListOfDashboardGraph,
-   getListOfDashboardGraph2
+   getListOfDashboardGraph2,
+   getTotalList,
+   distributedAssetTotalList
    
    
   

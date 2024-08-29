@@ -248,12 +248,46 @@ return res.status(201).send({
 
 // list
 router.get('/list', async (req, res) => {
-  let { offset = 0, limit = 10, key = '' ,unit=''} = req.query;
 
+  let reqData = {
+    "limit": req.query.limit || 100,
+    "offset": req.query.offset || 0,
+    "key": req.query.key,
+    "unit": req.query.unit,
+    "type": req.query.type,
+  };
   
-    let result = await assetModel.getList(offset, limit, key,unit);
+  let { offset, limit, key, unit, type } = reqData;
 
- 
+  let result = await assetModel.getList(offset, limit, key, unit, type);
+  let totalCount = await assetModel.getTotalList(key, unit, type);
+
+  // Log the incoming request data
+  // console.log("first", reqData);
+
+  // // Determine if any filter is provided
+  // let hasFilters = key !== undefined || unit !== undefined || type !== undefined;
+
+  // // Choose the total count based on the presence of filters
+  // let test = hasFilters ? result.length : totalCount.length;
+
+  return res.status(200).send({
+    success: true,
+    status: 200,
+    message: "Asset List.",
+    total: totalCount.length,
+    data: result
+  });
+  
+});
+
+
+
+// total list
+router.get('/all-list', async (req, res) => {
+
+ let result = await assetModel.getTotalList();
+
     return res.status(200).send({
       success: true,
       status: 200,
@@ -679,9 +713,17 @@ return res.status(201).send({
 
 //distributed asset list
 router.get('/distributed-asset', async (req, res) => {
-  let { offset = 0, limit = 10, key = '' } = req.query;
+  let reqData = {
+    "limit": req.query.limit || 50,
+    "offset": req.query.offset || 0,
+    "key": req.query.key,
+    "unit": req.query.unit,
+    "type": req.query.type,
+}
+ let { offset, limit , key,unit ,type} = reqData;
 
-  let result = await assetModel.distributedAssetList(offset, limit, key);
+  let result = await assetModel.distributedAssetList(offset, limit, key, unit,type);
+  let totalResult = await assetModel.distributedAssetTotalList(key, unit,type);
 
   for (let i = 0; i < result.length; i++) {
     const resultId = result[i].id;
@@ -724,9 +766,65 @@ router.get('/distributed-asset', async (req, res) => {
     success: true,
     status: 200,
     message: "Distributed asset list.",
+    total : totalResult.length,
     data: result,
   });
 });
+
+
+
+
+//distributed asset list
+router.get('/all-distributed-asset', async (req, res) => {
+
+  let result = await assetModel.distributedAssetTotalList();
+
+  for (let i = 0; i < result.length; i++) {
+    const resultId = result[i].id;
+
+    // Get assign data
+    let assignDataByAssetId = await assetAssignModel.getById(resultId);
+
+    if (!isEmpty(assignDataByAssetId)) {
+      result[i].employee_id = assignDataByAssetId[0].employee_id;
+      result[i].assign_date = assignDataByAssetId[0].assign_date;
+
+      // Get employee data based on the employee_id from assignDataByAssetId
+      let employeeData = await employeeModel.getById(assignDataByAssetId[0].employee_id);
+
+      if (!isEmpty(employeeData)) {
+        result[i].employee_name = employeeData[0].name;
+        result[i].employee_id_no = employeeData[0].employee_id;
+        result[i].employee_department = employeeData[0].department;
+        result[i].employee_designation = employeeData[0].designation;
+        result[i].employee_unit = employeeData[0].unit_name;
+      } else {
+        result[i].employee_name = "";
+        result[i].employee_id_no = "";
+        result[i].employee_department = "";
+        result[i].employee_designation = "";
+        result[i].employee_unit = "";
+      }
+    } else {
+      result[i].employee_id = "";
+      result[i].assign_date = "";
+      result[i].employee_name = "";
+      result[i].employee_id_no = "";
+      result[i].employee_department = "";
+      result[i].employee_designation = "";
+      result[i].employee_unit = "";
+    }
+  }
+
+  return res.status(200).send({
+    success: true,
+    status: 200,
+    message: "Distributed asset list.",
+    total : result.length,
+    data: result,
+  });
+});
+
 
 
 //details

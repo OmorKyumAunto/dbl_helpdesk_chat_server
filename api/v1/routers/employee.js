@@ -11,6 +11,7 @@ const employeeModel = require('../models/employee');
 const multer = require('multer');
 const xlsx = require('xlsx');
 const path = require('path');
+const { off } = require("process");
 
 // Configure Multer for file upload
 const storage = multer.diskStorage({
@@ -254,10 +255,54 @@ if(isEmpty(reqData.email)){
 
 // list
 router.get('/list',async (req, res) => {
-  let { offset = 0, limit = 10, key = '' ,unit = ''} = req.query;
 
-  try {
-    let result = await employeeModel.getList(offset, limit, key,unit);
+  let reqData = {
+    "limit": req.query.limit || 50,
+    "offset": req.query.offset || 0,
+    "key": req.query.key,
+    "unit": req.query.unit,
+}
+ let { offset, limit , key, unit}  = reqData;
+
+
+
+    let result = await employeeModel.getList(offset, limit, key, unit);
+
+    let countResult = await employeeModel.getTotalList(key, unit);
+
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Employee List.",
+      total: result.length,
+      data: result
+    });
+ 
+  
+});
+
+
+// list
+router.get('/all-list',async (req, res) => {
+
+
+    let result = await employeeModel.getTotalList();
+
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Employee List.",
+      total: result.length,
+      data: result
+    });
+ 
+  
+});
+
+
+// list
+router.get('/list-2',async (req, res) => {
+  let result = await employeeModel.getList22();
 
     return res.status(200).send({
       success: true,
@@ -266,15 +311,9 @@ router.get('/list',async (req, res) => {
       count: result.length,
       data: result
     });
-  } catch (error) {
-    return res.status(500).send({
-      success: false,
-      status: 500,
-      message: "Error retrieving employee list.",
-      error: error.message
-    });
-  }
+  
 });
+
 
 
 //details

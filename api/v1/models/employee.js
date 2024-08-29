@@ -29,7 +29,7 @@ let getByExistsEmployee = async(employee_id = "") => {
 
 
 
-let getList = async (offset, limit, key,unit) => {
+let getList = async (offset, limit, key,unit,type) => {
     return new Promise((resolve, reject) => {
       connectionDblystem.query(queries.getList(offset, limit, key,unit), (error, result, fields) => {
         if (error) reject(error);
@@ -39,6 +39,26 @@ let getList = async (offset, limit, key,unit) => {
   }
   
 
+  let getTotalList = async (key, unit) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getTotalList(key, unit), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+   
+
+  
+  let getList22 = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getTotalList(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+  
 
 let getById = async (id = 0) => {
     return new Promise((resolve, reject) => {
@@ -212,7 +232,9 @@ module.exports = {
    getByArtistId,
    updateByAlbum,
    getArtistListByAlbumId,
-   me
+   me,
+   getList22,
+   getTotalList
    
   
 }

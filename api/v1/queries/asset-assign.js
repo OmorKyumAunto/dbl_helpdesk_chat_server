@@ -27,6 +27,10 @@ const updateById = () => {
 }
 
 
+const deleteAssetById = () => {
+    return `delete from ${table_name} WHERE asset_id = ?  `;
+}
+
 
 const updateByAlbum = () => {
     return `UPDATE ${table_name} SET ? WHERE id = ?`;
@@ -44,6 +48,7 @@ module.exports = {
     getById,
     updateById,
     updateByAlbum,
-    getArtistListByAlbumId
+    getArtistListByAlbumId,
+    deleteAssetById
 
 }

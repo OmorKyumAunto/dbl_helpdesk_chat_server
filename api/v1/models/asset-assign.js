@@ -85,6 +85,17 @@ let updateById = async (id = 0, data = {}) => {
 }
 
 
+let deleteAssetById = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.deleteAssetById(), [id], (error, result, fields) => {
+            if (error) reject(error);
+            else resolve(result);
+        });
+    });
+}
+
+
+
 // update
 let updateByAlbum = (id = 0, updateData = {}, addedArr = [], deletedArr = [], conn = undefined) => {
 
@@ -205,7 +216,8 @@ module.exports = {
    updateById,
    getByArtistId,
    updateByAlbum,
-   getArtistListByAlbumId
+   getArtistListByAlbumId,
+   deleteAssetById
    
   
 }

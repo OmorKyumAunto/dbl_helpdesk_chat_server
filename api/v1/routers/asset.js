@@ -557,10 +557,57 @@ if(reqData.assign_update == 1){
   // get asset assign data 
   let assetAssignData = await assetAssignModel.getById(id)
 
-if(assetAssignData.length){
-  if(assetAssignData[0].employee_id != reqData.employee_id ){
-    // employee validation
-    if(isEmpty(reqData.employee_id)){
+  if(assetAssignData.length){
+    if(assetAssignData[0].employee_id != reqData.employee_id ){
+      // employee validation
+      if(isEmpty(reqData.employee_id)){
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message":"Employee id cannot be empty."
+      });
+      }
+
+
+
+      if (!moment(reqData.assign_date, "YYYY-MM-DD", true).isValid()) {
+      return res.status(400).send({
+        success: false,
+        status: 400,
+        message: "Invalid assign date."
+      });
+      } else if (current_time.isBefore(moment(reqData.assign_date, "YYYY-MM-DD"))) {
+      return res.status(400).send({
+        success: false,
+        status: 400,
+        message: "Invalid assign date."
+      });
+      }
+
+
+      let updateEmployeeData = {
+      asset_id : id,
+      employee_id : reqData.employee_id,
+      assign_date : reqData.assign_date
+      }
+
+
+
+      let result2 = await assetAssignModel.updateById(id,updateEmployeeData);
+
+      if (result2.affectedRows == undefined || result2.affectedRows < 1) {
+      return res.status(500).send({
+          "success": true,
+          "status": 500,
+          "message": "Something Wrong in system database."
+      });
+      }
+
+    }
+  
+  }else{
+     // employee validation
+     if(isEmpty(reqData.employee_id)){
       return res.status(400).send({
           "success": false,
           "status": 400,
@@ -592,8 +639,9 @@ if(assetAssignData.length){
     }
 
 
+    let result = await assetModel.updateById(id,{is_assign :1 , remarks: 'assigned'});
+    let result2 = await assetAssignModel.addNew(updateEmployeeData);
 
-    let result2 = await assetAssignModel.updateById(id,updateEmployeeData);
 
     if (result2.affectedRows == undefined || result2.affectedRows < 1) {
     return res.status(500).send({
@@ -604,10 +652,7 @@ if(assetAssignData.length){
     }
 
   }
- 
-}
-
-}
+  }
 else if(reqData.assign_update == 0){
   
   let deleteData = await assetAssignModel.deleteAssetById(id);

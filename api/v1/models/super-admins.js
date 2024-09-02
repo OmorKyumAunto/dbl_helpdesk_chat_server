@@ -1,5 +1,5 @@
 const { connectionDblystem } = require('../connections/connection');
-const queries = require('../queries/user');
+const queries = require('../queries/super-admins');
 
 
 
@@ -31,20 +31,9 @@ let getUserInfo = async (email = "",password="") => {
     });
 }
 
-let getUserById = async (id = 0) => {
-    console.log("firstgggggg",id)
+let getById = async (id = 0) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getUserById(), [id], (error, result, fields) => {
-            if (error) reject(error)
-            else resolve(result)
-        });
-    });
-}
-
-
-let getUserByEmployeeId = async (employee_id = 0) => {
-    return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getUserByEmployeeId(), [employee_id], (error, result, fields) => {
+        connectionDblystem.query(queries.getById(), [id], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -57,6 +46,5 @@ module.exports = {
     getUserByEmail,
     addNew,
     getUserInfo,
-    getUserById,
-    getUserByEmployeeId
+    getById
 }

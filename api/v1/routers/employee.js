@@ -6,7 +6,7 @@ const {check,validationResult} = require('express-validator')
 const moment = require("moment");
 const e = require("express");
 const employeeModel = require('../models/employee');
-
+const { routeAccessChecker } = require("../middlewares/routeAccess");
 
 const multer = require('multer');
 const xlsx = require('xlsx');
@@ -104,6 +104,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       });
   }
 });
+
 
 
 router.post('/add',async (req, res) => {
@@ -254,7 +255,7 @@ if(isEmpty(reqData.email)){
 
 
 // list
-router.get('/list',async (req, res) => {
+router.get('/list',[verifyToken, routeAccessChecker("employeeList")],async (req, res) => {
 
   let reqData = {
     "limit": req.query.limit || 50,

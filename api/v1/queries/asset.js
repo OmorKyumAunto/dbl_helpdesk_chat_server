@@ -90,7 +90,6 @@ let distributedTotalAssetList = (key, unit,type) => {
 
 
 let getLastData = () => {
-    
     return `SELECT * FROM ${table_name} where  status = 1 order by id desc  `;
   }
   

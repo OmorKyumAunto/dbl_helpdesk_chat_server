@@ -23,11 +23,17 @@ let getUserByEmployeeId = () => {
 }
 
 
+const updateByEmployeeUser = () => {
+    return `UPDATE ${table_name} SET ? WHERE profile_id = ?`;
+}
+
+
 module.exports = {
     
     getUserByEmail,
     addNew,
     getUserInfo,
     getUserById,
-    getUserByEmployeeId
+    getUserByEmployeeId,
+    updateByEmployeeUser
 }

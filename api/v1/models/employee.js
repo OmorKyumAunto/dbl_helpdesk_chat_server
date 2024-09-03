@@ -71,6 +71,15 @@ let getById = async (id = 0) => {
 
 
 
+let getDataByEmployeeId = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getDataByEmployeeId(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 
 
 let me = async (id = 0) => {
@@ -234,7 +243,8 @@ module.exports = {
    getArtistListByAlbumId,
    me,
    getList22,
-   getTotalList
+   getTotalList,
+   getDataByEmployeeId
    
   
 }

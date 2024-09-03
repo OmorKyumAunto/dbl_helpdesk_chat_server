@@ -1,10 +1,10 @@
 let superAdminPermission = [
-'employeeList',
+'employeeList','employeeAdd','employeeAllList','employeeDatails','employeeDetails','employeeDelete','employeeUpdate'
 ];
 
 let adminPermission = [
    
-'employeeList',
+'employeeList','employeeAdd','employeeAllList','employeeDatails','employeeDetails','employeeUpdate'
 ];
 
 let employeePermission = [

@@ -15,7 +15,7 @@ app.use(
   })
 );
 const api_redirect_path = require("./api/api");
-const port = 3003;
+const port = 3004;
 const api_version = 1.0;
 app.use("/api", api_redirect_path);
 app.listen(port, async () => {

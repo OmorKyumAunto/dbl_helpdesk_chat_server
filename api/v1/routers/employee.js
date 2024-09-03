@@ -6,12 +6,15 @@ const {check,validationResult} = require('express-validator')
 const moment = require("moment");
 const e = require("express");
 const employeeModel = require('../models/employee');
+const userModel = require('../models/user');
 const { routeAccessChecker } = require("../middlewares/routeAccess");
 
 const multer = require('multer');
 const xlsx = require('xlsx');
 const path = require('path');
 const { off } = require("process");
+const { profile } = require("console");
+const bcrypt = require('bcrypt');
 
 // Configure Multer for file upload
 const storage = multer.diskStorage({
@@ -107,8 +110,8 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 
 
 
-router.post('/add',async (req, res) => {
-    
+router.post('/add',[verifyToken, routeAccessChecker("employeeAdd")],async (req, res) => {
+ 
   // body data
   let reqData = {
       "employee_id": req.body.employee_id,
@@ -232,10 +235,38 @@ if(isEmpty(reqData.email)){
      }
 
 
-  let result = await employeeModel.addNew(reqData);
+     let employeeData = {
+      employee_id : reqData.employee_id,
+      name : reqData.name,
+       department : reqData.department,
+      designation : reqData.designation,
+      email : reqData.email,
+      contact_no : reqData.contact_no,
+      joining_date : reqData.joining_date,
+      unit_name : reqData.unit_name,
+
+    }  
 
 
-    if (result.affectedRows == undefined || result.affectedRows < 1) {
+    let result = await employeeModel.addNew(employeeData);
+
+    let employeeId = await employeeModel.getDataByEmployeeId(reqData.employee_id)
+    let password = bcrypt.hashSync(reqData.employee_id, 10);
+    
+    let userData = {
+      role_id : 3,
+      profile_id :employeeId[0].id,
+      employee_id : reqData.employee_id,
+      name : reqData.name,
+      email : reqData.email,
+      password : password
+    }
+
+
+  let user = await userModel.addNew(userData);
+
+
+    if (user.affectedRows == undefined || user.affectedRows < 1) {
       return res.status(500).send({
           "success": true,
           "status": 500,
@@ -284,7 +315,7 @@ router.get('/list',[verifyToken, routeAccessChecker("employeeList")],async (req,
 
 
 // list
-router.get('/all-list',async (req, res) => {
+router.get('/all-list',[verifyToken, routeAccessChecker("employeeAllList")],async (req, res) => {
 
 
     let result = await employeeModel.getTotalList();
@@ -302,7 +333,7 @@ router.get('/all-list',async (req, res) => {
 
 
 // list
-router.get('/list-2',async (req, res) => {
+router.get('/list-2',[verifyToken, routeAccessChecker("employeeList")],async (req, res) => {
   let result = await employeeModel.getList22();
 
     return res.status(200).send({
@@ -318,7 +349,7 @@ router.get('/list-2',async (req, res) => {
 
 
 //details
-router.get('/details/:id',
+router.get('/details/:id',[verifyToken, routeAccessChecker("employeeDatails")],
   async (req, res) => {
     
     let id = req.params.id
@@ -351,7 +382,7 @@ router.get('/details/:id',
 
 
 //delete
-router.delete('/delete/:id',async (req, res) => {
+router.delete('/delete/:id',[verifyToken, routeAccessChecker("employeeDelete")],async (req, res) => {
 
     let id = req.params.id
   
@@ -399,7 +430,7 @@ router.delete('/delete/:id',async (req, res) => {
 
 
 //update
-router.put('/update/:id', 
+router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
   async (req, res) => {
     
    let id = req.params.id
@@ -433,6 +464,7 @@ router.put('/update/:id',
 
   let isError = 0
   let updateData = {};
+  let userUpdateData = {};
   let willWeUpdate = 0; // 1 = yes , 0 = no;
   
   
@@ -441,6 +473,7 @@ router.put('/update/:id',
     if(existingDataById[0].employee_id != reqData.employee_id){
         willWeUpdate = 1
         updateData.employee_id = reqData.employee_id
+        userUpdateData.employee_id = reqData.employee_id
   
     }
   
@@ -449,6 +482,7 @@ router.put('/update/:id',
     if(existingDataById[0].name != reqData.name){
         willWeUpdate = 1
         updateData.name = reqData.name
+        userUpdateData.name = reqData.name
   
     }
 
@@ -472,6 +506,8 @@ router.put('/update/:id',
    if(existingDataById[0].email != reqData.email){
     willWeUpdate = 1
     updateData.email = reqData.email
+    userUpdateData.email = reqData.email
+  
 
   }
 
@@ -518,102 +554,6 @@ router.put('/update/:id',
 
   }
 
-    // // artist id update
-    // //check artist id empty or not
-    // if(isEmpty(reqData.artist_id)){
-    //     return res.status(400).send({
-    //           "success": false,
-    //           "status": 400,
-    //           "message": "Artist id should not be empty."
-    //     });
-    //   }else if(reqData.artist_id < 1){
-    //       return res.status(400).send({
-    //           "success": false,
-    //           "status": 400,
-    //           "message": "Artist id should be positive number."
-    //     });
-    //   }else if(!Array.isArray(reqData.artist_id)){
-    //       return res.status(400).send({
-    //           "success": false,
-    //           "status": 400,
-    //           "message": "Artist id should be array."
-    //     });
-    //   }
-
-    // // check duplicate value this artist id array
-    // let tempId = []
-
-    // for (let index = 0; index < reqData.artist_id.length; index++) {
-
-    //     let data = reqData.artist_id[index]
-
-    //     // check this artist id existing in database
-    //     let existingByArtistId = await artistModel.getById(data)
-    //     if(isEmpty(existingByArtistId)){
-    //         return res.status(404).send({
-    //             "success": false,
-    //             "status": 404,
-    //             "message": `This artist no ${index+1} id not found. `
-    //     });
-    //    }
-
-    //     tempId.push(data)
-
-    //     //duplicate check in array
-    //     let checkArtistIdISDuplicate = await duplicateCheckInArray(tempId)
-    //     if (checkArtistIdISDuplicate.result) {
-    //         return res.status(409).send({
-    //             success: false,
-    //             status: 409,
-    //             message: `Duplicate artist id position no: ${index + 1}.`,
-    //         });
-    //     }
-
-
-    // }
-
-    // let artistArrayId = tempId  // assign data
-
-
-    // // get album wise artist table album id wise artist id find
-    // let getByArtistIdInAlbum = await albumWiseArtistModel.getByArtistId(reqData.id)
-    // if (isEmpty(getByArtistIdInAlbum)) {
-    //     return res.status(404).send({
-    //         success: false,
-    //         status: 404,
-    //         message: "Artist id not found.",
-    //     });
-    // }
-
-
-    // // each artist_id store in artistId with table id and artist id to update artist id purpose
-    // let artistId = []
-    // for (let index = 0; index < getByArtistIdInAlbum.length; index++) {
-    //     artistId.push({
-    //         id: getByArtistIdInAlbum[index].id,
-    //         artist_id: getByArtistIdInAlbum[index].artist_id
-    //     })
-
-    // }
-
-
-    // // this place will be check get separate artist request new artist id and old artist id find
-    // // new artist id has this array artistArrayId and previous db artist id has this array artistId
-
-    // let addedArr = [];
-    // let deletedArr = [];
-    
-    // // Use Sets for faster lookups
-    // const artistArrayIdSet = new Set(artistArrayId);
-    // const artistIdSet = new Set(artistId);
-    
-    // // Find deleted items
-    // deletedArr = artistId.filter(id => !artistArrayIdSet.has(id));
-    
-    // // Find added items
-    // addedArr = artistArrayId.filter(id => !artistIdSet.has(id));
-    
-
     if (isError == 1) {
       return res.status(400).send({
           "success": false,
@@ -625,9 +565,11 @@ router.put('/update/:id',
   if (willWeUpdate == 1) {
 
     let result = await employeeModel.updateById(id,updateData);
+
+    let updateUser = await userModel.updateByEmployeeUser(id,userUpdateData);
   
   
-    if (result.affectedRows == undefined || result.affectedRows < 1) {
+    if (updateUser.affectedRows == undefined || updateUser.affectedRows < 1) {
         return res.status(500).send({
             "success": true,
             "status": 500,

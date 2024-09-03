@@ -53,10 +53,21 @@ let getUserByEmployeeId = async (employee_id = 0) => {
 
 
 
+let updateByEmployeeUser = async (id = 0, data = {}) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.updateByEmployeeUser(), [data, id], (error, result, fields) => {
+            if (error) reject(error);
+            else resolve(result);
+        });
+    });
+}
+
+
 module.exports = {
     getUserByEmail,
     addNew,
     getUserInfo,
     getUserById,
-    getUserByEmployeeId
+    getUserByEmployeeId,
+    updateByEmployeeUser
 }

@@ -26,12 +26,28 @@ router.post('/add',async (req, res) => {
       "specification":req.body.specification,
       "is_assign":req.body.is_assign,
       "employee_id":req.body.employee_id,
-      "assign_date":req.body.assign_date
+      "assign_date":req.body.assign_date,
+      "is_new_employee": 1,
+
+      "employee_id": req.body.employee_id,
+      "employee_name":req.body.name,
+      "department":req.body.department,
+      "designation":req.body.designation,
+      "email":req.body.email,
+      "contact_no":req.body.contact_no,
+      "joining_date":req.body.joining_date,
+      "employee_unit_name":req.body.employee_unit_name,
+
   }
 
   let current_date = new Date(); 
   let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
   reqData.created_at = current_time;
+
+
+
+
+  
 
 
 
@@ -144,7 +160,7 @@ if(isEmpty(reqData.unit_name)){
 
 
 
-if(reqData.is_assign === 1){
+if(reqData.is_assign === 1 && reqData.is_new_employee === 0){
 
   // employee validation
   if(isEmpty(reqData.employee_id)){
@@ -210,8 +226,7 @@ return res.status(201).send({
 });
 }
 
-
- let data2 = {
+let data2 = {
   name: reqData.name,
   category: reqData.category,
   purchase_date: reqData.purchase_date,
@@ -224,7 +239,146 @@ return res.status(201).send({
   specification : reqData.specification,
 }
 
-  let result = await assetModel.addNew2(data2);
+let result = await assetModel.addNew2(data2);
+
+
+if(reqData.is_assign === 1 && reqData.is_new_employee == 1){
+ 
+              // employee data
+            if(isEmpty(reqData.employee_id)){
+              return res.status(400).send({
+                "success": false,
+                "status": 400,
+                "message":"Employee id cannot be empty."
+              });
+          }
+
+
+            // check name
+            if(isEmpty(reqData.employee_name)){
+              return res.status(400).send({
+                "success": false,
+                "status": 400,
+                "message":"Name cannot be empty."
+              });
+          }
+
+
+            // check department
+            if(isEmpty(reqData.department)){
+              return res.status(400).send({
+                "success": false,
+                "status": 400,
+                "message":"Department cannot be empty."
+              });
+          }
+
+          if(isEmpty(reqData.designation)){
+            return res.status(400).send({
+              "success": false,
+              "status": 400,
+              "message":"Designation cannot be empty."
+            });
+          }
+
+
+          if(isEmpty(reqData.email)){
+          return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message":"Email cannot be empty."
+          });
+          }
+
+
+          // check contact_no
+          if(isEmpty(reqData.contact_no) || Number(reqData.contact_no.length) > 15){
+              return res.status(400).send({
+                "success": false,
+                "status": 400,
+                "message":"Give a valid phone number."
+              });
+          }
+
+
+          // date validation
+          if(isEmpty(reqData.joining_date)){
+              return res.status(400).send({
+                  "success": false,
+                  "status": 400,
+                  "message":"Joining date cannot be empty."
+                });
+          }
+
+          current_time = moment(); 
+          if (!moment(reqData.joining_date, "YYYY-MM-DD", true).isValid()) {
+            return res.status(400).send({
+              success: false,
+              status: 400,
+              message: "Invalid date."
+            });
+          } else if (current_time.isBefore(moment(reqData.joining_date, "YYYY-MM-DD"))) {
+            return res.status(400).send({
+              success: false,
+              status: 400,
+              message: "Invalid date."
+            });
+          }
+
+
+
+          // validation unit_name
+            if(isEmpty(reqData.employee_unit_name)){
+              return res.status(400).send({
+                  "success": false,
+                  "status": 400,
+                  "message":"Employee Unit name cannot be empty."
+                });
+          }
+
+          // // check duplicate 
+            let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
+
+            if (checkDuplicate.length) {
+              return res.status(404).send({
+                "success": false,
+                "status": 404,
+                "message": "This employee already exists."
+              });
+            }
+
+
+
+            let employeeData = {
+              employee_id : reqData.employee_id,
+              name : reqData.employee_name,
+              department : reqData.department,
+              designation : reqData.designation,
+              email : reqData.email,
+              contact_no : reqData.contact_no,
+              joining_date : reqData.joining_date,
+              unit_name : reqData.employee_unit_name,
+
+            }
+          
+            let result = await employeeModel.addNew(employeeData);
+
+            let getByEmployeeDataByEmployeeId = await employeeModel.getDataByEmployeeId(reqData.employee_id)
+
+            if(getByEmployeeDataByEmployeeId){
+              let getAssetId = await assetModel.getLastData()
+              let assignData = {
+                asset_id : getAssetId[0].id,
+                employee_id : getByEmployeeDataByEmployeeId.id,
+                assign_date : reqData.assign_date
+              }
+              let result2 = await assetAssignModel.addNew(assignData);
+            }
+
+  
+
+  }
+
 
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
@@ -438,7 +592,7 @@ router.put('/update/:id',
     let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
 
 
-    // get artist all list
+    // get asset all list
     let existingDataById = await assetModel.getById(id)
     if (isEmpty(existingDataById)) {
       return res.status(404).send({

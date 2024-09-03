@@ -49,6 +49,10 @@ let getById = () => {
 }
 
 
+let getDataByEmployeeId = () => {
+    return `SELECT * FROM ${table_name} where  employee_id = ? and status = 1 `;
+}
+
 
 let me = () => {
     return `SELECT id,name,email,status FROM ${table_name2} where  id = ? and status = 1 `;
@@ -89,6 +93,7 @@ module.exports = {
     updateByAlbum,
     getArtistListByAlbumId,
     me,
-    getTotalList
+    getTotalList,
+    getDataByEmployeeId
 
 }

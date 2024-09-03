@@ -71,7 +71,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 
           // Perform validation checks here...
 
-          // Check for duplicates
+          //Check for duplicates
           let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
           if (checkDuplicate.length) {
               return res.status(400).send({
@@ -83,7 +83,24 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 
           // Save to database
           let result = await employeeModel.addNew(reqData);
-          if (result.affectedRows == undefined || result.affectedRows < 1) {
+
+          let employeeId = await employeeModel.getDataByEmployeeId(reqData.employee_id)
+          let password = bcrypt.hashSync(reqData.employee_id.toString(), 10);
+          
+          let userData = {
+            role_id : 3,
+            profile_id : employeeId[0].id,
+            employee_id : reqData.employee_id,
+            name : row['Name'],
+            email : row['Email'],
+            password : password
+          }
+
+
+        let user = await userModel.addNew(userData);
+
+
+          if (user.affectedRows == undefined || user.affectedRows < 1) {
               return res.status(500).send({
                   success: false,
                   status: 500,

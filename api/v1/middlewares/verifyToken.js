@@ -7,6 +7,7 @@ const commonObject = require('../common/common');
 const userModel = require('../models/user');
 const superAdminModel = require('../models/super-admins');
 const adminModel = require('../models/admins ');
+const employeeModel = require('../models/employee');
 // const supervisorModel = require('../../models/supervisor');
 // const employeeModel = require('../../models/employee');
 const roleModel = require('../models/role');
@@ -77,7 +78,7 @@ router.use(async function (req, res, next) {
                         profileInfo = await adminModel.getById(userData[0].profile_id,);
 
                     } else if (userData[0].role_id == 3) {
-                        profileInfo = await supervisorModel.getById(userData[0].profile_id,);
+                        profileInfo = await employeeModel.getById(userData[0].profile_id,);
 
                     } else if (userData[0].role_id == 4 || userData[0].role_id == 5) {
                         profileInfo = await employeeModel.getById(userData[0].profile_id,);

@@ -71,6 +71,18 @@ let getById = async (id = 0) => {
 
 
 
+let getByIdForDeleted = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByIdForDeleted(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+
+
 let getDataByEmployeeId = async (id = 0) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getDataByEmployeeId(), [id], (error, result, fields) => {
@@ -244,7 +256,8 @@ module.exports = {
    me,
    getList22,
    getTotalList,
-   getDataByEmployeeId
+   getDataByEmployeeId,
+   getByIdForDeleted
    
   
 }

@@ -48,6 +48,9 @@ let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ? and status = 1 `;
 }
 
+let getByIdForDeleted = () => {
+    return `delete FROM ${table_name} where  id = ? and status = 1 `;
+}
 
 let getDataByEmployeeId = () => {
     return `SELECT * FROM ${table_name} where  employee_id = ? and status = 1 `;
@@ -94,6 +97,7 @@ module.exports = {
     getArtistListByAlbumId,
     me,
     getTotalList,
-    getDataByEmployeeId
+    getDataByEmployeeId,
+    getByIdForDeleted
 
 }

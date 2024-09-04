@@ -9,6 +9,7 @@ const e = require('express');
 
 
 let addNew = async (info) => {
+    console.log("first\====",info)
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.addNew(), [info], (error, result, fields) => {
             if (error) reject(error)

@@ -1,5 +1,5 @@
 let superAdminPermission = [
-'employeeList','employeeAdd','employeeAllList','employeeDatails','employeeDetails','employeeDelete','employeeUpdate'
+'employeeList','employeeAdd','employeeAllList','employeeDatails','employeeDetails','employeeDelete','employeeUpdate',"assignAdmin"
 ];
 
 let adminPermission = [

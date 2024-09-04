@@ -27,6 +27,9 @@ const updateByEmployeeUser = () => {
     return `UPDATE ${table_name} SET ? WHERE profile_id = ?`;
 }
 
+const updateById = () => {
+    return `UPDATE ${table_name} SET ? WHERE profile_id = ?`;
+}
 
 module.exports = {
     
@@ -35,5 +38,6 @@ module.exports = {
     getUserInfo,
     getUserById,
     getUserByEmployeeId,
-    updateByEmployeeUser
+    updateByEmployeeUser,
+    updateById
 }

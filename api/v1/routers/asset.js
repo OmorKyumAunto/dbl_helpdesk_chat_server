@@ -8,8 +8,8 @@ const e = require("express");
 const assetModel = require('../models/asset');
 const assetAssignModel = require('../models/asset-assign');
 const employeeModel = require('../models/employee');
-
-
+const bcrypt = require('bcrypt');
+const userModel = require('../models/user');
 
 router.post('/add',async (req, res) => {
     
@@ -27,10 +27,10 @@ router.post('/add',async (req, res) => {
       "is_assign":req.body.is_assign,
       "employee_id":req.body.employee_id,
       "assign_date":req.body.assign_date,
-      "is_new_employee": 1,
 
+      "is_new_employee": 1,
       "employee_id": req.body.employee_id,
-      "employee_name":req.body.name,
+      "employee_name":req.body.employee_name,
       "department":req.body.department,
       "designation":req.body.designation,
       "email":req.body.email,
@@ -43,11 +43,6 @@ router.post('/add',async (req, res) => {
   let current_date = new Date(); 
   let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
   reqData.created_at = current_time;
-
-
-
-
-  
 
 
 
@@ -158,10 +153,10 @@ if(isEmpty(reqData.unit_name)){
 // yes =1 , no = 0
 
 
+console.log(typeof req.body.is_assign);  
 
-
-if(reqData.is_assign === 1 && reqData.is_new_employee === 0){
-
+if (reqData.is_assign === 1) {
+console.log("assign 1 .. em 0  ")
   // employee validation
   if(isEmpty(reqData.employee_id)){
     return res.status(400).send({
@@ -240,10 +235,17 @@ let data2 = {
 }
 
 let result = await assetModel.addNew2(data2);
+if (result.affectedRows == undefined || result.affectedRows < 1) {
+  return res.status(500).send({
+      "success": true,
+      "status": 500,
+      "message": "Something Wrong in system database."
+  });
+}
 
 
-if(reqData.is_assign === 1 && reqData.is_new_employee == 1){
- 
+if (reqData.is_assign === 1 && reqData.is_new_employee === 1) {
+  console.log("assign 1 .. em 1 ")
               // employee data
             if(isEmpty(reqData.employee_id)){
               return res.status(400).send({
@@ -259,7 +261,7 @@ if(reqData.is_assign === 1 && reqData.is_new_employee == 1){
               return res.status(400).send({
                 "success": false,
                 "status": 400,
-                "message":"Name cannot be empty."
+                "message":"Employee name cannot be empty."
               });
           }
 
@@ -347,7 +349,7 @@ if(reqData.is_assign === 1 && reqData.is_new_employee == 1){
               });
             }
 
-
+            reqData.name = reqData.employee_name
 
             let employeeData = {
               employee_id : reqData.employee_id,
@@ -360,34 +362,59 @@ if(reqData.is_assign === 1 && reqData.is_new_employee == 1){
               unit_name : reqData.employee_unit_name,
 
             }
-          
-            let result = await employeeModel.addNew(employeeData);
+     
 
-            let getByEmployeeDataByEmployeeId = await employeeModel.getDataByEmployeeId(reqData.employee_id)
+          
+
+            let result = await employeeModel.addNew(employeeData);
+          
+            let employeeId = await employeeModel.getDataByEmployeeId(reqData.employee_id)
+            let password = bcrypt.hashSync(reqData.employee_id, 10);
+     
+            let userData = {
+              role_id : 3,
+              profile_id :employeeId[0].id,
+              employee_id : employeeId[0].employee_id,
+              name :reqData.name,
+              email : reqData.email,
+              password : password
+            }
+
+
+           let user = await userModel.addNew(userData);
+
+
+      
+          let getByEmployeeDataByEmployeeId = await employeeModel.getDataByEmployeeId(reqData.employee_id)
+
+
+     console.log("emppp",employeeId[0])
 
             if(getByEmployeeDataByEmployeeId){
               let getAssetId = await assetModel.getLastData()
               let assignData = {
                 asset_id : getAssetId[0].id,
-                employee_id : getByEmployeeDataByEmployeeId.id,
+                employee_id : employeeId[0].id,
                 assign_date : reqData.assign_date
               }
+
+              console.log("first========",assignData)
+
               let result2 = await assetAssignModel.addNew(assignData);
+              if (result2.affectedRows == undefined || result2.affectedRows < 1) {
+                return res.status(500).send({
+                    "success": true,
+                    "status": 500,
+                    "message": "Something Wrong in system database."
+                });
             }
 
-  
+            
+          }
+        
 
-  }
+}
 
-
-
-    if (result.affectedRows == undefined || result.affectedRows < 1) {
-      return res.status(500).send({
-          "success": true,
-          "status": 500,
-          "message": "Something Wrong in system database."
-      });
-  }
 
   return res.status(201).send({
       "success": true,

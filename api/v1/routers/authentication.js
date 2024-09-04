@@ -263,47 +263,47 @@ router.post("/login", async (req, res) => {
 
 
 //login
-router.post('/login',async (req, res) => {
+// router.post('/login',async (req, res) => {
 
-    // Body data
-    let reqData = {
-      "email": req.body.email,
-      "password": req.body.password,
-    }
+//     // Body data
+//     let reqData = {
+//       "email": req.body.email,
+//       "password": req.body.password,
+//     }
   
-    // Get user info
-    let existingByUserInfo = await userModel.getUserByEmail(reqData.email);
-    if (isEmpty(existingByUserInfo)) {
-      return res.status(400).send({
-        "success": false,
-        "status": 400,
-        "message": "This email does not match."
-      });
-    }
+//     // Get user info
+//     let existingByUserInfo = await userModel.getUserByEmail(reqData.email);
+//     if (isEmpty(existingByUserInfo)) {
+//       return res.status(400).send({
+//         "success": false,
+//         "status": 400,
+//         "message": "This email does not match."
+//       });
+//     }
     
 
-    // Check password
-    const isPasswordValid = await bcrypt.compare(reqData.password, existingByUserInfo[0].password);
-    if (!isPasswordValid) {
-      return res.status(400).send({
-        "success": false,
-        "status": 400,
-        "message": "Invalid password. Please try again with the correct password."
-      });
-    }
+//     // Check password
+//     const isPasswordValid = await bcrypt.compare(reqData.password, existingByUserInfo[0].password);
+//     if (!isPasswordValid) {
+//       return res.status(400).send({
+//         "success": false,
+//         "status": 400,
+//         "message": "Invalid password. Please try again with the correct password."
+//       });
+//     }
 
 
-    // Create and sign a JWT token
-    const token = jwt.sign({ userName : existingByUserInfo[0].name,employee_id:existingByUserInfo[0].employee_id, id: existingByUserInfo[0].id, role_id: existingByUserInfo[0].role_id,email: existingByUserInfo[0].email },keyData.secretKey, {'expiresIn':'12h'});
+//     // Create and sign a JWT token
+//     const token = jwt.sign({ userName : existingByUserInfo[0].name,employee_id:existingByUserInfo[0].employee_id, id: existingByUserInfo[0].id, role_id: existingByUserInfo[0].role_id,email: existingByUserInfo[0].email },keyData.secretKey, {'expiresIn':'12h'});
 
-    // Respond with the token
-    return res.status(200).send({
-      "success": true,
-      "status": 200,
-      "message": "Login Successfully.",
-      "token": token
-    });
-  });
+//     // Respond with the token
+//     return res.status(200).send({
+//       "success": true,
+//       "status": 200,
+//       "message": "Login Successfully.",
+//       "token": token
+//     });
+//   });
 
 
 

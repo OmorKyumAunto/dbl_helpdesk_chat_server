@@ -7,6 +7,7 @@ const moment = require("moment");
 const e = require("express");
 const employeeModel = require('../models/employee');
 const userModel = require('../models/user');
+const adminModel = require('../models/admins ');
 const { routeAccessChecker } = require("../middlewares/routeAccess");
 
 const multer = require('multer');
@@ -692,6 +693,73 @@ let duplicateCheckInArray = async (arrayData = []) => {
       message: "Duplicate value not found.",
     };
 };
+
+
+
+
+
+// assign to admin
+router.post('/assign-admin/:id',[verifyToken, routeAccessChecker("assignAdmin")],async (req, res) => {
+
+  let id = req.params.id
+
+  // get id wise data form db 
+  let employeeData = await employeeModel.getById(id);
+
+  // check this id already existing in database or not
+  if (isEmpty(employeeData)) {
+    return res.status(404).send({
+      success: false,
+      status: 404,
+      message: "Employee data not found."
+    });
+
+  } 
+  console.log("first",employeeData)
+
+  let data = {
+    employee_id : employeeData[0].employee_id,
+    name :  employeeData[0].name,
+     department :  employeeData[0].department,
+    designation :  employeeData[0].designation,
+    email :  employeeData[0].email,
+    contact_no :  employeeData[0].contact_no,
+    joining_date :  employeeData[0].joining_date,
+    unit_name :  employeeData[0].unit_name,
+
+  }  
+
+
+  let result = await adminModel.addNew(data);
+
+  let delete_employee_data = await employeeModel.getByIdForDeleted(id)
+
+  let userData = {
+    role_id : 2,
+  }
+
+
+  let user = await userModel.updateById(id,userData);
+
+
+    if (user.affectedRows == undefined || user.affectedRows < 1) {
+      return res.status(500).send({
+          "success": true,
+          "status": 500,
+          "message": "Something Wrong in system database."
+      });
+  }
+
+  
+   
+     return res.status(200).send({
+         "success": true,
+         "status": 200,
+         "message": "Employee successfully assing."
+     });
+  
+
+});
 
 
 module.exports = router;  

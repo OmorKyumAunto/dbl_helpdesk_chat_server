@@ -156,7 +156,9 @@ if(isEmpty(reqData.unit_name)){
 console.log(typeof req.body.is_assign);  
 
 if (reqData.is_assign === 1) {
-console.log("assign 1 .. em 0  ")
+
+  if(reqData.is_new_employee === 0){
+    console.log("assign 1 .. em 0  ")
   // employee validation
   if(isEmpty(reqData.employee_id)){
     return res.status(400).send({
@@ -219,6 +221,7 @@ return res.status(201).send({
   "status": 201,
   "message": "Asset added Successfully."
 });
+  }
 }
 
 let data2 = {
@@ -244,7 +247,9 @@ if (result.affectedRows == undefined || result.affectedRows < 1) {
 }
 
 
-if (reqData.is_assign === 1 && reqData.is_new_employee === 1) {
+if (reqData.is_assign === 1 ) {
+  
+if(reqData.is_new_employee == 1){
   console.log("assign 1 .. em 1 ")
               // employee data
             if(isEmpty(reqData.employee_id)){
@@ -410,12 +415,11 @@ if (reqData.is_assign === 1 && reqData.is_new_employee === 1) {
             }
 
             
-          }
-        
+          }      
 
 }
 
-
+}
   return res.status(201).send({
       "success": true,
       "status": 201,
@@ -423,7 +427,6 @@ if (reqData.is_assign === 1 && reqData.is_new_employee === 1) {
   });
  
 });
-
 
 
 

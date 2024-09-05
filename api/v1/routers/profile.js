@@ -17,7 +17,7 @@ router.get('/me',[verifyToken], async (req, res) => {
    delete data.password
 
     return res.status(200).send({
-      success: false,
+      success: true,
       status: 200,
       message: "Profile data.",
       data: data[0]

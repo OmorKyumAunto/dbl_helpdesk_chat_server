@@ -29,6 +29,8 @@ router.post('/add',async (req, res) => {
       "assign_date":req.body.assign_date,
 
       "is_new_employee": 1,
+      "test": 1,
+
       "employee_id": req.body.employee_id,
       "employee_name":req.body.employee_name,
       "department":req.body.department,
@@ -155,9 +157,8 @@ if(isEmpty(reqData.unit_name)){
 
 console.log(typeof req.body.is_assign);  
 
-if (reqData.is_assign === 1) {
+if (reqData.is_new_employee === 0 && reqData.is_assign === 1) {
 
-  if(reqData.is_new_employee === 0){
     console.log("assign 1 .. em 0  ")
   // employee validation
   if(isEmpty(reqData.employee_id)){
@@ -221,8 +222,8 @@ return res.status(201).send({
   "status": 201,
   "message": "Asset added Successfully."
 });
-  }
 }
+
 
 let data2 = {
   name: reqData.name,
@@ -247,9 +248,9 @@ if (result.affectedRows == undefined || result.affectedRows < 1) {
 }
 
 
-if (reqData.is_assign === 1 ) {
+if (reqData.is_assign === 1 && reqData.is_new_employee === 1) {
   
-if(reqData.is_new_employee == 1){
+
   console.log("assign 1 .. em 1 ")
               // employee data
             if(isEmpty(reqData.employee_id)){
@@ -417,7 +418,7 @@ if(reqData.is_new_employee == 1){
             
           }      
 
-}
+
 
 }
   return res.status(201).send({

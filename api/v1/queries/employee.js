@@ -45,7 +45,7 @@ let getTotalList = (key, unit) => {
 
   
 let getById = () => {
-    return `SELECT * FROM ${table_name} where  id = ? and status = 1 `;
+    return `SELECT * FROM ${table_name} where  profile_id = ? and status = 1 `;
 }
 
 let getByIdForDeleted = () => {

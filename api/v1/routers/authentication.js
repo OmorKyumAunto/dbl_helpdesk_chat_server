@@ -146,7 +146,7 @@ router.post("/login", async (req, res) => {
 
       //Check Role
       let roleData = await roleModel.getById(userData[0].role_id);
-  
+      console.log("first",roleData)
       if (isEmpty(roleData)) {
           return res.status(404).send({
               success: false,

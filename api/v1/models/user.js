@@ -32,7 +32,6 @@ let getUserInfo = async (email = "",password="") => {
 }
 
 let getUserById = async (id = 0) => {
-    console.log("firstgggggg",id)
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getUserById(), [id], (error, result, fields) => {
             if (error) reject(error)

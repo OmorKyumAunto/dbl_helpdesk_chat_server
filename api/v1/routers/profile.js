@@ -5,16 +5,18 @@ const verifyToken = require('../middlewares/verifyToken')
 const {check,validationResult} = require('express-validator')
 const moment = require("moment");
 const e = require("express");
-const employeeModel = require('../models/employee');
+const userModel = require('../models/user');
 
 
 
 // list
 router.get('/me', async (req, res) => {
-
-   let id = 1
-  let data = await employeeModel.me(id)
+ 
+  let id = 1
+  let data = await userModel.getUserById(id)
   
+   delete data.password
+
     return res.status(200).send({
       success: false,
       status: 200,

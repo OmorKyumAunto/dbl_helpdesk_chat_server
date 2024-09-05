@@ -15,7 +15,7 @@ let getUserInfo = () => {
 }
 
 let getUserById = () => {
-    return `SELECT  * FROM ${table_name} where  id = ?  and status = 1 `;
+    return `SELECT  id,role_id,profile_id,employee_id,name,email,status FROM ${table_name} where  id = ?  and status = 1 `;
 }
 
 let getUserByEmployeeId = () => {

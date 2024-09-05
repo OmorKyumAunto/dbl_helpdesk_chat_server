@@ -42,6 +42,7 @@ let getById = async (id = 0) => {
 }
 
 
+
 let updateById = async (id = 0, data = {}) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.updateById(), [data, id], (error, result, fields) => {
@@ -56,5 +57,5 @@ module.exports = {
     addNew,
     getUserInfo,
     getById,
-    updateById
+    updateById,
 }

@@ -18,6 +18,11 @@ let getUserById = () => {
     return `SELECT  id,role_id,profile_id,employee_id,name,email,status FROM ${table_name} where  id = ?  and status = 1 `;
 }
 
+let getById = () => {
+    return `SELECT  id,role_id,profile_id,employee_id,name,email,status FROM ${table_name} where  id = ?  and status = 1 `;
+}
+
+
 let getUserByEmployeeId = () => {
     return `SELECT  * FROM ${table_name} where  employee_id = ?  and status = 1 `;
 }
@@ -39,5 +44,6 @@ module.exports = {
     getUserById,
     getUserByEmployeeId,
     updateByEmployeeUser,
-    updateById
+    updateById,
+    getById
 }

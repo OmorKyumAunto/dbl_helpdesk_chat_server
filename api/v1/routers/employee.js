@@ -715,7 +715,7 @@ router.post('/assign-admin/:id',[verifyToken, routeAccessChecker("assignAdmin")]
     });
 
   } 
-  console.log("first",employeeData)
+
 
   let data = {
     employee_id : employeeData[0].employee_id,
@@ -734,8 +734,11 @@ router.post('/assign-admin/:id',[verifyToken, routeAccessChecker("assignAdmin")]
 
   let delete_employee_data = await employeeModel.getByIdForDeleted(id)
 
+  let getPresentData = await adminModel.getUserByEmail(employeeData[0].email)
+
   let userData = {
     role_id : 2,
+    profile_id : getPresentData[0].id
   }
 
 

@@ -79,8 +79,9 @@ const commonObject = require("../common/common");
 router.post("/login", async (req, res) => {
 
   let loginData = {
-      password: req.body.password,
       id: req.body.id,
+      password: req.body.password,
+     
       // email: req.body.email, // or email
   };
 
@@ -119,11 +120,11 @@ router.post("/login", async (req, res) => {
           message: errorMessage,
       });
   }
-
+ 
   // Get User data from user table.
   let userData = await userModel.getUserByEmployeeId(loginData.id);
 
-  console.log("first",userData[0])
+
 
   if (isEmpty(userData[0]) || userData[0].status == 0 || !(userData[0].employee_id == loginData.id)) {
       return res.status(404).send({
@@ -162,14 +163,13 @@ router.post("/login", async (req, res) => {
           profileInfo = await superAdminModel.getById(userData[0].profile_id);
 
       } else if (userData[0].role_id == 2) {
-          // profileInfo = await adminModel.getById(userData[0].profile_id);
           profileInfo = await adminModel.getById(userData[0].profile_id);
 
-         
+    
       } else if (userData[0].role_id == 3) {
-
+        console.log("firs",userData[0].profile_id)
           profileInfo = await employeeModel.getById(userData[0].profile_id);
-       
+       console.log("first==========",profileInfo)
       }else {
           return res.status(404).send({
               success: false,

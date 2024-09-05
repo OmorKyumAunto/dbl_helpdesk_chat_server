@@ -7,12 +7,11 @@ const moment = require("moment");
 const e = require("express");
 const userModel = require('../models/user');
 
-
-
 // list
-router.get('/me', async (req, res) => {
+router.get('/me',[verifyToken], async (req, res) => {
  
-  let id = 1
+
+  let id = req.decoded.userInfo.id
   let data = await userModel.getUserById(id)
   
    delete data.password

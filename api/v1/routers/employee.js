@@ -770,8 +770,11 @@ router.post('/assign-admin/:id',[verifyToken, routeAccessChecker("assignAdmin")]
 router.get('/employee-asset-assign-list', [verifyToken, routeAccessChecker("employeeAssignList")], async (req, res) => {
 
   let id = req.decoded.userInfo.id
+
+  let userProfileId = await userModel.getById(id)
+
   
-  let result = await assetModel.getByEmployeeId(id);
+  let result = await assetModel.getByEmployeeId(userProfileId[0].profile_id);
 
   return res.status(200).send({
       "success": true,

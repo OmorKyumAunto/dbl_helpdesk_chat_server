@@ -139,6 +139,14 @@ let getById = async (id = 0) => {
     });
 }
 
+let getByEmployeeId = async (id = 0) => {
+  return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getByEmployeeId(), [id], (error, result, fields) => {
+          if (error) reject(error)
+          else resolve(result)
+      });
+  });
+}
 
 
 let getByIdAssign = async (id = 0) => {
@@ -360,7 +368,8 @@ module.exports = {
    getListOfDashboardGraph,
    getListOfDashboardGraph2,
    getTotalList,
-   distributedAssetTotalList
+   distributedAssetTotalList,
+   getByEmployeeId
    
    
   

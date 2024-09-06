@@ -8,6 +8,7 @@ const e = require("express");
 const employeeModel = require('../models/employee');
 const userModel = require('../models/user');
 const adminModel = require('../models/admins ');
+const assetModel = require('../models/asset');
 const { routeAccessChecker } = require("../middlewares/routeAccess");
 
 const multer = require('multer');
@@ -762,6 +763,23 @@ router.post('/assign-admin/:id',[verifyToken, routeAccessChecker("assignAdmin")]
      });
   
 
+});
+
+
+
+router.get('/employee-asset-assign-list', [verifyToken, routeAccessChecker("employeeAssignList")], async (req, res) => {
+
+  let id = req.decoded.userInfo.id
+  
+  let result = await assetModel.getByEmployeeId(id);
+
+  return res.status(200).send({
+      "success": true,
+      "status": 200,
+      "message": "Employee Wise asset List.",
+      "count": result.length,
+      "data": result
+  });
 });
 
 

@@ -12,7 +12,7 @@ let adminPermission = [
 
 let employeePermission = [
     
-  
+  "employeeAssignList",
 ];
 
 

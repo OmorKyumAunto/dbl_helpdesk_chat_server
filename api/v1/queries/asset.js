@@ -99,6 +99,9 @@ let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ? and status = 1 `;
 }
 
+let getByEmployeeId = () => {
+  return `SELECT * FROM ${table_view} where  employee_id = ? and status = 1 `;
+}
 
 let getByIdAssign = () => {
     return `SELECT * FROM ${table_name} where  id = ?  and is_assign = 1 and status = 1 `;
@@ -188,7 +191,8 @@ module.exports = {
     getListOfDashboardGraph,
     getListOfDashboardGraph2,
     getTotalList,
-    distributedTotalAssetList
+    distributedTotalAssetList,
+    getByEmployeeId
 
 
 }

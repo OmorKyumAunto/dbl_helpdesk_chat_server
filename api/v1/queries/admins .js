@@ -9,6 +9,9 @@ let addNew = () => {
     return `INSERT INTO ${table_name} SET ?`;
 }
 
+let getList = () => {
+    return `SELECT *  FROM  ${table_name} WHERE status = 1 order by id desc`;
+}
 
 let getUserInfo = () => {
     return `SELECT * FROM ${table_name} where  email = ? and password = ? and status = 1 `;
@@ -24,11 +27,10 @@ const updateById = () => {
 
 
 module.exports = {
-    
     getUserByEmail,
     addNew,
     getUserInfo,
     getById,
     updateById,
-
+    getList
 }

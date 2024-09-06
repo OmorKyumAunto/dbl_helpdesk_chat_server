@@ -1,6 +1,8 @@
 let superAdminPermission = [
 'employeeList','employeeAdd','employeeAllList','employeeDatails','employeeDetails','employeeDelete','employeeUpdate',"assignAdmin",
 "assetUnitList","assetUnitActiveList","assetUnitListLimit","assetUnitAdd","assetUnitUpdate","changeAssetUnitStatus",'assetUnitDelete',
+"assignEmployee",
+"adminList",
 ];
 
 let adminPermission = [

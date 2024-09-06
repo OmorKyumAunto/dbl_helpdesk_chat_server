@@ -36,6 +36,12 @@ const updateById = () => {
     return `UPDATE ${table_name} SET ? WHERE profile_id = ?`;
 }
 
+
+let getByEmployeeId = () => {
+    return `SELECT  id,role_id,profile_id,employee_id,name,email,status FROM ${table_name} where  profile_id = ?  and status = 1 `;
+}
+
+
 module.exports = {
     
     getUserByEmail,
@@ -45,5 +51,6 @@ module.exports = {
     getUserByEmployeeId,
     updateByEmployeeUser,
     updateById,
-    getById
+    getById,
+    getByEmployeeId
 }

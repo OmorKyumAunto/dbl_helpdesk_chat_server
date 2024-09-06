@@ -8,8 +8,10 @@ const e = require("express");
 const assetModel = require('../models/asset');
 const assetAssignModel = require('../models/asset-assign');
 const employeeModel = require('../models/employee');
+const assetHistoryModel = require('../models/asset-history');
 const bcrypt = require('bcrypt');
 const userModel = require('../models/user');
+const { routeAccessChecker } = require("../middlewares/routeAccess");
 
 router.post('/add',async (req, res) => {
     
@@ -890,7 +892,7 @@ else if(reqData.assign_update == 0){
 
 
 // assign employee
-router.put('/assign-employee/:id',async(req,res) =>{
+router.put('/assign-employee/:id',[verifyToken,routeAccessChecker("assignEmployee")],async(req,res) =>{
 
   let id = req.params.id
   let reqData = {
@@ -944,9 +946,46 @@ router.put('/assign-employee/:id',async(req,res) =>{
 
   let updateRemarks = await assetModel.updateById(id,{is_assign : 1 ,remarks:'assigned'});
 
-  let result2 = await assetAssignModel.addNew(assignEmployeeData);
+ 
 
-if (result2.affectedRows == undefined || result2.affectedRows < 1) {
+  let getUserIdByEmployeeId = await userModel.getByEmployeeId(reqData.employee_id)
+
+  if(isEmpty(getUserIdByEmployeeId)) 
+    return res.status(404).send({
+    "success": true,
+    "status": 404,
+    "message": "Unknown User."
+});
+
+// check already assign this asset
+let alreadyAssignedHistory = await assetHistoryModel.getByAssetId(id)
+
+
+if(alreadyAssignedHistory.length){
+ // console.log("first",alreadyAssignedHistory)
+  let updateStatus = await assetAssignModel.updateById(alreadyAssignedHistory[0].asset_id,{status:0})
+
+
+  let data = {
+    status : 0,
+    history : `This asset previous assign To ${getUserIdByEmployeeId[0].name} and employee id: ${getUserIdByEmployeeId[0].employee_id}`
+  }
+  let updateStatusToHistory = await assetHistoryModel.updateById(alreadyAssignedHistory[0].id,data)
+
+
+}
+ 
+// assign asset history
+let assetHistory = {
+  asset_id : id,
+  employee_id : getUserIdByEmployeeId[0].profile_id,
+  history : `This asset assign To ${getUserIdByEmployeeId[0].name} and employee id: ${getUserIdByEmployeeId[0].employee_id}`
+
+}
+let result2 = await assetAssignModel.addNew(assignEmployeeData);
+let createAssetHistory = await assetHistoryModel.addNew(assetHistory)
+
+if (createAssetHistory.affectedRows == undefined || createAssetHistory.affectedRows < 1) {
   return res.status(500).send({
       "success": true,
       "status": 500,

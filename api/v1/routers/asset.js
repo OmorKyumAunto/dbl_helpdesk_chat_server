@@ -159,7 +159,7 @@ if(isEmpty(reqData.unit_name)){
 
 console.log(typeof req.body.is_assign);  
 
-if (reqData.is_new_employee === 0 && reqData.is_assign === 1) {
+if (reqData.is_assign === 1) {
 
     console.log("assign 1 .. em 0  ")
   // employee validation
@@ -250,7 +250,7 @@ if (result.affectedRows == undefined || result.affectedRows < 1) {
 }
 
 
-if (reqData.is_assign === 1 && reqData.is_new_employee === 1) {
+if (reqData.is_new_employee === 1) {
   
 
   console.log("assign 1 .. em 1 ")

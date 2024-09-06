@@ -2,7 +2,7 @@ const isEmpty = require("is-empty");
 let table_name = "dbl_asset_unit";
 
 let getList = () => {
-    return `SELECT * FROM ${table_name}  where status != 0`;
+    return `SELECT * FROM ${table_name}  where status != 0 order by id desc`;
 }
 
 let getActiveList = () => {

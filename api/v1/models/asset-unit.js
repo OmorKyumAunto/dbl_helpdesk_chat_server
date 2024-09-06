@@ -1,10 +1,10 @@
-const { connectionThyrocareMYSQL } = require('../connections/connection');
+const { connectionDblystem } = require('../connections/connection');
 const queries = require('../queries/asset-unit');
 
 // Promises Method
 let getList = async () => {
     return new Promise((resolve, reject) => {
-        connectionThyrocareMYSQL.query(queries.getList(), (error, result, fields) => {
+        connectionDblystem.query(queries.getList(), (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -13,7 +13,7 @@ let getList = async () => {
 
 let getActiveList = async () => {
     return new Promise((resolve, reject) => {
-        connectionThyrocareMYSQL.query(queries.getActiveList(), (error, result, fields) => {
+        connectionDblystem.query(queries.getActiveList(), (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -22,7 +22,7 @@ let getActiveList = async () => {
 
 let getByTitle = async (title = "") => {
     return new Promise((resolve, reject) => {
-        connectionThyrocareMYSQL.query(queries.getByTitle(), [title], (error, result, fields) => {
+        connectionDblystem.query(queries.getByTitle(), [title], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -31,7 +31,7 @@ let getByTitle = async (title = "") => {
 
 let getById = async (id = 0) => {
     return new Promise((resolve, reject) => {
-        connectionThyrocareMYSQL.query(queries.getById(), [id], (error, result, fields) => {
+        connectionDblystem.query(queries.getById(), [id], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -40,7 +40,7 @@ let getById = async (id = 0) => {
 
 let addNew = async (info) => {
     return new Promise((resolve, reject) => {
-        connectionThyrocareMYSQL.query(queries.addNew(), [info], (error, result, fields) => {
+        connectionDblystem.query(queries.addNew(), [info], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -49,7 +49,7 @@ let addNew = async (info) => {
 
 let updateById = async (id = 0, updateData = {}, conn = undefined) => {
 
-    let connection = connectionThyrocareMYSQL;
+    let connection = connectionDblystem;
     if (conn !== undefined) connection = conn;
     // get object, generate an array and push data value here
 
@@ -71,7 +71,7 @@ let updateById = async (id = 0, updateData = {}, conn = undefined) => {
 
 let getDataByWhereCondition = async (where = {}, orderBy = {}, limit = 2000, offset = 0, columnList = []) => {
 
-    let connection = connectionThyrocareMYSQL;
+    let connection = connectionDblystem;
     // get object, generate an array and push data value here
     let keys = Object.keys(where);
 
@@ -122,7 +122,7 @@ let getDataByWhereCondition = async (where = {}, orderBy = {}, limit = 2000, off
 
 let getDetailsByIdAndWhereIn = async (expertTypeId = []) => {
     return new Promise((resolve, reject) => {
-        connectionThyrocareMYSQL.query(queries.getDetailsByIdAndWhereIn(), [expertTypeId], (error, result, fields) => {
+        connectionDblystem.query(queries.getDetailsByIdAndWhereIn(), [expertTypeId], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });

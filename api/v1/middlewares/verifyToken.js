@@ -15,7 +15,7 @@ const routePermissionModel = require('../permissions/route_permission');
 
 
 router.use(async function (req, res, next) {
-    const token = req.headers['x-access-token'];
+    const token = req.headers['authorization'];
 
     if (token) {
         jwt.verify(token, global.config.secretKey,

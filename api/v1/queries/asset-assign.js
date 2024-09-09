@@ -41,6 +41,11 @@ let getArtistListByAlbumId = () => {
 }
 
 
+let totalAssignAssetCount = () => {
+    return `SELECT count(id) FROM ${table_name} where  user_id = ? and status = 1 `;
+}
+
+
 module.exports = {
     addNew,
     getByEmployee,
@@ -49,6 +54,7 @@ module.exports = {
     updateById,
     updateByAlbum,
     getArtistListByAlbumId,
-    deleteAssetById
+    deleteAssetById,
+    totalAssignAssetCount
 
 }

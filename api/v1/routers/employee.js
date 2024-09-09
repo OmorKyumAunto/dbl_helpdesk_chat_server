@@ -9,6 +9,7 @@ const employeeModel = require('../models/employee');
 const userModel = require('../models/user');
 const adminModel = require('../models/admins ');
 const assetModel = require('../models/asset');
+const assetAssignModel = require('../models/asset-assign');
 const { routeAccessChecker } = require("../middlewares/routeAccess");
 
 const multer = require('multer');
@@ -36,7 +37,7 @@ const xlsxDateToJSDate = (serial) => {
   return new Date(epoch.getTime() + epoch.getTimezoneOffset() * 60000);
 };
 
-router.post('/upload', upload.single('file'), async (req, res) => {
+router.post('/upload',[verifyToken, routeAccessChecker("employeeAdd")],upload.single('file'), async (req, res) => {
   if (!req.file) {
       return res.status(400).send({
           success: false,
@@ -45,6 +46,8 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       });
   }
 
+  // created at 
+ 
   try {
       const workbook = xlsx.readFile(req.file.path);
       const sheetName = workbook.SheetNames[0];
@@ -66,7 +69,8 @@ router.post('/upload', upload.single('file'), async (req, res) => {
               email: row['Email'],
               contact_no: row['Contact no'],
               joining_date: joining_date,
-              unit_name: row['Unit name']
+              unit_name: row['Unit name'],
+              created_by :req.decoded.userInfo.id ,
           };
 
          
@@ -89,13 +93,16 @@ router.post('/upload', upload.single('file'), async (req, res) => {
           let employeeId = await employeeModel.getDataByEmployeeId(reqData.employee_id)
           let password = bcrypt.hashSync(reqData.employee_id.toString(), 10);
           
+          let created_at  = reqData.created_at 
           let userData = {
             role_id : 3,
             profile_id : employeeId[0].id,
             employee_id : reqData.employee_id,
             name : row['Name'],
             email : row['Email'],
-            password : password
+            password : password,
+            created_by : req.decoded.userInfo.id,
+            
           }
 
 
@@ -141,13 +148,14 @@ router.post('/add',[verifyToken, routeAccessChecker("employeeAdd")],async (req, 
       "contact_no":req.body.contact_no,
       "joining_date":req.body.joining_date,
       "unit_name":req.body.unit_name,
+      "licenses": req.body.licenses
   }
 
   let current_date = new Date(); 
   let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
   reqData.created_at = current_time;
 
-
+  reqData.created_by = req.decoded.userInfo.id
 
 
   // check employee id
@@ -263,6 +271,8 @@ if(isEmpty(reqData.email)){
       contact_no : reqData.contact_no,
       joining_date : reqData.joining_date,
       unit_name : reqData.unit_name,
+      licenses : reqData.licenses,
+      created_by : reqData.created_by
 
     }  
 
@@ -317,9 +327,9 @@ router.get('/list',[verifyToken, routeAccessChecker("employeeList")],async (req,
 
 
 
-    let result = await employeeModel.getList(offset, limit, key, unit);
+    let result = await userModel.getEmployeeList(offset, limit, key, unit);
 
-    let countResult = await employeeModel.getTotalList(key, unit);
+    let countResult = await userModel.getTotalEmployeeList(key, unit);
 
     return res.status(200).send({
       success: true,
@@ -328,8 +338,7 @@ router.get('/list',[verifyToken, routeAccessChecker("employeeList")],async (req,
       total: countResult.length,
       data: result
     });
- 
-  
+
 });
 
 
@@ -337,7 +346,7 @@ router.get('/list',[verifyToken, routeAccessChecker("employeeList")],async (req,
 router.get('/all-list',[verifyToken, routeAccessChecker("employeeAllList")],async (req, res) => {
 
 
-    let result = await employeeModel.getTotalList();
+    let result = await userModel.getList();
 
     return res.status(200).send({
       success: true,
@@ -374,7 +383,7 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("employeeDatails")],
     let id = req.params.id
 
     // get id wise data form db 
-    let result = await employeeModel.getById(id);;
+    let result = await userModel.getById(id);;
 
      // check this id already existing in database or not
      if (isEmpty(result)) {
@@ -406,7 +415,7 @@ router.delete('/delete/:id',[verifyToken, routeAccessChecker("employeeDelete")],
     let id = req.params.id
   
     // get id wise data form db 
-    let existingById = await employeeModel.getById(id);
+    let existingById = await userModel.getById(id);
   
     // check this id already existing in database or not
     if (isEmpty(existingById)) {
@@ -423,12 +432,19 @@ router.delete('/delete/:id',[verifyToken, routeAccessChecker("employeeDelete")],
   
     let data = {
       status : 0,   // status = 1 (active) and status = 0 (delete)
+      updated_by : req.decoded.userInfo.id
      }
+
+   let userData = {
+      status : 0,   // status = 1 (active) and status = 0 (delete)
+      updated_by : req.decoded.userInfo.id
+   }
   
-      // get id wise data form db 
-      let result = await employeeModel.updateById(id,data);
   
-       if (result.affectedRows == undefined || result.affectedRows < 1) {
+      let userDataUpdate = await userModel.updateById(id,userData);
+    
+  
+       if (userDataUpdate.affectedRows == undefined || userDataUpdate.affectedRows < 1) {
            return res.status(500).send({
                "success": true,
                "status": 500,
@@ -464,6 +480,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
         "contact_no":req.body.contact_no,
         "joining_date":req.body.joining_date,
         "unit_name":req.body.unit_name,
+        "licenses" : req.body.licenses,
       }
 
   
@@ -472,7 +489,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
 
 
     // get artist all list
-    let existingDataById = await employeeModel.getById(id)
+    let existingDataById = await userModel.getById(id)
     if (isEmpty(existingDataById)) {
       return res.status(404).send({
           "success": false,
@@ -487,7 +504,11 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
   let willWeUpdate = 0; // 1 = yes , 0 = no;
   
   
-  
+   userUpdateData.employee_id = existingDataById[0].employee_id 
+   userUpdateData.name = existingDataById[0].name 
+   userUpdateData.employee_id = existingDataById[0].employee_id 
+   userUpdateData.updated_by = req.decoded.userInfo.id
+   
     // check employee_id
     if(existingDataById[0].employee_id != reqData.employee_id){
         willWeUpdate = 1
@@ -495,7 +516,6 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
         userUpdateData.employee_id = reqData.employee_id
   
     }
-  
   
     // check name
     if(existingDataById[0].name != reqData.name){
@@ -525,8 +545,6 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
    if(existingDataById[0].email != reqData.email){
     willWeUpdate = 1
     updateData.email = reqData.email
-    userUpdateData.email = reqData.email
-  
 
   }
 
@@ -573,6 +591,13 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
 
   }
 
+     // check unit_name
+     if(existingDataById[0].licenses != reqData.licenses){
+      willWeUpdate = 1
+      updateData.licenses = reqData.licenses
+  
+    }
+
     if (isError == 1) {
       return res.status(400).send({
           "success": false,
@@ -581,11 +606,15 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
       });
   }
   
+  updateData.updated_by = req.decoded.userInfo.id
   if (willWeUpdate == 1) {
 
-    let result = await employeeModel.updateById(id,updateData);
+    //console.log("first====",existingDataById[0].profile_id)
 
-    let updateUser = await userModel.updateByEmployeeUser(id,userUpdateData);
+
+    let result = await employeeModel.updateById(existingDataById[0].profile_id,updateData);
+
+   let updateUser = await userModel.updateByEmployeeUser(id,userUpdateData);
   
   
     if (updateUser.affectedRows == undefined || updateUser.affectedRows < 1) {
@@ -612,6 +641,52 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
     });
   }
   
+});
+
+
+// change statis
+router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeEmployeeStatus")], async (req, res) => {
+
+  let id = req.params.id
+
+  updated_by = req.decoded.userInfo.id;
+  let current_date = new Date(); 
+  let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+
+  let existingDataById = await userModel.getById(id);
+  if (isEmpty(existingDataById)) {
+      return res.status(404).send({
+          "success": false,
+          "status": 404,
+          "message": "No data found",
+
+      });
+  }
+
+  let data = {
+      status: existingDataById[0].status == 1 ? 2 : 1,
+      updated_by: updated_by,
+      updated_at: current_time
+  }
+
+  let result = await userModel.updateById(id, data);
+
+
+  if (result.affectedRows == undefined || result.affectedRows < 1) {
+      return res.status(500).send({
+          "success": true,
+          "status": 500,
+          "message": "Something Wrong in system database."
+      });
+  }
+
+
+  return res.status(200).send({
+      "success": true,
+      "status": 200,
+      "message": "Employee status has successfully changed."
+  });
+
 });
 
 
@@ -705,7 +780,7 @@ router.post('/assign-admin/:id',[verifyToken, routeAccessChecker("assignAdmin")]
   let id = req.params.id
 
   // get id wise data form db 
-  let employeeData = await employeeModel.getById(id);
+  let employeeData = await userModel.getById(id);
 
   // check this id already existing in database or not
   if (isEmpty(employeeData)) {
@@ -721,7 +796,7 @@ router.post('/assign-admin/:id',[verifyToken, routeAccessChecker("assignAdmin")]
   let data = {
     employee_id : employeeData[0].employee_id,
     name :  employeeData[0].name,
-     department :  employeeData[0].department,
+    department :  employeeData[0].department,
     designation :  employeeData[0].designation,
     email :  employeeData[0].email,
     contact_no :  employeeData[0].contact_no,
@@ -733,7 +808,7 @@ router.post('/assign-admin/:id',[verifyToken, routeAccessChecker("assignAdmin")]
 
   let result = await adminModel.addNew(data);
 
-  let delete_employee_data = await employeeModel.getByIdForDeleted(id)
+  let delete_employee_data = await employeeModel.getByIdForDeleted(employeeData[0].profile_id)
 
   let getPresentData = await adminModel.getUserByEmail(employeeData[0].email)
 
@@ -767,11 +842,20 @@ router.post('/assign-admin/:id',[verifyToken, routeAccessChecker("assignAdmin")]
 
 
 
+// api complete baki ache
 router.get('/employee-asset-assign-list', [verifyToken, routeAccessChecker("employeeAssignList")], async (req, res) => {
 
   let id = req.decoded.userInfo.id
 
   let userProfileId = await userModel.getById(id)
+
+  if(isEmpty(userProfileId)){
+    return res.status(404).send({
+      "success": false,
+      "status": 404,
+      "message": "Employee Wise asset List.",
+    })
+  }
 
   
   let result = await assetModel.getByEmployeeId(userProfileId[0].profile_id);
@@ -783,6 +867,42 @@ router.get('/employee-asset-assign-list', [verifyToken, routeAccessChecker("empl
       "count": result.length,
       "data": result
   });
+});
+
+
+
+
+//employee total assign asset
+router.get('/employee-asset-assign-count',[verifyToken, routeAccessChecker("employeeTotalAssetAssignCount")],
+  async (req, res) => {
+    
+    let id = req.decoded.userInfo.id
+
+    // get id wise data form db 
+    let result = await userModel.getById(id);;
+
+     // check this id already existing in database or not
+     if (isEmpty(result)) {
+        return res.status(404).send({
+          success: false,
+          status: 404,
+          message: "Invalid User"
+        });
+  
+      } 
+
+    // get employee total data
+
+    let totalAssignAssetCount = await assetAssignModel.totalAssignAssetCount(id)
+
+  return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Employee Assign asset count.",
+      data: totalAssignAssetCount,
+  });
+      
+    
 });
 
 

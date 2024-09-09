@@ -100,8 +100,9 @@ let getById = () => {
 }
 
 let getByEmployeeId = () => {
-  return `SELECT * FROM ${table_view} where  employee_id = ? and status = 1 `;
+  return `SELECT * FROM ${table_view} where  id = ? and status = 1 `;
 }
+
 
 let getByIdAssign = () => {
     return `SELECT * FROM ${table_name} where  id = ?  and is_assign = 1 and status = 1 `;
@@ -119,7 +120,7 @@ let getListOfDashboard = () => {
 };
   
 let getListOfDashboard2 = () => {
-    return `SELECT count(id) as total_employee FROM dbl_employee WHERE status = 1`; 
+    return `SELECT count(id) as total_laptop FROM dbl_employee WHERE status = 1`; 
 };
 
 let getListOfDashboard3 = () => {
@@ -174,6 +175,27 @@ let getArtistListByAlbumId = () => {
 }
 
 
+let laptopCountData = () => {
+  return `SELECT count(id) as total_laptop FROM ${table_name}  WHERE category = 'laptop' and status = 1`; 
+};
+
+let desktopCountData = () => {
+  return `SELECT count(id) as total_desktop FROM ${table_name}  WHERE category = 'desktop' and status = 1`; 
+};
+
+
+
+let printerCountData = () => {
+  return `SELECT count(id) as total_printer FROM ${table_name}  WHERE category = 'printer' and status = 1`; 
+};
+
+
+let accessoriesCountData = () => {
+  return `SELECT count(id) as total_accessories FROM ${table_name}  WHERE category = 'accessories' and status = 1`; 
+};
+
+
+
 module.exports = {
     addNew,
     getByEmployee,
@@ -192,7 +214,11 @@ module.exports = {
     getListOfDashboardGraph2,
     getTotalList,
     distributedTotalAssetList,
-    getByEmployeeId
+    getByEmployeeId,
+    laptopCountData,
+    printerCountData,
+    desktopCountData,
+    accessoriesCountData
 
 
 }

@@ -1,18 +1,21 @@
 let superAdminPermission = [
-'employeeList','employeeAdd','employeeAllList','employeeDatails','employeeDetails','employeeDelete','employeeUpdate',"assignAdmin",
+'employeeList','employeeAdd','employeeAllList','employeeDatails','employeeDetails','employeeDelete','employeeUpdate',"assignAdmin",'changeEmployeeStatus',
 "assetUnitList","assetUnitActiveList","assetUnitListLimit","assetUnitAdd","assetUnitUpdate","changeAssetUnitStatus",'assetUnitDelete',
 "assignEmployee",
 "adminList",
+"dashboardData",
 ];
 
 let adminPermission = [
    
-'employeeList','employeeAdd','employeeAllList','employeeDatails','employeeDetails','employeeUpdate',
+'employeeList','employeeAdd','employeeAllList','employeeDatails','employeeDetails','employeeUpdate','assignEmployee','changeEmployeeStatus',
+
+"dashboardData","dashboardGraphData",
 ];
 
 let employeePermission = [
     
-  "employeeAssignList",
+  "employeeAssignList","employeeTotalAssetAssignCount","dashboardGraphData",
 ];
 
 

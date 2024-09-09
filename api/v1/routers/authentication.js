@@ -15,67 +15,8 @@ const verifyToken = require('../middlewares/verifyToken')
 const { v4: uuidv4 } = require("uuid");
 const commonObject = require("../common/common");
 
-// registration
-// router.post('/registration', [
-//     // Example body validations
-//     check('email').isEmail().withMessage('Please provide a valid email address'),
-//     check('password')
-//       .isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
-//   ],
-//   async (req, res) => {
-//     // Handle the request only if there are no validation errors
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//       return res.status(400).json({ errors: errors.array() });
-//     }
-  
 
-//     // body data
-//     let reqData = {
-//             "email": req.body.email,
-//             "password":req.body.password,
-//           }
-
-    
-//     let current_date = new Date(); 
-//     let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
-//     reqData.created_at = current_time;
-//     reqData.role_id = 1
-
- 
-
-//     // this email check unique
-//     let existingByEmail = await userModel.getUserByEmail(reqData.email)
-//     if(!isEmpty(existingByEmail)){
-//         return res.status(409).send({
-//             "success": false,
-//             "status": 409,
-//             "message":"This email already exists."
-//        });
-//     }
-
-//   // password hashing
-//   reqData.password = bcrypt.hashSync(reqData.password,10)
-
-
-//    // save in database
-//    let result = await userModel.addNew(reqData);
-
-//    if (result.affectedRows == undefined || result.affectedRows < 1) {
-//         return res.status(500).send({
-//             "success": true,
-//             "status": 500,
-//             "message": "Something Wrong in system database."
-//         });
-//     }
-
-//     return res.status(201).send({
-//         "success": true,
-//         "status": 201,
-//         "message": "Registration Successfully."
-//     });
-// });
-
+// user login
 router.post("/login", async (req, res) => {
 
   let loginData = {
@@ -262,48 +203,6 @@ router.post("/login", async (req, res) => {
 
 
 
-//login
-// router.post('/login',async (req, res) => {
-
-//     // Body data
-//     let reqData = {
-//       "email": req.body.email,
-//       "password": req.body.password,
-//     }
-  
-//     // Get user info
-//     let existingByUserInfo = await userModel.getUserByEmail(reqData.email);
-//     if (isEmpty(existingByUserInfo)) {
-//       return res.status(400).send({
-//         "success": false,
-//         "status": 400,
-//         "message": "This email does not match."
-//       });
-//     }
-    
-
-//     // Check password
-//     const isPasswordValid = await bcrypt.compare(reqData.password, existingByUserInfo[0].password);
-//     if (!isPasswordValid) {
-//       return res.status(400).send({
-//         "success": false,
-//         "status": 400,
-//         "message": "Invalid password. Please try again with the correct password."
-//       });
-//     }
-
-
-//     // Create and sign a JWT token
-//     const token = jwt.sign({ userName : existingByUserInfo[0].name,employee_id:existingByUserInfo[0].employee_id, id: existingByUserInfo[0].id, role_id: existingByUserInfo[0].role_id,email: existingByUserInfo[0].email },keyData.secretKey, {'expiresIn':'12h'});
-
-//     // Respond with the token
-//     return res.status(200).send({
-//       "success": true,
-//       "status": 200,
-//       "message": "Login Successfully.",
-//       "token": token
-//     });
-//   });
 
 
 

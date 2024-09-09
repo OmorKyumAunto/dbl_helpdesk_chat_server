@@ -51,13 +51,14 @@ let getById = async (id = 0) => {
 
 
 
-
-
-
-
-
-
-
+let totalAssignAssetCount = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.totalAssignAssetCount(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
 
 
 
@@ -217,7 +218,8 @@ module.exports = {
    getByArtistId,
    updateByAlbum,
    getArtistListByAlbumId,
-   deleteAssetById
+   deleteAssetById,
+   totalAssignAssetCount
    
   
 }

@@ -349,6 +349,47 @@ let getArtistListByAlbumId = async (artist_id = 0) => {
 }
 
 
+
+let laptopCountData = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(queries.laptopCountData(), (error, result, fields) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+  });
+}
+
+let desktopCountData = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(queries.desktopCountData(), (error, result, fields) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+  });
+}
+
+
+
+let printerCountData = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(queries.printerCountData(), (error, result, fields) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+  });
+}
+
+
+let accessoriesCountData = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(queries.accessoriesCountData(), (error, result, fields) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+  });
+}
+
+
 module.exports = {
    addNew,
    getByExistsEmployee,
@@ -369,7 +410,11 @@ module.exports = {
    getListOfDashboardGraph2,
    getTotalList,
    distributedAssetTotalList,
-   getByEmployeeId
+   getByEmployeeId,
+   laptopCountData,
+   printerCountData,
+   desktopCountData,
+   accessoriesCountData
    
    
   

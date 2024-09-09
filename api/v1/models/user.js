@@ -93,6 +93,36 @@ let updateById = async (id = 0, data = {}) => {
 }
 
 
+let getEmployeeList = async (offset, limit, key,unit,type) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getEmployeeList(offset, limit, key,unit), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+
+
+  let getTotalEmployeeList = async (key, unit) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getTotalEmployeeList(key, unit), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+
+
+let getList = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getList(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+
+  
 
 module.exports = {
     getUserByEmail,
@@ -103,5 +133,8 @@ module.exports = {
     updateByEmployeeUser,
     updateById,
     getById,
-    getByEmployeeId
+    getByEmployeeId,
+    getEmployeeList,
+    getTotalEmployeeList,
+    getList
 }

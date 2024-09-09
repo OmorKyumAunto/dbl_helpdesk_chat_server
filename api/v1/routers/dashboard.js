@@ -1,17 +1,16 @@
 const express = require("express");
 const isEmpty = require("is-empty");
 const router = express.Router();
-const verifyToken = require('../middlewares/verifyToken')
 const {check,validationResult} = require('express-validator')
 const moment = require("moment");
 const e = require("express");
 const employeeModel = require('../models/employee');
 const assetModel = require('../models/asset');
-
-
+const verifyToken = require('../middlewares/verifyToken')
+const { routeAccessChecker } = require("../middlewares/routeAccess");
 
 // list
-router.get('/dashboard-data', async (req, res) => {
+router.get('/dashboard-data',[verifyToken,routeAccessChecker("dashboardData")], async (req, res) => {
 
   let data = await assetModel.getListOfDashboard()
   let data2 = await assetModel.getListOfDashboard2()
@@ -32,7 +31,7 @@ router.get('/dashboard-data', async (req, res) => {
   
 });
 
-router.get('/dashboard-graph-data', async (req, res) => {
+router.get('/dashboard-graph-data',[verifyToken,routeAccessChecker("dashboardGraphData")], async (req, res) => {
   try {
     let resultAssign = await assetModel.getListOfDashboardGraph();
     let resultTotal = await assetModel.getListOfDashboardGraph2();
@@ -82,6 +81,27 @@ router.get('/dashboard-graph-data', async (req, res) => {
 });
 
 
+router.get('/accessories-count', async (req, res) => {
 
+  let laptop = await assetModel.laptopCountData()
+  let desktop = await assetModel.desktopCountData()
+  let printer = await assetModel.printerCountData()
+  let accessories = await assetModel.accessoriesCountData()
+
+  let result = {
+    total_laptop : laptop[0].total_laptop,
+    total_desktop : desktop[0].total_desktop,
+    total_printer : printer[0].total_printer,
+    total_accessories : accessories[0].total_accessories,
+  }
+
+    return res.status(200).send({
+      success: false,
+      status: 200,
+      message: "Dashboard Accssories Count data.",
+      data: result
+    });
+  
+});
 
 module.exports = router;  

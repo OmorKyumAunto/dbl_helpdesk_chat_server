@@ -4,6 +4,7 @@ let superAdminPermission = [
 "assignEmployee",
 "adminList",
 "dashboardData",
+"addAsset","assetList","assetAllList","assetUpdate","assetDelete",
 ];
 
 let adminPermission = [
@@ -11,6 +12,7 @@ let adminPermission = [
 'employeeList','employeeAdd','employeeAllList','employeeDatails','employeeDetails','employeeUpdate','assignEmployee','changeEmployeeStatus',
 
 "dashboardData","dashboardGraphData",
+"addAsset","assetList","assetAllList","assetUpdate","assetDelete"
 ];
 
 let employeePermission = [

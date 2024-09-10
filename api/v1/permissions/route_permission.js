@@ -3,7 +3,7 @@ let superAdminPermission = [
 "assetUnitList","assetUnitActiveList","assetUnitListLimit","assetUnitAdd","assetUnitUpdate","changeAssetUnitStatus",'assetUnitDelete',
 "assignEmployee",
 "adminList",
-"dashboardData",
+"dashboardData","dashboardGraphData",
 "addAsset","assetList","assetAllList","assetUpdate","assetDelete",
 ];
 
@@ -17,7 +17,7 @@ let adminPermission = [
 
 let employeePermission = [
     
-  "employeeAssignList","employeeTotalAssetAssignCount","dashboardGraphData",
+  "employeeAssignList","employeeTotalAssetAssignCount",
 ];
 
 

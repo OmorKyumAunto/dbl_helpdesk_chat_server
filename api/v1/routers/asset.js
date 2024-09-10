@@ -600,7 +600,7 @@ router.delete('/delete/:id',[verifyToken, routeAccessChecker("assetDelete")],asy
 
 
 //update
-router.put('/update/:id', 
+router.put('/update/:id', [verifyToken, routeAccessChecker("updateAsset")],
   async (req, res) => {
     
    let id = req.params.id

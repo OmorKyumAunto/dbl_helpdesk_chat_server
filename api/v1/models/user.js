@@ -122,6 +122,15 @@ let getList = async () => {
     });
   }
 
+
+  let getActiveList = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getActiveList(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
   
 
 module.exports = {
@@ -136,5 +145,6 @@ module.exports = {
     getByEmployeeId,
     getEmployeeList,
     getTotalEmployeeList,
-    getList
+    getList,
+    getActiveList
 }

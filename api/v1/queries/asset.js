@@ -2,7 +2,7 @@ let table_name = "dbl_asset";
 
 let table_name2 = "dbl_asset_assign";
 
-let table_view = "employee_asset_assign_view";
+let table_view = "asset_assign_user_view";
 
 
 
@@ -195,6 +195,10 @@ let accessoriesCountData = () => {
 };
 
 
+let getAssetList = () => {
+  return `select * from ${table_name} where status = 1 order by id desc`;
+}
+
 
 module.exports = {
     addNew,
@@ -218,7 +222,8 @@ module.exports = {
     laptopCountData,
     printerCountData,
     desktopCountData,
-    accessoriesCountData
+    accessoriesCountData,
+    getAssetList
 
 
 }

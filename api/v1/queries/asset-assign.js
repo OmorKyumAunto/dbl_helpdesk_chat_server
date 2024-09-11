@@ -17,6 +17,7 @@ let getList = (offset, limit, key) => {
   }
   
 
+
 let getById = () => {
     return `SELECT * FROM ${table_name} where  asset_id = ? and status = 1 `;
 }

@@ -25,12 +25,17 @@ const updateById = () => {
     return `UPDATE ${table_name} SET ? WHERE id = ?`;
 }
 
-
+let getByIdForDeleted = () => {
+    return `delete FROM ${table_name} where  id = ? and status = 1 `;
+}
 module.exports = {
     getUserByEmail,
     addNew,
     getUserInfo,
     getById,
     updateById,
-    getList
+    getList,
+    getByIdForDeleted,
+    
+    
 }

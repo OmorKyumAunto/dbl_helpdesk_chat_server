@@ -59,11 +59,23 @@ let updateById = async (id = 0, data = {}) => {
     });
 }
 
+let getByIdForDeleted = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByIdForDeleted(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+
 module.exports = {
     getUserByEmail,
     addNew,
     getUserInfo,
     getById,
     updateById,
-    getList
+    getList,
+    getByIdForDeleted
 }

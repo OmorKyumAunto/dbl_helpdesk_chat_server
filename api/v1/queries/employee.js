@@ -64,7 +64,9 @@ let me = () => {
 
 
 
-
+let getUserByEmail = () => {
+    return `SELECT * FROM ${table_name} where  email = ? and status = 1 `;
+}
 
 
 
@@ -98,6 +100,7 @@ module.exports = {
     me,
     getTotalList,
     getDataByEmployeeId,
-    getByIdForDeleted
+    getByIdForDeleted,
+    getUserByEmail
 
 }

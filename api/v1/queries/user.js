@@ -82,6 +82,11 @@ const getList = () => {
 }
 
 
+
+const getActiveList = () => {
+    return `select * from ${table_view} where status = 1 order by id desc`;
+}
+
 module.exports = {
     
     getUserByEmail,
@@ -95,5 +100,6 @@ module.exports = {
     getByEmployeeId,
     getEmployeeList,
     getTotalEmployeeList,
-    getList
+    getList,
+    getActiveList
 }

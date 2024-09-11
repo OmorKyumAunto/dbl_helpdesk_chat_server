@@ -31,10 +31,7 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
       "is_assign":req.body.is_assign,
       "employee_id":req.body.employee_id,
       "assign_date":req.body.assign_date,
-
-      "is_new_employee": 1,
-      "test": 1,
-
+      "is_new_employee": req.body.is_new_employee,
       "user_id": req.body.user_id,
       "employee_name":req.body.employee_name,
       "department":req.body.department,
@@ -157,18 +154,17 @@ if(isEmpty(reqData.po_number)){
 
 // yes =1 , no = 0
 
-
-console.log(typeof req.body.is_assign);  
-
-if (reqData.is_new_employee==0  && reqData.is_assign === 1) {
+if (reqData.is_new_employee == 0  && reqData.is_assign == 1) {
 
     console.log("assign 1 .. em 0  ")
+
+  let userId = await userModel.getById(reqData.user_id)
   // employee validation
-  if(isEmpty(reqData.employee_id)){
-    return res.status(400).send({
+  if(isEmpty(userId)){
+    return res.status(404).send({
         "success": false,
-        "status": 400,
-        "message":"Employee id cannot be empty."
+        "status": 404,
+        "message":"User not found."
   });
   }
 
@@ -207,12 +203,26 @@ let result = await assetModel.addNew2(data);
 let getAssetId = await assetModel.getLastData()
 let assignData = {
   asset_id : getAssetId[0].id,
-  employee_id : reqData.employee_id,
+  user_id : reqData.user_id,
   assign_date : reqData.assign_date
 }
 let result2 = await assetAssignModel.addNew(assignData);
 
-if (result2.affectedRows == undefined || result2.affectedRows < 1) {
+let employeeId = await employeeModel.getDataByEmployeeId(reqData.employee_id)
+let userLastData = await userModel.getActiveList()
+let asset = await assetModel.getAssetList()
+
+  let assetHistory = {
+    asset_id : asset[0].id,
+    user_id : userId[0].id,
+    history : `This asset assign To ${userId[0].name} and employee id: ${userId[0].employee_id}`
+
+  }
+
+
+  let createAssetHistory = await assetHistoryModel.addNew(assetHistory)
+
+if (createAssetHistory.affectedRows == undefined || createAssetHistory.affectedRows < 1) {
   return res.status(500).send({
       "success": true,
       "status": 500,
@@ -242,6 +252,7 @@ let data2 = {
 }
 
 let result = await assetModel.addNew2(data2);
+
 if (result.affectedRows == undefined || result.affectedRows < 1) {
   return res.status(500).send({
       "success": true,
@@ -251,19 +262,11 @@ if (result.affectedRows == undefined || result.affectedRows < 1) {
 }
 
 
-if (reqData.is_new_employee == 1 && is_assign == 1) {
+if (reqData.is_new_employee === 1 && reqData.is_assign === 1) {
   
 
   console.log("assign 1 .. em 1 ")
-              // employee data
-            if(isEmpty(reqData.employee_id)){
-              return res.status(400).send({
-                "success": false,
-                "status": 400,
-                "message":"Employee id cannot be empty."
-              });
-          }
-
+     
 
             // check name
             if(isEmpty(reqData.employee_name)){
@@ -391,25 +394,73 @@ if (reqData.is_new_employee == 1 && is_assign == 1) {
 
 
            let user = await userModel.addNew(userData);
-
+           let userLastData = await userModel.getActiveList()
 
       
           let getByEmployeeDataByEmployeeId = await employeeModel.getDataByEmployeeId(reqData.employee_id)
 
 
-     console.log("emppp",employeeId[0])
+
 
             if(getByEmployeeDataByEmployeeId){
               let getAssetId = await assetModel.getLastData()
               let assignData = {
                 asset_id : getAssetId[0].id,
-                employee_id : employeeId[0].id,
+                user_id : employeeId[0].id,
                 assign_date : reqData.assign_date
               }
 
-              console.log("first========",assignData)
 
-              let result2 = await assetAssignModel.addNew(assignData);
+              let res = await assetAssignModel.addNew(assignData);
+
+
+
+              // get all asset id
+
+              let asset = await assetModel.getAssetList()
+
+              // check already assign this asset
+              let alreadyAssignedHistory = await assetHistoryModel.getByAssetId(asset[0].id)
+
+
+              if(alreadyAssignedHistory.length){
+              // console.log("first",alreadyAssignedHistory)
+                let updateStatus = await assetAssignModel.updateById(alreadyAssignedHistory[0].asset_id,{status:0})
+           
+              
+
+                let data = {
+                  status : 0,
+                  history : `This asset previous assign To ${employeeId[0].name} and employee id: ${employeeId[0].employee_id}`
+                }
+                let updateStatusToHistory = await assetHistoryModel.updateById(alreadyAssignedHistory[0].id,data)
+
+
+              }
+
+        
+              // assign asset history
+              let assetHistory = {
+                asset_id : asset[0].id,
+                user_id : userLastData[0].id,
+                history : `This asset assign To ${employeeId[0].name} and employee id: ${employeeId[0].employee_id}`
+
+              }
+
+              let assignEmployeeData = {
+                asset_id : asset[0].id,
+                user_id : userLastData[0].id,
+                assign_date : reqData.assign_date,
+              }
+
+              
+
+              let result2 = await assetAssignModel.addNew(assignEmployeeData);
+              let createAssetHistory = await assetHistoryModel.addNew(assetHistory)
+
+
+
+              
               if (result2.affectedRows == undefined || result2.affectedRows < 1) {
                 return res.status(500).send({
                     "success": true,
@@ -617,7 +668,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateAsset")],
         "model":req.body.model,
         "specification":req.body.specification,
         "assign_update": req.body.assign_update,
-        "employee_id":req.body.employee_id,
+        "user_id":req.body.user_id,
         "assign_date":req.body.assign_date
       }
 
@@ -746,13 +797,13 @@ if(reqData.assign_update == 1){
   let assetAssignData = await assetAssignModel.getById(id)
 
   if(assetAssignData.length){
-    if(assetAssignData[0].employee_id != reqData.employee_id ){
+    if(assetAssignData[0].user_id != reqData.user_id ){
       // employee validation
-      if(isEmpty(reqData.employee_id)){
+      if(isEmpty(reqData.user_id)){
         return res.status(400).send({
             "success": false,
             "status": 400,
-            "message":"Employee id cannot be empty."
+            "message":"User id cannot be empty."
       });
       }
 
@@ -773,17 +824,47 @@ if(reqData.assign_update == 1){
       }
 
 
-      let updateEmployeeData = {
+      let updateEmployeeDataCreate = {
       asset_id : id,
-      employee_id : reqData.employee_id,
+      user_id : reqData.user_id,
       assign_date : reqData.assign_date
       }
 
-
-
+      let updateEmployeeData = {
+        asset_id : id,
+        status : 0
+        }
+  
+        console.log("first")
       let result2 = await assetAssignModel.updateById(id,updateEmployeeData);
 
-      if (result2.affectedRows == undefined || result2.affectedRows < 1) {
+      let createNew = await assetAssignModel.addNew(updateEmployeeDataCreate);
+
+
+      // get history id
+      let assetHistoryData = await assetHistoryModel.getByAssetId(id)
+      console.log("first====",assetHistoryData)
+      let userData = await userModel.getById(reqData.user_id)
+
+      let assetHistoryUpdate = {
+        asset_id : id,
+        status : 0,
+      }
+
+      let assetHistoryCreate = {
+        asset_id : id,
+        user_id : reqData.user_id,
+        history : `This asset assign To ${userData[0].name} and employee id: ${userData[0].employee_id}`
+      }
+
+      
+
+      let historyUpdate = await assetHistoryModel.updateById(assetHistoryData[0].id,assetHistoryUpdate);
+      let historyCreate = await assetHistoryModel.addNew(assetHistoryCreate);
+
+
+
+      if (historyCreate.affectedRows == undefined || historyCreate.affectedRows < 1) {
       return res.status(500).send({
           "success": true,
           "status": 500,
@@ -795,11 +876,11 @@ if(reqData.assign_update == 1){
   
   }else{
      // employee validation
-     if(isEmpty(reqData.employee_id)){
+     if(isEmpty(reqData.user_id)){
       return res.status(400).send({
           "success": false,
           "status": 400,
-          "message":"Employee id cannot be empty."
+          "message":"User id cannot be empty."
     });
     }
 
@@ -822,7 +903,7 @@ if(reqData.assign_update == 1){
 
     let updateEmployeeData = {
     asset_id : id,
-    employee_id : reqData.employee_id,
+    user_id : reqData.employee_id,
     assign_date : reqData.assign_date
     }
 
@@ -897,7 +978,7 @@ router.put('/assign-employee/:id',[verifyToken,routeAccessChecker("assignEmploye
 
   let id = req.params.id
   let reqData = {
-    "employee_id": req.body.employee_id,
+    "user_id": req.body.user_id,
     "assign_date":req.body.assign_date
   }
 
@@ -920,14 +1001,22 @@ router.put('/assign-employee/:id',[verifyToken,routeAccessChecker("assignEmploye
 
 
     // employee validation
-    if(isEmpty(reqData.employee_id)){
+    if(isEmpty(reqData.user_id)){
       return res.status(400).send({
           "success": false,
           "status": 400,
-          "message":"Employee id cannot be empty."
+          "message":"User id cannot be empty."
     });
     }
 
+    const userData = await userModel.getById(reqData.user_id)
+    if (isEmpty(userData)) {
+      return res.status(404).send({
+        success: false,
+        status: 404,
+        message: "This user not found."
+      });
+    } 
 
 
   if (!moment(reqData.assign_date, "YYYY-MM-DD", true).isValid()) {
@@ -940,7 +1029,7 @@ router.put('/assign-employee/:id',[verifyToken,routeAccessChecker("assignEmploye
 
   let assignEmployeeData = {
     asset_id : id,
-    employee_id : reqData.employee_id,
+    user_id : reqData.user_id,
     assign_date : reqData.assign_date,
     created_at : current_time
   }
@@ -949,14 +1038,7 @@ router.put('/assign-employee/:id',[verifyToken,routeAccessChecker("assignEmploye
 
  
 
-  let getUserIdByEmployeeId = await userModel.getByEmployeeId(reqData.employee_id)
-
-  if(isEmpty(getUserIdByEmployeeId)) 
-    return res.status(404).send({
-    "success": true,
-    "status": 404,
-    "message": "Unknown User."
-});
+  //let getUserIdByEmployeeId = await userModel.getByEmployeeId(reqData.employee_id)
 
 // check already assign this asset
 let alreadyAssignedHistory = await assetHistoryModel.getByAssetId(id)
@@ -969,7 +1051,7 @@ if(alreadyAssignedHistory.length){
 
   let data = {
     status : 0,
-    history : `This asset previous assign To ${getUserIdByEmployeeId[0].name} and employee id: ${getUserIdByEmployeeId[0].employee_id}`
+    history : `This asset previous assign To ${userData[0].name} and employee id: ${userData[0].employee_id}`
   }
   let updateStatusToHistory = await assetHistoryModel.updateById(alreadyAssignedHistory[0].id,data)
 
@@ -979,8 +1061,8 @@ if(alreadyAssignedHistory.length){
 // assign asset history
 let assetHistory = {
   asset_id : id,
-  employee_id : getUserIdByEmployeeId[0].profile_id,
-  history : `This asset assign To ${getUserIdByEmployeeId[0].name} and employee id: ${getUserIdByEmployeeId[0].employee_id}`
+  user_id : userData[0].id,
+  history : `This asset assign To ${userData[0].name} and employee id: ${userData[0].employee_id}`
 
 }
 let result2 = await assetAssignModel.addNew(assignEmployeeData);
@@ -1006,7 +1088,66 @@ return res.status(201).send({
 
 
 //distributed asset list
-router.get('/distributed-asset', async (req, res) => {
+// router.get('/distributed-asset', [verifyToken, routeAccessChecker("distributedAsset")], async (req, res) => {
+//   let reqData = {
+//     "limit": req.query.limit || 50,
+//     "offset": req.query.offset || 0,
+//     "key": req.query.key,
+//     "unit": req.query.unit,
+//     "type": req.query.type,
+// }
+//  let { offset, limit , key,unit ,type} = reqData;
+
+//   let result = await assetModel.distributedAssetList(offset, limit, key, unit,type);
+//   let totalResult = await assetModel.distributedAssetTotalList(key, unit,type);
+
+//   for (let i = 0; i < result.length; i++) {
+//     const resultId = result[i].id;
+
+//     // Get assign data
+//     let assignDataByAssetId = await assetAssignModel.getById(resultId);
+
+//     if (!isEmpty(assignDataByAssetId)) {
+//       result[i].employee_id = assignDataByAssetId[0].employee_id;
+//       result[i].assign_date = assignDataByAssetId[0].assign_date;
+
+//       // Get employee data based on the employee_id from assignDataByAssetId
+//       let employeeData = await employeeModel.getById(assignDataByAssetId[0].employee_id);
+
+//       if (!isEmpty(employeeData)) {
+//         result[i].employee_name = employeeData[0].name;
+//         result[i].employee_id_no = employeeData[0].employee_id;
+//         result[i].employee_department = employeeData[0].department;
+//         result[i].employee_designation = employeeData[0].designation;
+//         result[i].employee_unit = employeeData[0].unit_name;
+//       } else {
+//         result[i].employee_name = "";
+//         result[i].employee_id_no = "";
+//         result[i].employee_department = "";
+//         result[i].employee_designation = "";
+//         result[i].employee_unit = "";
+//       }
+//     } else {
+//       result[i].employee_id = "";
+//       result[i].assign_date = "";
+//       result[i].employee_name = "";
+//       result[i].employee_id_no = "";
+//       result[i].employee_department = "";
+//       result[i].employee_designation = "";
+//       result[i].employee_unit = "";
+//     }
+//   }
+
+//   return res.status(200).send({
+//     success: true,
+//     status: 200,
+//     message: "Distributed asset list.",
+//     total : totalResult.length,
+//     data: result,
+//   });
+// });
+
+router.get('/distributed-asset', [verifyToken, routeAccessChecker("distributedAsset")], async (req, res) => {
   let reqData = {
     "limit": req.query.limit || 50,
     "offset": req.query.offset || 0,
@@ -1019,42 +1160,6 @@ router.get('/distributed-asset', async (req, res) => {
   let result = await assetModel.distributedAssetList(offset, limit, key, unit,type);
   let totalResult = await assetModel.distributedAssetTotalList(key, unit,type);
 
-  for (let i = 0; i < result.length; i++) {
-    const resultId = result[i].id;
-
-    // Get assign data
-    let assignDataByAssetId = await assetAssignModel.getById(resultId);
-
-    if (!isEmpty(assignDataByAssetId)) {
-      result[i].employee_id = assignDataByAssetId[0].employee_id;
-      result[i].assign_date = assignDataByAssetId[0].assign_date;
-
-      // Get employee data based on the employee_id from assignDataByAssetId
-      let employeeData = await employeeModel.getById(assignDataByAssetId[0].employee_id);
-
-      if (!isEmpty(employeeData)) {
-        result[i].employee_name = employeeData[0].name;
-        result[i].employee_id_no = employeeData[0].employee_id;
-        result[i].employee_department = employeeData[0].department;
-        result[i].employee_designation = employeeData[0].designation;
-        result[i].employee_unit = employeeData[0].unit_name;
-      } else {
-        result[i].employee_name = "";
-        result[i].employee_id_no = "";
-        result[i].employee_department = "";
-        result[i].employee_designation = "";
-        result[i].employee_unit = "";
-      }
-    } else {
-      result[i].employee_id = "";
-      result[i].assign_date = "";
-      result[i].employee_name = "";
-      result[i].employee_id_no = "";
-      result[i].employee_department = "";
-      result[i].employee_designation = "";
-      result[i].employee_unit = "";
-    }
-  }
 
   return res.status(200).send({
     success: true,
@@ -1069,7 +1174,7 @@ router.get('/distributed-asset', async (req, res) => {
 
 
 //distributed asset list
-router.get('/all-distributed-asset', async (req, res) => {
+router.get('/all-distributed-asset', [verifyToken, routeAccessChecker("allDistributedAsset")],async (req, res) => {
 
   let result = await assetModel.distributedAssetTotalList();
 
@@ -1122,7 +1227,7 @@ router.get('/all-distributed-asset', async (req, res) => {
 
 
 //details
-router.get('/distributed-details/:id',
+router.get('/distributed-details/:id',[verifyToken, routeAccessChecker("distributedDetails")],
   async (req, res) => {
     
     let id = req.params.id
@@ -1207,7 +1312,7 @@ const epoch = new Date(Date.UTC(0, 0, serial - 1));
 return new Date(epoch.getTime() + epoch.getTimezoneOffset() * 60000);
 };
 
-router.post('/upload-asset', upload.single('file'), async (req, res) => {
+router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], upload.single('file'), async (req, res) => {
 if (!req.file) {
     return res.status(400).send({
         success: false,

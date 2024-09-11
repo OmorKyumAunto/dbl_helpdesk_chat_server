@@ -158,6 +158,14 @@ let getByIdAssign = async (id = 0) => {
     });
 }
 
+let getAssetList = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(queries.getAssetList(), (error, result, fields) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+  });
+}
 
 
 
@@ -414,7 +422,8 @@ module.exports = {
    laptopCountData,
    printerCountData,
    desktopCountData,
-   accessoriesCountData
+   accessoriesCountData,
+   getAssetList
    
    
   

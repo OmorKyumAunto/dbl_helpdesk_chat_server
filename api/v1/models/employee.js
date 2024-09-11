@@ -243,6 +243,14 @@ let getArtistListByAlbumId = async (artist_id = 0) => {
     });
 }
 
+let getUserByEmail = async (email = "") => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getUserByEmail(), [email], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
 
 module.exports = {
    addNew,
@@ -257,7 +265,8 @@ module.exports = {
    getList22,
    getTotalList,
    getDataByEmployeeId,
-   getByIdForDeleted
+   getByIdForDeleted,
+   getUserByEmail
    
   
 }

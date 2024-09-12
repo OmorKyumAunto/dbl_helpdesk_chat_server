@@ -572,7 +572,7 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
 
    // get assign data
    let assignDataByAssetId = await assetAssignModel.getById(result[0].id)
-   console.log("first===",assignDataByAssetId)
+
    if(!isEmpty(assignDataByAssetId)){
      result[0].employee_id = assignDataByAssetId[0].employee_id,
      result[0].assign_date = assignDataByAssetId[0].assign_date
@@ -583,10 +583,11 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
 
    if(!isEmpty(assignDataByAssetId)){
   let userData = await userModel.getById(assignDataByAssetId[0].user_id)
+  console.log("first",userData)
   let employeeData = await employeeModel.getById(userData[0].profile_id)
 
 
-    if(!isEmpty(employeeData)){
+    if(employeeData){
       result[0].employee_name = employeeData[0].name,
       result[0].employee_id_no = employeeData[0].employee_id,
       result[0].employee_department = employeeData[0].department,

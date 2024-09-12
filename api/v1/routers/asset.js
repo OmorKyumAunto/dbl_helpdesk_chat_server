@@ -1172,10 +1172,22 @@ router.get('/distributed-asset', [verifyToken, routeAccessChecker("distributedAs
 }
  let { offset, limit , key,unit ,type} = reqData;
 
+ let arr = []
   let result = await assetModel.distributedAssetList(offset, limit, key, unit,type);
   let totalResult = await assetModel.distributedAssetTotalList(key, unit,type);
 
+  for (let index = 0; index < result.length; index++) {
+    const element = result[index].id;
 
+    let getHistory = await assetHistoryModel.getByAssetId(element)
+    if(getHistory.length){
+
+      arr.push(getHistory)
+      
+    }
+    
+  }
+  console.log("dasddsaf",arr)
   return res.status(200).send({
     success: true,
     status: 200,
@@ -1238,7 +1250,6 @@ router.get('/all-distributed-asset', [verifyToken, routeAccessChecker("allDistri
     data: result,
   });
 });
-
 
 
 //details

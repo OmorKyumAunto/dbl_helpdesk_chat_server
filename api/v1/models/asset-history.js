@@ -49,8 +49,6 @@ let getById = async (id = 0) => {
     });
 }
 
-
-
 let getByAssetId = async (id = 0) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getByAssetId(), [id], (error, result, fields) => {
@@ -59,8 +57,6 @@ let getByAssetId = async (id = 0) => {
         });
     });
 }
-
-
 
 
 
@@ -227,6 +223,7 @@ module.exports = {
    updateByAlbum,
    getArtistListByAlbumId,
    deleteAssetById,
+   getByAssetId,
    getByAssetId
    
   

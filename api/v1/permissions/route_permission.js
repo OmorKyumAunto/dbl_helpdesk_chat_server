@@ -21,7 +21,7 @@ let adminPermission = [
 
 let employeePermission = [
     
-  "employeeAssignList","employeeTotalAssetAssignCount", "employeeUpdate","changePassword"
+  "employeeAssignList","employeeTotalAssetAssignCount", "employeeUpdate","changePassword","dashboardData","dashboardGraphData"
 ];
 
 

@@ -588,12 +588,15 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
 
 
     if(employeeData){
+      result[0].user_id = userData[0].id,
+
       result[0].employee_name = employeeData[0].name,
       result[0].employee_id_no = employeeData[0].employee_id,
       result[0].employee_department = employeeData[0].department,
       result[0].employee_designation = employeeData[0].designation,
       result[0].employee_unit = employeeData[0].unit_name
     }else{
+      result[0].user_id = "",
       result[0].employee_name = "",
         result[0].employee_id_no = "",
         result[0].employee_department = "",
@@ -605,7 +608,12 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
     }
 
     let assetUnitData = await assetUnitModel.getById(result[0].unit_id)
-    result[0].unit_name = assetUnitData[0].title
+    if(assetUnitData){
+      result[0].unit_name = assetUnitData[0].title
+    }else{
+      result[0].unit_name = ""
+    }
+    
 
 
 

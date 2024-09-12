@@ -25,7 +25,6 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
       "purchase_date":req.body.purchase_date,
       "serial_number":req.body.serial_number,
       "po_number":req.body.po_number,
-      "asset_history":req.body.asset_history,
       "unit_id":req.body.unit_id,
       "model":req.body.model,
       "specification":req.body.specification,
@@ -245,7 +244,6 @@ let data2 = {
   purchase_date: reqData.purchase_date,
   serial_number: reqData.serial_number,
   po_number: reqData.po_number,
-  asset_history: reqData.asset_history,
   is_assign: reqData.is_assign,
   unit_id : reqData.unit_id,
   model : reqData.model,
@@ -422,6 +420,9 @@ if (reqData.is_new_employee === 1 && reqData.is_assign === 1) {
 
               // check already assign this asset
               let alreadyAssignedHistory = await assetHistoryModel.getByAssetId(asset[0].id)
+
+              // update status
+              let assetRemarksUpdate = await assetModel.updateById(asset[0].id,{remarks:'assigned'})
 
 
               if(alreadyAssignedHistory.length){
@@ -601,6 +602,10 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
       
     }
 
+    let assetUnitData = await assetUnitModel.getById(result[0].unit_id)
+    result[0].unit_name = assetUnitData[0].title
+
+
 
   return res.status(200).send({
       success: true,
@@ -676,7 +681,6 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateAsset")],
         "purchase_date":req.body.purchase_date,
         "serial_number":req.body.serial_number,
         "po_number":req.body.po_number,
-        "asset_history":req.body.asset_history,
         "unit_id":req.body.unit_id,
         "model":req.body.model,
         "specification":req.body.specification,
@@ -760,18 +764,6 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateAsset")],
       updateData.po_number = reqData.po_number
   
     }
-
-
-
-   // check email
-   if(existingDataById[0].asset_history != reqData.asset_history){
-    willWeUpdate = 1
-    updateData.asset_history = reqData.asset_history
-
-  }
-
-
- 
 
    // check unit_id
    if(existingDataById[0].unit_id != reqData.unit_id){

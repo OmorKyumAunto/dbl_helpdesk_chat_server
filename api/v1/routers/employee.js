@@ -668,7 +668,7 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeEmployee
       updated_by: updated_by,
       updated_at: current_time
   }
-  console.log("first",data)
+
 
   let result = await userModel.updateById(id, data);
 
@@ -979,11 +979,12 @@ router.get('/employee-asset-assign-count',[verifyToken, routeAccessChecker("empl
 //change password
 router.post("/password-change", [verifyToken,routeAccessChecker("changePassword")],
   async (req, res) => {
+    console.log("first")
       // Get User data from user table.
       let old_password = req.body.old_password;
       let new_password = req.body.new_password;
 
-      let userData = await userModel.getById(req.decoded.userInfo.id);
+      let userData = await userModel.getDataById(req.decoded.userInfo.id);
 
       if (isEmpty(userData)) {
           return res.status(400).send({
@@ -996,9 +997,10 @@ router.post("/password-change", [verifyToken,routeAccessChecker("changePassword"
 
       if (bcrypt.compareSync(old_password, userData[0].password)) {
           new_password = bcrypt.hashSync(new_password, 10); // hashing Password
+          console.log("first",new_password)
           let result = await userModel.updateById(
               req.decoded.userInfo.id,
-              new_password
+              {password:new_password}
           );
 
           if (!isEmpty(result) && result.affectedRows == 0) {
@@ -1008,13 +1010,23 @@ router.post("/password-change", [verifyToken,routeAccessChecker("changePassword"
                   message: "Password change fail! Try again",
               });
           } 
-      } else {
+      } 
+      
+      
+      else {
           return res.status(401).send({
               success: false,
               status: 402,
               message: "Old password not match.",
           });
       }
+
+
+      return res.status(200).send({
+        success: false,
+        status: 200,
+        message: "Password successfully change.",
+    });
   }
 );
 

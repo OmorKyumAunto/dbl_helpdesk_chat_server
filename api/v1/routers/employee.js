@@ -1014,7 +1014,7 @@ router.post("/password-change", [verifyToken,routeAccessChecker("changePassword"
       
       
       else {
-          return res.status(401).send({
+          return res.status(400).send({
               success: false,
               status: 400,
               message: "Old password not match.",

@@ -1182,9 +1182,11 @@ router.get('/distributed-asset', [verifyToken, routeAccessChecker("distributedAs
     let getHistory = await assetHistoryModel.getByAssetId(element)
     if(getHistory.length){
 
-      arr.push(getHistory)
-      
+      arr.push(...getHistory)
+      result[index].asset_history = arr
     }
+    
+
     
   }
   console.log("dasddsaf",arr)

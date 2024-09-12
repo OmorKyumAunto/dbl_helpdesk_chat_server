@@ -190,7 +190,6 @@ if (reqData.is_new_employee == 0  && reqData.is_assign == 1) {
   purchase_date: reqData.purchase_date,
   serial_number: reqData.serial_number,
   po_number: reqData.po_number,
-  asset_history: reqData.asset_history,
   is_assign: reqData.is_assign,
   remarks : 'assigned',
   unit_id : reqData.unit_id,

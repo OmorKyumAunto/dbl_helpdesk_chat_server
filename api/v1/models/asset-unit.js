@@ -11,6 +11,16 @@ let getList = async () => {
     });
 }
 
+let getOnlyDataList = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getOnlyDataList(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
 let getActiveList = async () => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getActiveList(), (error, result, fields) => {
@@ -138,6 +148,7 @@ module.exports = {
     getDataByWhereCondition,
     updateById,
     getDetailsByIdAndWhereIn,
-    getByTitle
+    getByTitle,
+    getOnlyDataList
 }
 

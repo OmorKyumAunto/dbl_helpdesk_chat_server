@@ -12,7 +12,7 @@ router.get('/me',[verifyToken], async (req, res) => {
  
 
   let id = req.decoded.userInfo.id
-  let data = await userModel.getUserById(id)
+  let data = await userModel.getById(id)
   
    delete data.password
 

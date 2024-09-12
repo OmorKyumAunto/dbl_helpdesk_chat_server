@@ -668,6 +668,7 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeEmployee
       updated_by: updated_by,
       updated_at: current_time
   }
+  console.log("first",data)
 
   let result = await userModel.updateById(id, data);
 
@@ -972,6 +973,50 @@ router.get('/employee-asset-assign-count',[verifyToken, routeAccessChecker("empl
       
     
 });
+
+
+
+//change password
+router.post("/password-change", [verifyToken,routeAccessChecker("changePassword")],
+  async (req, res) => {
+      // Get User data from user table.
+      let old_password = req.body.old_password;
+      let new_password = req.body.new_password;
+
+      let userData = await userModel.getById(req.decoded.userInfo.id);
+
+      if (isEmpty(userData)) {
+          return res.status(400).send({
+              success: false,
+              status: 400,
+              message: "Unauthorize Request. User not found, please login again.",
+          });
+      }
+
+
+      if (bcrypt.compareSync(old_password, userData[0].password)) {
+          new_password = bcrypt.hashSync(new_password, 10); // hashing Password
+          let result = await userModel.updateById(
+              req.decoded.userInfo.id,
+              new_password
+          );
+
+          if (!isEmpty(result) && result.affectedRows == 0) {
+              return res.status(500).send({
+                  success: false,
+                  status: 500,
+                  message: "Password change fail! Try again",
+              });
+          } 
+      } else {
+          return res.status(401).send({
+              success: false,
+              status: 402,
+              message: "Old password not match.",
+          });
+      }
+  }
+);
 
 
 module.exports = router;  

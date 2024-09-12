@@ -9,6 +9,7 @@ const assetModel = require('../models/asset');
 const assetAssignModel = require('../models/asset-assign');
 const employeeModel = require('../models/employee');
 const assetHistoryModel = require('../models/asset-history');
+const assetUnitModel = require('../models/asset-unit');
 const bcrypt = require('bcrypt');
 const userModel = require('../models/user');
 const unitModel = require('../models/asset-unit');
@@ -499,16 +500,18 @@ router.get('/list', [verifyToken, routeAccessChecker("assetList")],async (req, r
   let { offset, limit, key, unit, type } = reqData;
 
   let result = await assetModel.getList(offset, limit, key, unit, type);
+
+  for (let index = 0; index < result.length; index++) {
+    const element = result[index].unit_id;
+  
+    let getUnitname = await unitModel.getById(element);
+    if (getUnitname.length) {
+      result[index].unit_name = getUnitname[0].title;
+    } else {
+      result[index].unit_name = "";
+    }
+  }
   let totalCount = await assetModel.getTotalList(key, unit, type);
-
-  // Log the incoming request data
-  // console.log("first", reqData);
-
-  // // Determine if any filter is provided
-  // let hasFilters = key !== undefined || unit !== undefined || type !== undefined;
-
-  // // Choose the total count based on the presence of filters
-  // let test = hasFilters ? result.length : totalCount.length;
 
   return res.status(200).send({
     success: true,
@@ -526,6 +529,16 @@ router.get('/list', [verifyToken, routeAccessChecker("assetList")],async (req, r
 router.get('/all-list', [verifyToken, routeAccessChecker("assetAllList")],async (req, res) => {
 
  let result = await assetModel.getTotalList();
+ for (let index = 0; index < result.length; index++) {
+  const element = result[index].unit_id;
+
+  let getUnitname = await unitModel.getById(element);
+  if (getUnitname.length) {
+    result[index].unit_name = getUnitname[0].title;
+  } else {
+    result[index].unit_name = "";
+  }
+}
 
     return res.status(200).send({
       success: true,
@@ -1293,6 +1306,7 @@ router.get('/distributed-details/:id',[verifyToken, routeAccessChecker("distribu
 const multer = require('multer');
 const xlsx = require('xlsx');
 const path = require('path');
+const { get } = require("http");
 
 // Configure Multer for file upload
 const storage = multer.diskStorage({
@@ -1311,6 +1325,9 @@ const xlsxDateToJSDate = (serial) => {
 const epoch = new Date(Date.UTC(0, 0, serial - 1)); 
 return new Date(epoch.getTime() + epoch.getTimezoneOffset() * 60000);
 };
+
+
+
 
 router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], upload.single('file'), async (req, res) => {
 if (!req.file) {
@@ -1347,7 +1364,29 @@ try {
         };
 
      
+        let unitArr = [];
+        // get asset unit data
+        let assetUnitData = await assetUnitModel.getOnlyDataList();
+        for (let index = 0; index < assetUnitData.length; index++) {
+            const data = assetUnitData[index];
+            unitArr.push(data);  // Store the asset unit data in unitArr
+        }
+        
+        // Loop through unitArr to find the matching unit
+        for (let index = 0; index < unitArr.length; index++) {
+            const element = unitArr[index];
+            console.log("first==",element.title.toLowerCase())
+            // Check if unit_name matches the title in the assetUnitData
+            if (element.title.toLowerCase() === reqData.unit_name.toLowerCase()) {
+                reqData.unit_id = element.id;  // Assign the matched id to unit_id
 
+                
+                break;  // Exit the loop once a match is found
+            }
+        }
+        
+        // Remove unit_name from reqData since it is no longer needed
+        delete reqData.unit_name;
 
         // Save to database
         let result = await assetModel.addNew2(reqData);

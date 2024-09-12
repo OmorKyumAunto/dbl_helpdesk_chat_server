@@ -23,7 +23,7 @@ let getList = (offset, limit, key, unit, type ) => {
   }
 
   if (unit) {
-      searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit}%') `;
+      searchCondition += `AND UPPER(unit_id) LIKE UPPER('%${unit}%') `;
   }
   if (type) {
     searchCondition += `AND lower(remarks) LIKE lower('%${type}%') `;
@@ -53,47 +53,41 @@ let getTotalList = (key, unit, type) => {
 
 
 let distributedAssetList = (offset, limit, key, unit) => {
-  // Initialize searchCondition as an array to hold all conditions
   let searchCondition = [];
 
-  // Add unit search condition if unit is provided
   if (unit) {
-    searchCondition.push(`UPPER(employee_unit) LIKE UPPER('%${unit}%')`);
+    searchCondition.push(`asset_unit_id = ${unit}`);
   }
 
-  // Add key search condition if key is provided
   if (key) {
     searchCondition.push(`(LOWER(employee_id_no) LIKE LOWER('%${key}%') OR LOWER(employee_name) LIKE LOWER('%${key}%') OR LOWER(serial_number) LIKE LOWER('%${key}%'))`);
   }
 
-  // Combine the conditions with AND, and check if any conditions exist
   let whereClause = searchCondition.length ? `WHERE ${searchCondition.join(' AND ')}` : '';
 
-  // Return the final query with the search conditions applied
   return `SELECT * FROM ${table_view} ${whereClause} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
 }
 
 
 
 
+
 let distributedTotalAssetList = (key, unit, type) => {
-  // Initialize searchCondition as an array to hold all conditions
   let searchCondition = [];
 
-  // Add key search condition if key is provided
+ 
   if (key) {
     searchCondition.push(`(LOWER(employee_id_no) LIKE LOWER('%${key}%') OR LOWER(employee_name) LIKE LOWER('%${key}%') OR LOWER(serial_number) LIKE LOWER('%${key}%'))`);
   }
 
-  // Add unit search condition if unit is provided
+
   if (unit) {
-    searchCondition.push(`UPPER(employee_unit) LIKE UPPER('%${unit}%')`);
+
+    searchCondition.push(`asset_unit_id = ${unit}`);
   }
 
-  // Combine the conditions with AND, and check if any conditions exist
   let whereClause = searchCondition.length ? `WHERE ${searchCondition.join(' AND ')}` : '';
 
-  // Return the final query with the search conditions applied
   return `SELECT * FROM ${table_view} ${whereClause} ORDER BY id DESC`;
 }
 

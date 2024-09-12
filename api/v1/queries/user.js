@@ -56,7 +56,7 @@ let getEmployeeList = (offset, limit, key, unit) => {
         searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit}%') `;
     }
 
-    return `SELECT * FROM ${table_view} WHERE status = 1 ${searchCondition} ORDER BY id desc LIMIT ${limit} OFFSET ${offset}`;
+    return `SELECT * FROM ${table_view} WHERE status != 0 ${searchCondition} ORDER BY id desc LIMIT ${limit} OFFSET ${offset}`;
 }
 
 

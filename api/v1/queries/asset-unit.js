@@ -5,6 +5,10 @@ let getList = () => {
     return `SELECT * FROM ${table_name}  where status != 0 order by id desc`;
 }
 
+let getOnlyDataList = () => {
+    return `SELECT id,title FROM ${table_name}  where status != 0 `;
+}
+
 let getActiveList = () => {
     return `SELECT * FROM ${table_name}  where status = 1`;
 }
@@ -168,6 +172,7 @@ module.exports = {
     addNew,
     updateById,
     getDataByWhereCondition,
-    getDetailsByIdAndWhereIn
+    getDetailsByIdAndWhereIn,
+    getOnlyDataList
   
 }

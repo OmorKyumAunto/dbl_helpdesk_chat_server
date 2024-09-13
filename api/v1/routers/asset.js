@@ -591,63 +591,53 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
   
       } 
 
-   // get assign data
-   let assignDataByAssetId = await assetAssignModel.getById(result[0].id)
-   console.log("first,user",assignDataByAssetId)
-
-
-  //  if(assignDataByAssetId){
-  //    result[0].employee_id = assignDataByAssetId[0].employee_id,
-  //    result[0].assign_date = assignDataByAssetId[0].assign_date
-  //  }else{
-  //   result[0].employee_id = ""
-  //   result[0].assign_date =  ""
-  //  }
-
-   if(assignDataByAssetId){
-    let userData = await userModel.getDataById(assignDataByAssetId[0].user_id)
-
-
-
-
-
-      //result[0].user_id = userData[0].id
-
-      if(userData[0].role_id == 1){
-        let superData = await superAdminModel.getById(userData[0].profile_id)
-
-        result[0].employee_name = superData[0].name,
-        result[0].employee_id_no = superData[0].employee_id,
-        result[0].employee_department = superData[0].department,
-        result[0].employee_designation = superData[0].designation,
-        result[0].employee_unit = superData[0].unit_name
-      }else if(userData[0].role_id == 2){
-        let adminData = await adminData.getById(userData[0].profile_id)
-
-        result[0].employee_name = adminData[0].name,
-        result[0].employee_id_no = adminData[0].employee_id,
-        result[0].employee_department = adminData[0].department,
-        result[0].employee_designation = adminData[0].designation,
-        result[0].employee_unit = adminData[0].unit_name
-      }else if(userData[0].role_id == 3){
-        let employeeData = await employeeModel.getById(userData[0].profile_id)
-
-        result[0].employee_name = employeeData[0].name,
-        result[0].employee_id_no = employeeData[0].employee_id,
-        result[0].employee_department = employeeData[0].department,
-        result[0].employee_designation = employeeData[0].designation,
-        result[0].employee_unit = employeeData[0].unit_name
+      let assignDataByAssetId = await assetAssignModel.getById(result[0].id);
+      console.log("first, user", assignDataByAssetId);
+      
+      if (assignDataByAssetId && assignDataByAssetId.length > 0) {
+          let userData = await userModel.getDataById(assignDataByAssetId[0].user_id);
+          
+          if (userData && userData.length > 0) {
+              // Check for role_id and handle accordingly
+              if (userData[0].role_id == 1) {
+                  let superData = await superAdminModel.getById(userData[0].profile_id);
+                  if (superData && superData.length > 0) {
+                      result[0].employee_name = superData[0].name;
+                      result[0].employee_id_no = superData[0].employee_id;
+                      result[0].employee_department = superData[0].department;
+                      result[0].employee_designation = superData[0].designation;
+                      result[0].employee_unit = superData[0].unit_name;
+                  }
+              } else if (userData[0].role_id == 2) {
+                  let adminData = await adminModel.getById(userData[0].profile_id);
+                  if (adminData && adminData.length > 0) {
+                      result[0].employee_name = adminData[0].name;
+                      result[0].employee_id_no = adminData[0].employee_id;
+                      result[0].employee_department = adminData[0].department;
+                      result[0].employee_designation = adminData[0].designation;
+                      result[0].employee_unit = adminData[0].unit_name;
+                  }
+              } else if (userData[0].role_id == 3) {
+                  let employeeData = await employeeModel.getById(userData[0].profile_id);
+                  if (employeeData && employeeData.length > 0) {
+                      result[0].employee_name = employeeData[0].name;
+                      result[0].employee_id_no = employeeData[0].employee_id;
+                      result[0].employee_department = employeeData[0].department;
+                      result[0].employee_designation = employeeData[0].designation;
+                      result[0].employee_unit = employeeData[0].unit_name;
+                  }
+              }
+          }
+      } else {
+          // If no data found, set default values
+          result[0].user_id = "";
+          result[0].employee_name = "";
+          result[0].employee_id_no = "";
+          result[0].employee_department = "";
+          result[0].employee_designation = "";
+          result[0].employee_unit = "";
       }
-
-    
-   }else{
-    result[0].user_id = "",
-    result[0].employee_name = "",
-    result[0].employee_id_no = "",
-    result[0].employee_department = "",
-    result[0].employee_designation = "",
-    result[0].employee_unit = ""
-   }
+      
 
 
     let assetUnitData = await assetUnitModel.getById(result[0].unit_id)

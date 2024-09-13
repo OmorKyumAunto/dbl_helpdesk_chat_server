@@ -56,7 +56,7 @@ let distributedAssetList = (offset, limit, key, unit) => {
   let searchCondition = [];
 
   if (unit) {
-    searchCondition.push(`asset_unit_id = ${unit}`);
+    searchCondition.push(`UPPER(employee_unit_name) LIKE UPPER('%${unit}%')`);
   }
 
   if (key) {
@@ -82,8 +82,7 @@ let distributedTotalAssetList = (key, unit, type) => {
 
 
   if (unit) {
-
-    searchCondition.push(`asset_unit_id = ${unit}`);
+    searchCondition.push(`UPPER(employee_unit_name) LIKE UPPER('%${unit}%')`);
   }
 
   let whereClause = searchCondition.length ? `WHERE ${searchCondition.join(' AND ')}` : '';

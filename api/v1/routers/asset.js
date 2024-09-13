@@ -593,7 +593,7 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
    // get assign data
    let assignDataByAssetId = await assetAssignModel.getById(result[0].id)
 
-   console.log("first====",assignDataByAssetId)
+
 
   //  if(assignDataByAssetId){
   //    result[0].employee_id = assignDataByAssetId[0].employee_id,
@@ -627,7 +627,14 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
       
     }
       
-    }
+   }else{
+    result[0].user_id = "",
+      result[0].employee_name = "",
+        result[0].employee_id_no = "",
+        result[0].employee_department = "",
+        result[0].employee_designation = "",
+        result[0].employee_unit = ""
+   }
 
     let assetUnitData = await assetUnitModel.getById(result[0].unit_id)
     if(assetUnitData){

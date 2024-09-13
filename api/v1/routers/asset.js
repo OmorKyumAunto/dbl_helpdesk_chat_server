@@ -8,6 +8,7 @@ const e = require("express");
 const assetModel = require('../models/asset');
 const assetAssignModel = require('../models/asset-assign');
 const employeeModel = require('../models/employee');
+const superAdminModel = require('../models/super-admins');
 const assetHistoryModel = require('../models/asset-history');
 const assetUnitModel = require('../models/asset-unit');
 const bcrypt = require('bcrypt');
@@ -592,7 +593,7 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
 
    // get assign data
    let assignDataByAssetId = await assetAssignModel.getById(result[0].id)
-
+   console.log("first,user",assignDataByAssetId)
 
 
   //  if(assignDataByAssetId){
@@ -604,37 +605,50 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
   //  }
 
    if(assignDataByAssetId){
-  let userData = await userModel.getById(assignDataByAssetId[0].user_id)
-
-  let employeeData = await employeeModel.getById(userData[0].profile_id)
+    let userData = await userModel.getDataById(assignDataByAssetId[0].user_id)
 
 
-    if(employeeData){
-      result[0].user_id = userData[0].id,
 
-      result[0].employee_name = employeeData[0].name,
-      result[0].employee_id_no = employeeData[0].employee_id,
-      result[0].employee_department = employeeData[0].department,
-      result[0].employee_designation = employeeData[0].designation,
-      result[0].employee_unit = employeeData[0].unit_name
-    }else{
-      result[0].user_id = "",
-      result[0].employee_name = "",
-        result[0].employee_id_no = "",
-        result[0].employee_department = "",
-        result[0].employee_designation = "",
-        result[0].employee_unit = ""
-      
-    }
-      
+
+
+      //result[0].user_id = userData[0].id
+
+      if(userData[0].role_id == 1){
+        let superData = await superAdminModel.getById(userData[0].profile_id)
+
+        result[0].employee_name = superData[0].name,
+        result[0].employee_id_no = superData[0].employee_id,
+        result[0].employee_department = superData[0].department,
+        result[0].employee_designation = superData[0].designation,
+        result[0].employee_unit = superData[0].unit_name
+      }else if(userData[0].role_id == 2){
+        let adminData = await adminData.getById(userData[0].profile_id)
+
+        result[0].employee_name = adminData[0].name,
+        result[0].employee_id_no = adminData[0].employee_id,
+        result[0].employee_department = adminData[0].department,
+        result[0].employee_designation = adminData[0].designation,
+        result[0].employee_unit = adminData[0].unit_name
+      }else if(userData[0].role_id == 3){
+        let employeeData = await employeeModel.getById(userData[0].profile_id)
+
+        result[0].employee_name = employeeData[0].name,
+        result[0].employee_id_no = employeeData[0].employee_id,
+        result[0].employee_department = employeeData[0].department,
+        result[0].employee_designation = employeeData[0].designation,
+        result[0].employee_unit = employeeData[0].unit_name
+      }
+
+    
    }else{
     result[0].user_id = "",
-      result[0].employee_name = "",
-        result[0].employee_id_no = "",
-        result[0].employee_department = "",
-        result[0].employee_designation = "",
-        result[0].employee_unit = ""
+    result[0].employee_name = "",
+    result[0].employee_id_no = "",
+    result[0].employee_department = "",
+    result[0].employee_designation = "",
+    result[0].employee_unit = ""
    }
+
 
     let assetUnitData = await assetUnitModel.getById(result[0].unit_id)
     if(assetUnitData){

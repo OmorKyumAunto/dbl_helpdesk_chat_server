@@ -583,7 +583,7 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
 
    if(!isEmpty(assignDataByAssetId)){
   let userData = await userModel.getById(assignDataByAssetId[0].user_id)
-  console.log("first",userData)
+
   let employeeData = await employeeModel.getById(userData[0].profile_id)
 
 

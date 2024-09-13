@@ -23,7 +23,7 @@ let getList = (offset, limit, key, unit, type ) => {
   }
 
   if (unit) {
-      searchCondition += `AND UPPER(unit_id) LIKE UPPER('%${unit}%') `;
+    searchCondition += `AND unit_id LIKE '%${unit}%' `;
   }
   if (type) {
     searchCondition += `AND lower(remarks) LIKE lower('%${type}%') `;
@@ -42,7 +42,7 @@ let getTotalList = (key, unit, type) => {
   }
 
   if (unit) {
-      searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit}%') `;
+    searchCondition += `AND unit_id LIKE '%${unit}%' `;
   }
   if (type) {
     searchCondition += `AND lower(remarks) LIKE lower('%${type}%') `;

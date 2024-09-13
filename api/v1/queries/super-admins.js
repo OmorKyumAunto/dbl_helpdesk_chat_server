@@ -17,11 +17,14 @@ let getUserInfo = () => {
 let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ? and status = 1 `;
 }
-
+const updateById = () => {
+    return `UPDATE ${table_name} SET ? WHERE id = ?`;
+}
 module.exports = {
     
     getUserByEmail,
     addNew,
     getUserInfo,
-    getById
+    getById,
+    updateById
 }

@@ -10,6 +10,7 @@ const userModel = require('../models/user');
 const adminModel = require('../models/admins ');
 const assetModel = require('../models/asset');
 const assetAssignModel = require('../models/asset-assign');
+const superModel = require('../models/super-admins');
 const { routeAccessChecker } = require("../middlewares/routeAccess");
 
 const multer = require('multer');
@@ -610,11 +611,24 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
   if (willWeUpdate == 1) {
 
     //console.log("first====",existingDataById[0].profile_id)
+    let result 
+    let updateUser
+    if(existingDataById[0].role_id == 1){
+     result = await superModel.updateById(existingDataById[0].profile_id,updateData);
 
+      updateUser = await userModel.updateByEmployeeUser(id,userUpdateData);
+    }
+    else if(existingDataById[0].role_id == 2){
+       result = await adminModel.updateById(existingDataById[0].profile_id,updateData);
 
-    let result = await employeeModel.updateById(existingDataById[0].profile_id,updateData);
+       updateUser = await userModel.updateByEmployeeUser(id,userUpdateData);
+    }
+    else if(existingDataById[0].role_id == 3){
+       result = await employeeModel.updateById(existingDataById[0].profile_id,updateData);
 
-   let updateUser = await userModel.updateByEmployeeUser(id,userUpdateData);
+       updateUser = await userModel.updateByEmployeeUser(id,userUpdateData);
+    }
+ 
   
   
     if (updateUser.affectedRows == undefined || updateUser.affectedRows < 1) {

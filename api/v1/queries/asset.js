@@ -52,12 +52,17 @@ let getTotalList = (key, unit, type) => {
 }
 
 
-let distributedAssetList = (offset, limit, key, unit) => {
+let distributedAssetList = (offset, limit, key, unit,type) => {
   let searchCondition = [];
 
   if (unit) {
     searchCondition.push(`UPPER(employee_unit_name) LIKE UPPER('%${unit}%')`);
   }
+
+  if (type) {
+    searchCondition.push(`UPPER(category) LIKE UPPER('%${type}%')`);
+  }
+  
 
   if (key) {
     searchCondition.push(`(LOWER(employee_id_no) LIKE LOWER('%${key}%') OR LOWER(employee_name) LIKE LOWER('%${key}%') OR LOWER(serial_number) LIKE LOWER('%${key}%'))`);
@@ -80,7 +85,10 @@ let distributedTotalAssetList = (key, unit, type) => {
     searchCondition.push(`(LOWER(employee_id_no) LIKE LOWER('%${key}%') OR LOWER(employee_name) LIKE LOWER('%${key}%') OR LOWER(serial_number) LIKE LOWER('%${key}%'))`);
   }
 
-
+  if (type) {
+    searchCondition.push(`UPPER(category) LIKE UPPER('%${type}%')`);
+  }
+  
   if (unit) {
     searchCondition.push(`UPPER(employee_unit_name) LIKE UPPER('%${unit}%')`);
   }

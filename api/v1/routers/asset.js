@@ -1372,7 +1372,6 @@ try {
             purchase_date: purchase_date,
             serial_number: row['Serial number'],
             po_number: row['PO number'],
-            asset_history: row['Asset history'],
             model: row['Model'],
             specification: row['Specification'],
             unit_name: row['Unit name']
@@ -1390,7 +1389,6 @@ try {
         // Loop through unitArr to find the matching unit
         for (let index = 0; index < unitArr.length; index++) {
             const element = unitArr[index];
-            console.log("first==",element.title.toLowerCase())
             // Check if unit_name matches the title in the assetUnitData
             if (element.title.toLowerCase() === reqData.unit_name.toLowerCase()) {
                 reqData.unit_id = element.id;  // Assign the matched id to unit_id

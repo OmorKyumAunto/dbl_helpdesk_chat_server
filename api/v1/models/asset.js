@@ -139,6 +139,17 @@ let getById = async (id = 0) => {
     });
 }
 
+let getDuplicateSerialNumber = async (serial_number = 0) => {
+  return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getDuplicateSerialNumber(), [serial_number], (error, result, fields) => {
+          if (error) reject(error)
+          else resolve(result)
+      });
+  });
+}
+
+
+
 let getByEmployeeId = async (id = 0) => {
   return new Promise((resolve, reject) => {
       connectionDblystem.query(queries.getByEmployeeId(), [id], (error, result, fields) => {
@@ -423,7 +434,8 @@ module.exports = {
    printerCountData,
    desktopCountData,
    accessoriesCountData,
-   getAssetList
+   getAssetList,
+   getDuplicateSerialNumber
    
    
   

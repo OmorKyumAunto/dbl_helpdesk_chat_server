@@ -251,6 +251,23 @@ let data2 = {
 
 let result = await assetModel.addNew2(data2);
 
+// let getList = await assetModel.getLastData()
+
+// let getDuplicate
+// for (let index = 0; index < getList.length; index++) {
+//   const element = getList[index].serial_number;
+//    let checkDuplicate = await assetModel.getDuplicateSerialNumber(element)
+
+//    if(reqData.serial_number === checkDuplicate){
+//     getDuplicate = reqData.serial_number
+
+//     console.log("first",getDuplicate)
+//    }
+// }
+
+
+
+
 if (result.affectedRows == undefined || result.affectedRows < 1) {
   return res.status(500).send({
       "success": true,
@@ -476,10 +493,13 @@ if (reqData.is_new_employee === 1 && reqData.is_assign === 1) {
 
 
 }
+
+
   return res.status(201).send({
       "success": true,
       "status": 201,
-      "message": "Asset added Successfully."
+      "message": "Asset added Successfully.",
+      // "duplicate_message":`This Asset serial number ${getDuplicate}  already exists`
   });
  
 });
@@ -573,15 +593,17 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
    // get assign data
    let assignDataByAssetId = await assetAssignModel.getById(result[0].id)
 
-   if(!isEmpty(assignDataByAssetId)){
-     result[0].employee_id = assignDataByAssetId[0].employee_id,
-     result[0].assign_date = assignDataByAssetId[0].assign_date
-   }else{
-    result[0].employee_id = ""
-    result[0].assign_date =  ""
-   }
+   console.log("first====",assignDataByAssetId)
 
-   if(!isEmpty(assignDataByAssetId)){
+  //  if(assignDataByAssetId){
+  //    result[0].employee_id = assignDataByAssetId[0].employee_id,
+  //    result[0].assign_date = assignDataByAssetId[0].assign_date
+  //  }else{
+  //   result[0].employee_id = ""
+  //   result[0].assign_date =  ""
+  //  }
+
+   if(assignDataByAssetId){
   let userData = await userModel.getById(assignDataByAssetId[0].user_id)
 
   let employeeData = await employeeModel.getById(userData[0].profile_id)

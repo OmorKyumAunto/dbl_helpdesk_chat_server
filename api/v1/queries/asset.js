@@ -103,6 +103,12 @@ let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ? and status = 1 `;
 }
 
+let getDuplicateSerialNumber = () => {
+  return `SELECT * FROM ${table_name} where  serial_number = ? and status = 1 `;
+}
+
+
+
 let getByEmployeeId = () => {
   return `SELECT * FROM ${table_view} where  id = ? and status = 1 `;
 }
@@ -124,7 +130,7 @@ let getListOfDashboard = () => {
 };
   
 let getListOfDashboard2 = () => {
-    return `SELECT count(id) as total_laptop FROM dbl_employee WHERE status = 1`; 
+    return `SELECT count(id) as total_employee FROM dbl_users WHERE status = 1`; 
 };
 
 let getListOfDashboard3 = () => {
@@ -227,7 +233,8 @@ module.exports = {
     printerCountData,
     desktopCountData,
     accessoriesCountData,
-    getAssetList
+    getAssetList,
+    getDuplicateSerialNumber
 
 
 }

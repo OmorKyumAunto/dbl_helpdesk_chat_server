@@ -10,13 +10,16 @@ let superAdminPermission = [
 ];
 
 let adminPermission = [
-   
-'employeeList','employeeAdd','employeeAllList','employeeDatails','employeeDetails','employeeUpdate','assignEmployee','changeEmployeeStatus',
 
+
+'employeeList','employeeAdd','employeeAllList','employeeDatails','employeeDetails','employeeDelete','employeeUpdate',"assignAdmin",'changeEmployeeStatus',
+"assetUnitList","assetUnitActiveList","assetUnitListLimit","assetUnitAdd","assetUnitUpdate","changeAssetUnitStatus",'assetUnitDelete',
+"assignEmployee",
+"adminList",
 "dashboardData","dashboardGraphData",
-"addAsset","assetList","assetAllList","assetUpdate","assetDelete","uploadAsset","updateAsset",
-"distributedAsset","allDistributedAsset","distributedDetails","assetUnitActiveList","assetUnitList","assetUnitActiveList",
-"changePassword","employeeDashboard",
+"addAsset","assetList","assetAllList","assetUpdate","assetDelete","uploadAsset","updateAsset","assetUnitActiveList",
+"distributedAsset","allDistributedAsset","distributedDetails",
+"changePassword","employeeDashboard","assetUnitActiveList",
 ];
 
 let employeePermission = [

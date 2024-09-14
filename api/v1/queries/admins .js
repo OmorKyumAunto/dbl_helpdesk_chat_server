@@ -1,5 +1,5 @@
 let table_name = "dbl_admins";
-
+let table_view = "users_view"
 
 let getUserByEmail = () => {
     return `SELECT * FROM ${table_name} where  email = ? and status = 1 `;
@@ -10,7 +10,7 @@ let addNew = () => {
 }
 
 let getList = () => {
-    return `SELECT *  FROM  ${table_name} WHERE status != 0 order by id desc`;
+    return `SELECT *  FROM  ${table_view} WHERE status != 0 order by id desc`;
 }
 
 let getUserInfo = () => {

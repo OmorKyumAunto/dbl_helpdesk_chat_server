@@ -277,7 +277,7 @@ if(isEmpty(reqData.email)){
 
     }  
 
-
+console.log("first=========",employeeData)
     let result = await employeeModel.addNew(employeeData);
 
     let employeeId = await employeeModel.getDataByEmployeeId(reqData.employee_id)
@@ -322,15 +322,15 @@ router.get('/list',[verifyToken, routeAccessChecker("employeeList")],async (req,
     "limit": req.query.limit || 50,
     "offset": req.query.offset || 0,
     "key": req.query.key,
-    "unit": req.query.unit,
+    "unit_name": req.query.unit_name,
 }
- let { offset, limit , key, unit}  = reqData;
+ let { offset, limit , key, unit_name}  = reqData;
 
 
 
-    let result = await userModel.getEmployeeList(offset, limit, key, unit);
+    let result = await userModel.getEmployeeList(offset, limit, key, unit_name);
 
-    let countResult = await userModel.getTotalEmployeeList(key, unit);
+    let countResult = await userModel.getTotalEmployeeList(key, unit_name);
 
     return res.status(200).send({
       success: true,

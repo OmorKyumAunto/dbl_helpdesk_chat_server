@@ -209,6 +209,17 @@ let getArtistListByAlbumId = async (artist_id = 0) => {
 }
 
 
+
+let employeeAssignCount = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.employeeAssignCount(), [id], (error, result, fields) => {
+            if (error) reject(error);
+            else resolve(result);
+        });
+    });
+}
+ 
+
 module.exports = {
    addNew,
    getByExistsEmployee,
@@ -219,7 +230,8 @@ module.exports = {
    updateByAlbum,
    getArtistListByAlbumId,
    deleteAssetById,
-   totalAssignAssetCount
+   totalAssignAssetCount,
+   employeeAssignCount
    
   
 }

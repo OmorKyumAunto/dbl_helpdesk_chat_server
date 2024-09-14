@@ -6,8 +6,10 @@ const moment = require("moment");
 const e = require("express");
 const employeeModel = require('../models/employee');
 const assetModel = require('../models/asset');
+const assignModel = require('../models/asset-assign');
 const verifyToken = require('../middlewares/verifyToken')
 const { routeAccessChecker } = require("../middlewares/routeAccess");
+const { distributedAssetList } = require("../queries/asset");
 
 // list
 router.get('/dashboard-data',[verifyToken,routeAccessChecker("dashboardData")], async (req, res) => {
@@ -99,6 +101,28 @@ router.get('/accessories-count', async (req, res) => {
       success: false,
       status: 200,
       message: "Dashboard Accssories Count data.",
+      data: result
+    });
+  
+});
+
+
+router.get('/employee-data-count',[verifyToken,routeAccessChecker("employeeDashboard")], async (req, res) => {
+
+  let id = req.decoded.userInfo.id
+
+  let total_asset = await assetModel.totalAssetCount()
+  let asset_assign = await assignModel.employeeAssignCount(id)
+
+  let result = {
+    total_asset_count : total_asset[0].total_asset,
+    total_assign_count : asset_assign[0].total_assign,
+  }
+
+    return res.status(200).send({
+      success: false,
+      status: 200,
+      message: "Dashboard employee Count data.",
       data: result
     });
   

@@ -22,7 +22,7 @@ let getById = () => {
 }
 
 let getByAssetId = () => {
-    return `SELECT * FROM ${table_name} where  asset_id = ? and status = 1 `;
+    return `SELECT id,history,status FROM ${table_name} where  asset_id = ? `;
 }
 
 const updateById = () => {

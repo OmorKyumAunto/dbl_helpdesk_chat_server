@@ -102,9 +102,9 @@ let updateById = async (id = 0, data = {}) => {
 }
 
 
-let getEmployeeList = async (offset, limit, key,unit,type) => {
+let getEmployeeList = async (offset, limit, key,unit_name) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getEmployeeList(offset, limit, key,unit), (error, result, fields) => {
+      connectionDblystem.query(queries.getEmployeeList(offset, limit, key,unit_name), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });

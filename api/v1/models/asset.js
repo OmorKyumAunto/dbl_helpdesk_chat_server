@@ -87,6 +87,16 @@ let getList = async (offset, limit, key,unit,type) => {
       });
     });
   }
+
+  
+  let totalAssetCount = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.totalAssetCount(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
   
 
 
@@ -409,6 +419,16 @@ let accessoriesCountData = async () => {
 }
 
 
+// get distributed asset id by data
+let getDistributedData = async (id = 0) => {
+  return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getDistributedData(), [id], (error, result, fields) => {
+          if (error) reject(error)
+          else resolve(result)
+      });
+  });
+}
+
 module.exports = {
    addNew,
    getByExistsEmployee,
@@ -435,7 +455,9 @@ module.exports = {
    desktopCountData,
    accessoriesCountData,
    getAssetList,
-   getDuplicateSerialNumber
+   getDuplicateSerialNumber,
+   totalAssetCount,
+   getDistributedData
    
    
   

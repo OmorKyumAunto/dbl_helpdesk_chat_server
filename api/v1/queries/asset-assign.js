@@ -47,6 +47,9 @@ let totalAssignAssetCount = () => {
 }
 
 
+let employeeAssignCount = () => {
+    return  `SELECT count(id) as total_assign FROM ${table_name} where  user_id = ? `;
+}
 module.exports = {
     addNew,
     getByEmployee,
@@ -56,6 +59,7 @@ module.exports = {
     updateByAlbum,
     getArtistListByAlbumId,
     deleteAssetById,
-    totalAssignAssetCount
+    totalAssignAssetCount,
+    employeeAssignCount
 
 }

@@ -217,6 +217,16 @@ let getAssetList = () => {
 }
 
 
+let totalAssetCount = () => {
+  return `select count(id) as total_asset from ${table_name} where status = 1`;
+}
+
+
+
+let getDistributedData = () => {
+  return `SELECT * FROM ${table_view} where  id = ? and status = 1`;
+}
+
 module.exports = {
     addNew,
     getByEmployee,
@@ -241,7 +251,9 @@ module.exports = {
     desktopCountData,
     accessoriesCountData,
     getAssetList,
-    getDuplicateSerialNumber
+    getDuplicateSerialNumber,
+    totalAssetCount,
+    getDistributedData
 
 
 }

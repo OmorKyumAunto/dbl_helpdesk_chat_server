@@ -1209,19 +1209,7 @@ router.get('/distributed-asset', [verifyToken, routeAccessChecker("distributedAs
   let result = await assetModel.distributedAssetList(offset, limit, key, unit,type);
   let totalResult = await assetModel.distributedAssetTotalList(key, unit,type);
 
-  for (let index = 0; index < result.length; index++) {
-    const element = result[index].id;
 
-    let getHistory = await assetHistoryModel.getByAssetId(element)
-    if(getHistory.length){
-
-      arr.push(...getHistory)
-      result[index].asset_history = arr
-    }
-    
-
-    
-  }
   console.log("dasddsaf",arr)
   return res.status(200).send({
     success: true,
@@ -1294,7 +1282,7 @@ router.get('/distributed-details/:id',[verifyToken, routeAccessChecker("distribu
     let id = req.params.id
 
     // get id wise data form db 
-    let result = await assetModel.getByIdAssign(id);;
+    let result = await assetModel.getDistributedData(id);
 
      // check this id already existing in database or not
      if (isEmpty(result)) {
@@ -1306,37 +1294,18 @@ router.get('/distributed-details/:id',[verifyToken, routeAccessChecker("distribu
   
       } 
 
-   // get assign data
-   let assignDataByAssetId = await assetAssignModel.getById(result[0].id)
-   if(!isEmpty(assignDataByAssetId)){
-     result[0].employee_id = assignDataByAssetId[0].employee_id,
-     result[0].assign_date = assignDataByAssetId[0].assign_date
-   }else{
-    result[0].employee_id = ""
-    result[0].assign_date =  ""
-   }
+      let getHistory = await assetHistoryModel.getByAssetId(id)
 
-   if(!isEmpty(assignDataByAssetId)){
-  let employeeData = await employeeModel.getById(assignDataByAssetId[0].employee_id)
+      let arr = []
+      for (let index = 0; index < getHistory.length; index++) {
+        const element = getHistory[index];
 
-
-    if(!isEmpty(employeeData)){
-      result[0].employee_name = employeeData[0].name,
-      result[0].employee_id_no = employeeData[0].employee_id,
-      result[0].employee_department = employeeData[0].department,
-      result[0].employee_designation = employeeData[0].designation,
-      result[0].employee_unit = employeeData[0].unit_name
-    }else{
-      result[0].employee_name = "",
-        result[0].employee_id_no = "",
-        result[0].employee_department = "",
-        result[0].employee_designation = "",
-        result[0].employee_unit = ""
+        console.log("firs===t",element)
+        arr.push(element)
+        
+      }
+      result[0].history = arr
       
-    }
-      
-    }
-
 
   return res.status(200).send({
       success: true,

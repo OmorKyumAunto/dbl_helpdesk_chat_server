@@ -77,5 +77,6 @@ module.exports = {
     getById,
     updateById,
     getList,
-    getByIdForDeleted
+    getByIdForDeleted,
+    getById
 }

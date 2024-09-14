@@ -24,7 +24,7 @@ let getById = () => {
     return `SELECT  * FROM ${table_view} where  id = ?  and status = 1 `;
 }
 let getDataById = () => {
-    return `SELECT  *FROM ${table_name} where  id = ?  and status != 0 `;
+    return `SELECT  *FROM ${table_name} where  id = ?  and status = 1 `;
 }
 
 

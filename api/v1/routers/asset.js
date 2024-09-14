@@ -9,6 +9,7 @@ const assetModel = require('../models/asset');
 const assetAssignModel = require('../models/asset-assign');
 const employeeModel = require('../models/employee');
 const superAdminModel = require('../models/super-admins');
+const adminModel = require('../models/admins ');
 const assetHistoryModel = require('../models/asset-history');
 const assetUnitModel = require('../models/asset-unit');
 const bcrypt = require('bcrypt');

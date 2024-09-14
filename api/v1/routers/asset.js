@@ -1135,66 +1135,6 @@ return res.status(201).send({
 
 
 
-//distributed asset list
-// router.get('/distributed-asset', [verifyToken, routeAccessChecker("distributedAsset")], async (req, res) => {
-//   let reqData = {
-//     "limit": req.query.limit || 50,
-//     "offset": req.query.offset || 0,
-//     "key": req.query.key,
-//     "unit": req.query.unit,
-//     "type": req.query.type,
-// }
-//  let { offset, limit , key,unit ,type} = reqData;
-
-//   let result = await assetModel.distributedAssetList(offset, limit, key, unit,type);
-//   let totalResult = await assetModel.distributedAssetTotalList(key, unit,type);
-
-//   for (let i = 0; i < result.length; i++) {
-//     const resultId = result[i].id;
-
-//     // Get assign data
-//     let assignDataByAssetId = await assetAssignModel.getById(resultId);
-
-//     if (!isEmpty(assignDataByAssetId)) {
-//       result[i].employee_id = assignDataByAssetId[0].employee_id;
-//       result[i].assign_date = assignDataByAssetId[0].assign_date;
-
-//       // Get employee data based on the employee_id from assignDataByAssetId
-//       let employeeData = await employeeModel.getById(assignDataByAssetId[0].employee_id);
-
-//       if (!isEmpty(employeeData)) {
-//         result[i].employee_name = employeeData[0].name;
-//         result[i].employee_id_no = employeeData[0].employee_id;
-//         result[i].employee_department = employeeData[0].department;
-//         result[i].employee_designation = employeeData[0].designation;
-//         result[i].employee_unit = employeeData[0].unit_name;
-//       } else {
-//         result[i].employee_name = "";
-//         result[i].employee_id_no = "";
-//         result[i].employee_department = "";
-//         result[i].employee_designation = "";
-//         result[i].employee_unit = "";
-//       }
-//     } else {
-//       result[i].employee_id = "";
-//       result[i].assign_date = "";
-//       result[i].employee_name = "";
-//       result[i].employee_id_no = "";
-//       result[i].employee_department = "";
-//       result[i].employee_designation = "";
-//       result[i].employee_unit = "";
-//     }
-//   }
-
-//   return res.status(200).send({
-//     success: true,
-//     status: 200,
-//     message: "Distributed asset list.",
-//     total : totalResult.length,
-//     data: result,
-//   });
-// });
-
 router.get('/distributed-asset', [verifyToken, routeAccessChecker("distributedAsset")], async (req, res) => {
   let reqData = {
     "limit": req.query.limit || 50,
@@ -1205,12 +1145,10 @@ router.get('/distributed-asset', [verifyToken, routeAccessChecker("distributedAs
 }
  let { offset, limit , key,unit ,type} = reqData;
 
- let arr = []
   let result = await assetModel.distributedAssetList(offset, limit, key, unit,type);
   let totalResult = await assetModel.distributedAssetTotalList(key, unit,type);
 
 
-  console.log("dasddsaf",arr)
   return res.status(200).send({
     success: true,
     status: 200,
@@ -1299,8 +1237,6 @@ router.get('/distributed-details/:id',[verifyToken, routeAccessChecker("distribu
       let arr = []
       for (let index = 0; index < getHistory.length; index++) {
         const element = getHistory[index];
-
-        console.log("firs===t",element)
         arr.push(element)
         
       }

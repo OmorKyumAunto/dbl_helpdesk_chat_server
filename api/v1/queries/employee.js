@@ -8,7 +8,7 @@ let addNew = () => {
 }
 
 let getByEmployee = () => {
-    return `SELECT * FROM ${table_name} where employee_id = ? and status != 0`;
+    return `SELECT * FROM ${table_name} where employee_id = ? and status = 1`;
 }
 
 

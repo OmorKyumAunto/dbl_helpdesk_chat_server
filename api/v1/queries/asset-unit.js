@@ -2,11 +2,11 @@ const isEmpty = require("is-empty");
 let table_name = "dbl_asset_unit";
 
 let getList = () => {
-    return `SELECT * FROM ${table_name}  where status != 0 order by id desc`;
+    return `SELECT * FROM ${table_name}  where status = 1 order by id desc`;
 }
 
 let getOnlyDataList = () => {
-    return `SELECT id,title FROM ${table_name}  where status != 0 `;
+    return `SELECT id,title FROM ${table_name}  where status = 1 `;
 }
 
 let getActiveList = () => {
@@ -14,11 +14,11 @@ let getActiveList = () => {
 }
 
 let getByTitle = () => {
-    return `SELECT * FROM ${table_name} where  title = ? and status != 0`;
+    return `SELECT * FROM ${table_name} where  title = ? and status = 1`;
 }
 
 let getById = () => {
-    return `SELECT * FROM ${table_name} where  id = ? and status != 0`;
+    return `SELECT * FROM ${table_name} where  id = ? and status = 1`;
 }
 
 let addNew = () => {

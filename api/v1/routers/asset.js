@@ -664,7 +664,7 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
 
 
 //delete
-router.delete('/delete/:id',[verifyToken, routeAccessChecker("assetDelete")],async (req, res) => {
+router.delete('/delete/:id',[verifyToken, routeAccessChecker("assetUpdate")],async (req, res) => {
 
     let id = req.params.id
   

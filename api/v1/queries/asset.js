@@ -213,7 +213,7 @@ let accessoriesCountData = () => {
 
 
 let getAssetList = () => {
-  return `select * from ${table_name} where status = 1 order by id desc`;
+  return `select * from ${table_name} where status != 0 order by id desc`;
 }
 
 

@@ -10,11 +10,11 @@ let addNew = () => {
 }
 
 let getList = () => {
-    return `SELECT *  FROM  ${table_name} WHERE status = 1 order by id desc`;
+    return `SELECT *  FROM  ${table_name} WHERE status != 0 order by id desc`;
 }
 
 let getUserInfo = () => {
-    return `SELECT * FROM ${table_name} where  email = ? and password = ? and status = 1 `;
+    return `SELECT * FROM ${table_name} where  email = ? and password = ? and status != 0 `;
 }
 
 let getById = () => {

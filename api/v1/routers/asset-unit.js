@@ -21,6 +21,21 @@ router.get('/list', [verifyToken, routeAccessChecker("assetUnitList")], async (r
     });
 });
 
+
+router.get('/active-list', [verifyToken, routeAccessChecker("assetUnitActiveList")], async (req, res) => {
+
+    let result = await assetUnitModel.getActiveList();
+
+    return res.status(200).send({
+        "success": true,
+        "status": 200,
+        "message": "Asset Unit List.",
+        "count": result.length,
+        "data": result
+    });
+});
+
+
 router.get('/activeList', [verifyToken, routeAccessChecker("assetUnitActiveList")], async (req, res) => {
 
     let result = await assetUnitModel.getActiveList();

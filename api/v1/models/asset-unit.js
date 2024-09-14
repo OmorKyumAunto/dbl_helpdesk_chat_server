@@ -11,6 +11,8 @@ let getList = async () => {
     });
 }
 
+
+
 let getOnlyDataList = async () => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getOnlyDataList(), (error, result, fields) => {

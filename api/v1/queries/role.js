@@ -12,7 +12,7 @@ let getByEmployee = () => {
 
 
 let getList = () => {
-    return `SELECT * FROM ${table_name} WHERE status = 1 `;
+    return `SELECT * FROM ${table_name} WHERE status != 0 `;
   }
   
 

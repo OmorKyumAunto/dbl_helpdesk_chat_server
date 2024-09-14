@@ -51,9 +51,9 @@ let getUserByEmployeeId = async (employee_id = 0) => {
     });
 }
 
-let getById = async (employee_id = 0) => {
+let getById = async (id = 0) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getById(), [employee_id], (error, result, fields) => {
+        connectionDblystem.query(queries.getById(), [id], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });

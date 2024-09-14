@@ -1215,7 +1215,7 @@ router.get('/all-distributed-asset', [verifyToken, routeAccessChecker("allDistri
 
 
 //details
-router.get('/distributed-details/:id',[verifyToken, routeAccessChecker("distributedDetails")],
+router.get('/distributed-details/:id',[verifyToken, routeAccessChecker("distributedDetail")],
   async (req, res) => {
     
     let id = req.params.id

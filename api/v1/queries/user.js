@@ -58,7 +58,7 @@ let getEmployeeList = (offset, limit, key, unit_name) => {
     }
 
 
-    return `SELECT * FROM ${table_view} WHERE status != 0 ${searchCondition} ORDER BY id desc LIMIT ${limit} OFFSET ${offset}`;
+    return `SELECT * FROM ${table_view} WHERE profile_id = 2 and status != 0 ${searchCondition} ORDER BY id desc LIMIT ${limit} OFFSET ${offset}`;
 }
 
 
@@ -74,7 +74,7 @@ let getTotalEmployeeList = (key, unit_name) => {
     }
 
    
-    return `SELECT * FROM ${table_view} WHERE status = 1 ${searchCondition} ORDER BY id desc`;
+    return `SELECT * FROM ${table_view} WHERE  profile_id = 2 and  status = 1 ${searchCondition} ORDER BY id desc`;
 }
 
 

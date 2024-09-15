@@ -26,7 +26,7 @@ let getByAssetId = () => {
 }
 
 const updateById = () => {
-    return `UPDATE ${table_name} SET ? WHERE id = ?`;
+    return `UPDATE ${table_name} SET ? WHERE asset_id = ?`;
 }
 
 

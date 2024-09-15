@@ -593,7 +593,6 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
       } 
 
       let assignDataByAssetId = await assetAssignModel.getById(result[0].id);
-      console.log("first, user", assignDataByAssetId);
       
       if (assignDataByAssetId && assignDataByAssetId.length > 0) {
           let userData = await userModel.getDataById(assignDataByAssetId[0].user_id);
@@ -603,29 +602,36 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
               if (userData[0].role_id == 1) {
                   let superData = await superAdminModel.getById(userData[0].profile_id);
                   if (superData && superData.length > 0) {
+
+                      result[0].user_id = assignDataByAssetId[0].user_id;
                       result[0].employee_name = superData[0].name;
                       result[0].employee_id_no = superData[0].employee_id;
                       result[0].employee_department = superData[0].department;
                       result[0].employee_designation = superData[0].designation;
                       result[0].employee_unit = superData[0].unit_name;
+                      result[0].assign_date = assignDataByAssetId[0].assign_date;
                   }
               } else if (userData[0].role_id == 2) {
                   let adminData = await adminModel.getById(userData[0].profile_id);
                   if (adminData && adminData.length > 0) {
+                      result[0].user_id = assignDataByAssetId[0].user_id;
                       result[0].employee_name = adminData[0].name;
                       result[0].employee_id_no = adminData[0].employee_id;
                       result[0].employee_department = adminData[0].department;
                       result[0].employee_designation = adminData[0].designation;
                       result[0].employee_unit = adminData[0].unit_name;
+                      result[0].assign_date = assignDataByAssetId[0].assign_date;
                   }
               } else if (userData[0].role_id == 3) {
                   let employeeData = await employeeModel.getById(userData[0].profile_id);
                   if (employeeData && employeeData.length > 0) {
+                      result[0].user_id = assignDataByAssetId[0].user_id;
                       result[0].employee_name = employeeData[0].name;
                       result[0].employee_id_no = employeeData[0].employee_id;
                       result[0].employee_department = employeeData[0].department;
                       result[0].employee_designation = employeeData[0].designation;
                       result[0].employee_unit = employeeData[0].unit_name;
+                      result[0].assign_date = assignDataByAssetId[0].assign_date;
                   }
               }
           }
@@ -649,7 +655,15 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
     }
     
 
+    let getHistory = await assetHistoryModel.getByAssetId(id)
 
+    let arr = []
+    for (let index = 0; index < getHistory.length; index++) {
+      const element = getHistory[index];
+      arr.push(element)
+      
+    }
+    result[0].history = arr
 
   return res.status(200).send({
       success: true,
@@ -884,7 +898,7 @@ if(reqData.assign_update == 1){
         status : 0
         }
   
-        console.log("first")
+
       let result2 = await assetAssignModel.updateById(id,updateEmployeeData);
 
       let createNew = await assetAssignModel.addNew(updateEmployeeDataCreate);
@@ -892,9 +906,10 @@ if(reqData.assign_update == 1){
 
       // get history id
       let assetHistoryData = await assetHistoryModel.getByAssetId(id)
-      console.log("first====",assetHistoryData)
+
       let userData = await userModel.getById(reqData.user_id)
 
+      
       let assetHistoryUpdate = {
         asset_id : id,
         status : 0,
@@ -908,7 +923,7 @@ if(reqData.assign_update == 1){
 
       
 
-      let historyUpdate = await assetHistoryModel.updateById(assetHistoryData[0].id,assetHistoryUpdate);
+      let historyUpdate = await assetHistoryModel.updateById(id,assetHistoryUpdate);
       let historyCreate = await assetHistoryModel.addNew(assetHistoryCreate);
 
 

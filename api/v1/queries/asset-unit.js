@@ -1,16 +1,30 @@
 const isEmpty = require("is-empty");
 let table_name = "dbl_asset_unit";
 
-let getList = () => {
-    return `SELECT * FROM ${table_name}  where status != 0 order by id desc`;
+let getList = (status) => {
+    console.log("first", status);
+    let searchCondition = "status != 'delete'"; // Exclude 'delete' status by default
+
+    if (status === 'active') {
+        searchCondition += " AND status = 'active'";
+    } else if (status === '') {
+        searchCondition += " AND status = ''";
+    }
+
+    return `SELECT * FROM ${table_name} WHERE ${searchCondition} ORDER BY id DESC`;
 }
+
+
+
+
+
 
 let getOnlyDataList = () => {
     return `SELECT id,title FROM ${table_name}  where status = 1 `;
 }
 
 let getActiveList = () => {
-    return `SELECT * FROM ${table_name}  where status = 1`;
+    return `SELECT * FROM ${table_name}  where status = 'active'`;
 }
 
 let getByTitle = () => {
@@ -18,7 +32,7 @@ let getByTitle = () => {
 }
 
 let getById = () => {
-    return `SELECT * FROM ${table_name} where  id = ? and status != 0`;
+    return `SELECT * FROM ${table_name} where  id = ? and status IN ('active', 'inactive') `;
 }
 
 let addNew = () => {

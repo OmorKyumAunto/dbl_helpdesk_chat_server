@@ -343,6 +343,8 @@ router.get('/list',[verifyToken, routeAccessChecker("employeeList")],async (req,
 });
 
 
+
+
 // list
 router.get('/all-list',[verifyToken, routeAccessChecker("employeeAllList")],async (req, res) => {
 
@@ -936,7 +938,7 @@ router.get('/employee-asset-assign-list', [verifyToken, routeAccessChecker("empl
     return res.status(404).send({
       "success": false,
       "status": 404,
-      "message": "Employee Wise asset List.",
+      "message": "Not found.",
     })
   }
 

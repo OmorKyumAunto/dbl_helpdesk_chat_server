@@ -117,7 +117,7 @@ let getDuplicateSerialNumber = () => {
 
 
 let getByEmployeeId = () => {
-  return `SELECT * FROM ${table_view} where  id = ? and status = 1 `;
+  return `SELECT * FROM ${table_view} where  employee_id = ? and status = 1 `;
 }
 
 
@@ -227,6 +227,13 @@ let getDistributedData = () => {
   return `SELECT * FROM ${table_view} where  id = ? and status = 1`;
 }
 
+
+
+let alreadyAssignUnit = () => {
+  return `SELECT * FROM ${table_name} where  unit_id = ? and status = 1 `;
+}
+
+
 module.exports = {
     addNew,
     getByEmployee,
@@ -253,7 +260,8 @@ module.exports = {
     getAssetList,
     getDuplicateSerialNumber,
     totalAssetCount,
-    getDistributedData
+    getDistributedData,
+    alreadyAssignUnit
 
 
 }

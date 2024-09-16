@@ -1,8 +1,8 @@
 const express = require("express");
 const isEmpty = require("is-empty");
 const router = express.Router();
-const commonObject = require('../common/common');
 const assetUnitModel = require('../models/asset-unit');
+const assetModel = require('../models/asset');
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const moment = require("moment");
@@ -10,7 +10,9 @@ require('dotenv').config();
 
 router.get('/list', [verifyToken, routeAccessChecker("assetUnitList")], async (req, res) => {
 
-    let result = await assetUnitModel.getList();
+    const status = req.query.status
+
+    let result = await assetUnitModel.getList(status);
 
     return res.status(200).send({
         "success": true,
@@ -30,20 +32,6 @@ router.get('/active-list', [verifyToken, routeAccessChecker("assetUnitActiveList
         "success": true,
         "status": 200,
         "message": "Asset Unit List.",
-        "count": result.length,
-        "data": result
-    });
-});
-
-
-router.get('/activeList', [verifyToken, routeAccessChecker("assetUnitActiveList")], async (req, res) => {
-
-    let result = await assetUnitModel.getActiveList();
-
-    return res.status(200).send({
-        "success": true,
-        "status": 200,
-        "message": "Asset unit active List.",
         "count": result.length,
         "data": result
     });
@@ -136,7 +124,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("assetUnitUpdate")], 
             if (!isEmpty(existingDataByname) && existingDataByname[0].id != id) {
 
                 isError = 1;
-                errorMessage += existingDataByname[0].status == "1" ? "This title Already Exist." : "This title Already Exist but Deactivate, You can activate it."
+                errorMessage += existingDataByname[0].status == "active" ? "This title Already Exist." : "This title Already Exist but Deactivate, You can activate it."
             }
 
             willWeUpdate = 1;
@@ -212,8 +200,21 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("assetUnitDelete")
         });
     }
 
+    // check already assign this unit 
+    let alreadyAssignThisUnit = await assetModel.alreadyAssignUnit(id);
+    if (alreadyAssignThisUnit) {
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "This unit already assign in asset.",
+
+        });
+    }
+
+
+
     let data = {
-        status: 0,
+        status: 'delete',
         updated_by: updated_by,
         updated_at: current_time
     }
@@ -259,7 +260,7 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeAssetUni
     }
 
     let data = {
-        status: existingDataById[0].status == 1 ? 2 : 1,
+        status: existingDataById[0].status == 'active' ? 'inactive' : 'active',
         updated_by: updated_by,
         updated_at: current_time
     }

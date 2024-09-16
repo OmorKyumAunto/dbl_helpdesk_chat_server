@@ -574,7 +574,7 @@ router.get('/all-list', [verifyToken, routeAccessChecker("assetAllList")],async 
 
 
 //details
-router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
+router.get('/details/:id',[verifyToken, routeAccessChecker("assetDetails")],
   async (req, res) => {
     
     let id = req.params.id
@@ -648,6 +648,7 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetUpdate")],
 
 
     let assetUnitData = await assetUnitModel.getById(result[0].unit_id)
+    // console.log("firs======t",assetUnitData)
     if(assetUnitData){
       result[0].unit_name = assetUnitData[0].title
     }else{
@@ -702,6 +703,7 @@ router.delete('/delete/:id',[verifyToken, routeAccessChecker("assetUpdate")],asy
     let data = {
       status : 0,   // status = 1 (active) and status = 0 (delete)
      }
+ 
   
       // get id wise data form db 
       let result = await assetModel.updateById(id,data);

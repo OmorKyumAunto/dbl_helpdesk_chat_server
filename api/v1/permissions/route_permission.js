@@ -7,9 +7,7 @@ let superAdminPermission = [
 "addAsset","assetList","assetAllList","assetUpdate","assetDelete","uploadAsset","updateAsset","assetUnitActiveList",
 "distributedAsset","allDistributedAsset","distributedDetails",
 "changePassword","employeeDashboard","assetUnitActiveList","adminList",
-];
-
-let adminPermission = [
+"employeeAssignList","assetDetails",
 
 
 'employeeList','employeeAdd','employeeAllList','employeeDatails','employeeDetails','employeeDelete','employeeUpdate',"assignAdmin",'changeEmployeeStatus',
@@ -20,12 +18,70 @@ let adminPermission = [
 "addAsset","assetList","assetAllList","assetUpdate","assetDelete","uploadAsset","updateAsset","assetUnitActiveList",
 "distributedAsset","allDistributedAsset","distributedDetails",
 "changePassword","employeeDashboard","assetUnitActiveList","adminList",
+"employeeAssignList","assetDetails",
+
+
+"employeeAssignList","employeeTotalAssetAssignCount", "employeeUpdate","changePassword","dashboardData","dashboardGraphData","employeeDashboard","distributedDetails",
+"adminList","assetUpdate","assetDetails"
+];
+
+let adminPermission = [
+'employeeList','employeeAdd','employeeAllList','employeeDatails','employeeDetails','employeeDelete','employeeUpdate',"assignAdmin",'changeEmployeeStatus',
+"assetUnitList","assetUnitActiveList","assetUnitListLimit","assetUnitAdd","assetUnitUpdate","changeAssetUnitStatus",'assetUnitDelete',
+"assignEmployee",
+"adminList",
+"dashboardData","dashboardGraphData",
+"addAsset","assetList","assetAllList","assetUpdate","assetDelete","uploadAsset","updateAsset","assetUnitActiveList",
+"distributedAsset","allDistributedAsset","distributedDetails",
+"changePassword","employeeDashboard","assetUnitActiveList","adminList",
+"employeeAssignList","assetDetails",
+
+
+
+'employeeList','employeeAdd','employeeAllList','employeeDatails','employeeDetails','employeeDelete','employeeUpdate',"assignAdmin",'changeEmployeeStatus',
+"assetUnitList","assetUnitActiveList","assetUnitListLimit","assetUnitAdd","assetUnitUpdate","changeAssetUnitStatus",'assetUnitDelete',
+"assignEmployee",
+"adminList",
+"dashboardData","dashboardGraphData",
+"addAsset","assetList","assetAllList","assetUpdate","assetDelete","uploadAsset","updateAsset","assetUnitActiveList",
+"distributedAsset","allDistributedAsset","distributedDetails",
+"changePassword","employeeDashboard","assetUnitActiveList","adminList",
+"employeeAssignList","assetDetails",
+
+
+
+
+"employeeAssignList","employeeTotalAssetAssignCount", "employeeUpdate","changePassword","dashboardData","dashboardGraphData","employeeDashboard","distributedDetails",
+"adminList","assetUpdate","assetDetails"
 ];
 
 let employeePermission = [
     
+'employeeList','employeeAdd','employeeAllList','employeeDatails','employeeDetails','employeeDelete','employeeUpdate',"assignAdmin",'changeEmployeeStatus',
+"assetUnitList","assetUnitActiveList","assetUnitListLimit","assetUnitAdd","assetUnitUpdate","changeAssetUnitStatus",'assetUnitDelete',
+"assignEmployee",
+"adminList",
+"dashboardData","dashboardGraphData",
+"addAsset","assetList","assetAllList","assetUpdate","assetDelete","uploadAsset","updateAsset","assetUnitActiveList",
+"distributedAsset","allDistributedAsset","distributedDetails",
+"changePassword","employeeDashboard","assetUnitActiveList","adminList",
+"employeeAssignList","assetDetails",
+
+
+'employeeList','employeeAdd','employeeAllList','employeeDatails','employeeDetails','employeeDelete','employeeUpdate',"assignAdmin",'changeEmployeeStatus',
+"assetUnitList","assetUnitActiveList","assetUnitListLimit","assetUnitAdd","assetUnitUpdate","changeAssetUnitStatus",'assetUnitDelete',
+"assignEmployee",
+"adminList",
+"dashboardData","dashboardGraphData",
+"addAsset","assetList","assetAllList","assetUpdate","assetDelete","uploadAsset","updateAsset","assetUnitActiveList",
+"distributedAsset","allDistributedAsset","distributedDetails",
+"changePassword","employeeDashboard","assetUnitActiveList","adminList",
+"employeeAssignList","assetDetails",
+
+
+
   "employeeAssignList","employeeTotalAssetAssignCount", "employeeUpdate","changePassword","dashboardData","dashboardGraphData","employeeDashboard","distributedDetails",
-  "adminList"
+  "adminList","assetUpdate","assetDetails"
 ];
 
 

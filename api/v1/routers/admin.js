@@ -15,20 +15,20 @@ router.get('/list',[verifyToken, routeAccessChecker("adminList")],async (req, re
       "limit": req.query.limit || 50,
       "offset": req.query.offset || 0,
       "key": req.query.key,
-      "unit_name": req.query.unit_name,
+      "unit": req.query.unit,
   }
-   let { offset, limit , key, unit_name}  = reqData;
+   let { offset, limit , key, unit}  = reqData;
   
   
   
-      let result = await userModel.getEmployeeList(offset, limit, key, unit_name);
+      let result = await userModel.getEmployeeAdminList(offset, limit, key, unit);
   
-      let countResult = await userModel.getTotalEmployeeList(key, unit_name);
+      let countResult = await userModel.getTotalEmployeeAdminList(key, unit);
   
       return res.status(200).send({
         success: true,
         status: 200,
-        message: "Employee List.",
+        message: "Admin List.",
         total: countResult.length,
         data: result
       });

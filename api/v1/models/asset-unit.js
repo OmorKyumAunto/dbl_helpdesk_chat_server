@@ -2,9 +2,9 @@ const { connectionDblystem } = require('../connections/connection');
 const queries = require('../queries/asset-unit');
 
 // Promises Method
-let getList = async () => {
+let getList = async (status) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getList(), (error, result, fields) => {
+        connectionDblystem.query(queries.getList(status), (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });

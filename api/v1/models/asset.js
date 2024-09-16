@@ -169,6 +169,16 @@ let getByEmployeeId = async (id = 0) => {
   });
 }
 
+let alreadyAssignUnit = async (id = 0) => {
+  return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.alreadyAssignUnit(), [id], (error, result, fields) => {
+          if (error) reject(error)
+          else resolve(result)
+      });
+  });
+}
+
+
 
 let getByIdAssign = async (id = 0) => {
     return new Promise((resolve, reject) => {
@@ -457,7 +467,8 @@ module.exports = {
    getAssetList,
    getDuplicateSerialNumber,
    totalAssetCount,
-   getDistributedData
+   getDistributedData,
+   alreadyAssignUnit
    
    
   

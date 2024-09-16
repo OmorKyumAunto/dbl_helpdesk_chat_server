@@ -74,6 +74,35 @@ let getTotalEmployeeList = (key, unit_name) => {
     }
 
    
+    return `SELECT * FROM ${table_view} WHERE  status = 1 ${searchCondition} ORDER BY id desc`;
+}
+
+
+let getEmployeeAdminList = (offset, limit, key, unit) => {
+    let searchCondition = '';
+    if (unit) {
+        searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit}%') `;
+    }
+    if (key) {
+        searchCondition += ` AND (LOWER(employee_id) LIKE LOWER('%${key}%') OR LOWER(name) LIKE LOWER('%${key}%'))`;
+    }
+
+
+    return `SELECT * FROM ${table_view} WHERE profile_id = 2 and status != 0 ${searchCondition} ORDER BY id desc LIMIT ${limit} OFFSET ${offset}`;
+}
+
+
+let getTotalEmployeeAdminList = (key, unit) => {
+    let searchCondition = '';
+    if (unit) {
+        searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit}%') `;
+    }
+
+    if (key) {
+        searchCondition += ` AND (LOWER(employee_id) LIKE LOWER('%${key}%') OR LOWER(name) LIKE LOWER('%${key}%'))`;
+    }
+
+   
     return `SELECT * FROM ${table_view} WHERE  profile_id = 2 and  status = 1 ${searchCondition} ORDER BY id desc`;
 }
 
@@ -104,5 +133,7 @@ module.exports = {
     getTotalEmployeeList,
     getList,
     getActiveList,
-    getDataById
+    getDataById,
+    getEmployeeAdminList,
+    getTotalEmployeeAdminList
 }

@@ -876,15 +876,18 @@ router.post('/assign-admin-demoted/:id',[verifyToken, routeAccessChecker("assign
   } 
 
 
+
+  let getData = await adminModel.getByProfileId(employeeData[0].profile_id);
+
   let data = {
     employee_id : employeeData[0].employee_id,
     name :  employeeData[0].name,
-    department :  employeeData[0].department,
-    designation :  employeeData[0].designation,
-    email :  employeeData[0].email,
-    contact_no :  employeeData[0].contact_no,
-    joining_date :  employeeData[0].joining_date,
-    unit_name :  employeeData[0].unit_name,
+    department :  getData[0].department,
+    designation :  getData[0].designation,
+    email :  getData[0].email,
+    contact_no :  getData[0].contact_no,
+    joining_date :  getData[0].joining_date,
+    unit_name :  getData[0].unit_name,
 
   }  
 
@@ -893,8 +896,9 @@ router.post('/assign-admin-demoted/:id',[verifyToken, routeAccessChecker("assign
 
   let delete_admin_data = await adminModel.getByIdForDeleted(employeeData[0].profile_id)
 
-  let getPresentData = await employeeModel.getUserByEmail(employeeData[0].email)
+  let getPresentData = await employeeModel.getUserByEmployeeIdNo(employeeData[0].employee_id)
 
+  console.log("first",getPresentData)
   let userData = {
     role_id : 3,
     profile_id : getPresentData[0].id

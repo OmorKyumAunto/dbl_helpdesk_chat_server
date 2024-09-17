@@ -2,6 +2,8 @@ let table_name = "dbl_users";
 
 let table_view = "users_view"
 
+let asset_table_view = "asset_assign_user_view"
+
 
 let getUserByEmail = () => {
     return `SELECT * FROM ${table_name} where  email = ? and status = 1 `;
@@ -23,6 +25,11 @@ let getUserById = () => {
 let getById = () => {
     return `SELECT  * FROM ${table_view} where  id = ?  and status != 0 `;
 }
+
+let getDataByAssetId = () => {
+    return `SELECT  * FROM ${asset_table_view} where  user_id = ?  and status != 0 `;
+}
+
 let getDataById = () => {
     return `SELECT  *FROM ${table_name} where  id = ?  and status = 1 `;
 }
@@ -135,5 +142,7 @@ module.exports = {
     getActiveList,
     getDataById,
     getEmployeeAdminList,
-    getTotalEmployeeAdminList
+    getTotalEmployeeAdminList,
+    getDataByAssetId,
+    getDataByAssetId
 }

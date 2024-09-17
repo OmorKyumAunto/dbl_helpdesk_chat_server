@@ -69,6 +69,15 @@ let getDataById = async (id = 0) => {
     });
 }
 
+let getDataByAssetId = async (id = 0) => {
+  return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getDataByAssetId(), [id], (error, result, fields) => {
+          if (error) reject(error)
+          else resolve(result)
+      });
+  });
+}
+
 
 let getByEmployeeId = async (employee_id = 0) => {
     return new Promise((resolve, reject) => {
@@ -180,5 +189,6 @@ module.exports = {
     getActiveList,
     getDataById,
     getEmployeeAdminList,
-    getTotalEmployeeAdminList
+    getTotalEmployeeAdminList,
+    getDataByAssetId
 }

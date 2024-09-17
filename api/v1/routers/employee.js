@@ -936,7 +936,7 @@ router.get('/employee-asset-assign-list', [verifyToken, routeAccessChecker("empl
 
   let id = req.decoded.userInfo.id
   let userProfileId = await userModel.getById(id)
-
+console.log("idddd",id)
   if(isEmpty(userProfileId)){
     return res.status(404).send({
       "success": false,
@@ -946,8 +946,8 @@ router.get('/employee-asset-assign-list', [verifyToken, routeAccessChecker("empl
   }
 
   
-  let result = await assetModel.getByEmployeeId(userProfileId[0].profile_id);
-
+  let result = await userModel.getDataByAssetId(id);
+console.log("first========",result)
   return res.status(200).send({
       "success": true,
       "status": 200,

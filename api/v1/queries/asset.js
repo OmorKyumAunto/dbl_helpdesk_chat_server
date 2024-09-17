@@ -65,7 +65,7 @@ let distributedAssetList = (offset, limit, key, unit,type) => {
   
 
   if (key) {
-    searchCondition.push(`(LOWER(employee_id_no) LIKE LOWER('%${key}%') OR LOWER(employee_name) LIKE LOWER('%${key}%') OR LOWER(serial_number) LIKE LOWER('%${key}%'))`);
+    searchCondition.push(`(LOWER(user_id_no) LIKE LOWER('%${key}%') OR LOWER(user_name) LIKE LOWER('%${key}%') OR LOWER(serial_number) LIKE LOWER('%${key}%'))`);
   }
 
   let whereClause = searchCondition.length ? `WHERE ${searchCondition.join(' AND ')}` : '';
@@ -82,7 +82,7 @@ let distributedTotalAssetList = (key, unit, type) => {
 
  
   if (key) {
-    searchCondition.push(`(LOWER(employee_id_no) LIKE LOWER('%${key}%') OR LOWER(employee_name) LIKE LOWER('%${key}%') OR LOWER(serial_number) LIKE LOWER('%${key}%'))`);
+    searchCondition.push(`(LOWER(user_id_no) LIKE LOWER('%${key}%') OR LOWER(user_name) LIKE LOWER('%${key}%') OR LOWER(serial_number) LIKE LOWER('%${key}%'))`);
   }
 
   if (type) {

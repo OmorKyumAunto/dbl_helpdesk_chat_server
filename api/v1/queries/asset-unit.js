@@ -20,7 +20,7 @@ let getList = (status) => {
 
 
 let getOnlyDataList = () => {
-    return `SELECT id,title FROM ${table_name}  where status = 1 `;
+    return `SELECT id,title FROM ${table_name}  where status IN ('active', 'inactive')`;
 }
 
 let getActiveList = () => {
@@ -28,7 +28,7 @@ let getActiveList = () => {
 }
 
 let getByTitle = () => {
-    return `SELECT * FROM ${table_name} where  title = ? and status = 1`;
+    return `SELECT * FROM ${table_name} where  title = ? and status = 'active'`;
 }
 
 let getById = () => {

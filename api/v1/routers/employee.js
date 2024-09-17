@@ -935,7 +935,6 @@ router.post('/assign-admin-demoted/:id',[verifyToken, routeAccessChecker("assign
 router.get('/employee-asset-assign-list', [verifyToken, routeAccessChecker("employeeAssignList")], async (req, res) => {
 
   let id = req.decoded.userInfo.id
-
   let userProfileId = await userModel.getById(id)
 
   if(isEmpty(userProfileId)){

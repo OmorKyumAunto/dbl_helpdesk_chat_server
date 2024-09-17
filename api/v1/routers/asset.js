@@ -1123,12 +1123,17 @@ if(alreadyAssignedHistory.length){
 
 
 }
+
+ // get asset assign date
+ //et getAssetDate = await assetAssignModel.getById()
+
  
 // assign asset history
 let assetHistory = {
   asset_id : id,
   user_id : userData[0].id,
-  history : `This asset assign To ${userData[0].name} and employee id: ${userData[0].employee_id}`
+  history : `This asset assign To ${userData[0].name} and employee id: ${userData[0].employee_id}`,
+  asset_assign_date : reqData.assign_date
 
 }
 let result2 = await assetAssignModel.addNew(assignEmployeeData);

@@ -98,7 +98,7 @@ let getOnlyEmployeeList = (offset, limit, key, unit_name) => {
     }
 
 
-    return `SELECT * FROM ${table_view} WHERE user_id status != 0 ${searchCondition} ORDER BY id desc LIMIT ${limit} OFFSET ${offset}`;
+    return `SELECT * FROM ${table_view} WHERE  role_id = 3 and status != 0 ${searchCondition} ORDER BY id desc LIMIT ${limit} OFFSET ${offset}`;
 }
 
 // employee list only
@@ -113,7 +113,7 @@ let getOnlyTotalEmployeeList = (key, unit_name) => {
     }
 
    
-    return `SELECT * FROM ${table_view} WHERE  status = 1 ${searchCondition} ORDER BY id desc`;
+    return `SELECT * FROM ${table_view} WHERE  role_id = 3  and status = 1 ${searchCondition} ORDER BY id desc`;
 }
 
 
@@ -179,5 +179,8 @@ module.exports = {
     getEmployeeAdminList,
     getTotalEmployeeAdminList,
     getDataByAssetId,
-    getDataByAssetId
+    getDataByAssetId,
+    getOnlyEmployeeList,
+    getOnlyTotalEmployeeList
+
 }

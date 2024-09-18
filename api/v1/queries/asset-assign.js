@@ -48,7 +48,7 @@ let totalAssignAssetCount = () => {
 
 
 let employeeAssignCount = () => {
-    return  `SELECT count(id) as total_assign FROM ${table_name} where  user_id = ? `;
+    return  `SELECT count(id) as total_assign FROM ${table_name} where  user_id = ?  and status = 1`;
 }
 module.exports = {
     addNew,

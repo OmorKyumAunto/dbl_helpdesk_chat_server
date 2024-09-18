@@ -356,9 +356,9 @@ router.get('/employee-list',[verifyToken, routeAccessChecker("onlyEmployeeList")
 
 
 
-    let result = await userModel.getEmployeeList(offset, limit, key, unit_name);
+    let result = await userModel.getOnlyEmployeeList(offset, limit, key, unit_name);
 
-    let countResult = await userModel.getTotalEmployeeList(key, unit_name);
+    let countResult = await userModel.getOnlyTotalEmployeeList(key, unit_name);
 
     return res.status(200).send({
       success: true,

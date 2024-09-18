@@ -1308,91 +1308,197 @@ return new Date(epoch.getTime() + epoch.getTimezoneOffset() * 60000);
 
 
 
-router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], upload.single('file'), async (req, res) => {
-if (!req.file) {
-    return res.status(400).send({
-        success: false,
-        status: 400,
-        message: 'No file uploaded.'
-    });
-}
+// router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], upload.single('file'), async (req, res) => {
+// if (!req.file) {
+//     return res.status(400).send({
+//         success: false,
+//         status: 400,
+//         message: 'No file uploaded.'
+//     });
+// }
 
-try {
-    const workbook = xlsx.readFile(req.file.path);
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    const data = xlsx.utils.sheet_to_json(worksheet);
+// try {
+//     const workbook = xlsx.readFile(req.file.path);
+//     const sheetName = workbook.SheetNames[0];
+//     const worksheet = workbook.Sheets[sheetName];
+//     const data = xlsx.utils.sheet_to_json(worksheet);
 
-    // Iterate through each row and save to database
-    for (let row of data) {
-        let purchase_date = row['Purchase date'];
-        if (typeof purchase_date === 'number') {
-          purchase_date = xlsxDateToJSDate(purchase_date).toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD'
-        }
+//     // Iterate through each row and save to database
+//     for (let row of data) {
+//         let purchase_date = row['Purchase date'];
+//         if (typeof purchase_date === 'number') {
+//           purchase_date = xlsxDateToJSDate(purchase_date).toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD'
+//         }
 
-        let reqData = {
-            name: row['Name'],
-            category: row['Category'],
-            purchase_date: purchase_date,
-            serial_number: row['Serial number'],
-            po_number: row['PO number'],
-            model: row['Model'],
-            specification: row['Specification'],
-            unit_name: row['Unit name']
-        };
+//         let reqData = {
+//             name: row['Name'],
+//             category: row['Category'],
+//             purchase_date: purchase_date,
+//             serial_number: row['Serial number'],
+//             po_number: row['PO number'],
+//             model: row['Model'],
+//             specification: row['Specification'],
+//             unit_name: row['Unit name']
+//         };
 
      
-        let unitArr = [];
-        // get asset unit data
-        let assetUnitData = await assetUnitModel.getOnlyDataList();
-        for (let index = 0; index < assetUnitData.length; index++) {
-            const data = assetUnitData[index];
-            unitArr.push(data);  // Store the asset unit data in unitArr
-        }
+//         let unitArr = [];
+//         // get asset unit data
+//         let assetUnitData = await assetUnitModel.getOnlyDataList();
+//         for (let index = 0; index < assetUnitData.length; index++) {
+//             const data = assetUnitData[index];
+//             unitArr.push(data);  // Store the asset unit data in unitArr
+//         }
         
-        // Loop through unitArr to find the matching unit
-        for (let index = 0; index < unitArr.length; index++) {
-            const element = unitArr[index];
-            // Check if unit_name matches the title in the assetUnitData
-            if (element.title.toLowerCase() === reqData.unit_name.toLowerCase()) {
-                reqData.unit_id = element.id;  // Assign the matched id to unit_id
+//         // Loop through unitArr to find the matching unit
+//         for (let index = 0; index < unitArr.length; index++) {
+//             const element = unitArr[index];
+//             // Check if unit_name matches the title in the assetUnitData
+//             if (element.title.toLowerCase() === reqData.unit_name.toLowerCase()) {
+//                 reqData.unit_id = element.id;  // Assign the matched id to unit_id
 
                 
-                break;  // Exit the loop once a match is found
-            }
-        }
+//                 break;  // Exit the loop once a match is found
+//             }
+//         }
         
-        // Remove unit_name from reqData since it is no longer needed
-        delete reqData.unit_name;
+//         // Remove unit_name from reqData since it is no longer needed
+//         delete reqData.unit_name;
 
-        // Save to database
-        let result = await assetModel.addNew2(reqData);
-        if (result.affectedRows == undefined || result.affectedRows < 1) {
-            return res.status(500).send({
-                success: false,
-                status: 500,
-                message: 'Something went wrong in the database.'
-            });
-        }
-    }
+//         // Save to database
+//         let result = await assetModel.addNew2(reqData);
+//         if (result.affectedRows == undefined || result.affectedRows < 1) {
+//             return res.status(500).send({
+//                 success: false,
+//                 status: 500,
+//                 message: 'Something went wrong in the database.'
+//             });
+//         }
+//     }
 
-    return res.status(201).send({
-        success: true,
-        status: 201,
-        message: 'All asset added successfully.'
-    });
+//     return res.status(201).send({
+//         success: true,
+//         status: 201,
+//         message: 'All asset added successfully.'
+//     });
 
-} catch (error) {
-    return res.status(500).send({
-        success: false,
-        status: 500,
-        message: 'Error processing the file.',
-        error: error.message
-    });
-}
+// } catch (error) {
+//     return res.status(500).send({
+//         success: false,
+//         status: 500,
+//         message: 'Error processing the file.',
+//         error: error.message
+//     });
+// }
+// });
+
+
+router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], upload.single('file'), async (req, res) => {
+  if (!req.file) {
+      return res.status(400).send({
+          success: false,
+          status: 400,
+          message: 'No file uploaded.'
+      });
+  }
+
+  try {
+      const workbook = xlsx.readFile(req.file.path);
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const data = xlsx.utils.sheet_to_json(worksheet);
+
+      // Required fields
+      const requiredFields = ['Name', 'Category', 'Purchase date', 'Serial number', 'PO number', 'Model', 'Specification', 'Unit name'];
+
+      // Iterate through each row and save to the database
+      for (let row of data) {
+          // Check for missing fields
+          for (const field of requiredFields) {
+              if (!row[field]) {
+                  return res.status(400).send({
+                      success: false,
+                      status: 400,
+                      message: `Missing required field: ${field}.`
+                  });
+              }
+          }
+
+          // Handle purchase_date conversion
+          let purchase_date = row['Purchase date'];
+          if (typeof purchase_date === 'number') {
+              purchase_date = xlsxDateToJSDate(purchase_date).toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD'
+          }
+
+          let reqData = {
+              name: row['Name'],
+              category: row['Category'],
+              purchase_date: purchase_date,
+              serial_number: row['Serial number'],
+              po_number: row['PO number'],
+              model: row['Model'],
+              specification: row['Specification'],
+              unit_name: row['Unit name']
+          };
+
+          let unitArr = [];
+          // get asset unit data
+          let assetUnitData = await assetUnitModel.getOnlyDataList();
+          for (let index = 0; index < assetUnitData.length; index++) {
+              const data = assetUnitData[index];
+              unitArr.push(data); // Store the asset unit data in unitArr
+          }
+
+          // Loop through unitArr to find the matching unit
+          let unitMatch = false;
+          for (let index = 0; index < unitArr.length; index++) {
+              const element = unitArr[index];
+              // Check if unit_name matches the title in the assetUnitData
+              if (element.title.toLowerCase() === reqData.unit_name.toLowerCase()) {
+                  reqData.unit_id = element.id; // Assign the matched id to unit_id
+                  unitMatch = true;
+                  break; // Exit the loop once a match is found
+              }
+          }
+
+          // If no matching unit is found, return an error
+          if (!unitMatch) {
+              return res.status(400).send({
+                  success: false,
+                  status: 400,
+                  message: `Unit name ${reqData.unit_name} does not match any known units.`
+              });
+          }
+
+          // Remove unit_name from reqData since it is no longer needed
+          delete reqData.unit_name;
+
+          // Save to database
+          let result = await assetModel.addNew2(reqData);
+          if (!result.affectedRows || result.affectedRows < 1) {
+              return res.status(500).send({
+                  success: false,
+                  status: 500,
+                  message: 'Something went wrong in the database.'
+              });
+          }
+      }
+
+      return res.status(201).send({
+          success: true,
+          status: 201,
+          message: 'All assets added successfully.'
+      });
+
+  } catch (error) {
+      return res.status(500).send({
+          success: false,
+          status: 500,
+          message: 'Error processing the file.',
+          error: error.message
+      });
+  }
 });
-
-
 
 
 

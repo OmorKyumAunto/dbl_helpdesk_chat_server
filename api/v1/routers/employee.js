@@ -888,7 +888,8 @@ router.post('/assign-admin-demoted/:id',[verifyToken, routeAccessChecker("assign
     contact_no :  getData[0].contact_no,
     joining_date :  getData[0].joining_date,
     unit_name :  getData[0].unit_name,
-
+    licenses : getData[0].licenses
+    
   }  
 
 

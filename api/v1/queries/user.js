@@ -85,6 +85,41 @@ let getTotalEmployeeList = (key, unit_name) => {
 }
 
 
+
+
+// employee list only
+let getOnlyEmployeeList = (offset, limit, key, unit_name) => {
+    let searchCondition = '';
+    if (unit_name) {
+        searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit_name}%') `;
+    }
+    if (key) {
+        searchCondition += ` AND (LOWER(employee_id) LIKE LOWER('%${key}%') OR LOWER(name) LIKE LOWER('%${key}%'))`;
+    }
+
+
+    return `SELECT * FROM ${table_view} WHERE user_id status != 0 ${searchCondition} ORDER BY id desc LIMIT ${limit} OFFSET ${offset}`;
+}
+
+// employee list only
+let getOnlyTotalEmployeeList = (key, unit_name) => {
+    let searchCondition = '';
+    if (unit_name) {
+        searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit_name}%') `;
+    }
+
+    if (key) {
+        searchCondition += ` AND (LOWER(employee_id) LIKE LOWER('%${key}%') OR LOWER(name) LIKE LOWER('%${key}%'))`;
+    }
+
+   
+    return `SELECT * FROM ${table_view} WHERE  status = 1 ${searchCondition} ORDER BY id desc`;
+}
+
+
+
+
+
 let getEmployeeAdminList = (offset, limit, key, unit) => {
     let searchCondition = '';
     if (unit) {

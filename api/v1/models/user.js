@@ -130,6 +130,25 @@ let getEmployeeList = async (offset, limit, key,unit_name) => {
   }
 
 
+let getOnlyEmployeeList = async (offset, limit, key,unit_name) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(queries.getOnlyEmployeeList(offset, limit, key,unit_name), (error, result, fields) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+  });
+}
+
+let getOnlyTotalEmployeeList = async (key, unit) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(queries.getOnlyTotalEmployeeList(key, unit), (error, result, fields) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+  });
+}
+
+
 
   let getEmployeeAdminList = async (offset, limit, key,unit) => {
     return new Promise((resolve, reject) => {
@@ -190,5 +209,7 @@ module.exports = {
     getDataById,
     getEmployeeAdminList,
     getTotalEmployeeAdminList,
-    getDataByAssetId
+    getDataByAssetId,
+    getOnlyEmployeeList,
+    getOnlyTotalEmployeeList
 }

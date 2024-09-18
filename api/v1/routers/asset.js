@@ -922,7 +922,8 @@ if(reqData.assign_update == 1){
       let assetHistoryCreate = {
         asset_id : id,
         user_id : reqData.user_id,
-        history : `This asset assign To ${userData[0].name} and employee id: ${userData[0].employee_id}`
+        history : `This asset assign To ${userData[0].name} and employee id: ${userData[0].employee_id}`,
+        asset_assign_date : reqData.assign_date
       }
 
       

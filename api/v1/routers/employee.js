@@ -38,7 +38,117 @@ const xlsxDateToJSDate = (serial) => {
   return new Date(epoch.getTime() + epoch.getTimezoneOffset() * 60000);
 };
 
-router.post('/upload',[verifyToken, routeAccessChecker("employeeAdd")],upload.single('file'), async (req, res) => {
+// router.post('/upload',[verifyToken, routeAccessChecker("employeeAdd")],upload.single('file'), async (req, res) => {
+//   if (!req.file) {
+//       return res.status(400).send({
+//           success: false,
+//           status: 400,
+//           message: 'No file uploaded.'
+//       });
+//   }
+
+//   // created at 
+ 
+//   try {
+//       const workbook = xlsx.readFile(req.file.path);
+//       const sheetName = workbook.SheetNames[0];
+//       const worksheet = workbook.Sheets[sheetName];
+//       const data = xlsx.utils.sheet_to_json(worksheet);
+
+//       // Iterate through each row and save to database
+//       for (let row of data) {
+//           let joining_date = row['Joining date'];
+//           if (typeof joining_date === 'number') {
+//               joining_date = xlsxDateToJSDate(joining_date).toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD'
+//           }
+
+//           let reqData = {
+//               employee_id: row['Employee id'],
+//               name: row['Name'],
+//               department: row['Department'],
+//               designation: row['Designation'],
+//               email: row['Email'],
+//               contact_no: row['Contact no'],
+//               joining_date: joining_date,
+//               unit_name: row['Unit name'],
+//               created_by :req.decoded.userInfo.id ,
+//           };
+
+         
+
+//           // Perform validation checks here...
+
+//           //Check for duplicates
+//           let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
+//           if (checkDuplicate.length) {
+//               return res.status(400).send({
+//                   success: false,
+//                   status: 400,
+//                   message: `Employee ID ${reqData.employee_id} already exists.`
+//               });
+//           }
+
+//           // Save to database
+//           let result = await employeeModel.addNew(reqData);
+
+//           let employeeId = await employeeModel.getDataByEmployeeId(reqData.employee_id)
+//           let password = bcrypt.hashSync(reqData.employee_id.toString(), 10);
+          
+        
+//           let userData = {
+//             role_id : 3,
+//             profile_id : employeeId[0].id,
+//             employee_id : reqData.employee_id,
+//             name : row['Name'],
+//             email : row['Email'],
+//             password : password,
+//             created_by : req.decoded.userInfo.id,
+            
+//           }
+
+//         let user 
+//         if(reqData.department  && reqData.name && reqData.employee_id && reqData.email && reqData.contact_no && reqData.joining_date && reqData.unit_name && reqData.created_by){
+          
+//           user = await userModel.addNew(userData);
+          
+//         }else{
+//           return res.status(400).send({
+//             success: false,
+//             status: 400,
+//             message: 'employee Upload field could not match.'
+//         });
+//         }
+
+
+       
+
+
+//           if (user.affectedRows == undefined || user.affectedRows < 1) {
+//               return res.status(500).send({
+//                   success: false,
+//                   status: 500,
+//                   message: 'Something went wrong in the database.'
+//               });
+//           }
+//       }
+
+//       return res.status(201).send({
+//           success: true,
+//           status: 201,
+//           message: 'All employees added successfully.'
+//       });
+
+//   } catch (error) {
+//       return res.status(500).send({
+//           success: false,
+//           status: 500,
+//           message: 'Error processing the file.',
+//           error: error.message
+//       });
+//   }
+// });
+
+router.post('/upload', [verifyToken, routeAccessChecker("employeeAdd")], upload.single('file'), async (req, res) => {
   if (!req.file) {
       return res.status(400).send({
           success: false,
@@ -47,16 +157,27 @@ router.post('/upload',[verifyToken, routeAccessChecker("employeeAdd")],upload.si
       });
   }
 
-  // created at 
- 
   try {
       const workbook = xlsx.readFile(req.file.path);
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
       const data = xlsx.utils.sheet_to_json(worksheet);
 
-      // Iterate through each row and save to database
       for (let row of data) {
+          // Required fields
+          const requiredFields = ['Employee id', 'Name', 'Department', 'Designation', 'Email', 'Contact no', 'Joining date', 'Unit name'];
+
+          // Check for missing fields
+          for (const field of requiredFields) {
+              if (!row[field]) {
+                  return res.status(400).send({
+                      success: false,
+                      status: 400,
+                      message: `Missing required field: ${field}.`
+                  });
+              }
+          }
+
           let joining_date = row['Joining date'];
           if (typeof joining_date === 'number') {
               joining_date = xlsxDateToJSDate(joining_date).toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD'
@@ -71,14 +192,10 @@ router.post('/upload',[verifyToken, routeAccessChecker("employeeAdd")],upload.si
               contact_no: row['Contact no'],
               joining_date: joining_date,
               unit_name: row['Unit name'],
-              created_by :req.decoded.userInfo.id ,
+              created_by: req.decoded.userInfo.id,
           };
 
-         
-
-          // Perform validation checks here...
-
-          //Check for duplicates
+          // Check for duplicates
           let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
           if (checkDuplicate.length) {
               return res.status(400).send({
@@ -90,44 +207,35 @@ router.post('/upload',[verifyToken, routeAccessChecker("employeeAdd")],upload.si
 
           // Save to database
           let result = await employeeModel.addNew(reqData);
-
-          let employeeId = await employeeModel.getDataByEmployeeId(reqData.employee_id)
+          let employeeId = await employeeModel.getDataByEmployeeId(reqData.employee_id);
           let password = bcrypt.hashSync(reqData.employee_id.toString(), 10);
-          
-        
+
           let userData = {
-            role_id : 3,
-            profile_id : employeeId[0].id,
-            employee_id : reqData.employee_id,
-            name : row['Name'],
-            email : row['Email'],
-            password : password,
-            created_by : req.decoded.userInfo.id,
-            
-          }
+              role_id: 3,
+              profile_id: employeeId[0].id,
+              employee_id: reqData.employee_id,
+              name: reqData.name,
+              email: reqData.email,
+              password: password,
+              created_by: req.decoded.userInfo.id,
+          };
 
-        let user 
-        if(reqData.department  && reqData.name && reqData.employee_id && reqData.email && reqData.contact_no && reqData.joining_date && reqData.unit_name && reqData.created_by){
-          
-          user = await userModel.addNew(userData);
-          
-        }else{
-          return res.status(400).send({
-            success: false,
-            status: 400,
-            message: 'employee Upload field could not match.'
-        });
-        }
+          // Validate user data before saving
+          if (reqData.department && reqData.name && reqData.employee_id && reqData.email && reqData.contact_no && reqData.joining_date && reqData.unit_name && reqData.created_by) {
+              let user = await userModel.addNew(userData);
 
-
-       
-
-
-          if (user.affectedRows == undefined || user.affectedRows < 1) {
-              return res.status(500).send({
+              if (!user.affectedRows || user.affectedRows < 1) {
+                  return res.status(500).send({
+                      success: false,
+                      status: 500,
+                      message: 'Something went wrong in the database.'
+                  });
+              }
+          } else {
+              return res.status(400).send({
                   success: false,
-                  status: 500,
-                  message: 'Something went wrong in the database.'
+                  status: 400,
+                  message: 'Employee upload fields do not match the required format.'
               });
           }
       }
@@ -147,7 +255,6 @@ router.post('/upload',[verifyToken, routeAccessChecker("employeeAdd")],upload.si
       });
   }
 });
-
 
 
 router.post('/add',[verifyToken, routeAccessChecker("employeeAdd")],async (req, res) => {

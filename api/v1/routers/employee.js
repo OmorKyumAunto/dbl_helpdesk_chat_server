@@ -192,6 +192,7 @@ router.post('/upload', [verifyToken, routeAccessChecker("employeeAdd")], upload.
               contact_no: row['Contact no'],
               joining_date: joining_date,
               unit_name: row['Unit name'],
+              licenses : row['licenses'],
               created_by: req.decoded.userInfo.id,
           };
 

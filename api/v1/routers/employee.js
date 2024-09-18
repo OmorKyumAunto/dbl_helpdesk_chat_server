@@ -344,6 +344,33 @@ router.get('/list',[verifyToken, routeAccessChecker("employeeList")],async (req,
 
 
 
+router.get('/employee-list',[verifyToken, routeAccessChecker("onlyEmployeeList")],async (req, res) => {
+
+  let reqData = {
+    "limit": req.query.limit || 50,
+    "offset": req.query.offset || 0,
+    "key": req.query.key,
+    "unit_name": req.query.unit_name,
+}
+  let { offset, limit , key, unit_name}  = reqData;
+
+
+
+    let result = await userModel.getEmployeeList(offset, limit, key, unit_name);
+
+    let countResult = await userModel.getTotalEmployeeList(key, unit_name);
+
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Employee List.",
+      total: countResult.length,
+      data: result
+    });
+
+});
+
+
 
 // list
 router.get('/all-list',[verifyToken, routeAccessChecker("employeeAllList")],async (req, res) => {

@@ -94,7 +94,7 @@ router.post('/upload',[verifyToken, routeAccessChecker("employeeAdd")],upload.si
           let employeeId = await employeeModel.getDataByEmployeeId(reqData.employee_id)
           let password = bcrypt.hashSync(reqData.employee_id.toString(), 10);
           
-          let created_at  = reqData.created_at 
+        
           let userData = {
             role_id : 3,
             profile_id : employeeId[0].id,
@@ -106,8 +106,21 @@ router.post('/upload',[verifyToken, routeAccessChecker("employeeAdd")],upload.si
             
           }
 
+        let user 
+        if(reqData.department  && reqData.name && reqData.employee_id && reqData.email && reqData.contact_no && reqData.joining_date && reqData.unit_name && reqData.created_by){
+          
+          user = await userModel.addNew(userData);
+          
+        }else{
+          return res.status(400).send({
+            success: false,
+            status: 400,
+            message: 'employee Upload field could not match.'
+        });
+        }
 
-        let user = await userModel.addNew(userData);
+
+       
 
 
           if (user.affectedRows == undefined || user.affectedRows < 1) {

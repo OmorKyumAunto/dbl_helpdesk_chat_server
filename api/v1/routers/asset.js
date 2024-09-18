@@ -216,7 +216,8 @@ let asset = await assetModel.getAssetList()
   let assetHistory = {
     asset_id : asset[0].id,
     user_id : userId[0].id,
-    history : `This asset assign To ${userId[0].name} and employee id: ${userId[0].employee_id}`
+    history : `This asset assign To ${userId[0].name} and employee id: ${userId[0].employee_id}`,
+    asset_assign_date : reqData.assign_date
 
   }
 
@@ -389,6 +390,7 @@ if (reqData.is_new_employee === 1 && reqData.is_assign === 1) {
               contact_no : reqData.contact_no,
               joining_date : reqData.joining_date,
               unit_name : reqData.employee_unit_name,
+              asset_assign_date : reqData.assign_date
 
             }
      

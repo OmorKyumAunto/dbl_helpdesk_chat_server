@@ -192,7 +192,7 @@ router.post('/upload', [verifyToken, routeAccessChecker("employeeAdd")], upload.
               contact_no: row['Contact no'],
               joining_date: joining_date,
               unit_name: row['Unit name'],
-              licenses : row['licenses'],
+              licenses : row['Licenses'],
               created_by: req.decoded.userInfo.id,
           };
 
@@ -222,7 +222,7 @@ router.post('/upload', [verifyToken, routeAccessChecker("employeeAdd")], upload.
           };
 
           // Validate user data before saving
-          if (reqData.department && reqData.name && reqData.employee_id && reqData.email && reqData.contact_no && reqData.joining_date && reqData.unit_name && reqData.created_by) {
+          if (reqData.department && reqData.name && reqData.employee_id && reqData.email && reqData.contact_no && reqData.joining_date && reqData.unit_name && reqData.licenses && reqData.created_by ) {
               let user = await userModel.addNew(userData);
 
               if (!user.affectedRows || user.affectedRows < 1) {

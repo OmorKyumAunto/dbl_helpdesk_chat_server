@@ -16,7 +16,7 @@ const bcrypt = require('bcrypt');
 const userModel = require('../models/user');
 const unitModel = require('../models/asset-unit');
 const { routeAccessChecker } = require("../middlewares/routeAccess");
-
+const commonObject = require("../common/common");
 
 router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res) => {
     
@@ -1142,6 +1142,27 @@ let assetHistory = {
 let result2 = await assetAssignModel.addNew(assignEmployeeData);
 let createAssetHistory = await assetHistoryModel.addNew(assetHistory)
 
+
+
+// get employee email data
+let employeeData = await employeeModel.getById(userData[0].profile_id)
+
+// if(employeeData){
+//   console.log(" employee email==>",employeeData[0].email)
+//   let sendEmail = await commonObject.sentEmailByHtmlFormate(
+//     employeeData[0].email,
+//     "Assign your task",
+//    employeeData[0].name,
+//    result[0].name,
+//    result[0].serial_number,
+//    result[0].created_at,
+//    result[0].unit
+//   );
+// }
+
+
+asset_name = "",type = "", asset_serial_number = "", assign_date = "",unit=""
+
 if (createAssetHistory.affectedRows == undefined || createAssetHistory.affectedRows < 1) {
   return res.status(500).send({
       "success": true,
@@ -1286,6 +1307,7 @@ const multer = require('multer');
 const xlsx = require('xlsx');
 const path = require('path');
 const { get } = require("http");
+const { ADDRGETNETWORKPARAMS } = require("dns");
 
 // Configure Multer for file upload
 const storage = multer.diskStorage({

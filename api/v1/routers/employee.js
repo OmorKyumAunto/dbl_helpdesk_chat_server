@@ -967,6 +967,7 @@ router.post('/assign-admin/:id',[verifyToken, routeAccessChecker("assignAdmin")]
     contact_no :  employeeData[0].contact_no,
     joining_date :  employeeData[0].joining_date,
     unit_name :  employeeData[0].unit_name,
+    licenses :  employeeData[0].licenses,
 
   }  
 

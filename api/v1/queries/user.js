@@ -55,31 +55,39 @@ let getByEmployeeId = () => {
 
 
 //get employee list
-let getEmployeeList = (offset, limit, key, unit_name) => {
+let getEmployeeList = (offset, limit, key, unit_name,status) => {
     let searchCondition = '';
     if (unit_name) {
         searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit_name}%') `;
     }
+    if (status) {
+        searchCondition += `AND (status) LIKE ('%${status}%') `;
+    }
     if (key) {
         searchCondition += ` AND (LOWER(employee_id) LIKE LOWER('%${key}%') OR LOWER(name) LIKE LOWER('%${key}%'))`;
     }
-
-
+   
     return `SELECT * FROM ${table_view} WHERE status != 0 ${searchCondition} ORDER BY id desc LIMIT ${limit} OFFSET ${offset}`;
 }
 
 
 
-let getTotalEmployeeList = (key, unit_name) => {
+
+let getTotalEmployeeList = (key, unit_name,status) => {
     let searchCondition = '';
     if (unit_name) {
         searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit_name}%') `;
+    }
+
+    if (status) {
+        searchCondition += `AND (status) LIKE ('%${status}%') `;
     }
 
     if (key) {
         searchCondition += ` AND (LOWER(employee_id) LIKE LOWER('%${key}%') OR LOWER(name) LIKE LOWER('%${key}%'))`;
     }
 
+   
    
     return `SELECT * FROM ${table_view} WHERE  status = 1 ${searchCondition} ORDER BY id desc`;
 }

@@ -16,7 +16,7 @@ const bcrypt = require('bcrypt');
 const userModel = require('../models/user');
 const unitModel = require('../models/asset-unit');
 const { routeAccessChecker } = require("../middlewares/routeAccess");
-
+const commonObject = require("../common/common");
 
 router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res) => {
     
@@ -48,7 +48,6 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
   let current_date = new Date(); 
   let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
   reqData.created_at = current_time;
-
 
 
 
@@ -250,6 +249,7 @@ let data2 = {
   unit_id : reqData.unit_id,
   model : reqData.model,
   specification : reqData.specification,
+  created_by : req.decoded.userInfo.id
 }
 
 let result = await assetModel.addNew2(data2);
@@ -1142,6 +1142,36 @@ let assetHistory = {
 let result2 = await assetAssignModel.addNew(assignEmployeeData);
 let createAssetHistory = await assetHistoryModel.addNew(assetHistory)
 
+
+
+// get employee email data
+let employeeData = await employeeModel.getById(userData[0].profile_id)
+
+// get assign time 
+let getAssinDate = await assetAssignModel.getById(id)
+console.log("first === > ",getAssinDate)
+// get assign name
+let getAssignName = await userModel.getById(result[0].created_by)
+
+// get unit name
+let getUnitName = await unitModel.getById(result[0].unit_id)
+
+if (employeeData) {
+  let assignDate = new Date(getAssinDate[0].assign_date).toDateString(); // Convert to readable date format
+
+  let sendEmail = await commonObject.sentEmailByHtmlFormate(
+    employeeData[0].email,
+    "Asset Disbursement",
+    employeeData[0].name || "", // employee name
+    result[0].name || "",   // asset name
+    result[0].category || "",  // asset type - category
+    result[0].serial_number || "", // serial no
+    assignDate,  // formatted assign date
+    getAssignName[0].name || "", // assigned by
+    getUnitName[0].title || ""  // assigned unit
+  );
+}
+
 if (createAssetHistory.affectedRows == undefined || createAssetHistory.affectedRows < 1) {
   return res.status(500).send({
       "success": true,
@@ -1286,6 +1316,7 @@ const multer = require('multer');
 const xlsx = require('xlsx');
 const path = require('path');
 const { get } = require("http");
+const { ADDRGETNETWORKPARAMS } = require("dns");
 
 // Configure Multer for file upload
 const storage = multer.diskStorage({

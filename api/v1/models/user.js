@@ -111,18 +111,18 @@ let updateById = async (id = 0, data = {}) => {
 }
 
 
-let getEmployeeList = async (offset, limit, key,unit_name) => {
+let getEmployeeList = async (offset, limit, key,unit_name,status) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getEmployeeList(offset, limit, key,unit_name), (error, result, fields) => {
+      connectionDblystem.query(queries.getEmployeeList(offset, limit, key,unit_name,status), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
     });
   }
 
-  let getTotalEmployeeList = async (key, unit) => {
+  let getTotalEmployeeList = async (key, unit,status) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getTotalEmployeeList(key, unit), (error, result, fields) => {
+      connectionDblystem.query(queries.getTotalEmployeeList(key, unit,status), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });

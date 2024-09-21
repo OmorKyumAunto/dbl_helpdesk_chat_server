@@ -51,7 +51,6 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
 
 
 
-
     // check name
     if(isEmpty(reqData.name)){
       return res.status(400).send({
@@ -250,6 +249,7 @@ let data2 = {
   unit_id : reqData.unit_id,
   model : reqData.model,
   specification : reqData.specification,
+  created_by : req.decoded.userInfo.id
 }
 
 let result = await assetModel.addNew2(data2);
@@ -1147,21 +1147,30 @@ let createAssetHistory = await assetHistoryModel.addNew(assetHistory)
 // get employee email data
 let employeeData = await employeeModel.getById(userData[0].profile_id)
 
-// if(employeeData){
-//   console.log(" employee email==>",employeeData[0].email)
-//   let sendEmail = await commonObject.sentEmailByHtmlFormate(
-//     employeeData[0].email,
-//     "Assign your task",
-//    employeeData[0].name,
-//    result[0].name,
-//    result[0].serial_number,
-//    result[0].created_at,
-//    result[0].unit
-//   );
-// }
+// get assign time 
+let getAssinDate = await assetAssignModel.getById(id)
+console.log("first === > ",getAssinDate)
+// get assign name
+let getAssignName = await userModel.getById(result[0].created_by)
 
+// get unit name
+let getUnitName = await unitModel.getById(result[0].unit_id)
 
-asset_name = "",type = "", asset_serial_number = "", assign_date = "",unit=""
+if (employeeData) {
+  let assignDate = new Date(getAssinDate[0].assign_date).toDateString(); // Convert to readable date format
+
+  let sendEmail = await commonObject.sentEmailByHtmlFormate(
+    employeeData[0].email,
+    "Asset Disbursement",
+    employeeData[0].name || "", // employee name
+    result[0].name || "",   // asset name
+    result[0].category || "",  // asset type - category
+    result[0].serial_number || "", // serial no
+    assignDate,  // formatted assign date
+    getAssignName[0].name || "", // assigned by
+    getUnitName[0].title || ""  // assigned unit
+  );
+}
 
 if (createAssetHistory.affectedRows == undefined || createAssetHistory.affectedRows < 1) {
   return res.status(500).send({

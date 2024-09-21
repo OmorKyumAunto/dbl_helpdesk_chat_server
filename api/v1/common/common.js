@@ -2,6 +2,7 @@ const crypto = require("crypto");
 require('dotenv').config();
 const nodemailer = require('nodemailer');
 
+
 let decodingUsingCrypto = async (text = "") => {
     const key = Buffer.from(
         "xNRxA48aNYd33PXaODSutRNFyCu4cAe/InKT/Rx+bw0=",
@@ -52,9 +53,7 @@ let hashingUsingCrypto = async (text = "") => {
 
 
 
-
-
-let sentEmailByHtmlFormate = async (receiverEmailAddress, subject,name = "", asset_name = "", type = "", asset_serial_number = "",created_at="",unit="") => {
+let sentEmailByHtmlFormate = async (receiverEmailAddress, subject,name = "", asset_name = "", type = "", asset_serial_number = "",assign_date = "",assign_by = "",unit_name="") => {
     // set transport
         var transporter = nodemailer.createTransport({
             service:process.env.send_email_service,
@@ -72,7 +71,7 @@ let sentEmailByHtmlFormate = async (receiverEmailAddress, subject,name = "", ass
             from: process.env.send_email_address,
             to: receiverEmailAddress,
             subject: subject,
-            html: await getHTMLBody(asset_name, type, asset_serial_number,created_at,unit)
+            html: await getHTMLBody(name,asset_name, type, asset_serial_number,assign_date,assign_by,unit_name)
         };
     
     
@@ -92,92 +91,89 @@ let sentEmailByHtmlFormate = async (receiverEmailAddress, subject,name = "", ass
             }
         });
         
-    }
-let getHTMLBody = async (name = "",asset_name = "",type = "", asset_serial_number = "", created_at = "",unit="") => {
-    return `<div style="font-family: 'Roboto', sans-serif; background-color: #f0f4f8; color: #4a4a4a; padding: 20px;">
-    <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1); overflow: hidden;">
-        
-        <!-- Header Section -->
-        <div style="background: linear-gradient(135deg, #003366, #0055aa); padding: 30px; text-align: center; color: white; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-            <img src="[LOGO_URL]" alt="Company Logo" style="max-width: 100px; margin-bottom: 15px;">
-            <h1 style="font-size: 24px; font-weight: 700; margin: 0;">Asset Disbursement Notification</h1>
-        </div>
-
-        <!-- Content Section -->
-        <div style="padding: 30px;">
-            <h2 style="color: #003366; font-size: 20px; font-weight: 600;">Hello, <strong>${name}</strong>,</h2>
-            <p style="font-size: 16px; line-height: 1.6; color: #666;">We are excited to inform you that the following asset has been assigned to you:</p>
-
-            <!-- Asset Details Section -->
-            <div style="background-color: #f9f9f9; border-radius: 12px; margin: 20px 0; padding: 20px; border: 1px solid #e0e0e0; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);">
-                <h3 style="font-size: 18px; color: #003366; margin-bottom: 10px; font-weight: 500;">Asset Details</h3>
-                <p style="margin: 5px 0; font-size: 16px; color: #444;"><strong>Asset Name:</strong> ${asset_name}</p>
-                <p style="margin: 5px 0; font-size: 16px; color: #444;"><strong>Asset Type:</strong> ${type}</p>
-                <p style="margin: 5px 0; font-size: 16px; color: #444;"><strong>Serial Number:</strong> ${asset_serial_number}</p>
-                <p style="margin: 5px 0; font-size: 16px; color: #444;"><strong>Assigned Date:</strong> ${created_at}</p>
-                <p style="margin: 5px 0; font-size: 16px; color: #444;"><strong>Assigned By:</strong> [Admin/SuperAdmin Name]</p>
-                <p style="margin: 5px 0; font-size: 16px; color: #444;"><strong>Buying Unit:</strong> ${unit}</p>
-            </div>
-
-            <!-- Guidelines Section -->
-            <div style="margin-top: 30px;">
-                <p style="font-size: 15px; color: #555;">Please take note of the following guidelines regarding your assigned asset:</p>
-                <ul style="padding-left: 20px; font-size: 15px; color: #555;">
-                    <li style="margin-bottom: 10px;">Ensure proper and safe usage of the asset.</li>
-                    <li style="margin-bottom: 10px;">Report any issues or damages to the IT department promptly.</li>
-                    <li style="margin-bottom: 10px;">Ensure the asset remains within company premises unless authorized for remote use.</li>
-                </ul>
-            </div>
-
-            <p style="font-size: 16px; color: #666;">If you have any questions or need assistance, feel free to reach out to your IT department.</p>
-
-            <!-- Credentials Section -->
-            <div style="margin-top: 30px; font-size: 16px; color: #333;">
-                <p style="margin: 0; padding: 5px 0;">Regards,</p>
-                <p style="margin: 0; padding: 5px 0;"><strong>IT Infrastructure and Operation</strong></p>
-                
-
-                <!-- Company Logo after Credentials -->
-                <div style="margin-top: 15px; text-align: left;">
-                    <img src="[LOGO_URL]" alt="Company Logo" style="max-width: 60px; display: block; margin-top: 10px;">
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer Section -->
-        <div style="background-color: #003366; color: white; text-align: center; padding: 20px;">
-            <p style="font-size: 14px; margin: 0;">This is an automated email. Please do not reply to this message.</p>
-        </div>
-    </div>
-</div>
-
-<!-- Add responsive styling -->
-<style>
-    @media (max-width: 600px) {
-        div[style*="max-width: 600px"] {
-            max-width: 100%;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .header img {
-            max-width: 80px;
-        }
-        .content h2 {
-            font-size: 18px;
-        }
-        .asset-details h3 {
-            font-size: 16px;
-        }
-        .footer p {
-            font-size: 13px;
-        }
-        .credentials p {
-            font-size: 14px;
-        }
-    }
-</style>`
 }
 
+
+
+let getHTMLBody = async (name = "", asset_name = "", type = "", asset_serial_number = "",assign_date = "",assign_by = "",unit_name="") => {
+    return `<div style="font-family: Arial, sans-serif; background-color: #e9f0f7; color: #444444; padding: 30px; line-height: 1.6; width: 100%;">
+
+  <!-- Main Container (Table-based for Outlook compatibility) -->
+  <table align="center" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 15px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);">
+    
+    <!-- VML Fallback for Outlook Border Radius -->
+    <!--[if mso]>
+    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="#" style="height: 600px; v-text-anchor:middle; width:600px;" arcsize="15%" strokecolor="#003366" fillcolor="#ffffff">
+      <w:anchorlock/>
+      <center style="color:#ffffff; font-family:sans-serif; font-size:16px;">Asset Assignment Notification</center>
+    </v:roundrect>
+    <![endif]-->
+    
+    <!-- Header -->
+    <tr>
+      <td style="background-color: #003366; padding: 40px; text-align: center; color: white; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+        <img src="https://i.postimg.cc/Df8xNNt0/DBL-Logo.jpg" alt="Company Logo" style="max-width: 100px; border-radius: 10%; margin-bottom: 5px;">
+        <h1 style="font-size: 24px; margin: 0;">Asset Disbursement Notification</h1>
+      </td>
+    </tr>
+
+    <!-- Main Content -->
+    <tr>
+      <td style="padding: 40px; color: #444444; font-size: 16px;">
+        <h2 style="font-size: 22px; color: #003366;">Hello, ${name}</h2>
+        <p>We are pleased to inform you that the following asset has been assigned to you:</p>
+
+        <!-- Asset Details -->
+        <div style="background-color: #f4f8fc; padding: 20px; border-radius: 10px; border: 1px solid #dde6f2; margin-top: 20px;">
+          <p style="margin: 0;"><strong>Asset Name:</strong> ${asset_name}</p>
+          <p style="margin: 0;"><strong>Asset Type:</strong> ${type}</p>
+          <p style="margin: 0;"><strong>Serial Number:</strong> ${asset_serial_number}</p>
+          <p style="margin: 0;"><strong>Assigned Date:</strong> ${assign_date}</p>
+          <p style="margin: 0;"><strong>Assigned By:</strong> ${assign_by}</p>
+          <p style="margin: 0;"><strong>Buying Unit:</strong> ${unit_name}</p>
+        </div>
+
+        <!-- Notes -->
+        <p style="margin-top: 30px;">Please note the following guidelines:</p>
+        <ul style="padding-left: 20px;">
+          <li>Ensure proper usage and maintenance of the asset.</li>
+          <li>Report any issues or damages to the IT department.</li>
+          <li>Use the asset in accordance with company policies.</li>
+        </ul>
+
+        <p>If you have any questions, feel free to contact your IT Department.</p>
+
+        <!-- Closing Section -->
+        <p style="margin-top: 30px;">Regards,</p>
+        <p><strong>IT Infrastructure and Operation</strong></p>
+
+        <!-- Small Logo After Credentials -->
+        <img src="https://i.postimg.cc/Df8xNNt0/DBL-Logo.jpg" alt="Company Logo" style="width: 60px; margin-top: 20px; border-radius: 10%;">
+      </td>
+    </tr>
+
+    <!-- Footer -->
+    <tr>
+      <td style="background-color: #003366; padding: 20px; text-align: center; color: white; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;">
+        <p style="margin: 0;">This is an automated email, please do not reply.</p>
+      </td>
+    </tr>
+
+  </table>
+</div>
+
+<!-- Responsive Styling -->
+<style>
+  @media (max-width: 600px) {
+    table {
+      width: 100% !important;
+    }
+    h1, h2, p {
+      font-size: 90%;
+    }
+  }
+</style>`
+}
 
 
 

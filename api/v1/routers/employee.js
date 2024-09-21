@@ -20,6 +20,7 @@ const { off } = require("process");
 const { profile } = require("console");
 const bcrypt = require('bcrypt');
 
+
 // Configure Multer for file upload
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -444,14 +445,15 @@ router.get('/list',[verifyToken, routeAccessChecker("employeeList")],async (req,
     "offset": req.query.offset || 0,
     "key": req.query.key,
     "unit_name": req.query.unit_name,
+     "status": req.query.status
 }
- let { offset, limit , key, unit_name}  = reqData;
+ let { offset, limit , key, unit_name,status}  = reqData;
 
 
 
-    let result = await userModel.getEmployeeList(offset, limit, key, unit_name);
+    let result = await userModel.getEmployeeList(offset, limit, key, unit_name,status);
 
-    let countResult = await userModel.getTotalEmployeeList(key, unit_name);
+    let countResult = await userModel.getTotalEmployeeList(key, unit_name,status);
 
     return res.status(200).send({
       success: true,

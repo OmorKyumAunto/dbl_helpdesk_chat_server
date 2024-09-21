@@ -1149,7 +1149,7 @@ let employeeData = await employeeModel.getById(userData[0].profile_id)
 
 // get assign time 
 let getAssinDate = await assetAssignModel.getById(id)
-console.log("first === > ",getAssinDate)
+
 // get assign name
 let getAssignName = await userModel.getById(result[0].created_by)
 
@@ -1160,9 +1160,9 @@ if (employeeData) {
   let assignDate = new Date(getAssinDate[0].assign_date).toDateString(); // Convert to readable date format
 
   let sendEmail = await commonObject.sentEmailByHtmlFormate(
-    employeeData[0].email,
+    userData[0].email,
     "Asset Disbursement",
-    employeeData[0].name || "", // employee name
+    userData[0].name || "", // employee name
     result[0].name || "",   // asset name
     result[0].category || "",  // asset type - category
     result[0].serial_number || "", // serial no
@@ -1469,7 +1469,8 @@ router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], u
               po_number: row['PO number'],
               model: row['Model'],
               specification: row['Specification'],
-              unit_name: row['Unit name']
+              unit_name: row['Unit name'],
+              created_by : req.decoded.userInfo.id
           };
 
           let unitArr = [];

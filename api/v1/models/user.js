@@ -111,18 +111,18 @@ let updateById = async (id = 0, data = {}) => {
 }
 
 
-let getEmployeeList = async (offset, limit, key,unit_name,status) => {
+let getEmployeeList = async (offset, limit, key,unit_name,status,blood_group) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getEmployeeList(offset, limit, key,unit_name,status), (error, result, fields) => {
+      connectionDblystem.query(queries.getEmployeeList(offset, limit, key,unit_name,status,blood_group), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
     });
   }
 
-  let getTotalEmployeeList = async (key, unit,status) => {
+  let getTotalEmployeeList = async (key, unit,status,blood_group) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getTotalEmployeeList(key, unit,status), (error, result, fields) => {
+      connectionDblystem.query(queries.getTotalEmployeeList(key, unit,status,blood_group), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -130,18 +130,18 @@ let getEmployeeList = async (offset, limit, key,unit_name,status) => {
   }
 
 
-let getOnlyEmployeeList = async (offset, limit, key,unit_name) => {
+let getOnlyEmployeeList = async (offset, limit, key,unit_name,blood_group) => {
   return new Promise((resolve, reject) => {
-    connectionDblystem.query(queries.getOnlyEmployeeList(offset, limit, key,unit_name), (error, result, fields) => {
+    connectionDblystem.query(queries.getOnlyEmployeeList(offset, limit, key,unit_name,blood_group), (error, result, fields) => {
       if (error) reject(error);
       else resolve(result);
     });
   });
 }
 
-let getOnlyTotalEmployeeList = async (key, unit) => {
+let getOnlyTotalEmployeeList = async (key, unit,blood_group) => {
   return new Promise((resolve, reject) => {
-    connectionDblystem.query(queries.getOnlyTotalEmployeeList(key, unit), (error, result, fields) => {
+    connectionDblystem.query(queries.getOnlyTotalEmployeeList(key, unit,blood_group), (error, result, fields) => {
       if (error) reject(error);
       else resolve(result);
     });

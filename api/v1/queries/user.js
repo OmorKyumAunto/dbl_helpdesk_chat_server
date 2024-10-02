@@ -55,7 +55,8 @@ let getByEmployeeId = () => {
 
 
 //get employee list
-let getEmployeeList = (offset, limit, key, unit_name,status) => {
+let getEmployeeList = (offset, limit, key, unit_name,status,blood_group) => {
+   
     let searchCondition = '';
     if (unit_name) {
         searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit_name}%') `;
@@ -63,6 +64,10 @@ let getEmployeeList = (offset, limit, key, unit_name,status) => {
     if (status) {
         searchCondition += `AND (status) LIKE ('%${status}%') `;
     }
+    if (blood_group) {
+        searchCondition += `AND UPPER(blood_group) LIKE UPPER('%${blood_group}%') `;
+    }
+    
     if (key) {
         searchCondition += ` AND (LOWER(employee_id) LIKE LOWER('%${key}%') OR LOWER(name) LIKE LOWER('%${key}%'))`;
     }
@@ -73,16 +78,18 @@ let getEmployeeList = (offset, limit, key, unit_name,status) => {
 
 
 
-let getTotalEmployeeList = (key, unit_name,status) => {
+let getTotalEmployeeList = (key, unit_name,status,blood_group) => {
+    console.log(" ===")
     let searchCondition = '';
     if (unit_name) {
         searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit_name}%') `;
     }
-
     if (status) {
         searchCondition += `AND (status) LIKE ('%${status}%') `;
     }
-
+    if (blood_group) {
+        searchCondition += `AND UPPER(blood_group) LIKE UPPER('%${blood_group}%') `;
+    }
     if (key) {
         searchCondition += ` AND (LOWER(employee_id) LIKE LOWER('%${key}%') OR LOWER(name) LIKE LOWER('%${key}%'))`;
     }
@@ -96,10 +103,13 @@ let getTotalEmployeeList = (key, unit_name,status) => {
 
 
 // employee list only
-let getOnlyEmployeeList = (offset, limit, key, unit_name) => {
+let getOnlyEmployeeList = (offset, limit, key, unit_name,blood_group) => {
     let searchCondition = '';
     if (unit_name) {
         searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit_name}%') `;
+    }
+    if (blood_group) {
+        searchCondition += `AND (blood_group) LIKE ('%${blood_group}%') `;
     }
     if (key) {
         searchCondition += ` AND (LOWER(employee_id) LIKE LOWER('%${key}%') OR LOWER(name) LIKE LOWER('%${key}%'))`;
@@ -110,10 +120,13 @@ let getOnlyEmployeeList = (offset, limit, key, unit_name) => {
 }
 
 // employee list only
-let getOnlyTotalEmployeeList = (key, unit_name) => {
+let getOnlyTotalEmployeeList = (key, unit_name,blood_group) => {
     let searchCondition = '';
     if (unit_name) {
         searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit_name}%') `;
+    }
+    if (blood_group) {
+        searchCondition += `AND (blood_group) LIKE ('%${blood_group}%') `;
     }
 
     if (key) {

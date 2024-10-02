@@ -194,6 +194,10 @@ router.post('/upload', [verifyToken, routeAccessChecker("employeeAdd")], upload.
               joining_date: joining_date,
               unit_name: row['Unit name'],
               licenses : row['Licenses'],
+              blood_group : row['Blood group'],
+              business_type : row['Business type'],
+              line_of_business : row['Line of business'],
+              grade : row['Grade'],
               created_by: req.decoded.userInfo.id,
           };
 
@@ -271,7 +275,11 @@ router.post('/add',[verifyToken, routeAccessChecker("employeeAdd")],async (req, 
       "contact_no":req.body.contact_no,
       "joining_date":req.body.joining_date,
       "unit_name":req.body.unit_name,
-      "licenses": req.body.licenses
+      "licenses": req.body.licenses,
+      "blood_group" :req.body.blood_group,
+      "business_type": req.body.business_type,
+      "line_of_business": req.body.line_of_business,
+      "grade": req.body.grade,
   }
 
   let current_date = new Date(); 
@@ -373,9 +381,17 @@ if(isEmpty(reqData.email)){
         });
    }
 
+   // blood group validation
+   if(isEmpty(reqData.blood_group)){
+    return res.status(400).send({
+        "success": false,
+        "status": 400,
+        "message":"Blood group cannot be empty."
+      });
+ }
+
   // // check duplicate 
      let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
-  
      if (checkDuplicate.length) {
        return res.status(404).send({
          "success": false,
@@ -395,11 +411,16 @@ if(isEmpty(reqData.email)){
       joining_date : reqData.joining_date,
       unit_name : reqData.unit_name,
       licenses : reqData.licenses,
+      blood_group : reqData.blood_group,
+      business_type : reqData.business_type,
+      line_of_business : reqData.line_of_business,
+      grade : reqData.grade,
       created_by : reqData.created_by
 
-    }  
+    }
 
-console.log("first=========",employeeData)
+   console.log("first",employeeData)
+
     let result = await employeeModel.addNew(employeeData);
 
     let employeeId = await employeeModel.getDataByEmployeeId(reqData.employee_id)
@@ -445,15 +466,16 @@ router.get('/list',[verifyToken, routeAccessChecker("employeeList")],async (req,
     "offset": req.query.offset || 0,
     "key": req.query.key,
     "unit_name": req.query.unit_name,
-     "status": req.query.status
+    "status": req.query.status,
+    "blood_group": req.query.blood_group ? req.query.blood_group.replace(/ /g, '+') : null
 }
- let { offset, limit , key, unit_name,status}  = reqData;
+ let { offset, limit , key, unit_name,status,blood_group}  = reqData;
 
+ console.log("first === ",blood_group)
 
+    let result = await userModel.getEmployeeList(offset, limit, key, unit_name,status,blood_group);
 
-    let result = await userModel.getEmployeeList(offset, limit, key, unit_name,status);
-
-    let countResult = await userModel.getTotalEmployeeList(key, unit_name,status);
+    let countResult = await userModel.getTotalEmployeeList(key, unit_name,status,blood_group);
 
     return res.status(200).send({
       success: true,
@@ -474,14 +496,15 @@ router.get('/employee-list',[verifyToken, routeAccessChecker("onlyEmployeeList")
     "offset": req.query.offset || 0,
     "key": req.query.key,
     "unit_name": req.query.unit_name,
+    "blood_group" : req.query.blood_group
 }
-  let { offset, limit , key, unit_name}  = reqData;
+  let { offset, limit , key, unit_name,blood_group}  = reqData;
 
 
 
-    let result = await userModel.getOnlyEmployeeList(offset, limit, key, unit_name);
+    let result = await userModel.getOnlyEmployeeList(offset, limit, key, unit_name,blood_group);
 
-    let countResult = await userModel.getOnlyTotalEmployeeList(key, unit_name);
+    let countResult = await userModel.getOnlyTotalEmployeeList(key, unit_name,blood_group);
 
     return res.status(200).send({
       success: true,
@@ -634,6 +657,10 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
         "joining_date":req.body.joining_date,
         "unit_name":req.body.unit_name,
         "licenses" : req.body.licenses,
+        "blood_group": req.body.blood_group,
+        "business_type": req.body.business_type,
+        "line_of_business": req.body.line_of_business,
+        "grade": req.body.grade,
       }
 
   
@@ -750,6 +777,30 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
       updateData.licenses = reqData.licenses
   
     }
+
+    // check unit_name
+    if(existingDataById[0].blood_group != reqData.blood_group){
+      willWeUpdate = 1
+      updateData.blood_group = reqData.blood_group
+    }
+
+    // check unit_name
+    if(existingDataById[0].business_type != reqData.business_type){
+      willWeUpdate = 1
+      updateData.business_type = reqData.business_type
+    }
+
+   // check unit_name
+    if(existingDataById[0].line_of_business != reqData.line_of_business){
+      willWeUpdate = 1
+      updateData.line_of_business = reqData.line_of_business
+    }
+
+       // check unit_name
+       if(existingDataById[0].grade != reqData.grade){
+        willWeUpdate = 1
+        updateData.grade = reqData.grade
+      }
 
     if (isError == 1) {
       return res.status(400).send({
@@ -970,6 +1021,10 @@ router.post('/assign-admin/:id',[verifyToken, routeAccessChecker("assignAdmin")]
     joining_date :  employeeData[0].joining_date,
     unit_name :  employeeData[0].unit_name,
     licenses :  employeeData[0].licenses,
+    blood_group :  employeeData[0].blood_group,
+    business_type :  employeeData[0].business_type,
+    line_of_business :  employeeData[0].line_of_business,
+    grade :  employeeData[0].grade,
 
   }  
 
@@ -1039,7 +1094,11 @@ router.post('/assign-admin-demoted/:id',[verifyToken, routeAccessChecker("assign
     contact_no :  getData[0].contact_no,
     joining_date :  getData[0].joining_date,
     unit_name :  getData[0].unit_name,
-    licenses : getData[0].licenses
+    licenses : getData[0].licenses,
+    blood_group :  getData[0].blood_group,
+    business_type :  getData[0].business_type,
+    line_of_business :  getData[0].line_of_business,
+    grade :  getData[0].grade,
     
   }  
 
@@ -1088,7 +1147,6 @@ router.get('/employee-asset-assign-list', [verifyToken, routeAccessChecker("empl
 
   let id = req.decoded.userInfo.id
   let userProfileId = await userModel.getById(id)
-console.log("idddd",id)
   if(isEmpty(userProfileId)){
     return res.status(404).send({
       "success": false,
@@ -1099,7 +1157,6 @@ console.log("idddd",id)
 
   
   let result = await userModel.getDataByAssetId(id);
-console.log("first========",result)
   return res.status(200).send({
       "success": true,
       "status": 200,

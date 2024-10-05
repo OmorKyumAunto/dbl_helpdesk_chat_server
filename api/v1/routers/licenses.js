@@ -2,36 +2,23 @@ const express = require("express");
 const isEmpty = require("is-empty");
 const router = express.Router();
 const assetUnitModel = require('../models/asset-unit');
-const assetModel = require('../models/asset');
+const licensesModel = require('../models/licenses');
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const moment = require("moment");
 require('dotenv').config();
 
-router.get('/list', [verifyToken, routeAccessChecker("assetUnitList")], async (req, res) => {
+
+router.get('/list', [verifyToken, routeAccessChecker("licesesList")], async (req, res) => {
 
     const status = req.query.status
 
-    let result = await assetUnitModel.getList(status);
+    let result = await licensesModel.getList(status);
 
     return res.status(200).send({
         "success": true,
         "status": 200,
-        "message": "Asset Unit List.",
-        "count": result.length,
-        "data": result
-    });
-});
-
-
-router.get('/active-list', [verifyToken, routeAccessChecker("assetUnitActiveList")], async (req, res) => {
-
-    let result = await assetUnitModel.getActiveList();
-
-    return res.status(200).send({
-        "success": true,
-        "status": 200,
-        "message": "Asset Unit List.",
+        "message": "Licenses List.",
         "count": result.length,
         "data": result
     });
@@ -39,10 +26,26 @@ router.get('/active-list', [verifyToken, routeAccessChecker("assetUnitActiveList
 
 
 
-router.post('/add', [verifyToken, routeAccessChecker("assetUnitAdd")], async (req, res) => {
+router.get('/active-list', [verifyToken, routeAccessChecker("licesesActiveList")], async (req, res) => {
+
+    let result = await licensesModel.getActiveList();
+
+    return res.status(200).send({
+        "success": true,
+        "status": 200,
+        "message": "Licenses Active List.",
+        "count": result.length,
+        "data": result
+    });
+});
+
+
+
+router.post('/add', [verifyToken, routeAccessChecker("licesesAdd")], async (req, res) => {
 
     let reqData = {
-        "title": req.body.title
+        "title": req.body.title,
+        "price": req.body.price,
     }
 
     let current_date = new Date(); 
@@ -56,7 +59,7 @@ router.post('/add', [verifyToken, routeAccessChecker("assetUnitAdd")], async (re
 
 
 
-    let existingData = await assetUnitModel.getByTitle(reqData.title);
+    let existingData = await licensesModel.getByTitle(reqData.title);
 
 
     if (!isEmpty(existingData)) {
@@ -68,7 +71,7 @@ router.post('/add', [verifyToken, routeAccessChecker("assetUnitAdd")], async (re
 
     }
 
-    let result = await assetUnitModel.addNew(reqData);
+    let result = await licensesModel.addNew(reqData);
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
         return res.status(500).send({
@@ -81,32 +84,31 @@ router.post('/add', [verifyToken, routeAccessChecker("assetUnitAdd")], async (re
     return res.status(201).send({
         "success": true,
         "status": 201,
-        "message": "Asset unit added Successfully."
+        "message": "Licenses added Successfully."
     });
 
 });
 
 
 
-router.put('/update/:id', [verifyToken, routeAccessChecker("assetUnitUpdate")], async (req, res) => {
+router.put('/update/:id', [verifyToken, routeAccessChecker("licesesUpdate")], async (req, res) => {
 
     let id = req.params.id
     let reqData = {
-        "title": req.body.title
+        "title": req.body.title,
+        "price": req.body.price,
     }
 
     reqData.updated_by = req.decoded.userInfo.id;
     let current_date = new Date(); 
     let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
 
-    let existingDataById = await assetUnitModel.getById(id);
+    let existingDataById = await licensesModel.getById(id);
     if (isEmpty(existingDataById)) {
-
         return res.status(404).send({
             "success": false,
             "status": 404,
             "message": "No data found",
-
         });
     }
 
@@ -119,7 +121,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("assetUnitUpdate")], 
     // name
     if (existingDataById[0].title !== reqData.title) {
 
-            let existingDataByname = await assetUnitModel.getByTitle(reqData.title);
+            let existingDataByname = await licensesModel.getByTitle(reqData.title);
 
             if (!isEmpty(existingDataByname) && existingDataByname[0].id != id) {
 
@@ -130,9 +132,14 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("assetUnitUpdate")], 
             willWeUpdate = 1;
             updateData.title = reqData.title;
 
-        
-
     }
+    //price
+    if (existingDataById[0].price !== reqData.price) {
+
+        willWeUpdate = 1;
+        updateData.price = reqData.price
+
+  }
 
 
     if (isError == 1) {
@@ -149,7 +156,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("assetUnitUpdate")], 
         updateData.updated_at = current_time
 
 
-        let result = await assetUnitModel.updateById(id, updateData);
+        let result = await licensesModel.updateById(id, updateData);
 
 
         if (result.affectedRows == undefined || result.affectedRows < 1) {
@@ -164,7 +171,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("assetUnitUpdate")], 
         return res.status(200).send({
             "success": true,
             "status": 200,
-            "message": "Asset Unit successfully updated."
+            "message": "Licenses successfully updated."
         });
 
 
@@ -180,7 +187,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("assetUnitUpdate")], 
 
 
 
-router.delete('/delete/:id', [verifyToken, routeAccessChecker("assetUnitDelete")], async (req, res) => {
+router.delete('/delete/:id', [verifyToken, routeAccessChecker("licesesDelete")], async (req, res) => {
 
     let id = req.params.id
     
@@ -189,9 +196,8 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("assetUnitDelete")
     let current_date = new Date(); 
     let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
 
-    let existingDataById = await assetUnitModel.getById(id);
+    let existingDataById = await licensesModel.getById(id);
     if (isEmpty(existingDataById)) {
-
         return res.status(404).send({
             "success": false,
             "status": 404,
@@ -200,19 +206,6 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("assetUnitDelete")
         });
     }
 
-    // check already assign this unit 
-    let alreadyAssignThisUnit = await assetModel.alreadyAssignUnit(id);
-    console.log("first========",alreadyAssignThisUnit)
-    if (alreadyAssignThisUnit.length) {
-        return res.status(400).send({
-            "success": false,
-            "status": 400,
-            "message": "This unit already assign in asset.",
-
-        });
-    }
-
-
 
     let data = {
         status: 'delete',
@@ -220,7 +213,7 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("assetUnitDelete")
         updated_at: current_time
     }
 
-    let result = await assetUnitModel.updateById(id, data);
+    let result = await licensesModel.updateById(id, data);
 
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
@@ -241,7 +234,7 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("assetUnitDelete")
 });
 
 
-router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeAssetUnitStatus")], async (req, res) => {
+router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("licesesStatus")], async (req, res) => {
 
     let id = req.params.id
 
@@ -249,9 +242,8 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeAssetUni
     let current_date = new Date(); 
     let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
 
-    let existingDataById = await assetUnitModel.getById(id);
+    let existingDataById = await licensesModel.getById(id);
     if (isEmpty(existingDataById)) {
-
         return res.status(404).send({
             "success": false,
             "status": 404,
@@ -266,7 +258,7 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeAssetUni
         updated_at: current_time
     }
 
-    let result = await assetUnitModel.updateById(id, data);
+    let result = await licensesModel.updateById(id, data);
 
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
@@ -281,7 +273,7 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeAssetUni
     return res.status(200).send({
         "success": true,
         "status": 200,
-        "message": "Asset unit status has successfully changed."
+        "message": "Licenses status has successfully changed."
     });
 
 });

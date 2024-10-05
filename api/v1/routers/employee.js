@@ -9,6 +9,7 @@ const employeeModel = require('../models/employee');
 const userModel = require('../models/user');
 const adminModel = require('../models/admins ');
 const assetModel = require('../models/asset');
+const licensesModel = require('../models/licenses');
 const assetAssignModel = require('../models/asset-assign');
 const superModel = require('../models/super-admins');
 const { routeAccessChecker } = require("../middlewares/routeAccess");
@@ -39,115 +40,6 @@ const xlsxDateToJSDate = (serial) => {
   return new Date(epoch.getTime() + epoch.getTimezoneOffset() * 60000);
 };
 
-// router.post('/upload',[verifyToken, routeAccessChecker("employeeAdd")],upload.single('file'), async (req, res) => {
-//   if (!req.file) {
-//       return res.status(400).send({
-//           success: false,
-//           status: 400,
-//           message: 'No file uploaded.'
-//       });
-//   }
-
-//   // created at 
- 
-//   try {
-//       const workbook = xlsx.readFile(req.file.path);
-//       const sheetName = workbook.SheetNames[0];
-//       const worksheet = workbook.Sheets[sheetName];
-//       const data = xlsx.utils.sheet_to_json(worksheet);
-
-//       // Iterate through each row and save to database
-//       for (let row of data) {
-//           let joining_date = row['Joining date'];
-//           if (typeof joining_date === 'number') {
-//               joining_date = xlsxDateToJSDate(joining_date).toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD'
-//           }
-
-//           let reqData = {
-//               employee_id: row['Employee id'],
-//               name: row['Name'],
-//               department: row['Department'],
-//               designation: row['Designation'],
-//               email: row['Email'],
-//               contact_no: row['Contact no'],
-//               joining_date: joining_date,
-//               unit_name: row['Unit name'],
-//               created_by :req.decoded.userInfo.id ,
-//           };
-
-         
-
-//           // Perform validation checks here...
-
-//           //Check for duplicates
-//           let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
-//           if (checkDuplicate.length) {
-//               return res.status(400).send({
-//                   success: false,
-//                   status: 400,
-//                   message: `Employee ID ${reqData.employee_id} already exists.`
-//               });
-//           }
-
-//           // Save to database
-//           let result = await employeeModel.addNew(reqData);
-
-//           let employeeId = await employeeModel.getDataByEmployeeId(reqData.employee_id)
-//           let password = bcrypt.hashSync(reqData.employee_id.toString(), 10);
-          
-        
-//           let userData = {
-//             role_id : 3,
-//             profile_id : employeeId[0].id,
-//             employee_id : reqData.employee_id,
-//             name : row['Name'],
-//             email : row['Email'],
-//             password : password,
-//             created_by : req.decoded.userInfo.id,
-            
-//           }
-
-//         let user 
-//         if(reqData.department  && reqData.name && reqData.employee_id && reqData.email && reqData.contact_no && reqData.joining_date && reqData.unit_name && reqData.created_by){
-          
-//           user = await userModel.addNew(userData);
-          
-//         }else{
-//           return res.status(400).send({
-//             success: false,
-//             status: 400,
-//             message: 'employee Upload field could not match.'
-//         });
-//         }
-
-
-       
-
-
-//           if (user.affectedRows == undefined || user.affectedRows < 1) {
-//               return res.status(500).send({
-//                   success: false,
-//                   status: 500,
-//                   message: 'Something went wrong in the database.'
-//               });
-//           }
-//       }
-
-//       return res.status(201).send({
-//           success: true,
-//           status: 201,
-//           message: 'All employees added successfully.'
-//       });
-
-//   } catch (error) {
-//       return res.status(500).send({
-//           success: false,
-//           status: 500,
-//           message: 'Error processing the file.',
-//           error: error.message
-//       });
-//   }
-// });
 
 router.post('/upload', [verifyToken, routeAccessChecker("employeeAdd")], upload.single('file'), async (req, res) => {
   if (!req.file) {
@@ -202,14 +94,14 @@ router.post('/upload', [verifyToken, routeAccessChecker("employeeAdd")], upload.
           };
 
           // Check for duplicates
-          let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
-          if (checkDuplicate.length) {
-              return res.status(400).send({
-                  success: false,
-                  status: 400,
-                  message: `Employee ID ${reqData.employee_id} already exists.`
-              });
-          }
+          // let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
+          // if (checkDuplicate.length) {
+          //     return res.status(400).send({
+          //         success: false,
+          //         status: 400,
+          //         message: `Employee ID ${reqData.employee_id} already exists.`
+          //     });
+          // }
 
           // Save to database
           let result = await employeeModel.addNew(reqData);
@@ -381,6 +273,35 @@ if(isEmpty(reqData.email)){
         });
    }
 
+    if(isEmpty(reqData.licenses)){
+      return res.status(400).send({
+          "success": false,
+          "status": 400,
+          "message":"Licenses cannot be empty."
+        });
+  }
+    if(!Array.isArray(reqData.licenses)){
+      return res.status(400).send({
+        "success": false,
+        "status": 400,
+        "message":"Licenses cannot be array."
+      });
+    }
+
+    for (let index = 0; index < reqData.licenses.length; index++) {
+      const element = reqData.licenses[index];
+      let existingData = await licensesModel.getById(element);
+      if(isEmpty(existingData)){
+        return res.status(400).send({
+          "success": false,
+          "status": 400,
+          "message":"This Licenses id not found."
+        });
+      }
+    }
+
+    reqData.licenses = JSON.stringify(reqData.licenses)
+
    // blood group validation
    if(isEmpty(reqData.blood_group)){
     return res.status(400).send({
@@ -390,7 +311,7 @@ if(isEmpty(reqData.email)){
       });
  }
 
-  // // check duplicate 
+    // check duplicate 
      let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
      if (checkDuplicate.length) {
        return res.status(404).send({
@@ -419,7 +340,7 @@ if(isEmpty(reqData.email)){
 
     }
 
-   console.log("first",employeeData)
+
 
     let result = await employeeModel.addNew(employeeData);
 
@@ -456,8 +377,6 @@ if(isEmpty(reqData.email)){
 });
 
 
-
-
 // list
 router.get('/list',[verifyToken, routeAccessChecker("employeeList")],async (req, res) => {
 
@@ -471,11 +390,51 @@ router.get('/list',[verifyToken, routeAccessChecker("employeeList")],async (req,
 }
  let { offset, limit , key, unit_name,status,blood_group}  = reqData;
 
- console.log("first === ",blood_group)
 
     let result = await userModel.getEmployeeList(offset, limit, key, unit_name,status,blood_group);
 
     let countResult = await userModel.getTotalEmployeeList(key, unit_name,status,blood_group);
+    
+    // Iterate over the employee list
+// Iterate over the employee list
+for (let employee of result) {
+  if (!isEmpty(employee.licenses)) {
+    try {
+      // Try parsing the licenses string to an array
+      let licenses = JSON.parse(employee.licenses);
+
+      // Ensure licenses is an array before proceeding
+      if (Array.isArray(licenses)) {
+        // Array to store the fetched license details
+        let licenseDetails = [];
+
+        // Loop through each license ID, fetch the details, and store them
+        for (let licenseId of licenses) {
+          let existingData = await licensesModel.getById(licenseId);
+
+          if (existingData && existingData.length > 0) {
+            // Assuming existingData is an array, access the first element
+            let license = existingData[0];  // Access the first RowDataPacket
+
+            licenseDetails.push({
+              id : license.id,
+              title: license.title,
+              price: license.price
+            });
+          }
+        }
+
+        // Replace the licenses field with the fetched license details
+        employee.licenses = licenseDetails;
+      } else {
+        console.error("Licenses is not a valid array:", employee.licenses);
+      }
+    } catch (error) {
+      // Log the error and the faulty data
+      console.error("Error parsing licenses for employee:", employee.employee_id, error);
+    }
+  }
+}
 
     return res.status(200).send({
       success: true,
@@ -553,33 +512,69 @@ router.get('/list-2',[verifyToken, routeAccessChecker("employeeList")],async (re
 
 
 //details
-router.get('/details/:id',[verifyToken, routeAccessChecker("employeeDatails")],
-  async (req, res) => {
+router.get('/details/:id', [verifyToken, routeAccessChecker("employeeDatails")], async (req, res) => {
     
-    let id = req.params.id
+  let id = req.params.id;
 
-    // get id wise data form db 
-    let result = await userModel.getById(id);;
+  // Get data from the database by id
+  let result = await userModel.getById(id);
 
-     // check this id already existing in database or not
-     if (isEmpty(result)) {
-        return res.status(404).send({
-          success: false,
-          status: 404,
-          message: "Employee data not found."
-        });
-  
-      } 
+  // Check if this id already exists in the database
+  if (isEmpty(result)) {
+    return res.status(404).send({
+      success: false,
+      status: 404,
+      message: "Employee data not found."
+    });
+  }
 
+  // Assuming result[0] contains the employee data
+  let employee = result[0];
 
+  if (!isEmpty(employee.licenses)) {
+    try {
+      // Try parsing the licenses string to an array
+      let licenses = JSON.parse(employee.licenses);
+
+      // Ensure licenses is an array before proceeding
+      if (Array.isArray(licenses)) {
+        // Array to store the fetched license details
+        let licenseDetails = [];
+
+        // Loop through each license ID, fetch the details, and store them
+        for (let licenseId of licenses) {
+          let existingData = await licensesModel.getById(licenseId);
+
+          if (existingData && existingData.length > 0) {
+            // Assuming existingData is an array, access the first element
+            let license = existingData[0];  // Access the first RowDataPacket
+
+            licenseDetails.push({
+              id: license.id,
+              title: license.title,
+              price: license.price
+            });
+          }
+        }
+
+        // Replace the licenses field with the fetched license details
+        employee.licenses = licenseDetails;
+      } else {
+        console.error("Licenses is not a valid array:", employee.licenses);
+      }
+    } catch (error) {
+      // Log the error and the faulty data
+      console.error("Error parsing licenses for employee:", employee.employee_id, error);
+    }
+  }
+
+  // Return the employee details
   return res.status(200).send({
-      success: true,
-      status: 200,
-      message: "Employee details.",
-      data: result[0],
+    success: true,
+    status: 200,
+    message: "Employee details.",
+    data: employee,  // Return the single employee object
   });
-      
-    
 });
 
 
@@ -771,12 +766,29 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
 
   }
 
-     // check unit_name
-     if(existingDataById[0].licenses != reqData.licenses){
-      willWeUpdate = 1
-      updateData.licenses = reqData.licenses
-  
+// update licenses
+    if(!Array.isArray(reqData.licenses)){
+      return res.status(400).send({
+        "success": false,
+        "status": 400,
+        "message":"Licenses cannot be array."
+      });
     }
+
+    for (let index = 0; index < reqData.licenses.length; index++) {
+      const element = reqData.licenses[index];
+      let existingData = await licensesModel.getById(element);
+      if(isEmpty(existingData)){
+        return res.status(400).send({
+          "success": false,
+          "status": 400,
+          "message":"This Licenses id not found."
+        });
+      }
+    }
+
+    reqData.licenses = JSON.stringify(reqData.licenses)
+    updateData.licenses = reqData.licenses
 
     // check unit_name
     if(existingDataById[0].blood_group != reqData.blood_group){
@@ -827,6 +839,8 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
        updateUser = await userModel.updateByEmployeeUser(id,userUpdateData);
     }
     else if(existingDataById[0].role_id == 3){
+    console.log("first sss ss ",updateData)
+    console.log("first sss ss ",existingDataById[0].profile_id)
        result = await employeeModel.updateById(existingDataById[0].profile_id,updateData);
 
        updateUser = await userModel.updateByEmployeeUser(id,userUpdateData);

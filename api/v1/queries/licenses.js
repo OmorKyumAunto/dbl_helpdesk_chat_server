@@ -11,7 +11,7 @@ let getList = (status) => {
         searchCondition += " AND status = ''";
     }
 
-    return `SELECT * FROM ${table_name} WHERE ${searchCondition} ORDER BY id DESC`;
+    return `SELECT * FROM ${table_name} WHERE ${searchCondition}  ORDER BY id DESC`;
 }
 
 

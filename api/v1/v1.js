@@ -16,6 +16,7 @@ const profileRouter = require('./routers/profile');
 const dashboardRouter = require('./routers/dashboard');
 const  unitRouter = require('./routers/asset-unit');
 const  adminRouter = require('./routers/admin');
+const  licensesRouter = require('./routers/licenses');
 
 
 
@@ -27,6 +28,7 @@ router.use('/profile', profileRouter);
 router.use('/dashboard', dashboardRouter);
 router.use('/asset-unit', unitRouter);
 router.use('/admin', adminRouter);
+router.use('/licenses', licensesRouter);
 
 
 

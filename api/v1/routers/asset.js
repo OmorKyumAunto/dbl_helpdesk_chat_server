@@ -42,8 +42,9 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
       "contact_no":req.body.contact_no,
       "joining_date":req.body.joining_date,
       "employee_unit_name":req.body.employee_unit_name,
-
+      "price":req.body.price,
   }
+
 
   let current_date = new Date(); 
   let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
@@ -80,20 +81,20 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
         });
   }
 
-  current_time = moment(); 
-  if (!moment(reqData.purchase_date, "YYYY-MM-DD", true).isValid()) {
-    return res.status(400).send({
-      success: false,
-      status: 400,
-      message: "Invalid purchase date."
-    });
-  } else if (current_time.isBefore(moment(reqData.purchase_date, "YYYY-MM-DD"))) {
-    return res.status(400).send({
-      success: false,
-      status: 400,
-      message: "Invalid purchase date."
-    });
-  }
+    current_time = moment(); 
+    if (!moment(reqData.purchase_date, "YYYY-MM-DD", true).isValid()) {
+      return res.status(400).send({
+        success: false,
+        status: 400,
+        message: "Invalid purchase date."
+      });
+    } else if (current_time.isBefore(moment(reqData.purchase_date, "YYYY-MM-DD"))) {
+      return res.status(400).send({
+        success: false,
+        status: 400,
+        message: "Invalid purchase date."
+      });
+    }
 
 
 
@@ -249,6 +250,7 @@ let data2 = {
   unit_id : reqData.unit_id,
   model : reqData.model,
   specification : reqData.specification,
+  price : parseInt(reqData.price),
   created_by : req.decoded.userInfo.id
 }
 
@@ -582,8 +584,7 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetDetails")],
     let id = req.params.id
 
     // get id wise data form db 
-    let result = await assetModel.getById(id);;
-
+    let result = await assetModel.getById(id);
      // check this id already existing in database or not
      if (isEmpty(result)) {
         return res.status(404).send({
@@ -650,7 +651,6 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetDetails")],
 
 
     let assetUnitData = await assetUnitModel.getById(result[0].unit_id)
-    // console.log("firs======t",assetUnitData)
     if(assetUnitData){
       result[0].unit_name = assetUnitData[0].title
     }else{
@@ -748,7 +748,8 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateAsset")],
         "specification":req.body.specification,
         "assign_update": req.body.assign_update,
         "user_id":req.body.user_id,
-        "assign_date":req.body.assign_date
+        "assign_date":req.body.assign_date,
+        "price":req.body.price,
       }
 
   
@@ -845,6 +846,12 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateAsset")],
    if(existingDataById[0].specification != reqData.specification){
     willWeUpdate = 1
     updateData.specification = reqData.specification
+
+  }
+
+  if(existingDataById[0].price != reqData.price){
+    willWeUpdate = 1
+    updateData.price = parseInt(reqData.price)
 
   }
 

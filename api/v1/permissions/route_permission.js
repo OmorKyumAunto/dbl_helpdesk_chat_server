@@ -23,7 +23,7 @@ let superAdminPermission = [
 
 
 "employeeAssignList","employeeTotalAssetAssignCount", "employeeUpdate","changePassword","dashboardData","dashboardGraphData","employeeDashboard","distributedDetails",
-"adminList","assetUpdate","assetDetails"
+"adminList","assetUpdate","assetDetails","employeeCalculation"
 ];
 
 let adminPermission = [
@@ -53,7 +53,7 @@ let adminPermission = [
 
 "licesesList","licesesActiveList","licesesAdd","licesesUpdate","licesesDelete","licesesStatus",
 "employeeAssignList","employeeTotalAssetAssignCount", "employeeUpdate","changePassword","dashboardData","dashboardGraphData","employeeDashboard","distributedDetails",
-"adminList","assetUpdate","assetDetails","onlyEmployeeList"
+"adminList","assetUpdate","assetDetails","onlyEmployeeList","employeeCalculation"
 ];
 
 let employeePermission = [
@@ -82,7 +82,7 @@ let employeePermission = [
 
 "licesesList","licesesActiveList","licesesAdd","licesesUpdate","licesesDelete","licesesStatus",
   "employeeAssignList","employeeTotalAssetAssignCount", "employeeUpdate","changePassword","dashboardData","dashboardGraphData","employeeDashboard","distributedDetails",
-  "adminList","assetUpdate","assetDetails"
+  "adminList","assetUpdate","assetDetails","employeeCalculation"
 ];
 
 

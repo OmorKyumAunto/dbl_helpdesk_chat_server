@@ -395,47 +395,42 @@ router.get('/list',[verifyToken, routeAccessChecker("employeeList")],async (req,
 
     let countResult = await userModel.getTotalEmployeeList(key, unit_name,status,blood_group);
     
+
     // Iterate over the employee list
-// Iterate over the employee list
-for (let employee of result) {
-  if (!isEmpty(employee.licenses)) {
-    try {
-      // Try parsing the licenses string to an array
-      let licenses = JSON.parse(employee.licenses);
+    for (let employee of result) {
+      if (!isEmpty(employee.licenses)) {
+        try {
+          // Try parsing the licenses string to an array
+          let licenses = JSON.parse(employee.licenses);
 
-      // Ensure licenses is an array before proceeding
-      if (Array.isArray(licenses)) {
-        // Array to store the fetched license details
-        let licenseDetails = [];
+          // Ensure licenses is an array before proceeding
+          if (Array.isArray(licenses)) {
+            // Array to store the fetched license details
+            let licenseDetails = [];
 
-        // Loop through each license ID, fetch the details, and store them
-        for (let licenseId of licenses) {
-          let existingData = await licensesModel.getById(licenseId);
+            // Loop through each license ID, fetch the details, and store them
+            for (let licenseId of licenses) {
+              let existingData = await licensesModel.getById(licenseId);
 
-          if (existingData && existingData.length > 0) {
-            // Assuming existingData is an array, access the first element
-            let license = existingData[0];  // Access the first RowDataPacket
+              if (existingData && existingData.length > 0) {
+           
+                let license = existingData[0];  
 
-            licenseDetails.push({
-              id : license.id,
-              title: license.title,
-              price: license.price
-            });
-          }
+                licenseDetails.push({
+                  id : license.id,
+                  title: license.title,
+                  price: license.price
+                });
+              }
+            }
+            employee.licenses = licenseDetails;
+          } 
+        } catch (error) {
+          console.error("Error parsing licenses for employee:",error);
         }
-
-        // Replace the licenses field with the fetched license details
-        employee.licenses = licenseDetails;
-      } else {
-        console.error("Licenses is not a valid array:", employee.licenses);
       }
-    } catch (error) {
-      // Log the error and the faulty data
-      console.error("Error parsing licenses for employee:", employee.employee_id, error);
     }
-  }
-}
-
+    console.log("first")
     return res.status(200).send({
       success: true,
       status: 200,
@@ -1024,7 +1019,6 @@ router.post('/assign-admin/:id',[verifyToken, routeAccessChecker("assignAdmin")]
 
   } 
 
-
   let data = {
     employee_id : employeeData[0].employee_id,
     name :  employeeData[0].name,
@@ -1034,14 +1028,13 @@ router.post('/assign-admin/:id',[verifyToken, routeAccessChecker("assignAdmin")]
     contact_no :  employeeData[0].contact_no,
     joining_date :  employeeData[0].joining_date,
     unit_name :  employeeData[0].unit_name,
-    licenses :  employeeData[0].licenses,
     blood_group :  employeeData[0].blood_group,
     business_type :  employeeData[0].business_type,
     line_of_business :  employeeData[0].line_of_business,
     grade :  employeeData[0].grade,
+    licenses :  employeeData[0].licenses,
 
   }  
-
 
   let result = await adminModel.addNew(data);
 
@@ -1108,7 +1101,7 @@ router.post('/assign-admin-demoted/:id',[verifyToken, routeAccessChecker("assign
     contact_no :  getData[0].contact_no,
     joining_date :  getData[0].joining_date,
     unit_name :  getData[0].unit_name,
-    licenses : getData[0].licenses,
+    licenses :  employeeData[0].licenses,
     blood_group :  getData[0].blood_group,
     business_type :  getData[0].business_type,
     line_of_business :  getData[0].line_of_business,
@@ -1151,8 +1144,6 @@ router.post('/assign-admin-demoted/:id',[verifyToken, routeAccessChecker("assign
   
 
 });
-
-
 
 
 
@@ -1271,6 +1262,186 @@ router.post("/password-change", [verifyToken,routeAccessChecker("changePassword"
     });
   }
 );
+
+
+
+// router.get('/employee-calculation',[verifyToken, routeAccessChecker("employeeCalculation")],async (req, res) => {
+
+//   let reqData = {
+//     "limit": req.query.limit || 50,
+//     "offset": req.query.offset || 0,
+//     "key": req.query.key,
+//     "unit_name": req.query.unit_name,
+//   }
+
+//   let { offset, limit , key, unit_name}  = reqData;
+
+//   let result = await userModel.getEmployeeList(offset, limit, key, unit_name);
+
+//   let countResult = await userModel.getTotalEmployeeList(key, unit_name);
+
+
+// // Iterate through each employee
+// for (let index = 0; index < result.length; index++) {
+//   let licenses = result[index].licenses;
+//  let licenseDetails = []
+//   try {
+//     // Attempt to parse the licenses string
+//     let validData = JSON.parse(licenses);
+
+//     if(validData){
+//       for (let index = 0; index < validData.length; index++) {
+//         const data = validData[index];
+
+//         let existingData = await licensesModel.getById(data);
+
+//               if (existingData && existingData.length > 0) {
+           
+//                 let license = existingData[0];  
+
+//                 licenseDetails.push({
+//                   id : license.id,
+//                   title: license.title,
+//                   price: license.price
+//                 });
+//               }
+//             }
+//       }
+    
+//     // If licenses are parsed successfully, continue processing...
+//     result[index].licenses = licenseDetails;
+
+//     const getAssignAssetId = await assetAssignModel.getByAssignUser(result[index].id)
+//     for (let index = 0; index < getAssignAssetId.length; index++) {
+//       const element = getAssignAssetId[index].asset_id;
+//       console.log("first ======= ",element)
+//       let assetPrice = await assetModel.getById(element);
+//       for (let index = 0; index < array.length; index++) {
+//         const element = array[index];
+        
+//       }
+//     }
+
+//   } catch (error) {
+    
+//     console.error(`Error parsing licenses for employee at index ${index}:`, error.message);
+//     result[index].licenses = []; 
+//   }
+// }
+
+
+//     return res.status(200).send({
+//       success: true,
+//       status: 200,
+//       message: "Employee List.",
+//       total: countResult.length,
+//       data: result
+//     });
+
+// });
+
+
+router.get('/employee-calculation', [verifyToken, routeAccessChecker("employeeCalculation")], async (req, res) => {
+
+  let reqData = {
+    "limit": req.query.limit || 50,
+    "offset": req.query.offset || 0,
+    "key": req.query.key,
+    "unit_name": req.query.unit_name,
+  }
+
+  let { offset, limit, key, unit_name } = reqData;
+
+  // Fetch employee list and total employee count
+  let result = await userModel.getEmployeeList(offset, limit, key, unit_name);
+  let countResult = await userModel.getTotalEmployeeList(key, unit_name);
+
+  // Iterate through each employee
+  for (let index = 0; index < result.length; index++) {
+    let licenses = result[index].licenses;
+    let licenseDetails = [];
+    let totalAssetPrice = 0; // Initialize total asset price for the employee
+    let totalLicensesPrice = 0; // Initialize total license price for the employee
+
+    try {
+      // Attempt to parse the licenses string
+      let validData = JSON.parse(licenses);
+
+      if (validData && Array.isArray(validData)) {
+        // Loop through each license ID, fetch details, and push to licenseDetails
+        for (let licenseId of validData) {
+          let existingData = await licensesModel.getById(licenseId);
+          if (existingData && existingData.length > 0) {
+            let license = existingData[0]; // Access the first RowDataPacket
+            licenseDetails.push({
+              id: license.id,
+              title: license.title,
+              price: license.price
+            });
+
+            // Sum up the license prices for total license price calculation
+            totalLicensesPrice += license.price;
+          }
+        }
+      }
+
+      // Replace the licenses field with the fetched license details
+      result[index].licenses = licenseDetails;
+
+      // Fetch assigned assets for the employee
+      let getAssignAssetId = await assetAssignModel.getByAssignUser(result[index].id);
+      let assetDetails = [];
+
+      // Loop through each assigned asset ID, fetch details, and push to assetDetails
+      for (let assetAssignment of getAssignAssetId) {
+        let assetId = assetAssignment.asset_id;
+        let assetPriceData = await assetModel.getById(assetId);
+
+        if (assetPriceData && assetPriceData.length > 0) {
+          let asset = assetPriceData[0]; // Access the first RowDataPacket
+          assetDetails.push({
+            id: asset.id,
+            name: asset.name, 
+            serial_number: asset.serial_number, 
+            price: asset.price
+          });
+
+          // Sum up the asset prices for total asset price calculation
+          totalAssetPrice += asset.price;
+        }
+      }
+
+      // Add the asset details and total asset price to the employee object
+      result[index].assets = assetDetails;
+      result[index].total_asset_price = totalAssetPrice; 
+      result[index].monthly_asset_cost = Number((totalAssetPrice / 36).toFixed(2));
+      
+      // Add the total licenses price to the employee object
+      result[index].montly_licenses_price = totalLicensesPrice;
+      result[index].total_ctc_per_month = (result[index].monthly_asset_cost + result[index].montly_licenses_price)
+      result[index].total_ctc_per_year = (result[index].total_ctc_per_month * 12)
+
+    } catch (error) {
+      // Handle any parsing or data fetching errors
+      console.error(`Error processing employee at index ${index}:`, error.message);
+      result[index].licenses = [];
+      result[index].assets = [];
+      result[index].total_asset_price = 0; // Set total asset price to 0 if there's an error
+      result[index].montly_licenses_price = 0; // Set total license price to 0 if there's an error
+      result[index].total_ctc_per_month  = 0
+    }
+  }
+
+  // Return the response
+  return res.status(200).send({
+    success: true,
+    status: 200,
+    message: "Employee List.",
+    total: countResult.length,
+    data: result
+  });
+
+});
 
 
 module.exports = router;  

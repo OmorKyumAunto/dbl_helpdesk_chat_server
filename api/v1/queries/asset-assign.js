@@ -11,6 +11,12 @@ let getByEmployee = () => {
 }
 
 
+let getByAssignUser = () => {
+    return `SELECT * FROM ${table_name} where  user_id = ? and status = 1`;
+}
+
+
+
 let getList = (offset, limit, key) => {
     let searchCondition = key ? `AND LOWER(name) LIKE LOWER('%${key}%')` : '';
     return `SELECT * FROM ${table_name} WHERE status = 1 ${searchCondition} LIMIT ${limit} OFFSET ${offset}`;
@@ -60,6 +66,7 @@ module.exports = {
     getArtistListByAlbumId,
     deleteAssetById,
     totalAssignAssetCount,
-    employeeAssignCount
+    employeeAssignCount,
+    getByAssignUser
 
 }

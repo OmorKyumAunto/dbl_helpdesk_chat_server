@@ -26,6 +26,14 @@ let getByExistsEmployee = async(employee_id = "") => {
     });
 }
 
+let getByAssignUser = async(id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByAssignUser(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
 
 
 
@@ -231,7 +239,8 @@ module.exports = {
    getArtistListByAlbumId,
    deleteAssetById,
    totalAssignAssetCount,
-   employeeAssignCount
+   employeeAssignCount,
+   getByAssignUser
    
   
 }

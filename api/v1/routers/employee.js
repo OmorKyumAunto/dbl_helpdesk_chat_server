@@ -58,7 +58,7 @@ router.post('/upload', [verifyToken, routeAccessChecker("employeeAdd")], upload.
 
       for (let row of data) {
           // Required fields
-          const requiredFields = ['Employee id', 'Name', 'Department', 'Designation', 'Email', 'Contact no', 'Joining date', 'Unit name'];
+          const requiredFields = ['Employee id', 'Name', 'Department', 'Designation', 'Email', 'Contact no', 'Joining date', 'Unit name','Blood group','Business type','Line of business','Grade','Pabx'];
 
           // Check for missing fields
           for (const field of requiredFields) {
@@ -90,6 +90,7 @@ router.post('/upload', [verifyToken, routeAccessChecker("employeeAdd")], upload.
               business_type : row['Business type'],
               line_of_business : row['Line of business'],
               grade : row['Grade'],
+              pabx : row['Pabx'],
               created_by: req.decoded.userInfo.id,
           };
 

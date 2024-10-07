@@ -277,13 +277,13 @@ if(isEmpty(reqData.email)){
         });
    }
 
-    if(isEmpty(reqData.licenses)){
-      return res.status(400).send({
-          "success": false,
-          "status": 400,
-          "message":"Licenses cannot be empty."
-        });
-  }
+  //   if(isEmpty(reqData.licenses)){
+  //     return res.status(400).send({
+  //         "success": false,
+  //         "status": 400,
+  //         "message":"Licenses cannot be empty."
+  //       });
+  // }
     if(!Array.isArray(reqData.licenses)){
       return res.status(400).send({
         "success": false,

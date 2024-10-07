@@ -668,6 +668,23 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetDetails")],
     }
     result[0].history = arr
 
+    let current_date = new Date(); 
+    //let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+    let purchaseDate = new Date(result[0].purchase_date);
+    let currentTime = new Date();
+    
+    let warrantyEndDate = new Date(purchaseDate);
+    warrantyEndDate.setFullYear(warrantyEndDate.getFullYear() + 3);
+    
+    if (currentTime <= warrantyEndDate) {
+        let timeDiff = warrantyEndDate - currentTime; 
+        let daysLeft = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); 
+    
+        result[0].warranty = `Remaining warranty ${daysLeft} days.`;
+    } else {
+        result[0].warranty = 'Warranty expired';
+    }
+
   return res.status(200).send({
       success: true,
       status: 200,
@@ -1465,7 +1482,7 @@ router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], u
           // Handle purchase_date conversion
           let purchase_date = row['Purchase date'];
           if (typeof purchase_date === 'number') {
-              purchase_date = xlsxDateToJSDate(purchase_date).toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD'
+              purchase_date = xlsxDateToJSDate(purchase_date).toISOString().split('T')[0]; 
           }
 
           let reqData = {
@@ -1477,9 +1494,11 @@ router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], u
               model: row['Model'],
               specification: row['Specification'],
               unit_name: row['Unit name'],
+              price : row['Price'],
               created_by : req.decoded.userInfo.id
           };
 
+         
           let unitArr = [];
           // get asset unit data
           let assetUnitData = await assetUnitModel.getOnlyDataList();
@@ -1511,7 +1530,7 @@ router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], u
 
           // Remove unit_name from reqData since it is no longer needed
           delete reqData.unit_name;
-
+          console.log("first ==== >> ",reqData)
           // Save to database
           let result = await assetModel.addNew2(reqData);
           if (!result.affectedRows || result.affectedRows < 1) {

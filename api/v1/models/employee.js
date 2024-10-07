@@ -253,6 +253,92 @@ let getUserByEmployeeIdNo = async (email = "") => {
     });
 }
 
+
+// blood count 
+
+
+
+  let a_positive = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.a_positive(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+
+  let b_positive = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.b_positive(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+
+
+  let ab_positive = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.ab_positive(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+
+
+  let o_positive = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.o_positive(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+
+
+  let a_negative = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.a_negative(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+
+
+  let b_negative = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.b_negative(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+  
+
+  let ab_negative = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.ab_negative(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+
+
+  let  o_negative = async () => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.o_negative(), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+
+
+
+
 module.exports = {
    addNew,
    getByExistsEmployee,
@@ -267,7 +353,15 @@ module.exports = {
    getTotalList,
    getDataByEmployeeId,
    getByIdForDeleted,
-   getUserByEmployeeIdNo
+   getUserByEmployeeIdNo,
+   a_positive,
+   b_positive,
+   ab_positive,
+   o_positive,
+   a_negative,
+   b_negative,
+   ab_negative,
+   o_negative
    
   
 }

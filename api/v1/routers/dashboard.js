@@ -29,7 +29,7 @@ router.get('/dashboard-data',[verifyToken,routeAccessChecker("dashboardData")], 
       status: 200,
       message: "Dashboard data.",
       data: result
-    });
+    })
   
 });
 
@@ -123,6 +123,39 @@ router.get('/employee-data-count',[verifyToken,routeAccessChecker("employeeDashb
       success: false,
       status: 200,
       message: "Dashboard employee Count data.",
+      data: result
+    });
+  
+});
+
+
+
+router.get('/blood-count', async (req, res) => {
+
+  let a_positive = await employeeModel.a_positive()
+  let b_positive = await employeeModel.b_positive()
+  let ab_positive = await employeeModel.ab_positive()
+  let o_positive = await employeeModel.o_positive()
+  let a_negative = await employeeModel.a_negative()
+  let b_negative = await employeeModel.b_negative()
+  let ab_negative = await employeeModel.ab_negative()
+  let o_negative = await employeeModel.o_negative()
+
+  let result = {
+    total_a_positive : a_positive[0].total_a_positive,
+    total_b_positive : b_positive[0].total_b_positive,
+    total_ab_positive : ab_positive[0].total_ab_positive,
+    total_o_positive : o_positive[0].total_o_positive,
+    total_a_negative : a_negative[0].total_a_negative,
+    total_b_negative : b_negative[0].total_b_negative,
+    total_ab_negative : ab_negative[0].total_ab_negative,
+    total_0_negative : o_negative[0].total_0_negative,
+  }
+
+    return res.status(200).send({
+      success: false,
+      status: 200,
+      message: "Blood Count data.",
       data: result
     });
   

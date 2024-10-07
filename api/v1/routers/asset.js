@@ -107,13 +107,13 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
 }
 
 
-if(isEmpty(reqData.po_number)){
-  return res.status(400).send({
-    "success": false,
-    "status": 400,
-    "message":"Po number cannot be empty."
-  });
-}
+// if(isEmpty(reqData.po_number)){
+//   return res.status(400).send({
+//     "success": false,
+//     "status": 400,
+//     "message":"Po number cannot be empty."
+//   });
+// }
 
   // unit validation
   if(isEmpty(reqData.unit_id)){
@@ -142,14 +142,14 @@ if(isEmpty(reqData.po_number)){
   });
   } 
 
-  // unit validation
-  if(isEmpty(reqData.specification)){
-    return res.status(400).send({
-        "success": false,
-        "status": 400,
-        "message":"Specification cannot be empty."
-  });
-  } 
+  // // unit validation
+  // if(isEmpty(reqData.specification)){
+  //   return res.status(400).send({
+  //       "success": false,
+  //       "status": 400,
+  //       "message":"Specification cannot be empty."
+  // });
+  // } 
 
 
 // if is_assign employee

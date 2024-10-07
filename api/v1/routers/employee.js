@@ -93,6 +93,8 @@ router.post('/upload', [verifyToken, routeAccessChecker("employeeAdd")], upload.
               pabx : row['Pabx'],
               created_by: req.decoded.userInfo.id,
           };
+          //Microsoft E1
+
 
           // Check for duplicates
           // let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
@@ -654,10 +656,9 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
         "business_type": req.body.business_type,
         "line_of_business": req.body.line_of_business,
         "grade": req.body.grade,
-        "pabx":reqData.pabx,
+        "pabx":req.body.pabx,
       }
 
-  
     let current_date = new Date(); 
     let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
 

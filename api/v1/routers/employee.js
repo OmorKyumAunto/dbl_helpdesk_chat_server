@@ -659,7 +659,6 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
         "pabx":req.body.pabx,
       }
 
-  
     let current_date = new Date(); 
     let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
 

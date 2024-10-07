@@ -149,7 +149,7 @@ router.get('/blood-count', async (req, res) => {
     total_a_negative : a_negative[0].total_a_negative,
     total_b_negative : b_negative[0].total_b_negative,
     total_ab_negative : ab_negative[0].total_ab_negative,
-    total_0_negative : o_negative[0].total_0_negative,
+    total_0_negative : o_negative[0].total_o_negative,
   }
 
     return res.status(200).send({

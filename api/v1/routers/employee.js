@@ -172,6 +172,7 @@ router.post('/add',[verifyToken, routeAccessChecker("employeeAdd")],async (req, 
       "business_type": req.body.business_type,
       "line_of_business": req.body.line_of_business,
       "grade": req.body.grade,
+      "pabx": req.body.pabx
   }
 
   let current_date = new Date(); 
@@ -336,6 +337,7 @@ if(isEmpty(reqData.email)){
       business_type : reqData.business_type,
       line_of_business : reqData.line_of_business,
       grade : reqData.grade,
+      pabx:reqData.pabx,
       created_by : reqData.created_by
 
     }
@@ -651,6 +653,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
         "business_type": req.body.business_type,
         "line_of_business": req.body.line_of_business,
         "grade": req.body.grade,
+        "pabx":reqData.pabx,
       }
 
   
@@ -808,6 +811,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
         willWeUpdate = 1
         updateData.grade = reqData.grade
       }
+      updateData.pabx = reqData.pabx
 
     if (isError == 1) {
       return res.status(400).send({
@@ -1360,8 +1364,8 @@ router.get('/employee-calculation', [verifyToken, routeAccessChecker("employeeCa
   for (let index = 0; index < result.length; index++) {
     let licenses = result[index].licenses;
     let licenseDetails = [];
-    let totalAssetPrice = 0; // Initialize total asset price for the employee
-    let totalLicensesPrice = 0; // Initialize total license price for the employee
+    let totalAssetPrice = 0;
+    let totalLicensesPrice = 0; 
 
     try {
       // Attempt to parse the licenses string
@@ -1372,7 +1376,7 @@ router.get('/employee-calculation', [verifyToken, routeAccessChecker("employeeCa
         for (let licenseId of validData) {
           let existingData = await licensesModel.getById(licenseId);
           if (existingData && existingData.length > 0) {
-            let license = existingData[0]; // Access the first RowDataPacket
+            let license = existingData[0]; 
             licenseDetails.push({
               id: license.id,
               title: license.title,

@@ -89,6 +89,49 @@ let getArtistListByAlbumId = () => {
 }
 
 
+// blood 
+let a_positive = () => {
+    return `SELECT count(id) as total_a_positive FROM ${table_name2}  WHERE blood_group = 'A+' and status = 1`; 
+  };
+  
+
+  let b_positive = () => {
+    return `SELECT count(id) as total_b_positive FROM ${table_name2}  WHERE blood_group = 'B+' and status = 1`; 
+  };
+  
+
+  let ab_positive = () => {
+    return `SELECT count(id) as total_ab_positive FROM ${table_name2}  WHERE blood_group = 'AB+' and status = 1`; 
+  };
+  
+
+  let o_positive = () => {
+    return `SELECT count(id) as total_o_positive FROM ${table_name2}  WHERE blood_group = 'O+' and status = 1`; 
+  };
+  
+
+  let a_negative = () => {
+    return `SELECT count(id) as total_a_negative FROM ${table_name2}  WHERE blood_group = 'A-' and status = 1`; 
+  };
+  
+
+  let b_negative = () => {
+    return `SELECT count(id) as total_b_negative FROM ${table_name2}  WHERE blood_group = 'B-' and status = 1`; 
+  };
+  
+
+  let ab_negative = () => {
+    return `SELECT count(id) as total_ab_negative FROM ${table_name2}  WHERE blood_group = 'AB-' and status = 1`; 
+  };
+  
+
+  let o_negative = () => {
+    return `SELECT count(id) as total_o_negative FROM ${table_name2}  WHERE blood_group = 'O-' and status = 1`; 
+  };
+  
+  
+
+
 module.exports = {
     addNew,
     getByEmployee,
@@ -101,6 +144,14 @@ module.exports = {
     getTotalList,
     getDataByEmployeeId,
     getByIdForDeleted,
-    getUserByEmployeeIdNo
+    getUserByEmployeeIdNo,
+    a_positive,
+    b_positive,
+    ab_positive,
+    o_positive,
+    a_negative,
+    b_negative,
+    ab_negative,
+    o_negative
 
 }

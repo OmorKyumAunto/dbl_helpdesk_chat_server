@@ -62,8 +62,6 @@ let distributedAssetList = (offset, limit, key, unit,type) => {
   if (type) {
     searchCondition.push(`UPPER(category) LIKE UPPER('%${type}%')`);
   }
-  
-
   if (key) {
     searchCondition.push(`(
       LOWER(user_id_no) LIKE LOWER('%${key}%') 

@@ -53,7 +53,6 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
 
   }
 
-
   let current_date = new Date(); 
   let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
   reqData.created_at = current_time;

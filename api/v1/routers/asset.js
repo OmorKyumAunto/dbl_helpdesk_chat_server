@@ -33,7 +33,6 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
       "specification":req.body.specification,
       "is_assign":req.body.is_assign,
       "employee_id":req.body.employee_id,
-      "assign_date":req.body.assign_date,
       "is_new_employee": req.body.is_new_employee,
       "user_id": req.body.user_id,
       "employee_name":req.body.employee_name,
@@ -49,7 +48,8 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
       "business_type": req.body.business_type,
       "line_of_business": req.body.line_of_business,
       "grade": req.body.grade,
-      "pabx": req.body.pabx
+      "pabx": req.body.pabx,
+      "assign_date":req.body.assign_date,
 
   }
 
@@ -166,8 +166,6 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
 
 if (reqData.is_new_employee == 0  && reqData.is_assign == 1) {
 
-    console.log("assign 1 .. em 0  ")
-
   let userId = await userModel.getById(reqData.user_id)
   // employee validation
   if(isEmpty(userId)){
@@ -204,7 +202,8 @@ if (reqData.is_new_employee == 0  && reqData.is_assign == 1) {
   remarks : 'assigned',
   unit_id : reqData.unit_id,
   model : reqData.model,
-  specification : reqData.specification
+  specification : reqData.specification,
+  price:reqData.price
 }
 
 let result = await assetModel.addNew2(data);

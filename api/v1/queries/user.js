@@ -69,9 +69,14 @@ let getEmployeeList = (offset, limit, key, unit_name,status,blood_group) => {
     }
     
     if (key) {
-        searchCondition += ` AND (LOWER(employee_id) LIKE LOWER('%${key}%') OR LOWER(name) LIKE LOWER('%${key}%') OR email LIKE '%${key}%') OR LOWER(department) LIKE LOWER('%${key}%') `;
-    }
-   
+        searchCondition += ` AND (
+          LOWER(employee_id) LIKE LOWER('%${key}%') 
+          OR LOWER(name) LIKE LOWER('%${key}%') 
+          OR email LIKE '%${key}%' 
+          OR LOWER(department) LIKE LOWER('%${key}%') 
+        )`;
+      }
+      
     return `SELECT * FROM ${table_view} WHERE status != 0 ${searchCondition} ORDER BY id desc LIMIT ${limit} OFFSET ${offset}`;
 }
 

@@ -1168,10 +1168,10 @@ router.get('/employee-asset-assign-list', [verifyToken, routeAccessChecker("empl
 
   let result = await userModel.getDataByAssetId(id);
 
-  for (let index = 0; index < array.length; index++) {
-    const element = array[index];
+  // for (let index = 0; index < array.length; index++) {
+  //   const element = array[index];
     
-  }
+  // }
   return res.status(200).send({
       "success": true,
       "status": 200,

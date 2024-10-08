@@ -52,7 +52,7 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
       "assign_date":req.body.assign_date,
 
   }
-  console.log("dsssssssssssss",reqData)
+
 
   let current_date = new Date(); 
   let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
@@ -486,8 +486,6 @@ if (reqData.is_new_employee === 1 && reqData.is_assign === 1) {
                 user_id : userLastData[0].id,
                 assign_date : reqData.assign_date,
               }
-
-              console.log(" jjjjjjjjjjjjjjj",assignEmployeeData)
 
               let result2 = await assetAssignModel.addNew(assignEmployeeData);
               let createAssetHistory = await assetHistoryModel.addNew(assetHistory)

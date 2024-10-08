@@ -277,43 +277,30 @@ if(isEmpty(reqData.email)){
         });
    }
 
-  //   if(isEmpty(reqData.licenses)){
-  //     return res.status(400).send({
-  //         "success": false,
-  //         "status": 400,
-  //         "message":"Licenses cannot be empty."
-  //       });
-  // }
-    if(!Array.isArray(reqData.licenses)){
-      return res.status(400).send({
-        "success": false,
-        "status": 400,
-        "message":"Licenses cannot be array."
-      });
-    }
-
-    for (let index = 0; index < reqData.licenses.length; index++) {
-      const element = reqData.licenses[index];
-      let existingData = await licensesModel.getById(element);
-      if(isEmpty(existingData)){
-        return res.status(400).send({
-          "success": false,
-          "status": 400,
-          "message":"This Licenses id not found."
-        });
+    if(reqData.licenses){
+      for (let index = 0; index < reqData.licenses.length; index++) {
+        const element = reqData.licenses[index];
+        let existingData = await licensesModel.getById(element);
+        if(isEmpty(existingData)){
+          return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message":"This Licenses id not found."
+          });
+        }
       }
-    }
-
-    reqData.licenses = JSON.stringify(reqData.licenses)
-
-   // blood group validation
-   if(isEmpty(reqData.blood_group)){
-    return res.status(400).send({
-        "success": false,
-        "status": 400,
-        "message":"Blood group cannot be empty."
-      });
- }
+  
+      reqData.licenses = JSON.stringify(reqData.licenses)
+  }else{
+    reqData.licenses = null
+  }
+    // if(!Array.isArray(reqData.licenses)){
+    //   return res.status(400).send({
+    //     "success": false,
+    //     "status": 400,
+    //     "message":"Licenses cannot be array."
+    //   });
+    // }
 
     // check duplicate 
      let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
@@ -1428,8 +1415,9 @@ router.get('/employee-calculation', [verifyToken, routeAccessChecker("employeeCa
       
       // Add the total licenses price to the employee object
       result[index].montly_licenses_price = totalLicensesPrice;
-      result[index].total_ctc_per_month = (result[index].monthly_asset_cost + result[index].montly_licenses_price)
-      result[index].total_ctc_per_year = (result[index].total_ctc_per_month * 12)
+      result[index].total_ctc_per_month = (result[index].monthly_asset_cost + result[index].montly_licenses_price).toFixed(2);
+      result[index].total_ctc_per_year = (result[index].total_ctc_per_month * 12).toFixed(2);
+      
 
     } catch (error) {
       // Handle any parsing or data fetching errors

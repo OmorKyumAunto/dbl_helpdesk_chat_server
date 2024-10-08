@@ -65,7 +65,13 @@ let distributedAssetList = (offset, limit, key, unit,type) => {
   
 
   if (key) {
-    searchCondition.push(`(LOWER(user_id_no) LIKE LOWER('%${key}%') OR LOWER(user_name) LIKE LOWER('%${key}%') OR LOWER(serial_number) LIKE LOWER('%${key}%'))`);
+    searchCondition.push(`(
+      LOWER(user_id_no) LIKE LOWER('%${key}%') 
+      OR LOWER(user_name) LIKE LOWER('%${key}%') 
+      OR LOWER(serial_number) LIKE LOWER('%${key}%') 
+      OR email LIKE '%${key}%' 
+      OR LOWER(department) LIKE LOWER('%${key}%')
+    )`);
   }
 
   let whereClause = searchCondition.length ? `WHERE ${searchCondition.join(' AND ')}` : '';
@@ -149,18 +155,17 @@ let getListOfDashboard3 = () => {
 let getListOfDashboardGraph = () => {
     return `
       SELECT 
-        MONTH(created_at) as month,
+        MONTH(assign_date) as month,
         COUNT(id) as total_assign_asset 
       FROM 
-        dbl_asset 
+        dbl_asset_assign 
       WHERE 
         status = 1 
-        AND is_assign = 1 
-        AND created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+        AND assign_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
       GROUP BY 
-        MONTH(created_at)
+        MONTH(assign_date)
       ORDER BY 
-        MONTH(created_at) DESC
+        MONTH(assign_date) DESC
     `;
   };
   
@@ -168,17 +173,17 @@ let getListOfDashboardGraph = () => {
   let getListOfDashboardGraph2 = () => {
     return `
       SELECT 
-        MONTH(created_at) as month,
+        MONTH(purchase_date) as month,
         COUNT(id) as total_asset 
       FROM 
         dbl_asset 
       WHERE 
         status = 1 
-        AND created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+        AND purchase_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
       GROUP BY 
-        MONTH(created_at)
+        MONTH(purchase_date)
       ORDER BY 
-        MONTH(created_at) DESC
+        MONTH(purchase_date) DESC
     `;
   };
 

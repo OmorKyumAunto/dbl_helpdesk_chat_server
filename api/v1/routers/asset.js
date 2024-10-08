@@ -17,6 +17,7 @@ const userModel = require('../models/user');
 const unitModel = require('../models/asset-unit');
 const { routeAccessChecker } = require("../middlewares/routeAccess");
 const commonObject = require("../common/common");
+const licensesModel = require('../models/licenses');
 
 router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res) => {
     
@@ -43,6 +44,13 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
       "joining_date":req.body.joining_date,
       "employee_unit_name":req.body.employee_unit_name,
       "price":req.body.price,
+      "licenses": req.body.licenses,
+      "blood_group" :req.body.blood_group,
+      "business_type": req.body.business_type,
+      "line_of_business": req.body.line_of_business,
+      "grade": req.body.grade,
+      "pabx": req.body.pabx
+
   }
 
 
@@ -256,23 +264,6 @@ let data2 = {
 
 let result = await assetModel.addNew2(data2);
 
-// let getList = await assetModel.getLastData()
-
-// let getDuplicate
-// for (let index = 0; index < getList.length; index++) {
-//   const element = getList[index].serial_number;
-//    let checkDuplicate = await assetModel.getDuplicateSerialNumber(element)
-
-//    if(reqData.serial_number === checkDuplicate){
-//     getDuplicate = reqData.serial_number
-
-//     console.log("first",getDuplicate)
-//    }
-// }
-
-
-
-
 if (result.affectedRows == undefined || result.affectedRows < 1) {
   return res.status(500).send({
       "success": true,
@@ -284,9 +275,6 @@ if (result.affectedRows == undefined || result.affectedRows < 1) {
 
 if (reqData.is_new_employee === 1 && reqData.is_assign === 1) {
   
-
-  console.log("assign 1 .. em 1 ")
-     
 
             // check name
             if(isEmpty(reqData.employee_name)){
@@ -370,6 +358,24 @@ if (reqData.is_new_employee === 1 && reqData.is_assign === 1) {
                 });
           }
 
+          if(reqData.licenses){
+            for (let index = 0; index < reqData.licenses.length; index++) {
+              const element = reqData.licenses[index];
+              let existingData = await licensesModel.getById(element);
+              if(isEmpty(existingData)){
+                return res.status(400).send({
+                  "success": false,
+                  "status": 400,
+                  "message":"This Licenses id not found."
+                });
+              }
+            }
+        
+            reqData.licenses = JSON.stringify(reqData.licenses)
+        }else{
+          reqData.licenses = null
+        }
+
           // // check duplicate 
             let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
 
@@ -392,8 +398,12 @@ if (reqData.is_new_employee === 1 && reqData.is_assign === 1) {
               contact_no : reqData.contact_no,
               joining_date : reqData.joining_date,
               unit_name : reqData.employee_unit_name,
-              asset_assign_date : reqData.assign_date
-
+              licenses : reqData.licenses,
+              blood_group : reqData.blood_group,
+              business_type : reqData.business_type,
+              line_of_business : reqData.line_of_business,
+              grade : reqData.grade,
+              pabx : reqData.pabx,
             }
      
 
@@ -536,6 +546,26 @@ router.get('/list', [verifyToken, routeAccessChecker("assetList")],async (req, r
     } else {
       result[index].unit_name = "";
     }
+
+
+    let current_date = new Date(); 
+    //let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+    let purchaseDate = new Date(result[index].purchase_date);
+    let currentTime = new Date();
+    
+    let warrantyEndDate = new Date(purchaseDate);
+    warrantyEndDate.setFullYear(warrantyEndDate.getFullYear() + 3);
+    
+    if (currentTime <= warrantyEndDate) {
+        let timeDiff = warrantyEndDate - currentTime; 
+        let daysLeft = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); 
+    
+        result[index].warranty = `Remaining warranty ${daysLeft} days.`;
+    } else {
+        result[index].warranty = 'Warranty expired';
+    }
+
+
   }
   let totalCount = await assetModel.getTotalList(key, unit, type);
 
@@ -1362,90 +1392,6 @@ return new Date(epoch.getTime() + epoch.getTimezoneOffset() * 60000);
 
 
 
-
-// router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], upload.single('file'), async (req, res) => {
-// if (!req.file) {
-//     return res.status(400).send({
-//         success: false,
-//         status: 400,
-//         message: 'No file uploaded.'
-//     });
-// }
-
-// try {
-//     const workbook = xlsx.readFile(req.file.path);
-//     const sheetName = workbook.SheetNames[0];
-//     const worksheet = workbook.Sheets[sheetName];
-//     const data = xlsx.utils.sheet_to_json(worksheet);
-
-//     // Iterate through each row and save to database
-//     for (let row of data) {
-//         let purchase_date = row['Purchase date'];
-//         if (typeof purchase_date === 'number') {
-//           purchase_date = xlsxDateToJSDate(purchase_date).toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD'
-//         }
-
-//         let reqData = {
-//             name: row['Name'],
-//             category: row['Category'],
-//             purchase_date: purchase_date,
-//             serial_number: row['Serial number'],
-//             po_number: row['PO number'],
-//             model: row['Model'],
-//             specification: row['Specification'],
-//             unit_name: row['Unit name']
-//         };
-
-     
-//         let unitArr = [];
-//         // get asset unit data
-//         let assetUnitData = await assetUnitModel.getOnlyDataList();
-//         for (let index = 0; index < assetUnitData.length; index++) {
-//             const data = assetUnitData[index];
-//             unitArr.push(data);  // Store the asset unit data in unitArr
-//         }
-        
-//         // Loop through unitArr to find the matching unit
-//         for (let index = 0; index < unitArr.length; index++) {
-//             const element = unitArr[index];
-//             // Check if unit_name matches the title in the assetUnitData
-//             if (element.title.toLowerCase() === reqData.unit_name.toLowerCase()) {
-//                 reqData.unit_id = element.id;  // Assign the matched id to unit_id
-
-                
-//                 break;  // Exit the loop once a match is found
-//             }
-//         }
-        
-//         // Remove unit_name from reqData since it is no longer needed
-//         delete reqData.unit_name;
-
-//         // Save to database
-//         let result = await assetModel.addNew2(reqData);
-//         if (result.affectedRows == undefined || result.affectedRows < 1) {
-//             return res.status(500).send({
-//                 success: false,
-//                 status: 500,
-//                 message: 'Something went wrong in the database.'
-//             });
-//         }
-//     }
-
-//     return res.status(201).send({
-//         success: true,
-//         status: 201,
-//         message: 'All asset added successfully.'
-//     });
-
-// } catch (error) {
-//     return res.status(500).send({
-//         success: false,
-//         status: 500,
-//         message: 'Error processing the file.',
-//         error: error.message
-//     });
-// }
-// });
 
 
 router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], upload.single('file'), async (req, res) => {

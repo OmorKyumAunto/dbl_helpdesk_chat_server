@@ -67,7 +67,6 @@ let distributedAssetList = (offset, limit, key, unit,type) => {
       LOWER(user_id_no) LIKE LOWER('%${key}%') 
       OR LOWER(user_name) LIKE LOWER('%${key}%') 
       OR LOWER(serial_number) LIKE LOWER('%${key}%') 
-      OR email LIKE '%${key}%' 
       OR LOWER(department) LIKE LOWER('%${key}%')
     )`);
   }

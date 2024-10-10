@@ -805,29 +805,28 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
 
   }
 
-// update licenses
-    if(!Array.isArray(reqData.licenses)){
-      return res.status(400).send({
-        "success": false,
-        "status": 400,
-        "message":"Licenses cannot be array."
-      });
-    }
-
-    for (let index = 0; index < reqData.licenses.length; index++) {
-      const element = reqData.licenses[index];
-      let existingData = await licensesModel.getById(element);
-      if(isEmpty(existingData)){
-        return res.status(400).send({
-          "success": false,
-          "status": 400,
-          "message":"This Licenses id not found."
-        });
+    // update licenses
+    if(reqData.licenses){
+      for (let index = 0; index < reqData.licenses.length; index++) {
+        const element = reqData.licenses[index];
+        let existingData = await licensesModel.getById(element);
+        if(isEmpty(existingData)){
+          return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message":"This Licenses id not found."
+          });
+        }
       }
+
+      reqData.licenses = JSON.stringify(reqData.licenses)
+      updateData.licenses = reqData.licenses
+    }else{
+    reqData.licenses = null
+    updateData.licenses = reqData.licenses
     }
 
-    reqData.licenses = JSON.stringify(reqData.licenses)
-    updateData.licenses = reqData.licenses
+   
 
     // check unit_name
     if(existingDataById[0].blood_group != reqData.blood_group){

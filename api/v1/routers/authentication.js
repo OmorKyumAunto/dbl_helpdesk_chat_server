@@ -88,7 +88,6 @@ router.post("/login", async (req, res) => {
 
       //Check Role
       let roleData = await roleModel.getById(userData[0].role_id);
-      console.log("first",roleData)
       if (isEmpty(roleData)) {
           return res.status(404).send({
               success: false,
@@ -108,9 +107,7 @@ router.post("/login", async (req, res) => {
 
     
       } else if (userData[0].role_id == 3) {
-        console.log("firs",userData[0].profile_id)
           profileInfo = await employeeModel.getById(userData[0].profile_id);
-       console.log("first==========",profileInfo)
       }else {
           return res.status(404).send({
               success: false,

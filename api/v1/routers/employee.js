@@ -58,10 +58,13 @@ router.post('/upload', [verifyToken, routeAccessChecker("employeeAdd")], upload.
 
       for (let row of data) {
           // Required fields
-          const requiredFields = ['Employee id', 'Name', 'Department', 'Designation', 'Email', 'Contact no', 'Joining date', 'Unit name','Blood group','Business type','Line of business','Grade','Pabx'];
+          const requiredFields = ['Employee id', 'Name', 'Department', 'Designation', 'Email', 'Contact no', 'Joining date', 'Unit name','Blood group','Business type','Line of business','Grade','Pabx','Licenses'];
 
           // Check for missing fields
           for (const field of requiredFields) {
+            if (field === 'Licenses') {
+              continue;
+          }
               if (!row[field]) {
                   return res.status(400).send({
                       success: false,
@@ -85,26 +88,59 @@ router.post('/upload', [verifyToken, routeAccessChecker("employeeAdd")], upload.
               contact_no: row['Contact no'],
               joining_date: joining_date,
               unit_name: row['Unit name'],
-              licenses : row['Licenses'],
               blood_group : row['Blood group'],
               business_type : row['Business type'],
               line_of_business : row['Line of business'],
               grade : row['Grade'],
               pabx : row['Pabx'],
+              licenses: row['Licenses'],
               created_by: req.decoded.userInfo.id,
           };
           //Microsoft E1
 
+          let licenseArr = [];
 
-          // Check for duplicates
-          // let checkDuplicate = await employeeModel.getByExistsEmployee(reqData.employee_id);
-          // if (checkDuplicate.length) {
-          //     return res.status(400).send({
-          //         success: false,
-          //         status: 400,
-          //         message: `Employee ID ${reqData.employee_id} already exists.`
-          //     });
-          // }
+    // Step 1: Get asset unit data and store it in an array
+    let licenseData = await licensesModel.getOnlyDataList();
+    for (let index = 0; index < licenseData.length; index++) {
+        const data = licenseData[index];
+        licenseArr.push(data); 
+    }
+
+    // Step 2: Initialize an array to hold matching license IDs
+    let licenseIds = [];
+
+    // Step 1: Check if licenses field is empty
+    if (!reqData.licenses || reqData.licenses.trim() === '') {
+        // If empty, set as an empty array
+        reqData.licenses = null
+    } else {
+        // Step 2: Loop through licenseArr to find matching licenses
+        for (let index = 0; index < licenseArr.length; index++) {
+            const element = licenseArr[index];
+            
+            // Step 3: Check if the license title matches the input
+            if (element.title.toLowerCase() === reqData.licenses.toLowerCase()) {
+                licenseIds.push(element.id); // Add matching license ID to the array
+            }
+        }
+    
+        // Step 4: If no matching license is found, return an error
+        if (licenseIds.length === 0) {
+            return res.status(400).send({
+                success: false,
+                status: 400,
+                message: `Licenses name ${reqData.licenses} does not match any known licenses.`
+            });
+        }
+        
+        // Step 5: Convert the array of license IDs into a JSON string
+        reqData.licenses = JSON.stringify(licenseIds);
+    }
+
+    // Step 7: Remove `licenses` from `reqData` since it's no longer needed
+   // delete reqData.licenses;
+
 
           // Save to database
           let result = await employeeModel.addNew(reqData);
@@ -121,8 +157,10 @@ router.post('/upload', [verifyToken, routeAccessChecker("employeeAdd")], upload.
               created_by: req.decoded.userInfo.id,
           };
 
+
+
           // Validate user data before saving
-          if (reqData.department && reqData.name && reqData.employee_id && reqData.email && reqData.contact_no && reqData.joining_date && reqData.unit_name && reqData.licenses && reqData.created_by ) {
+          if (reqData.department && reqData.name && reqData.employee_id && reqData.email && reqData.contact_no && reqData.joining_date && reqData.unit_name && reqData.created_by ) {
               let user = await userModel.addNew(userData);
 
               if (!user.affectedRows || user.affectedRows < 1) {
@@ -146,7 +184,7 @@ router.post('/upload', [verifyToken, routeAccessChecker("employeeAdd")], upload.
           status: 201,
           message: 'All employees added successfully.'
       });
-
+    
   } catch (error) {
       return res.status(500).send({
           success: false,
@@ -422,7 +460,6 @@ router.get('/list',[verifyToken, routeAccessChecker("employeeList")],async (req,
         }
       }
     }
-    console.log("first")
     return res.status(200).send({
       success: true,
       status: 200,
@@ -812,8 +849,6 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
   
   updateData.updated_by = req.decoded.userInfo.id
   if (willWeUpdate == 1) {
-
-    //console.log("first====",existingDataById[0].profile_id)
     let result 
     let updateUser
     if(existingDataById[0].role_id == 1){
@@ -827,8 +862,6 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
        updateUser = await userModel.updateByEmployeeUser(id,userUpdateData);
     }
     else if(existingDataById[0].role_id == 3){
-    console.log("first sss ss ",updateData)
-    console.log("first sss ss ",existingDataById[0].profile_id)
        result = await employeeModel.updateById(existingDataById[0].profile_id,updateData);
 
        updateUser = await userModel.updateByEmployeeUser(id,userUpdateData);
@@ -1108,8 +1141,6 @@ router.post('/assign-admin-demoted/:id',[verifyToken, routeAccessChecker("assign
   let delete_admin_data = await adminModel.getByIdForDeleted(employeeData[0].profile_id)
 
   let getPresentData = await employeeModel.getUserByEmployeeIdNo(employeeData[0].employee_id)
-
-  console.log("first",getPresentData)
   let userData = {
     role_id : 3,
     profile_id : getPresentData[0].id
@@ -1209,7 +1240,6 @@ router.get('/employee-asset-assign-count',[verifyToken, routeAccessChecker("empl
 //change password
 router.post("/password-change", [verifyToken,routeAccessChecker("changePassword")],
   async (req, res) => {
-    console.log("first")
       // Get User data from user table.
       let old_password = req.body.old_password;
       let new_password = req.body.new_password;
@@ -1259,83 +1289,6 @@ router.post("/password-change", [verifyToken,routeAccessChecker("changePassword"
     });
   }
 );
-
-
-
-// router.get('/employee-calculation',[verifyToken, routeAccessChecker("employeeCalculation")],async (req, res) => {
-
-//   let reqData = {
-//     "limit": req.query.limit || 50,
-//     "offset": req.query.offset || 0,
-//     "key": req.query.key,
-//     "unit_name": req.query.unit_name,
-//   }
-
-//   let { offset, limit , key, unit_name}  = reqData;
-
-//   let result = await userModel.getEmployeeList(offset, limit, key, unit_name);
-
-//   let countResult = await userModel.getTotalEmployeeList(key, unit_name);
-
-
-// // Iterate through each employee
-// for (let index = 0; index < result.length; index++) {
-//   let licenses = result[index].licenses;
-//  let licenseDetails = []
-//   try {
-//     // Attempt to parse the licenses string
-//     let validData = JSON.parse(licenses);
-
-//     if(validData){
-//       for (let index = 0; index < validData.length; index++) {
-//         const data = validData[index];
-
-//         let existingData = await licensesModel.getById(data);
-
-//               if (existingData && existingData.length > 0) {
-           
-//                 let license = existingData[0];  
-
-//                 licenseDetails.push({
-//                   id : license.id,
-//                   title: license.title,
-//                   price: license.price
-//                 });
-//               }
-//             }
-//       }
-    
-//     // If licenses are parsed successfully, continue processing...
-//     result[index].licenses = licenseDetails;
-
-//     const getAssignAssetId = await assetAssignModel.getByAssignUser(result[index].id)
-//     for (let index = 0; index < getAssignAssetId.length; index++) {
-//       const element = getAssignAssetId[index].asset_id;
-//       console.log("first ======= ",element)
-//       let assetPrice = await assetModel.getById(element);
-//       for (let index = 0; index < array.length; index++) {
-//         const element = array[index];
-        
-//       }
-//     }
-
-//   } catch (error) {
-    
-//     console.error(`Error parsing licenses for employee at index ${index}:`, error.message);
-//     result[index].licenses = []; 
-//   }
-// }
-
-
-//     return res.status(200).send({
-//       success: true,
-//       status: 200,
-//       message: "Employee List.",
-//       total: countResult.length,
-//       data: result
-//     });
-
-// });
 
 
 router.get('/employee-calculation', [verifyToken, routeAccessChecker("employeeCalculation")], async (req, res) => {

@@ -117,7 +117,6 @@ router.use(async function (req, res, next) {
                         uuid: decoded.identity_id
                     };
 
-                   // console.log(decoded)
                     req.decoded = decoded;
 
                     next();

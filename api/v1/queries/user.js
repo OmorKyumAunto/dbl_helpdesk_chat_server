@@ -84,7 +84,6 @@ let getEmployeeList = (offset, limit, key, unit_name,status,blood_group) => {
 
 
 let getTotalEmployeeList = (key, unit_name,status,blood_group) => {
-    console.log(" ===")
     let searchCondition = '';
     if (unit_name) {
         searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit_name}%') `;

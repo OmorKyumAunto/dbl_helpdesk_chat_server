@@ -62,8 +62,23 @@ router.post('/upload', [verifyToken, routeAccessChecker("employeeAdd")], upload.
 
           // Check for missing fields
           for (const field of requiredFields) {
-            if (field === 'Licenses') {
+            if (field === 'Blood group') {
               continue;
+           }
+           if (field === 'Business type') {
+            continue;
+           }
+           if (field === 'Line of business') {
+            continue;
+            }
+           if (field === 'Grade') {
+          continue;
+           }
+          if (field === 'Pabx') {
+          continue;
+          }
+          if (field === 'Licenses') {
+         continue;
           }
               if (!row[field]) {
                   return res.status(400).send({

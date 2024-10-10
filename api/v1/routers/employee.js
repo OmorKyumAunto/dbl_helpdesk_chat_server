@@ -101,11 +101,11 @@ router.post('/upload', [verifyToken, routeAccessChecker("employeeAdd")], upload.
           let licenseArr = [];
 
     // Step 1: Get asset unit data and store it in an array
-    let licenseData = await licensesModel.getOnlyDataList();
-    for (let index = 0; index < licenseData.length; index++) {
-        const data = licenseData[index];
-        licenseArr.push(data); 
-    }
+    // let licenseData = await licensesModel.getOnlyDataList();
+    // for (let index = 0; index < licenseData.length; index++) {
+    //     const data = licenseData[index];
+    //     licenseArr.push(data); 
+    // }
 
     // Step 2: Initialize an array to hold matching license IDs
     let licenseIds = [];

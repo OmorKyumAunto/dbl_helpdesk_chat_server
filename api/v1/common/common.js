@@ -78,7 +78,6 @@ let sentEmailByHtmlFormate = async (receiverEmailAddress, subject,name = "", ass
       // send email 
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
-                // console.log(error);
                 return {
                     success: false,
                     message: "Email send fail"

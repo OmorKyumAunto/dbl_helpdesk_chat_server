@@ -50,18 +50,7 @@ let getByProfileId = async (id = 0) => {
     });
 }
 
-
-// let getList = async () => {
-//     return new Promise((resolve, reject) => {
-//         connectionDblystem.query(queries.getList(),(error, result, fields) => {
-//             if (error) reject(error)
-//             else resolve(result)
-//         });
-//     });
-// }
-
 let getList = async (offset, limit, key,unit,type) => {
-    console.log(unit)
     return new Promise((resolve, reject) => {
       connectionDblystem.query(queries.getList(offset, limit, key,unit), (error, result, fields) => {
         if (error) reject(error);

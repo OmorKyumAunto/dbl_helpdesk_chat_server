@@ -2,7 +2,6 @@ const isEmpty = require("is-empty");
 let table_name = "dbl_liceses";
 
 let getList = (status) => {
-    console.log("first", status);
     let searchCondition = "status != 'delete'"; // Exclude 'delete' status by default
 
     if (status === 'active') {

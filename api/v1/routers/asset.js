@@ -457,7 +457,6 @@ if (reqData.is_new_employee === 1 && reqData.is_assign === 1) {
 
 
               if(alreadyAssignedHistory.length){
-              // console.log("first",alreadyAssignedHistory)
                 let updateStatus = await assetAssignModel.updateById(alreadyAssignedHistory[0].asset_id,{status:0})
            
               
@@ -1166,7 +1165,6 @@ let alreadyAssignedHistory = await assetHistoryModel.getByAssetId(id)
 
 
 if(alreadyAssignedHistory.length){
- // console.log("first",alreadyAssignedHistory)
   let updateStatus = await assetAssignModel.updateById(alreadyAssignedHistory[0].asset_id,{status:0})
 
 
@@ -1474,7 +1472,7 @@ router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], u
 
           // Remove unit_name from reqData since it is no longer needed
           delete reqData.unit_name;
-          console.log("first ==== >> ",reqData)
+
           // Save to database
           let result = await assetModel.addNew2(reqData);
           if (!result.affectedRows || result.affectedRows < 1) {

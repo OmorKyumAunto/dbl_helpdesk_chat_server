@@ -202,7 +202,6 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("assetUnitDelete")
 
     // check already assign this unit 
     let alreadyAssignThisUnit = await assetModel.alreadyAssignUnit(id);
-    console.log("first========",alreadyAssignThisUnit)
     if (alreadyAssignThisUnit.length) {
         return res.status(400).send({
             "success": false,

@@ -3,9 +3,13 @@ const isEmpty = require("is-empty");
 const router = express.Router();
 const assetUnitModel = require('../models/asset-unit');
 const assetModel = require('../models/asset');
+const unitAccessModel = require('../models/unit-access');
+const userModel = require('../models/user');
+
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const moment = require("moment");
+const unitModel = require('../models/asset-unit');
 require('dotenv').config();
 
 router.get('/list', [verifyToken, routeAccessChecker("assetUnitList")], async (req, res) => {
@@ -286,6 +290,78 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeAssetUni
 });
 
 
+
+router.post('/search-access/:id', [verifyToken, routeAccessChecker("searchAccess")], async (req, res) => {
+
+    const id = req.params.id
+    let reqData = {
+        "unit_id": req.body.unit_id
+    }
+
+    let current_date = new Date(); 
+    let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+    
+
+    reqData.created_at = current_time;
+
+
+     // Get data from the database by id
+    let result = await userModel.getById(id);
+        // Check if this id already exists in the database
+        if (isEmpty(result)) {
+        return res.status(404).send({
+            success: false,
+            status: 404,
+            message: "User data not found."
+        });
+        }
+    if(result[0].role_id !== 2){
+        return res.status(404).send({
+            success: false,
+            status: 404,
+            message: "This user is not admin."
+        });
+    }
+
+    let deletePreviusId = await unitAccessModel.deletePreviusId(id); 
+
+    for (let index = 0; index < reqData.unit_id.length; index++) {
+        const element = reqData.unit_id[index];
+
+          // Get data from the database by id
+        let unitData = await unitModel.getById(element);
+        if (isEmpty(unitData)) {
+            return res.status(404).send({
+                success: false,
+                status: 404,
+                message: "Unit data not found."
+            });
+            }
+
+        let data = {
+            user_id : id,
+            unit_id : element,
+            created_at : reqData.created_at,
+        }
+        let createData = await unitAccessModel.addNew(data);   
+
+        if (createData.affectedRows == undefined || createData.affectedRows < 1) {
+            return res.status(500).send({
+                "success": false,
+                "status": 500,
+                "message": "Something Wrong in system database."
+            });
+        }
+    
+    }
+
+    return res.status(201).send({
+        "success": true,
+        "status": 201,
+        "message": "Admin unit access added Successfully."
+    });
+
+});
 
 
 

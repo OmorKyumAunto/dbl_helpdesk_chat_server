@@ -8,6 +8,7 @@ const e = require("express");
 const userModel = require('../models/user');
 const assignModel = require('../models/asset-assign');
 const unitAccessModel = require('../models/unit-access');
+const licensesModel = require('../models/licenses');
 // list
 router.get('/me', [verifyToken], async (req, res) => {
   let id = req.decoded.userInfo.id;

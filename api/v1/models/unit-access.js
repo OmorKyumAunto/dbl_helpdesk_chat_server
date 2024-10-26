@@ -11,6 +11,17 @@ let getList = async (status) => {
     });
 }
 
+let getUserWise = async (user_id) => {
+
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getUserWiseetList(), [user_id], (error, result, fields) => {
+            if (error) reject(error);
+            else resolve(result);
+        });
+    });
+}
+
+
 
 
 let getOnlyDataList = async () => {
@@ -60,7 +71,6 @@ let addNew = async (info) => {
 }
 
 let deletePreviusId = async (user_id) => {
-    console.log("firstpppppppppppppppp",user_id)
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.deletePreviusId(), [user_id], (error, result, fields) => {
             if (error) reject(error)
@@ -162,6 +172,7 @@ module.exports = {
     getDetailsByIdAndWhereIn,
     getByTitle,
     getOnlyDataList,
-    deletePreviusId
+    deletePreviusId,
+    getUserWise
 }
 

@@ -3,7 +3,11 @@ let table_name = "admin_search_access";
 
 
 let getList = () => {
-    return `SELECT * FROM ${table_name} where user_id ?`;
+    return `SELECT * FROM ${table_name} where user_id = ?`;
+  }
+
+let getUserWiseetList = () => {
+    return `SELECT * FROM ${table_name} where user_id = ?`;
   }
   
 let deletePreviusId = () => {
@@ -180,6 +184,7 @@ module.exports = {
     getDataByWhereCondition,
     getDetailsByIdAndWhereIn,
     getOnlyDataList,
-    deletePreviusId
+    deletePreviusId,
+    getUserWiseetList
 
 }

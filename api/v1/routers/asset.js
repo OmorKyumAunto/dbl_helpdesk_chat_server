@@ -18,6 +18,7 @@ const unitModel = require('../models/asset-unit');
 const { routeAccessChecker } = require("../middlewares/routeAccess");
 const commonObject = require("../common/common");
 const licensesModel = require('../models/licenses');
+const unitAccessModel = require('../models/unit-access');
 
 router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res) => {
     
@@ -1500,6 +1501,69 @@ router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], u
   }
 });
 
+
+
+
+// list
+router.get('/admin-unit-assin-list', [verifyToken, routeAccessChecker("adminAssinUnitAsset")], async (req, res) => {
+
+  let reqData = {
+    "limit": req.query.limit || 100,
+    "offset": req.query.offset || 0,
+    "key": req.query.key,
+    "unit": req.query.unit,
+    "type": req.query.type,
+  };
+  let user_id = req.decoded.userInfo.id;
+  let { offset, limit, key, unit, type } = reqData;
+
+  let result = await assetModel.getList(offset, limit, key, unit, type);
+
+  let getUnitAssignList = await unitAccessModel.getUserWise(user_id);
+  getUnitAssignList = JSON.parse(JSON.stringify(getUnitAssignList));
+  
+  // Filter result to include only matching unit_ids
+  let filteredResult = result.filter(item => 
+    getUnitAssignList.some(assign => assign.unit_id === parseInt(item.unit_id))
+  );
+
+  for (let index = 0; index < filteredResult.length; index++) {
+    const element = filteredResult[index].unit_id;
+
+    let getUnitname = await unitModel.getById(element);
+    if (getUnitname.length) {
+      filteredResult[index].unit_name = getUnitname[0].title;
+    } else {
+      filteredResult[index].unit_name = "";
+    }
+
+    let current_date = new Date(); 
+    let purchaseDate = new Date(filteredResult[index].purchase_date);
+    let currentTime = new Date();
+
+    let warrantyEndDate = new Date(purchaseDate);
+    warrantyEndDate.setFullYear(warrantyEndDate.getFullYear() + 3);
+
+    if (currentTime <= warrantyEndDate) {
+      let timeDiff = warrantyEndDate - currentTime; 
+      let daysLeft = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); 
+
+      filteredResult[index].warranty = `Remaining warranty ${daysLeft} days.`;
+    } else {
+      filteredResult[index].warranty = 'Warranty expired';
+    }
+  }
+
+  let totalCount = await assetModel.getTotalList(key, unit, type);
+
+  return res.status(200).send({
+    success: true,
+    status: 200,
+    message: "Asset List.",
+    total: filteredResult.length,
+    data: filteredResult
+  });
+});
 
 
 module.exports = router;  

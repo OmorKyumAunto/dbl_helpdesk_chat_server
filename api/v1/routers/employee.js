@@ -1270,8 +1270,7 @@ router.post("/password-change", [verifyToken,routeAccessChecker("changePassword"
 
 
       if (bcrypt.compareSync(old_password, userData[0].password)) {
-          new_password = bcrypt.hashSync(new_password, 10); // hashing Password
-          console.log("first",new_password)
+          new_password = bcrypt.hashSync(new_password, 10); 
           let result = await userModel.updateById(
               req.decoded.userInfo.id,
               {password:new_password}
@@ -1407,6 +1406,9 @@ router.get('/employee-calculation', [verifyToken, routeAccessChecker("employeeCa
   });
 
 });
+
+
+
 
 
 module.exports = router;  

@@ -1505,7 +1505,7 @@ router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], u
 
 
 // list
-router.get('/admin-unit-assin-list', [verifyToken, routeAccessChecker("adminAssinUnitAsset")], async (req, res) => {
+router.get('/admin-unit-assign-list', [verifyToken, routeAccessChecker("adminAssinUnitAsset")], async (req, res) => {
 
   let reqData = {
     "limit": req.query.limit || 100,

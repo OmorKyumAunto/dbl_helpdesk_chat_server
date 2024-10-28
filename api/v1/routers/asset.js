@@ -1524,7 +1524,7 @@ router.get('/admin-unit-assign-list', [verifyToken, routeAccessChecker("adminAss
 
   
   getUnitAssignList = JSON.parse(JSON.stringify(getUnitAssignList));
-  
+
   // Filter result to include only matching unit_ids
   let filteredResult = result.filter(item => 
     getUnitAssignList.some(assign => assign.unit_id === parseInt(item.unit_id))
@@ -1558,7 +1558,10 @@ router.get('/admin-unit-assign-list', [verifyToken, routeAccessChecker("adminAss
     }
   }
 
-  let totalCount = await assetModel.getTotalList(key, unit, type);
+  let unitDefine = unit || getUnitAssignList[0].unit_id;
+
+
+  let totalCount = await assetModel.getTotalList(key, unitDefine, type);
 
   return res.status(200).send({
     success: true,

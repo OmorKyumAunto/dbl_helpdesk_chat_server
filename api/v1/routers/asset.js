@@ -1558,7 +1558,13 @@ router.get('/admin-unit-assign-list', [verifyToken, routeAccessChecker("adminAss
     }
   }
 
-  let unitDefine = unit || getUnitAssignList[0].unit_id;
+  let unitDefine
+  if(req.decoded.userInfo.role_id === 2){
+     unitDefine = unit || getUnitAssignList[0].unit_id ;
+  }else{
+    unitDefine = unit
+  }
+  
 
 
   let totalCount = await assetModel.getTotalList(key, unitDefine, type);

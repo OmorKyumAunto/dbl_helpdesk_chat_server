@@ -1520,12 +1520,16 @@ router.get('/admin-unit-assign-list', [verifyToken, routeAccessChecker("adminAss
   let result = await assetModel.getList(offset, limit, key, unit, type);
 
   let getUnitAssignList = await unitAccessModel.getUserWise(user_id);
+
+
+  
   getUnitAssignList = JSON.parse(JSON.stringify(getUnitAssignList));
   
   // Filter result to include only matching unit_ids
   let filteredResult = result.filter(item => 
     getUnitAssignList.some(assign => assign.unit_id === parseInt(item.unit_id))
   );
+
 
   for (let index = 0; index < filteredResult.length; index++) {
     const element = filteredResult[index].unit_id;
@@ -1560,7 +1564,7 @@ router.get('/admin-unit-assign-list', [verifyToken, routeAccessChecker("adminAss
     success: true,
     status: 200,
     message: "Asset List.",
-    total: filteredResult.length,
+    total: totalCount.length,
     data: filteredResult
   });
 });

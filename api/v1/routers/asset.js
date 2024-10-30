@@ -1558,22 +1558,29 @@ router.get('/admin-unit-assign-list', [verifyToken, routeAccessChecker("adminAss
     }
   }
 
-  let unitDefine
-  if(req.decoded.userInfo.role_id === 2){
-     unitDefine = unit || getUnitAssignList[0].unit_id ;
-  }else{
-    unitDefine = unit
-  }
+  let unitDefine;
+  let count = 0;
+  if (req.decoded.userInfo.role_id === 2) {
+    
+    if (getUnitAssignList.length > 1 && isEmpty(unit)) {
+      unitDefine = getUnitAssignList[0].unit_id;
+      totalCount = await assetModel.getTotalList(key, unitDefine, type);
+      count = totalCount.length;
+    }else if(!isEmpty(unit)){
+      totalCount = await assetModel.getTotalList(key, unit, type);
+      count = totalCount.length;
+    }
+    else{
+      count = 0;
+    }
+  } 
   
-
-
-  let totalCount = await assetModel.getTotalList(key, unitDefine, type);
 
   return res.status(200).send({
     success: true,
     status: 200,
     message: "Asset List.",
-    total: totalCount.length,
+    total: count,
     data: filteredResult
   });
 });

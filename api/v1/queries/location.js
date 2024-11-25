@@ -5,7 +5,7 @@ let getList = () => {
     return `SELECT id,location, unit_id FROM ${table_name} WHERE status != 0 ORDER BY id DESC `;
 }
 let getAllList = () => {
-    return `SELECT id,location, unit_id FROM ${table_name} WHERE status = 1 ORDER BY id DESC `;
+    return `SELECT id,location, unit_id,status FROM ${table_name} WHERE status = 1 ORDER BY id DESC `;
 }
 
 let getAllLocationDataByUnitId = () => {

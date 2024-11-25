@@ -92,7 +92,7 @@ let getEmployeeList = (offset, limit, key, unit_name,status,blood_group,employee
 
 
 
-let getTotalEmployeeList = (key, unit_name,status,blood_group) => {
+let getTotalEmployeeList = (key, unit_name,status,blood_group,employee_type) => {
     let searchCondition = '';
     if (unit_name) {
         searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit_name}%') `;
@@ -103,12 +103,21 @@ let getTotalEmployeeList = (key, unit_name,status,blood_group) => {
     if (blood_group) {
         searchCondition += `AND UPPER(blood_group) LIKE UPPER('%${blood_group}%') `;
     }
+    if (employee_type) {
+        if (employee_type === "management") {
+            // Management employees (start with 1510)
+            searchCondition += `AND (employee_id) LIKE '1510%' `;
+        } else if (employee_type === "non-management") {
+            // Non-management employees (any user_id_no)
+            searchCondition += `AND (employee_id) NOT LIKE '1510%' `;
+        }
+    }
+   
     if (key) {
         searchCondition += ` AND (LOWER(employee_id) LIKE LOWER('%${key}%') OR LOWER(name) LIKE LOWER('%${key}%'))`;
     }
 
-   
-   
+
     return `SELECT * FROM ${table_view} WHERE  status = 1 ${searchCondition} ORDER BY id desc`;
 }
 

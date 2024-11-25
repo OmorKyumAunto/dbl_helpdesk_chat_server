@@ -8,6 +8,10 @@ let getAllList = () => {
     return `SELECT id,location, unit_id FROM ${table_name} WHERE status = 1 ORDER BY id DESC `;
 }
 
+let getAllLocationDataByUnitId = () => {
+    return `SELECT id,location,unit_id,status FROM ${table_name} WHERE unit_id = ? and status = 1 ORDER BY id DESC `;
+}
+
 
 
 let getLocation = () => {
@@ -59,6 +63,7 @@ module.exports = {
 
     getLocation,
     getAllList,
-    getByNonDeleteData
+    getByNonDeleteData,
+    getAllLocationDataByUnitId
 
 }

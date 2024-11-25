@@ -22,6 +22,16 @@ let getAllList = async (status) => {
 }
 
 
+let getAllLocationDataByUnitId = async (unit_id) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getAllLocationDataByUnitId(),[unit_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
 
 
 let getLocation = async (unit_id = 0,location= '') => {
@@ -96,7 +106,8 @@ module.exports = {
 
     getLocation,
     getAllList,
-    getByNonDeleteData
+    getByNonDeleteData,
+    getAllLocationDataByUnitId
 
 
 }

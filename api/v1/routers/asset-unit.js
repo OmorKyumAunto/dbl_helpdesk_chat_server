@@ -5,6 +5,7 @@ const assetUnitModel = require('../models/asset-unit');
 const assetModel = require('../models/asset');
 const unitAccessModel = require('../models/unit-access');
 const userModel = require('../models/user');
+const locationModel = require('../models/location');
 
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
@@ -17,6 +18,13 @@ router.get('/list', [verifyToken, routeAccessChecker("assetUnitList")], async (r
     const status = req.query.status
 
     let result = await assetUnitModel.getList(status);
+    for (let index = 0; index < result.length; index++) {
+        const element = result[index].id;
+        let location = await locationModel.getAllLocationDataByUnitId(element);
+
+        result[index].location = location
+
+    }
 
     return res.status(200).send({
         "success": true,
@@ -31,7 +39,13 @@ router.get('/list', [verifyToken, routeAccessChecker("assetUnitList")], async (r
 router.get('/active-list', [verifyToken, routeAccessChecker("assetUnitActiveList")], async (req, res) => {
 
     let result = await assetUnitModel.getActiveList();
+    for (let index = 0; index < result.length; index++) {
+        const element = result[index].id;
+        let location = await locationModel.getAllLocationDataByUnitId(element);
 
+        result[index].location = location
+
+    }
     return res.status(200).send({
         "success": true,
         "status": 200,

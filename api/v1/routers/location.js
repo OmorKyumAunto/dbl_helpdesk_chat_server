@@ -3,15 +3,12 @@ const isEmpty = require("is-empty");
 const router = express.Router();
 const assetUnitModel = require('../models/asset-unit');
 const locationModel = require('../models/location');
-const assetModel = require('../models/asset');
-const unitAccessModel = require('../models/unit-access');
-const userModel = require('../models/user');
+
 
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const moment = require("moment");
-const unitModel = require('../models/asset-unit');
-const { getLocation } = require("../queries/location");
+
 require('dotenv').config();
 
 

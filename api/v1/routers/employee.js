@@ -439,7 +439,7 @@ router.get('/list',[verifyToken, routeAccessChecker("employeeList")],async (req,
 
     let result = await userModel.getEmployeeList(offset, limit, key, unit_name,status,blood_group,employee_type);
 
-    let countResult = await userModel.getTotalEmployeeList(key, unit_name,status,blood_group);
+    let countResult = await userModel.getTotalEmployeeList(key, unit_name,status,blood_group,employee_type);
     
 
     // Iterate over the employee list

@@ -1,5 +1,6 @@
 const express = require("express");
-const router = express.Router();
+const 
+router = express.Router();
 const isEmpty = require("is-empty");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');

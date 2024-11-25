@@ -55,7 +55,7 @@ let getByEmployeeId = () => {
 
 
 //get employee list
-let getEmployeeList = (offset, limit, key, unit_name,status,blood_group) => {
+let getEmployeeList = (offset, limit, key, unit_name,status,blood_group,employee_type) => {
    
     let searchCondition = '';
     if (unit_name) {
@@ -66,6 +66,15 @@ let getEmployeeList = (offset, limit, key, unit_name,status,blood_group) => {
     }
     if (blood_group) {
         searchCondition += `AND UPPER(blood_group) LIKE UPPER('%${blood_group}%') `;
+    }
+    if (employee_type) {
+        if (employee_type === "management") {
+            // Management employees (start with 1510)
+            searchCondition += `AND (employee_id) LIKE '1510%' `;
+        } else if (employee_type === "non-management") {
+            // Non-management employees (any user_id_no)
+            searchCondition += `AND (employee_id) NOT LIKE '1510%' `;
+        }
     }
     
     if (key) {

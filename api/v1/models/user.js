@@ -111,9 +111,9 @@ let updateById = async (id = 0, data = {}) => {
 }
 
 
-let getEmployeeList = async (offset, limit, key,unit_name,status,blood_group) => {
+let getEmployeeList = async (offset, limit, key,unit_name,status,blood_group,employee_type) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getEmployeeList(offset, limit, key,unit_name,status,blood_group), (error, result, fields) => {
+      connectionDblystem.query(queries.getEmployeeList(offset, limit, key,unit_name,status,blood_group,employee_type), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });

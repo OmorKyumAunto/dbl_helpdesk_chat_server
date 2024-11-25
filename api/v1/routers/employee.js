@@ -431,12 +431,13 @@ router.get('/list',[verifyToken, routeAccessChecker("employeeList")],async (req,
     "key": req.query.key,
     "unit_name": req.query.unit_name,
     "status": req.query.status,
-    "blood_group": req.query.blood_group ? req.query.blood_group.replace(/ /g, '+') : null
+    "blood_group": req.query.blood_group ? req.query.blood_group.replace(/ /g, '+') : null,
+    "employee_type" : req.query.employee_type
 }
- let { offset, limit , key, unit_name,status,blood_group}  = reqData;
+ let { offset, limit , key, unit_name,status,blood_group,employee_type}  = reqData;
 
 
-    let result = await userModel.getEmployeeList(offset, limit, key, unit_name,status,blood_group);
+    let result = await userModel.getEmployeeList(offset, limit, key, unit_name,status,blood_group,employee_type);
 
     let countResult = await userModel.getTotalEmployeeList(key, unit_name,status,blood_group);
     

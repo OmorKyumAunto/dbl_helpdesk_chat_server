@@ -566,6 +566,7 @@ router.get('/list', [verifyToken, routeAccessChecker("assetList")],async (req, r
 
     let getLocationName = await locationModel.getById(result[index].location)
     result[index].location_name =  getLocationName[0]?.location || ""
+    result[index].location =  getLocationName[0]?.id || ""
  
     //let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
     let purchaseDate = new Date(result[index].purchase_date);
@@ -706,6 +707,7 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetDetails")],
     }
     let getLocationName = await locationModel.getById(result[0].location)
     result[0].location_name =  getLocationName[0]?.location || ""
+    result[0].location =  getLocationName[0]?.id || ""
 
     let getHistory = await assetHistoryModel.getByAssetId(id)
 

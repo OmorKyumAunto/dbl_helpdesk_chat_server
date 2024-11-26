@@ -131,14 +131,7 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
       return res.status(400).send({
           "success": false,
           "status": 400,
-          "message":"Unit name  cannot be empty."
-    });
-    } 
-    if(isEmpty(reqData.location)){
-      return res.status(400).send({
-          "success": false,
-          "status": 400,
-          "message":"Location cannot be empty."
+          "message":"Unit name cannot be empty."
     });
     } 
 
@@ -159,14 +152,14 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
           "message":"This location not found."
     });
     } 
-    const checkUnitWiseLocation = await locationModel.getById(reqData.location)
-    if(isEmpty(checkUnitWiseLocation)){
-      return res.status(404).send({
-          "success": false,
-          "status": 404,
-          "message":"This location is not under this unit."
-    });
-    } 
+    // const checkUnitWiseLocation = await locationModel.getLocation(reqData.unit_id,reqData.location)
+    // if(isEmpty(checkUnitWiseLocation)){
+    //   return res.status(404).send({
+    //       "success": false,
+    //       "status": 404,
+    //       "message":"This location is not under this unit."
+    // });
+    // } 
   // unit validation
   if(isEmpty(reqData.model)){
     return res.status(400).send({
@@ -909,14 +902,14 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateAsset")],
 
   }
     if(existingDataById[0].location != reqData.location){
-      const checkUnitWiseLocation = await locationModel.getById(reqData.location)
-      if(isEmpty(checkUnitWiseLocation)){
-        return res.status(404).send({
-            "success": false,
-            "status": 404,
-            "message":"This location is not under this unit."
-      });
-      } 
+      // const checkUnitWiseLocation = await locationModel.getById(reqData.location)
+      // if(isEmpty(checkUnitWiseLocation)){
+      //   return res.status(404).send({
+      //       "success": false,
+      //       "status": 404,
+      //       "message":"This location is not under this unit."
+      // });
+      // } 
       willWeUpdate = 1
       updateData.location = reqData.location
 
@@ -1292,11 +1285,12 @@ router.get('/distributed-asset', [verifyToken, routeAccessChecker("distributedAs
     "key": req.query.key,
     "unit": req.query.unit,
     "type": req.query.type,
+    "employee_type" : req.query.employee_type,
 }
- let { offset, limit , key,unit ,type} = reqData;
+ let { offset, limit , key,unit ,type,employee_type} = reqData;
 
-  let result = await assetModel.distributedAssetList(offset, limit, key, unit,type);
-  let totalResult = await assetModel.distributedAssetTotalList(key, unit,type);
+  let result = await assetModel.distributedAssetList(offset, limit, key, unit,type,employee_type);
+  let totalResult = await assetModel.distributedAssetTotalList(key, unit,type,employee_type);
 
 
   return res.status(200).send({

@@ -34,9 +34,9 @@ let getAllLocationDataByUnitId = async (unit_id) => {
 
 
 
-let getLocation = async (unit_id = 0,location= '') => {
+let getLocation = async (unit_id = 0,location = '') => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getLocation(), [location,unit_id,], (error, result, fields) => {
+        connectionDblystem.query(queries.getLocation(), [unit_id,location], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });

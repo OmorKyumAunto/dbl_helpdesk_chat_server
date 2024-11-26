@@ -111,18 +111,18 @@ let getTotalList = async (key, unit, type) => {
   
 
 
-  let distributedAssetList = async (offset, limit, key, unit ,type) => {
+  let distributedAssetList = async (offset, limit, key, unit ,type,employee_type) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.distributedAssetList(offset, limit, key, unit,type), (error, result, fields) => {
+      connectionDblystem.query(queries.distributedAssetList(offset, limit, key, unit,type,employee_type), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
     });
   }
   
-  let distributedAssetTotalList = async (key, unit,type) => {
+  let distributedAssetTotalList = async (key, unit,type,employee_type) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.distributedTotalAssetList(key, unit,type), (error, result, fields) => {
+      connectionDblystem.query(queries.distributedTotalAssetList(key, unit,type,employee_type), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });

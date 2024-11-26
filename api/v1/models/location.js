@@ -70,6 +70,15 @@ let getById = async (id = 0) => {
     });
 }
 
+let getUnitWiseLocation = async (unit_id = 0,location = '') => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getUnitWiseLocation(), [unit_id,location], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 let getByNonDeleteData = async (id = 0) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getByNonDeleteData(), [id], (error, result, fields) => {
@@ -107,7 +116,8 @@ module.exports = {
     getLocation,
     getAllList,
     getByNonDeleteData,
-    getAllLocationDataByUnitId
+    getAllLocationDataByUnitId,
+    getUnitWiseLocation
 
 
 }

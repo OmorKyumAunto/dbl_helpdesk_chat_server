@@ -19,6 +19,9 @@ let getLocation = () => {
     return `SELECT * FROM ${table_name}  where location = ? and unit_id = ? and status = 1`;
 }
 
+let getUnitWiseLocation = () => {
+    return `SELECT * FROM ${table_name}  where location = ? and unit_id = ? and status = 1`;
+}
 
 
 let getOnlyDataList = () => {
@@ -64,6 +67,7 @@ module.exports = {
     getLocation,
     getAllList,
     getByNonDeleteData,
-    getAllLocationDataByUnitId
+    getAllLocationDataByUnitId,
+    getUnitWiseLocation
 
 }

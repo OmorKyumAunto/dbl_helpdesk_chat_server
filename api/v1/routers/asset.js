@@ -15,6 +15,7 @@ const assetUnitModel = require('../models/asset-unit');
 const bcrypt = require('bcrypt');
 const userModel = require('../models/user');
 const unitModel = require('../models/asset-unit');
+const locationModel = require('../models/location');
 const { routeAccessChecker } = require("../middlewares/routeAccess");
 const commonObject = require("../common/common");
 const licensesModel = require('../models/licenses');
@@ -30,6 +31,7 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
       "serial_number":req.body.serial_number,
       "po_number":req.body.po_number,
       "unit_id":req.body.unit_id,
+      "location":req.body.location,
       "model":req.body.model,
       "specification":req.body.specification,
       "is_assign":req.body.is_assign,
@@ -116,32 +118,55 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
 }
 
 
-// if(isEmpty(reqData.po_number)){
-//   return res.status(400).send({
-//     "success": false,
-//     "status": 400,
-//     "message":"Po number cannot be empty."
-//   });
-// }
+  // if(isEmpty(reqData.po_number)){
+  //   return res.status(400).send({
+  //     "success": false,
+  //     "status": 400,
+  //     "message":"Po number cannot be empty."
+  //   });
+  // }
 
   // unit validation
-  if(isEmpty(reqData.unit_id)){
-    return res.status(400).send({
-        "success": false,
-        "status": 400,
-        "message":"Unit name  cannot be empty."
-  });
-  } 
-
-    const checkUnitId = await unitModel.getById(reqData.unit_id)
-    if(isEmpty(checkUnitId)){
+    if(isEmpty(reqData.unit_id)){
       return res.status(400).send({
           "success": false,
           "status": 400,
-          "message":"Unit id not found."
+          "message":"Unit name  cannot be empty."
+    });
+    } 
+    if(isEmpty(reqData.location)){
+      return res.status(400).send({
+          "success": false,
+          "status": 400,
+          "message":"Location cannot be empty."
     });
     } 
 
+
+    const checkUnitId = await unitModel.getById(reqData.unit_id)
+    if(isEmpty(checkUnitId)){
+      return res.status(404).send({
+          "success": false,
+          "status": 404,
+          "message":"Unit not found."
+    });
+    } 
+    const location = await locationModel.getById(reqData.location)
+    if(isEmpty(location)){
+      return res.status(404).send({
+          "success": false,
+          "status": 404,
+          "message":"This location not found."
+    });
+    } 
+    const checkUnitWiseLocation = await locationModel.getById(reqData.location)
+    if(isEmpty(checkUnitWiseLocation)){
+      return res.status(404).send({
+          "success": false,
+          "status": 404,
+          "message":"This location is not under this unit."
+    });
+    } 
   // unit validation
   if(isEmpty(reqData.model)){
     return res.status(400).send({
@@ -256,6 +281,7 @@ let data2 = {
   po_number: reqData.po_number,
   is_assign: reqData.is_assign,
   unit_id : reqData.unit_id,
+  location : reqData.location,
   model : reqData.model,
   specification : reqData.specification,
   price : parseInt(reqData.price),
@@ -545,8 +571,9 @@ router.get('/list', [verifyToken, routeAccessChecker("assetList")],async (req, r
       result[index].unit_name = "";
     }
 
-
-    let current_date = new Date(); 
+    let getLocationName = await locationModel.getById(result[index].location)
+    result[index].location_name =  getLocationName[0]?.location || ""
+ 
     //let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
     let purchaseDate = new Date(result[index].purchase_date);
     let currentTime = new Date();
@@ -684,7 +711,8 @@ router.get('/details/:id',[verifyToken, routeAccessChecker("assetDetails")],
     }else{
       result[0].unit_name = ""
     }
-    
+    let getLocationName = await locationModel.getById(result[0].location)
+    result[0].location_name =  getLocationName[0]?.location || ""
 
     let getHistory = await assetHistoryModel.getByAssetId(id)
 
@@ -793,6 +821,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateAsset")],
         "specification":req.body.specification,
         "assign_update": req.body.assign_update,
         "user_id":req.body.user_id,
+        "location":req.body.location,
         "assign_date":req.body.assign_date,
         "price":req.body.price,
       }
@@ -879,6 +908,20 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateAsset")],
     updateData.unit_id = reqData.unit_id
 
   }
+    if(existingDataById[0].location != reqData.location){
+      const checkUnitWiseLocation = await locationModel.getById(reqData.location)
+      if(isEmpty(checkUnitWiseLocation)){
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message":"This location is not under this unit."
+      });
+      } 
+      willWeUpdate = 1
+      updateData.location = reqData.location
+
+    }
+
 
 
      if(existingDataById[0].model != reqData.model){

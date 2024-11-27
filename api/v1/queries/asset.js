@@ -33,6 +33,25 @@ let getList = (offset, limit, key, unit, type ) => {
 }
 
 
+let adminUnitWisetotalAssetCount = () => {
+  return `SELECT 
+    COUNT(u.id) AS user_count
+    FROM 
+        dbl.dbl_users AS u
+    JOIN 
+        admin_search_access AS sa 
+    ON 
+        sa.user_id = u.id
+    JOIN 
+        dbl_asset AS asset 
+    ON 
+        asset.unit_id = sa.unit_id
+    WHERE 
+        u.role_id = 2 
+        AND asset.status = 1
+        AND u.id = ?;
+        `;
+}
 
 let getTotalList = (key, unit, type) => {
   let searchCondition = '';
@@ -283,7 +302,8 @@ module.exports = {
     getDuplicateSerialNumber,
     totalAssetCount,
     getDistributedData,
-    alreadyAssignUnit
+    alreadyAssignUnit,
+    adminUnitWisetotalAssetCount
 
 
 }

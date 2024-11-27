@@ -98,6 +98,14 @@ let getList = async (offset, limit, key,unit,type) => {
     });
   }
   
+  let adminUnitWisetotalAssetCount = async (user_id) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.adminUnitWisetotalAssetCount(),[user_id], (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
 
 
 let getTotalList = async (key, unit, type) => {
@@ -468,7 +476,8 @@ module.exports = {
    getDuplicateSerialNumber,
    totalAssetCount,
    getDistributedData,
-   alreadyAssignUnit
+   alreadyAssignUnit,
+   adminUnitWisetotalAssetCount
    
    
   

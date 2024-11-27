@@ -220,6 +220,7 @@ if (reqData.is_new_employee == 0  && reqData.is_assign == 1) {
   is_assign: reqData.is_assign,
   remarks : 'assigned',
   unit_id : reqData.unit_id,
+  location : reqData.location,
   model : reqData.model,
   specification : reqData.specification,
   price:reqData.price

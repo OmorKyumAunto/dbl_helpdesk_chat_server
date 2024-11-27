@@ -161,4 +161,21 @@ router.get('/blood-count', async (req, res) => {
   
 });
 
+
+router.get('/admin-unit-wise-asset-count',[verifyToken], async (req, res) => {
+
+  let id = req.decoded.userInfo.id
+
+  let admin_asset = await assetModel.adminUnitWisetotalAssetCount(id)
+
+
+    return res.status(200).send({
+      success: false,
+      status: 200,
+      message: "Admin unit wise asset count.",
+      data: admin_asset[0]
+    });
+  
+});
+
 module.exports = router;  

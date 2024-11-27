@@ -1523,6 +1523,7 @@ router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], u
               const data = locationData[index];
               locationArr.push(data); // Store the asset unit data in unitArr
           }
+          
           // Loop through unitArr to find the matching unit
           let locationMatch = false;
           for (let index = 0; index < locationArr.length; index++) {

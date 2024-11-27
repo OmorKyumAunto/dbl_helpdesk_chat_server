@@ -12,6 +12,15 @@ let getList = async (status) => {
 }
 
 
+let getOnlyDataList = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getOnlyDataList(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 let getAllList = async (status) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getAllList(status), (error, result, fields) => {
@@ -117,7 +126,8 @@ module.exports = {
     getAllList,
     getByNonDeleteData,
     getAllLocationDataByUnitId,
-    getUnitWiseLocation
+    getUnitWiseLocation,
+    getOnlyDataList
 
 
 }

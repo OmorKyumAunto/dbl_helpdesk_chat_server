@@ -1367,7 +1367,8 @@ router.get('/employee-calculation', [verifyToken, routeAccessChecker("employeeCa
             id: asset.id,
             name: asset.name, 
             serial_number: asset.serial_number, 
-            price: asset.price
+            price: asset.price,
+            category : asset.category
           });
 
           // Sum up the asset prices for total asset price calculation

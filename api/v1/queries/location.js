@@ -25,12 +25,14 @@ let getUnitWiseLocation = () => {
 
 
 let getOnlyDataList = () => {
-    return `SELECT id,title FROM ${table_name}  where status IN ('active', 'inactive')`;
+    return `SELECT * FROM ${table_name}  where status != 0 `;
 }
 
 let getActiveList = () => {
     return `SELECT * FROM ${table_name}  where status = 'active'`;
 }
+
+
 
 let getByTitle = () => {
     return `SELECT * FROM ${table_name} where  title = ? and status = 'active'`;

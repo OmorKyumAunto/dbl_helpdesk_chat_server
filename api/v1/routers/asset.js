@@ -1429,8 +1429,6 @@ return new Date(epoch.getTime() + epoch.getTimezoneOffset() * 60000);
 
 
 
-
-
 router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], upload.single('file'), async (req, res) => {
   if (!req.file) {
       return res.status(400).send({
@@ -1447,7 +1445,7 @@ router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], u
       const data = xlsx.utils.sheet_to_json(worksheet);
 
       // Required fields
-      const requiredFields = ['Name', 'Category', 'Purchase date', 'Serial number', 'PO number', 'Model', 'Specification', 'Unit name'];
+      const requiredFields = ['Name', 'Category', 'Purchase date', 'Serial number', 'PO number', 'Model', 'Specification', 'Unit name','Location'];
 
       // Iterate through each row and save to the database
       for (let row of data) {
@@ -1477,6 +1475,7 @@ router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], u
               model: row['Model'],
               specification: row['Specification'],
               unit_name: row['Unit name'],
+              location_name: row['Location'],
               price : row['Price'],
               created_by : req.decoded.userInfo.id
           };
@@ -1487,7 +1486,7 @@ router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], u
           let assetUnitData = await assetUnitModel.getOnlyDataList();
           for (let index = 0; index < assetUnitData.length; index++) {
               const data = assetUnitData[index];
-              unitArr.push(data); // Store the asset unit data in unitArr
+              unitArr.push(data); 
           }
 
           // Loop through unitArr to find the matching unit
@@ -1496,11 +1495,12 @@ router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], u
               const element = unitArr[index];
               // Check if unit_name matches the title in the assetUnitData
               if (element.title.toLowerCase() === reqData.unit_name.toLowerCase()) {
-                  reqData.unit_id = element.id; // Assign the matched id to unit_id
+                  reqData.unit_id = element.id; 
                   unitMatch = true;
-                  break; // Exit the loop once a match is found
+                  break; 
               }
           }
+          
 
           // If no matching unit is found, return an error
           if (!unitMatch) {
@@ -1513,6 +1513,39 @@ router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], u
 
           // Remove unit_name from reqData since it is no longer needed
           delete reqData.unit_name;
+
+       
+          let locationArr = [];
+          // get asset unit data
+          let locationData = await locationModel.getOnlyDataList();
+          
+          for (let index = 0; index < locationData.length; index++) {
+              const data = locationData[index];
+              locationArr.push(data); // Store the asset unit data in unitArr
+          }
+          // Loop through unitArr to find the matching unit
+          let locationMatch = false;
+          for (let index = 0; index < locationArr.length; index++) {
+              const element = locationArr[index];
+              // Check if unit_name matches the title in the assetUnitData
+              if (element.location.toLowerCase() === reqData.location_name.toLowerCase()) {
+                  reqData.location = element.id; // Assign the matched id to unit_id
+                  locationMatch = true;
+                  break; // Exit the loop once a match is found
+              }
+          }
+
+          // If no matching unit is found, return an error
+          if (!locationMatch) {
+              return res.status(400).send({
+                  success: false,
+                  status: 400,
+                  message: `Location ${reqData.location_name} does not match any known location.`
+              });
+          }
+
+          // Remove unit_name from reqData since it is no longer needed
+          delete reqData.location_name;
 
           // Save to database
           let result = await assetModel.addNew2(reqData);
@@ -1540,7 +1573,6 @@ router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], u
       });
   }
 });
-
 
 
 

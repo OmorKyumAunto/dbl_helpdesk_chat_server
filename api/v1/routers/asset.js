@@ -1531,7 +1531,7 @@ router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], u
           for (let index = 0; index < locationArr.length; index++) {
               const element = locationArr[index];
               // Check if unit_name matches the title in the assetUnitData
-              if (element.location.toLowerCase() === reqData.location_name.toLowerCase()) {
+              if (element && element.location.toLowerCase() === reqData.location_name.toLowerCase()) {
                   reqData.location = element.id; // Assign the matched id to unit_id
                   locationMatch = true;
                   break; // Exit the loop once a match is found

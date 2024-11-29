@@ -15,15 +15,16 @@ let getByEmployee = () => {
 }
 
 
-let getList = (offset, limit, key, unit, type ) => {
+let getList = (offset, limit, key, unit, type , location) => {
   let searchCondition = '';
-
   if (key) {
       searchCondition += `AND (LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) LIKE LOWER('%${key}%') OR UPPER(serial_number) LIKE UPPER('%${key}%')) `;
   }
-
   if (unit) {
     searchCondition += `AND unit_id LIKE '%${unit}%' `;
+  }
+  if (location) {
+    searchCondition += `AND location LIKE '%${location}%' `;
   }
   if (type) {
     searchCondition += `AND lower(remarks) LIKE lower('%${type}%') `;
@@ -53,6 +54,12 @@ let adminUnitWisetotalAssetCount = () => {
     `;
 }
 
+
+let employeeWiseAssigntotalAssetCount = () => {
+  return `SELECT count(id) as employee_total_assign_asset FROM dbl_asset_assign where user_id = ? and status = 1 `;
+}
+
+
 let getTotalList = (key, unit, type) => {
   let searchCondition = '';
 
@@ -71,11 +78,14 @@ let getTotalList = (key, unit, type) => {
 }
 
 
-let distributedAssetList = (offset, limit, key, unit, type, employee_type) => {
+let distributedAssetList = (offset, limit, key, unit, type, employee_type,location) => {
   let searchCondition = [];
 
   if (unit) {
     searchCondition.push(`(asset_unit_id) LIKE ('%${unit}%')`);
+  }
+  if (location) {
+    searchCondition.push(`(location_id) LIKE ('%${location}%')`);
   }
 
   if (type) {
@@ -97,6 +107,7 @@ let distributedAssetList = (offset, limit, key, unit, type, employee_type) => {
       LOWER(user_id_no) LIKE LOWER('%${key}%') 
       OR LOWER(user_name) LIKE LOWER('%${key}%') 
       OR LOWER(serial_number) LIKE LOWER('%${key}%')
+      OR LOWER(asset_name) LIKE LOWER('%${key}%')
     )`);
   }
 
@@ -307,7 +318,8 @@ module.exports = {
     getDistributedData,
     alreadyAssignUnit,
     adminUnitWisetotalAssetCount,
-    monitorCountData
+    monitorCountData,
+    employeeWiseAssigntotalAssetCount
 
 
 }

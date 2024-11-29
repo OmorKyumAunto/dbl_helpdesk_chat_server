@@ -79,9 +79,9 @@ let getByExistsEmployee = async(employee_id = "") => {
 
 
 
-let getList = async (offset, limit, key,unit,type) => {
+let getList = async (offset, limit, key,unit,type, location) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getList(offset, limit, key,unit,type), (error, result, fields) => {
+      connectionDblystem.query(queries.getList(offset, limit, key,unit,type,location), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -107,6 +107,15 @@ let getList = async (offset, limit, key,unit,type) => {
     });
   }
 
+let employeeWiseAssigntotalAssetCount = async (user_id) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.employeeWiseAssigntotalAssetCount(),[user_id], (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+
 
 let getTotalList = async (key, unit, type) => {
     return new Promise((resolve, reject) => {
@@ -119,9 +128,9 @@ let getTotalList = async (key, unit, type) => {
   
 
 
-  let distributedAssetList = async (offset, limit, key, unit ,type,employee_type) => {
+  let distributedAssetList = async (offset, limit, key, unit ,type,employee_type,location) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.distributedAssetList(offset, limit, key, unit,type,employee_type), (error, result, fields) => {
+      connectionDblystem.query(queries.distributedAssetList(offset, limit, key, unit,type,employee_type,location), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -487,7 +496,8 @@ module.exports = {
    getDistributedData,
    alreadyAssignUnit,
    adminUnitWisetotalAssetCount,
-   monitorCountData
+   monitorCountData,
+   employeeWiseAssigntotalAssetCount
    
    
   

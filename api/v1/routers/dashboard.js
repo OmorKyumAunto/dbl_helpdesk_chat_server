@@ -180,4 +180,19 @@ router.get('/admin-unit-wise-asset-count',[verifyToken], async (req, res) => {
   
 });
 
+router.get('/employee-wise-asset-assign-count',[verifyToken], async (req, res) => {
+
+  let id = req.decoded.userInfo.id
+
+  let employee_assign_asset_count = await assetModel.employeeWiseAssigntotalAssetCount(id)
+
+    return res.status(200).send({
+      success: false,
+      status: 200,
+      message: "Admin unit wise asset count.",
+      data: employee_assign_asset_count[0]
+    });
+  
+});
+
 module.exports = router;  

@@ -96,7 +96,7 @@ router.get('/accessories-count', async (req, res) => {
     total_desktop : desktop[0].total_desktop,
     total_printer : printer[0].total_printer,
     total_accessories : accessories[0].total_accessories,
-    total_monitor : monitor[0].total_monitor,
+    total_monitor : monitor[0].total_monitors,
   }
 
     return res.status(200).send({

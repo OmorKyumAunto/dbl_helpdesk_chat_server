@@ -280,7 +280,7 @@ let accessoriesCountData = () => {
 };
 
 let monitorCountData = () => {
-  return `SELECT count(id) as total_monitor FROM ${table_name}  WHERE category = 'monitor' and status = 1`; 
+  return `SELECT count(id) as total_monitors FROM ${table_name}  WHERE category = 'monitor' and status = 1`; 
 };
 
 let getAssetList = () => {

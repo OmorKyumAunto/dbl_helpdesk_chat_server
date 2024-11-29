@@ -37,7 +37,7 @@ let adminUnitWisetotalAssetCount = () => {
   return `SELECT 
     COUNT(u.id) AS user_count
     FROM 
-        dbl.dbl_users AS u
+        dbl_users AS u
     JOIN 
         admin_search_access AS sa 
     ON 
@@ -50,7 +50,7 @@ let adminUnitWisetotalAssetCount = () => {
         u.role_id = 2 
         AND asset.status = 1
         AND u.id = ?;
-        `;
+    `;
 }
 
 let getTotalList = (key, unit, type) => {

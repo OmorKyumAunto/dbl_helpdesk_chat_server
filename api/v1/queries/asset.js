@@ -56,8 +56,24 @@ let adminUnitWisetotalAssetCount = () => {
 
 
 let employeeWiseAssigntotalAssetCount = () => {
-  return `SELECT count(id) as employee_total_assign_asset FROM dbl_asset_assign where user_id = ? and status = 1 `;
+  return `
+  SELECT 
+    COUNT(u.id) AS employee_assign_asset_count
+    FROM 
+        dbl_users AS u
+    JOIN 
+        admin_search_access AS sa 
+    ON 
+        sa.user_id = u.id
+    JOIN 
+        asset_assign_user_view AS aav 
+    ON 
+        aav.asset_unit_id = sa.unit_id
+    WHERE 
+        u.role_id = 2 
+        AND u.id = ?;`;
 }
+
 
 
 let getTotalList = (key, unit, type) => {

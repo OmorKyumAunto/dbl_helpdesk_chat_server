@@ -436,6 +436,15 @@ let accessoriesCountData = async () => {
   });
 }
 
+let monitorCountData = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(queries.monitorCountData(), (error, result, fields) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+  });
+}
+
 
 // get distributed asset id by data
 let getDistributedData = async (id = 0) => {
@@ -477,7 +486,8 @@ module.exports = {
    totalAssetCount,
    getDistributedData,
    alreadyAssignUnit,
-   adminUnitWisetotalAssetCount
+   adminUnitWisetotalAssetCount,
+   monitorCountData
    
    
   

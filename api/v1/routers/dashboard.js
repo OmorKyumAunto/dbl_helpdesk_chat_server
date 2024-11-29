@@ -89,12 +89,14 @@ router.get('/accessories-count', async (req, res) => {
   let desktop = await assetModel.desktopCountData()
   let printer = await assetModel.printerCountData()
   let accessories = await assetModel.accessoriesCountData()
+  let monitor = await assetModel.monitorCountData()
 
   let result = {
     total_laptop : laptop[0].total_laptop,
     total_desktop : desktop[0].total_desktop,
     total_printer : printer[0].total_printer,
     total_accessories : accessories[0].total_accessories,
+    total_monitor : monitor[0].total_monitor,
   }
 
     return res.status(200).send({

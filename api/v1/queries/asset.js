@@ -252,6 +252,9 @@ let accessoriesCountData = () => {
   return `SELECT count(id) as total_accessories FROM ${table_name}  WHERE category = 'accessories' and status = 1`; 
 };
 
+let monitorCountData = () => {
+  return `SELECT count(id) as total_monitor FROM ${table_name}  WHERE category = 'monitor' and status = 1`; 
+};
 
 let getAssetList = () => {
   return `select * from ${table_name} where status != 0 order by id desc`;
@@ -303,7 +306,8 @@ module.exports = {
     totalAssetCount,
     getDistributedData,
     alreadyAssignUnit,
-    adminUnitWisetotalAssetCount
+    adminUnitWisetotalAssetCount,
+    monitorCountData
 
 
 }

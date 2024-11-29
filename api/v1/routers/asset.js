@@ -548,12 +548,13 @@ router.get('/list', [verifyToken, routeAccessChecker("assetList")],async (req, r
     "offset": req.query.offset || 0,
     "key": req.query.key,
     "unit": req.query.unit,
+    "location": req.query.location,
     "type": req.query.type,
   };
   
-  let { offset, limit, key, unit, type } = reqData;
+  let { offset, limit, key, unit, type , location} = reqData;
 
-  let result = await assetModel.getList(offset, limit, key, unit, type);
+  let result = await assetModel.getList(offset, limit, key, unit, type, location);
 
   for (let index = 0; index < result.length; index++) {
     const element = result[index].unit_id;
@@ -1287,13 +1288,14 @@ router.get('/distributed-asset', [verifyToken, routeAccessChecker("distributedAs
     "offset": req.query.offset || 0,
     "key": req.query.key,
     "unit": req.query.unit,
+    "location": req.query.location,
     "type": req.query.type,
     "employee_type" : req.query.employee_type,
 }
- let { offset, limit , key,unit ,type,employee_type} = reqData;
+ let { offset, limit , key,unit ,type,employee_type,location} = reqData;
 
-  let result = await assetModel.distributedAssetList(offset, limit, key, unit,type,employee_type);
-  let totalResult = await assetModel.distributedAssetTotalList(key, unit,type,employee_type);
+  let result = await assetModel.distributedAssetList(offset, limit, key, unit,type,employee_type,location);
+  let totalResult = await assetModel.distributedAssetTotalList(key, unit,type,employee_type,location);
 
 
   return res.status(200).send({

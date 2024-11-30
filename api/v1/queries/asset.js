@@ -140,6 +140,9 @@ let distributedAssetList = (offset, limit, key, unit, type, employee_type,locati
 let adminDistributedAssetList = (offset, limit, key, unit, type, employee_type,location,user_id) => {
   let searchCondition = [];
 
+  if (user_id) {
+    searchCondition.push(`(user_id) LIKE ('%${user_id}%')`);
+  }
   if (unit) {
     searchCondition.push(`(asset_unit_id) LIKE ('%${unit}%')`);
   }
@@ -172,7 +175,7 @@ let adminDistributedAssetList = (offset, limit, key, unit, type, employee_type,l
 
   let whereClause = searchCondition.length ? `WHERE ${searchCondition.join(' AND ')}` : '';
 
-  return `SELECT * FROM ${table_view} ${whereClause} and where user_id = ${user_id} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+  return `SELECT * FROM ${table_view} ${whereClause}  ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
 };
 
 
@@ -214,10 +217,13 @@ let distributedTotalAssetList = (key, unit, type,employee_type,user_id) => {
 
 
 
-let adminDistributedTotalAssetList = (key, unit, type,employee_type,user_id) => {
+let adminDistributedTotalAssetList = (key, unit, location,type,employee_type,user_id) => {
   let searchCondition = [];
 
- 
+  if (user_id) {
+    searchCondition.push(`(user_id) LIKE ('%${user_id}%')`);
+  }
+
   if (key) {
     searchCondition.push(`(LOWER(user_id_no) LIKE LOWER('%${key}%') OR LOWER(user_name) LIKE LOWER('%${key}%') OR LOWER(serial_number) LIKE LOWER('%${key}%'))`);
   }

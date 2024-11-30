@@ -145,7 +145,7 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
     });
     } 
     const location = await locationModel.getById(reqData.location)
-    if(isEmpty(location)){
+    if(location && isEmpty(location)){
       return res.status(404).send({
           "success": false,
           "status": 404,
@@ -588,7 +588,7 @@ router.get('/list', [verifyToken, routeAccessChecker("assetList")],async (req, r
 
 
   }
-  let totalCount = await assetModel.getTotalList(key, unit, type);
+  let totalCount = await assetModel.getTotalList(key, unit, type,location);
 
   return res.status(200).send({
     success: true,

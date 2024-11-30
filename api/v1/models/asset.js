@@ -117,9 +117,9 @@ let employeeWiseAssigntotalAssetCount = async (user_id) => {
   }
 
 
-let getTotalList = async (key, unit, type) => {
+let getTotalList = async (key, unit, type,location) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getTotalList(key, unit, type), (error, result, fields) => {
+      connectionDblystem.query(queries.getTotalList(key, unit, type,location), (error, result, fields) => {
         if (error) reject(error)
         else resolve(result);
       });

@@ -1307,7 +1307,7 @@ router.get('/distributed-asset', [verifyToken, routeAccessChecker("distributedAs
   });
 });
 
-router.get('/admin-distributed-asset', [verifyToken, routeAccessChecker("distributedAsset")], async (req, res) => {
+router.get('/admin-distributed-asset', [verifyToken, routeAccessChecker("adminDistributedAsset")], async (req, res) => {
     let reqData = {
       "limit": req.query.limit || 50,
       "offset": req.query.offset || 0,

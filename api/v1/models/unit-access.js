@@ -61,6 +61,7 @@ let getById = async (id = 0) => {
     });
 }
 
+
 let addNew = async (info) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.addNew(), [info], (error, result, fields) => {
@@ -173,6 +174,6 @@ module.exports = {
     getByTitle,
     getOnlyDataList,
     deletePreviusId,
-    getUserWise
+    getUserWise,
 }
 

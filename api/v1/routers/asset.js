@@ -21,6 +21,7 @@ const commonObject = require("../common/common");
 const licensesModel = require('../models/licenses');
 const unitAccessModel = require('../models/unit-access');
 
+
 router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res) => {
     
   // body data
@@ -1283,11 +1284,18 @@ return res.status(201).send({
 
 
 router.get('/distributed-asset', [verifyToken, routeAccessChecker("distributedAsset")], async (req, res) => {
+  let assignData
+  if (req.decoded.userInfo.role_id === 2){
+    const assign_unit = await unitAccessModel.getById(req.decoded.userInfo.id)
+    if(assign_unit){
+      assignData = assign_unit[0].unit_id
+    }
+  }
   let reqData = {
     "limit": req.query.limit || 50,
     "offset": req.query.offset || 0,
     "key": req.query.key,
-    "unit": req.query.unit,
+    "unit": req.query.unit || assignData,
     "location": req.query.location,
     "type": req.query.type,
     "employee_type" : req.query.employee_type,

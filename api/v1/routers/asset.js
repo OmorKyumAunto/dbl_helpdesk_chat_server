@@ -145,7 +145,7 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
     });
     } 
     const location = await locationModel.getById(reqData.location)
-    if(location && isEmpty(location)){
+    if(reqData.location && isEmpty(location)){
       return res.status(404).send({
           "success": false,
           "status": 404,

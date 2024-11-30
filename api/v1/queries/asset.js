@@ -134,9 +134,48 @@ let distributedAssetList = (offset, limit, key, unit, type, employee_type,locati
 
 
 
+let adminDistributedAssetList = (offset, limit, key, unit, type, employee_type,location,user_id) => {
+  let searchCondition = [];
+
+  if (unit) {
+    searchCondition.push(`(asset_unit_id) LIKE ('%${unit}%')`);
+  }
+  if (location) {
+    searchCondition.push(`(location_id) LIKE ('%${location}%')`);
+  }
+
+  if (type) {
+    searchCondition.push(`UPPER(category) LIKE UPPER('%${type}%')`);
+  }
+
+  if (employee_type) {
+    if (employee_type === "management") {
+      // Management employees (start with 1510)
+      searchCondition.push(`(user_id_no) LIKE '1510%'`);
+    } else if (employee_type === "non-management") {
+      // Non-management employees (any user_id_no)
+      searchCondition.push(`(user_id_no) NOT LIKE '1510%'`);
+    }
+  }
+
+  if (key) {
+    searchCondition.push(`(
+      LOWER(user_id_no) LIKE LOWER('%${key}%') 
+      OR LOWER(user_name) LIKE LOWER('%${key}%') 
+      OR LOWER(serial_number) LIKE LOWER('%${key}%')
+      OR LOWER(asset_name) LIKE LOWER('%${key}%')
+    )`);
+  }
+
+  let whereClause = searchCondition.length ? `WHERE ${searchCondition.join(' AND ')}` : '';
+
+  return `SELECT * FROM ${table_view} ${whereClause} and where user_id = ${user_id} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+};
 
 
-let distributedTotalAssetList = (key, unit, type,employee_type) => {
+
+
+let distributedTotalAssetList = (key, unit, type,employee_type,user_id) => {
   let searchCondition = [];
 
  
@@ -150,6 +189,9 @@ let distributedTotalAssetList = (key, unit, type,employee_type) => {
   
   if (unit) {
     searchCondition.push(`(asset_unit_id) LIKE ('%${unit}%')`);
+  }
+  if (location) {
+    searchCondition.push(`(location_id) LIKE ('%${location}%')`);
   }
 
   if (employee_type) {
@@ -167,6 +209,42 @@ let distributedTotalAssetList = (key, unit, type,employee_type) => {
   return `SELECT * FROM ${table_view} ${whereClause} ORDER BY id DESC`;
 }
 
+
+
+let adminDistributedTotalAssetList = (key, unit, type,employee_type,user_id) => {
+  let searchCondition = [];
+
+ 
+  if (key) {
+    searchCondition.push(`(LOWER(user_id_no) LIKE LOWER('%${key}%') OR LOWER(user_name) LIKE LOWER('%${key}%') OR LOWER(serial_number) LIKE LOWER('%${key}%'))`);
+  }
+
+  if (type) {
+    searchCondition.push(`UPPER(category) LIKE UPPER('%${type}%')`);
+  }
+  
+  if (unit) {
+    searchCondition.push(`(asset_unit_id) LIKE ('%${unit}%')`);
+  }
+  if (location) {
+    searchCondition.push(`(location_id) LIKE ('%${location}%')`);
+  }
+  
+
+  if (employee_type) {
+    if (employee_type === "management") {
+      // Management employees (start with 1510)
+      searchCondition.push(`(user_id_no) LIKE '1510%'`);
+    } else if (employee_type === "non-management") {
+      // Non-management employees (any user_id_no)
+      searchCondition.push(`(user_id_no) NOT LIKE '1510%'`);
+    }
+  }
+
+  let whereClause = searchCondition.length ? `WHERE ${searchCondition.join(' AND ')}` : '';
+
+  return `SELECT * FROM ${table_view} ${whereClause} and user_id = ${user_id} ORDER BY id DESC`;
+}
 
 
 let getLastData = () => {
@@ -335,7 +413,9 @@ module.exports = {
     alreadyAssignUnit,
     adminUnitWisetotalAssetCount,
     monitorCountData,
-    employeeWiseAssigntotalAssetCount
+    employeeWiseAssigntotalAssetCount,
+    adminDistributedAssetList,
+    adminDistributedTotalAssetList
 
 
 }

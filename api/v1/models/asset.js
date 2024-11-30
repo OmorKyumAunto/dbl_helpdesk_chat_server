@@ -137,6 +137,16 @@ let getTotalList = async (key, unit, type) => {
     });
   }
   
+
+  let adminDistributedAssetList = async (offset, limit, key, unit ,type,employee_type,location,user_id) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.adminDistributedAssetList(offset, limit, key, unit,type,employee_type,location,user_id), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+  
   let distributedAssetTotalList = async (key, unit,type,employee_type) => {
     return new Promise((resolve, reject) => {
       connectionDblystem.query(queries.distributedTotalAssetList(key, unit,type,employee_type), (error, result, fields) => {
@@ -147,6 +157,15 @@ let getTotalList = async (key, unit, type) => {
   }
   
 
+  let adminDistributedAssetTotalList = async (key, unit,type,employee_type,location,user_id) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.adminDistributedTotalAssetList(key, unit,type,employee_type,location,user_id), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+  
 let getLastData = async () => {
     return new Promise((resolve, reject) => {
       connectionDblystem.query(queries.getLastData(), (error, result, fields) => {
@@ -497,8 +516,8 @@ module.exports = {
    alreadyAssignUnit,
    adminUnitWisetotalAssetCount,
    monitorCountData,
-   employeeWiseAssigntotalAssetCount
+   employeeWiseAssigntotalAssetCount,
+   adminDistributedAssetList,
+   adminDistributedAssetTotalList
    
-   
-  
 }

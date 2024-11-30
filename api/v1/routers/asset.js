@@ -1307,6 +1307,32 @@ router.get('/distributed-asset', [verifyToken, routeAccessChecker("distributedAs
   });
 });
 
+router.get('/admin-distributed-asset', [verifyToken, routeAccessChecker("distributedAsset")], async (req, res) => {
+    let reqData = {
+      "limit": req.query.limit || 50,
+      "offset": req.query.offset || 0,
+      "key": req.query.key,
+      "unit": req.query.unit,
+      "location": req.query.location,
+      "type": req.query.type,
+      "employee_type" : req.query.employee_type,
+   }
+    let { offset, limit , key,unit ,type,employee_type,location} = reqData;
+    let user_id = req.decoded.userInfo.id
+    let result = await assetModel.adminDistributedAssetList(offset, limit, key, unit,type,employee_type,location,user_id);
+    let totalResult = await assetModel.adminDistributedAssetTotalList(key, unit,type,employee_type,location,user_id);
+  
+  
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Distributed asset list.",
+      total : totalResult.length,
+      data: result,
+    });
+  });
+  
+
 
 
 
@@ -1587,12 +1613,13 @@ router.get('/admin-unit-assign-list', [verifyToken, routeAccessChecker("adminAss
     "offset": req.query.offset || 0,
     "key": req.query.key,
     "unit": req.query.unit,
+    "location": req.query.location,
     "type": req.query.type,
   };
   let user_id = req.decoded.userInfo.id;
-  let { offset, limit, key, unit, type } = reqData;
+  let { offset, limit, key, unit, type ,location} = reqData;
 
-  let result = await assetModel.getList(offset, limit, key, unit, type);
+  let result = await assetModel.getList(offset, limit, key, unit, type,location);
 
   let getUnitAssignList = await unitAccessModel.getUserWise(user_id);
 

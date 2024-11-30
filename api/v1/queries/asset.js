@@ -181,7 +181,7 @@ let adminDistributedAssetList = (offset, limit, key, unit, type, employee_type,l
 
 
 
-let distributedTotalAssetList = (key, unit, type,employee_type,user_id) => {
+let distributedTotalAssetList = (key, unit, location, type,employee_type) => {
   let searchCondition = [];
 
  

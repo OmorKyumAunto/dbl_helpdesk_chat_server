@@ -1305,7 +1305,6 @@ router.get('/distributed-asset', [verifyToken, routeAccessChecker("distributedAs
   let result = await assetModel.distributedAssetList(offset, limit, key, unit,type,employee_type,location);
   let totalResult = await assetModel.distributedAssetTotalList(key, unit,type,employee_type,location);
 
-
   return res.status(200).send({
     success: true,
     status: 200,

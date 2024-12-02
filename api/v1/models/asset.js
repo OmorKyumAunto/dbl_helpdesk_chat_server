@@ -147,9 +147,9 @@ let getTotalList = async (key, unit, type,location) => {
     });
   }
   
-  let distributedAssetTotalList = async (key, unit,type,employee_type) => {
+  let distributedAssetTotalList = async (key, unit,type,employee_type,location) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.distributedTotalAssetList(key, unit,type,employee_type), (error, result, fields) => {
+      connectionDblystem.query(queries.distributedTotalAssetList(key, unit,type,employee_type,location), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });

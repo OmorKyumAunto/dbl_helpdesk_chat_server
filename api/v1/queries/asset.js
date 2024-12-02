@@ -181,10 +181,8 @@ let adminDistributedAssetList = (offset, limit, key, unit, type, employee_type,l
 
 
 
-let distributedTotalAssetList = (key, unit, location, type,employee_type) => {
+let distributedTotalAssetList = (key, unit,type,employee_type,location) => {
   let searchCondition = [];
-
- 
   if (key) {
     searchCondition.push(`(LOWER(user_id_no) LIKE LOWER('%${key}%') OR LOWER(user_name) LIKE LOWER('%${key}%') OR LOWER(serial_number) LIKE LOWER('%${key}%'))`);
   }

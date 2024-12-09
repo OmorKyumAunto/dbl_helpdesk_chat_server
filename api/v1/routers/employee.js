@@ -58,7 +58,7 @@ router.post('/upload', [verifyToken, routeAccessChecker("employeeAdd")], upload.
 
       for (let row of data) {
           // Required fields
-          const requiredFields = ['Employee id', 'Name', 'Department', 'Designation', 'Email', 'Contact no', 'Joining date', 'Unit name','Blood group','Business type','Line of business','Grade','Pabx','Licenses'];
+          const requiredFields = ['Employee id', 'Name', 'Department', 'Designation'];
 
           // Check for missing fields
           for (const field of requiredFields) {

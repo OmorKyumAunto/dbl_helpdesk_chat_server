@@ -1,42 +1,38 @@
 const express = require("express");
 const isEmpty = require("is-empty");
 const router = express.Router();
-const assetUnitModel = require('../models/asset-unit');
-const assetModel = require('../models/asset');
-const unitAccessModel = require('../models/unit-access');
+const assignCategoryModel = require('../models/assign-category');
 const userModel = require('../models/user');
-const locationModel = require('../models/location');
-
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const moment = require("moment");
 const ticketCategoryModel = require('../models/ticket-category');
+
 require('dotenv').config();
 
-router.get('/list', [verifyToken, routeAccessChecker("ticketCategoryList")], async (req, res) => {
+// category assign before list
+router.get('/before-assign-list', [verifyToken, routeAccessChecker("beforeAssignList")], async (req, res) => {
 
-    const status = req.query.status
-
-    let result = await ticketCategoryModel.getList(status);
+    let result = await assignCategoryModel.getBeforeCategoryAssignList();
 
     return res.status(200).send({
         "success": true,
         "status": 200,
-        "message": "Ticket category List.",
+        "message": "Before assign category List.",
         "count": result.length,
         "data": result
     });
 });
 
 
-router.get('/active-list', [verifyToken, routeAccessChecker("ticketCategoryActiveList")], async (req, res) => {
+router.get('/after-assign-list', [verifyToken, routeAccessChecker("afterAssignList")], async (req, res) => {
 
-    let result = await ticketCategoryModel.getActiveList();
+    let result = await assignCategoryModel.getAfterCategoryAssignList();
 
     return res.status(200).send({
         "success": true,
         "status": 200,
-        "message": "Ticket category List.",
+        "message": "Before assign category List.",
         "count": result.length,
         "data": result
     });
@@ -44,10 +40,12 @@ router.get('/active-list', [verifyToken, routeAccessChecker("ticketCategoryActiv
 
 
 
-router.post('/add', [verifyToken, routeAccessChecker("ticketCategoryCreate")], async (req, res) => {
 
+router.post('/:id', [verifyToken, routeAccessChecker("assignCategory")], async (req, res) => {
+
+    const id = req.params.id
     let reqData = {
-        "title": req.body.title
+        "category_id": req.body.category_id
     }
 
     let current_date = new Date(); 
@@ -55,39 +53,157 @@ router.post('/add', [verifyToken, routeAccessChecker("ticketCategoryCreate")], a
     
 
     reqData.created_at = current_time;
-    reqData.updated_at = current_time;
 
 
-
-    let existingData = await ticketCategoryModel.getByTitle(reqData.title);
-
-
-    if (!isEmpty(existingData)) {
-        return res.status(409).send({
-            "success": false,
-            "status": 409,
-            "message": existingData[0].status == "active" ? "This Title Already Exists." : "This title Already Exists but Deactivate, You can activate it."
+     // Get data from the database by id
+    let result = await userModel.getById(id);
+        if (isEmpty(result)) {
+        return res.status(404).send({
+            success: false,
+            status: 404,
+            message: "User data not found."
         });
+        }
 
+
+    if(!Array.isArray(reqData.category_id)){
+        return res.status(400).send({
+            success: false,
+            status: 400,
+            message: "Category should be array."
+        });
     }
 
-    let result = await ticketCategoryModel.addNew(reqData);
 
-    if (result.affectedRows == undefined || result.affectedRows < 1) {
-        return res.status(500).send({
-            "success": false,
-            "status": 500,
-            "message": "Something Wrong in system database."
-        });
+    for (let index = 0; index < reqData.category_id.length; index++) {
+        const element = reqData.category_id[index];
+          // Get data from the database by id
+        let unitData = await ticketCategoryModel.getById(element);
+        if (isEmpty(unitData)) {
+            return res.status(404).send({
+                success: false,
+                status: 404,
+                message: "This ticket category not found."
+            });
+        }
+
+        let existsData = await assignCategoryModel.getByIdAndUser(element,id);
+        if (existsData.length) {
+            return res.status(400).send({
+                success: false,
+                status: 400,
+                message: "This ticket category id already exists."
+            });
+        }
+
+        let data = {
+            user_id : id,
+            category_id : element,
+            created_at : reqData.created_at,
+        }
+        let createData = await assignCategoryModel.addNew(data);   
+
+        if (createData.affectedRows == undefined || createData.affectedRows < 1) {
+            return res.status(500).send({
+                "success": false,
+                "status": 500,
+                "message": "Something Wrong in system database."
+            });
+        }
+    
     }
 
     return res.status(201).send({
         "success": true,
         "status": 201,
-        "message": "Ticket category added Successfully."
+        "message": "Ticket category access added Successfully."
     });
 
 });
+
+
+
+router.post('/assign-update/:id', [verifyToken, routeAccessChecker("categoryAssignUpdate")], async (req, res) => {
+
+    const id = req.params.id
+    let reqData = {
+        "category_id": req.body.category_id
+    }
+
+    let current_date = new Date(); 
+    let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+    
+
+    reqData.created_at = current_time;
+
+
+     // Get data from the database by id
+    let result = await userModel.getById(id);
+        if (isEmpty(result)) {
+        return res.status(404).send({
+            success: false,
+            status: 404,
+            message: "User data not found."
+        });
+        }
+
+
+    if(!Array.isArray(reqData.category_id)){
+        return res.status(400).send({
+            success: false,
+            status: 400,
+            message: "Category should be array."
+        });
+    }
+
+
+    for (let index = 0; index < reqData.category_id.length; index++) {
+        const element = reqData.category_id[index];
+          // Get data from the database by id
+        let unitData = await ticketCategoryModel.getById(element);
+        if (isEmpty(unitData)) {
+            return res.status(404).send({
+                success: false,
+                status: 404,
+                message: "This ticket category not found."
+            });
+        }
+
+        let existsData = await assignCategoryModel.getByIdAndUser(element,id);
+        if (existsData.length) {
+            return res.status(400).send({
+                success: false,
+                status: 400,
+                message: "This ticket category id already exists."
+            });
+        }
+
+        let data = {
+            user_id : id,
+            category_id : element,
+            created_at : reqData.created_at,
+        }
+        let createData = await assignCategoryModel.addNew(data);   
+
+        if (createData.affectedRows == undefined || createData.affectedRows < 1) {
+            return res.status(500).send({
+                "success": false,
+                "status": 500,
+                "message": "Something Wrong in system database."
+            });
+        }
+    
+    }
+
+    return res.status(201).send({
+        "success": true,
+        "status": 201,
+        "message": "Ticket category access added Successfully."
+    });
+
+});
+
+
 
 
 

@@ -1,8 +1,9 @@
 const isEmpty = require("is-empty");
-let table_name = "dbl_ticket_category";
+let table_name = "dbl_user_category_access";
+let user_unit_category_view = "user_unit_category";
 
 let getList = (status) => {
-    let searchCondition = "status != 'delete'"; // Exclude 'delete' status by default
+    let searchCondition = "status != 'delete'"; 
 
     if (status === 'active') {
         searchCondition += " AND status = 'active'";
@@ -15,7 +16,26 @@ let getList = (status) => {
 
 
 
+let getBeforeCategoryAssignList = () => {
+    return `SELECT 
+    u.id AS user_id,
+    u.employee_id AS employee_id,
+    u.name AS name,
+    u.email AS email,
+    GROUP_CONCAT(au.title ORDER BY au.title ASC SEPARATOR ', ') AS asset_unit_titles
+    FROM
+        dbl_users AS u
+    JOIN
+        admin_search_access AS sa ON sa.user_id = u.id
+    JOIN
+        dbl_asset_unit AS au ON au.id = sa.unit_id
+    GROUP BY 
+        u.id, u.employee_id;`;
+}
 
+let getAfterCategoryAssignList = () => {
+    return `SELECT * FROM ${user_unit_category_view}`;
+}
 
 
 let getOnlyDataList = () => {
@@ -31,7 +51,11 @@ let getByTitle = () => {
 }
 
 let getById = () => {
-    return `SELECT * FROM ${table_name} where  id = ? and status IN ('active', 'deactivate') `;
+    return `SELECT * FROM ${table_name} where  id = ?  `;
+}
+
+let getByIdAndUser = () => {
+    return `SELECT * FROM ${table_name} where  category_id = ?  and user_id = ? `;
 }
 
 let addNew = () => {
@@ -186,6 +210,9 @@ module.exports = {
     updateById,
     getDataByWhereCondition,
     getDetailsByIdAndWhereIn,
-    getOnlyDataList
+    getOnlyDataList,
+    getByIdAndUser,
+    getBeforeCategoryAssignList,
+    getAfterCategoryAssignList
 
 }

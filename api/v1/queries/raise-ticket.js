@@ -19,7 +19,7 @@ let getLocation = () => {
     return `SELECT * FROM ${table_name}  where location = ? and unit_id = ? and status = 1`;
 }
 
-let getAllListUserWise = () => {
+let getAllListUserWise = (id) => {
     return `SELECT 
     rt.*,  
     au.title AS unit_name, 
@@ -27,7 +27,7 @@ let getAllListUserWise = () => {
     ass.name AS asset_name,
     ass.category AS asset_category
     FROM 
-        ${table_name}  AS rt
+       dbl_raise_ticket  AS rt
     JOIN 
         dbl_asset_unit AS au ON au.id = rt.unit_id 
     JOIN 
@@ -35,10 +35,11 @@ let getAllListUserWise = () => {
     LEFT JOIN 
         dbl_asset AS ass ON ass.id = rt.asset_id
     WHERE 
-        rt.created_by = ? AND rt.status = 1
+        rt.created_by = ${id} AND rt.status = 1
     ORDER BY 
-        rt.created_at DESC;`;
+        rt.created_at DESC `;
 }
+
 
 
 let getUnitWiseLocation = () => {

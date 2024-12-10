@@ -28,6 +28,10 @@ let getById = () => {
     return `SELECT * FROM ${table_name} where  asset_id = ? and status = 1 `;
 }
 
+let getByIdUserWise = () => {
+    return `SELECT * FROM ${table_name} where  asset_id = ? and user_id = ? and status = 1 `;
+}
+
 
 const updateById = () => {
     return `UPDATE ${table_name} SET ? WHERE asset_id = ?`;
@@ -67,6 +71,7 @@ module.exports = {
     deleteAssetById,
     totalAssignAssetCount,
     employeeAssignCount,
-    getByAssignUser
+    getByAssignUser,
+    getByIdUserWise
 
 }

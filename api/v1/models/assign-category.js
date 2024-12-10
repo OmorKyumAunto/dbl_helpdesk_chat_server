@@ -1,10 +1,28 @@
 const { connectionDblystem } = require('../connections/connection');
-const queries = require('../queries/ticket-category');
+const queries = require('../queries/assign-category');
 
 // Promises Method
 let getList = async (status) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getList(status), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+let getBeforeCategoryAssignList = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getBeforeCategoryAssignList(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+let getAfterCategoryAssignList = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getAfterCategoryAssignList(), (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -44,6 +62,14 @@ let getByTitle = async (title = "") => {
 let getById = async (id = 0) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getById(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+let getByIdAndUser = async (id = 0,user_id=0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByIdAndUser(), [id,user_id], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -151,6 +177,9 @@ module.exports = {
     updateById,
     getDetailsByIdAndWhereIn,
     getByTitle,
-    getOnlyDataList
+    getOnlyDataList,
+    getByIdAndUser,
+    getBeforeCategoryAssignList,
+    getAfterCategoryAssignList
 }
 

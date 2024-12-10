@@ -190,14 +190,13 @@ let distributedTotalAssetList = (key, unit,type,employee_type,location) => {
   if (type) {
     searchCondition.push(`UPPER(category) LIKE UPPER('%${type}%')`);
   }
-  
+
   if (unit) {
-    searchCondition.push(`(asset_unit_id) LIKE ('%${unit}%')`);
+    searchCondition.push(`asset_unit_id = '${unit}'`);
   }
   if (location) {
-    searchCondition.push(`(location_id) LIKE ('%${location}%')`);
+    searchCondition.push(`UPPER(location_id) LIKE ('%${location}%')`);
   }
-
   if (employee_type) {
     if (employee_type === "management") {
       // Management employees (start with 1510)

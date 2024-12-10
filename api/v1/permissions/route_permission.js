@@ -26,7 +26,8 @@ let superAdminPermission = [
 "adminList","assetUpdate","assetDetails","employeeCalculation",
 "locationAdd","updateLocation","locationList","locationActiveList","changeLocationStatus",
 "adminDistributedAsset",
-"ticketCategoryCreate","ticketCategoryList","ticketCategoryActiveList","assetUnitUpdate","ticketCategoryUpdate","ticketCategoryChangeStatus","ticketCategoryDelete"
+"ticketCategoryCreate","ticketCategoryList","ticketCategoryActiveList","assetUnitUpdate","ticketCategoryUpdate","ticketCategoryChangeStatus","ticketCategoryDelete",
+"assignCategory","beforeAssignList","afterAssignList","categoryAssignUpdate"
 ];
 
 let adminPermission = [
@@ -59,7 +60,8 @@ let adminPermission = [
 "licesesList","licesesActiveList","licesesAdd","licesesUpdate","licesesDelete","licesesStatus",
 "employeeAssignList","employeeTotalAssetAssignCount", "employeeUpdate","changePassword","dashboardData","dashboardGraphData","employeeDashboard","distributedDetails",
 "adminList","assetUpdate","assetDetails","onlyEmployeeList","employeeCalculation",
-"ticketCategoryActiveList"
+"ticketCategoryActiveList",
+"beforeAssignList","afterAssignList",
 ];
 
 let employeePermission = [

@@ -69,6 +69,14 @@ let totalAssignAssetCount = async (id = 0) => {
 }
 
 
+let getByIdUserWise = async (id = 0,user_id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByIdUserWise(), [id,user_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
 
 
 
@@ -240,7 +248,8 @@ module.exports = {
    deleteAssetById,
    totalAssignAssetCount,
    employeeAssignCount,
-   getByAssignUser
+   getByAssignUser,
+   getByIdUserWise
    
   
 }

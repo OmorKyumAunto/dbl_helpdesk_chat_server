@@ -20,6 +20,7 @@ const  licensesRouter = require('./routers/licenses');
 const  locationRouter = require('./routers/location');
 const  ticketCategoryRouter = require('./routers/ticket-category');
 const  assignCategoryRouter = require('./routers/assign-category');
+const  raiseTicketRouter = require('./routers/raise-ticket');
 
 
 
@@ -35,6 +36,7 @@ router.use('/licenses', licensesRouter);
 router.use('/location', locationRouter);
 router.use('/ticket-category', ticketCategoryRouter);
 router.use('/assign-category', assignCategoryRouter);
+router.use('/raise-ticket', raiseTicketRouter);
 
 
 

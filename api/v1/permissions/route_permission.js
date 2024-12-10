@@ -93,7 +93,8 @@ let employeePermission = [
   "adminList","assetUpdate","assetDetails","employeeCalculation","adminAssinUnitAsset",
 
   "locationActiveList",
-  "ticketCategoryActiveList"
+  "ticketCategoryActiveList",
+  "raiseTicket","userWiseTicket"
 ];
 
 

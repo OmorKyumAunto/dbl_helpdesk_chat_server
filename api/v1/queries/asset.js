@@ -97,14 +97,15 @@ let getTotalList = (key, unit, type,location) => {
 }
 
 
-let distributedAssetList = (offset, limit, key, unit, type, employee_type,location) => {
+let distributedAssetList = (offset, limit, key, unit, type, employee_type, location) => {
   let searchCondition = [];
 
   if (unit) {
-    searchCondition.push(`(asset_unit_id) LIKE ('%${unit}%')`);
+    searchCondition.push(`asset_unit_id = '${unit}'`);
   }
+
   if (location) {
-    searchCondition.push(`(location_id) LIKE ('%${location}%')`);
+    searchCondition.push(`location_id LIKE ('%${location}%')`);
   }
 
   if (type) {
@@ -113,11 +114,9 @@ let distributedAssetList = (offset, limit, key, unit, type, employee_type,locati
 
   if (employee_type) {
     if (employee_type === "management") {
-      // Management employees (start with 1510)
-      searchCondition.push(`(user_id_no) LIKE '1510%'`);
+      searchCondition.push(`user_id_no LIKE '1510%'`);
     } else if (employee_type === "non-management") {
-      // Non-management employees (any user_id_no)
-      searchCondition.push(`(user_id_no) NOT LIKE '1510%'`);
+      searchCondition.push(`user_id_no NOT LIKE '1510%'`);
     }
   }
 
@@ -144,7 +143,7 @@ let adminDistributedAssetList = (offset, limit, key, unit, type, employee_type,l
     searchCondition.push(`(user_id) LIKE ('%${user_id}%')`);
   }
   if (unit) {
-    searchCondition.push(`(asset_unit_id) LIKE ('%${unit}%')`);
+    searchCondition.push(`asset_unit_id = '${unit}'`);
   }
   if (location) {
     searchCondition.push(`(location_id) LIKE ('%${location}%')`);

@@ -30,9 +30,38 @@ let getAllList = async (status) => {
     });
 }
 
-let getAllListUserWise = async (id = 0) => {
+let getAllListUserWise = async (id = 0,key,priority,status) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getAllListUserWise(id), (error, result, fields) => {
+        connectionDblystem.query(queries.getAllListUserWise(id,key,priority,status), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+let getAdminWiseTicket = async (user_id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getAdminWiseTicket(user_id), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+let getSuperAdminTicket = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getSuperAdminTicket(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+
+let getAllListAdminWise = async (id = 0,key,priority,status) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getAllListAdminWise(id,key,priority,status), (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -88,6 +117,16 @@ let getById = async (id = 0) => {
     });
 }
 
+let adminWiseTicketDetails = async (user_id = 0,ticket_id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.adminWiseTicketDetails(), [user_id,ticket_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
 let getUnitWiseLocation = async (unit_id = 0,location = '') => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getUnitWiseLocation(), [unit_id,location], (error, result, fields) => {
@@ -137,6 +176,10 @@ module.exports = {
     getAllLocationDataByUnitId,
     getUnitWiseLocation,
     getOnlyDataList,
-    getAllListUserWise
+    getAllListUserWise,
+    getAllListAdminWise,
+    getAdminWiseTicket,
+    adminWiseTicketDetails,
+    getSuperAdminTicket
 }
 

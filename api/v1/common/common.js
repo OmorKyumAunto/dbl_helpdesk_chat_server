@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 require('dotenv').config();
 const nodemailer = require('nodemailer');
+const otpGenerator = require('otp-generator')
 
 
 let decodingUsingCrypto = async (text = "") => {
@@ -175,10 +176,15 @@ let getHTMLBody = async (name = "", asset_name = "", type = "", asset_serial_num
 }
 
 
+const rendomGenerator = ()=>{
+ return otpGenerator.generate(6, { upperCaseAlphabets: true, digits: true });
+}
+
 
 module.exports = {
     decodingUsingCrypto,
     hashingUsingCrypto,
-    sentEmailByHtmlFormate
+    sentEmailByHtmlFormate,
+    rendomGenerator
    
 }

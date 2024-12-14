@@ -15,9 +15,35 @@ let getAllLocationDataByUnitId = () => {
 
 
 
-let getAdminWiseTicket = () => {
-    return `SELECT * FROM ${admin_wise_ticket_view}  where user_id = ? `;
-}
+let getAdminWiseTicket = (key, priority, status) => {
+    let conditions = [];
+
+    // Add conditions dynamically based on parameters
+    if (priority) {
+        conditions.push(`priority = '${priority}'`);
+    }
+    if (status) {
+        conditions.push(`ticket_status = '${status}'`);
+    }
+    if (key) {
+        conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+    }
+
+    // Base condition for user_id
+    conditions.push(`user_id = ?`);
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    // Final query
+    return `
+        SELECT 
+            * 
+        FROM 
+            ${admin_wise_ticket_view} 
+        ${whereClause} 
+      
+    `;
+};
+
 
 let getSuperAdminTicket = () => {
     return `SELECT * FROM ${admin_wise_ticket_view} `;

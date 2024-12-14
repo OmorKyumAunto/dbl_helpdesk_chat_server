@@ -171,8 +171,21 @@ router.post('/', [verifyToken, routeAccessChecker("raiseTicket"),upload.none()],
     }
    
     reqData.ticket_id = common.rendomGenerator()
+    let  user = await userModel.getById(req.decoded.userInfo.id);
+    let data = {
+        ticket_id : reqData.ticket_id,
+        subject : reqData.subject,
+        priority: reqData.priority.charAt(0).toUpperCase() + reqData.priority.slice(1).toLowerCase(),
+        unit_name : unit[0].title,
+        created_by : user[0].name,
+        created_employee_id : user[0].employee_id,
+    }
+
 
     let result = await raiseTicketModel.addNew(reqData);
+
+
+     await common.sentTicketEmail('omorkyumaunto16@gmail.com','Raise Create',data)
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
         return res.status(500).send({
@@ -198,10 +211,8 @@ router.post('/', [verifyToken, routeAccessChecker("raiseTicket"),upload.none()],
 router.get('/admin-ticket-list', [verifyToken, routeAccessChecker("adminWiseTicketList")], async (req, res) => {
 
     let id = req.decoded.userInfo.id
-
-   // let {key,priority,status} = req.query
-
-    let result = await raiseTicketModel.getAdminWiseTicket(id);
+    let {key,priority,status} = req.query
+    let result = await raiseTicketModel.getAdminWiseTicket(id,key,priority,status);
     return res.status(200).send({
         success: true,
         status: 200,

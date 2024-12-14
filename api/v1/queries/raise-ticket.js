@@ -69,7 +69,8 @@ let getAllListUserWise = (id, key = '', priority = '', status = '') => {
             au.title AS unit_name, 
             tc.title AS category_name,
             ass.name AS asset_name,
-            ass.category AS asset_category
+            ass.category AS asset_category,
+            ass.serial_number AS serial_number
         FROM 
             dbl_raise_ticket AS rt
         JOIN 

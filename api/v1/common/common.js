@@ -115,7 +115,7 @@ let sentTicketEmail = async (receiverEmailAddress, subject,data) => {
           html: await ticketEmail(data)
       };
   
-  console.log(" =====????")
+
     // send email 
       transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
@@ -130,7 +130,7 @@ let sentTicketEmail = async (receiverEmailAddress, subject,data) => {
               }
           }
       });
-  console.log(" ===== enmd ")
+
       
 }
 

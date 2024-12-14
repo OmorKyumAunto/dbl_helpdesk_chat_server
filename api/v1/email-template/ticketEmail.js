@@ -1,6 +1,5 @@
 
 const ticketEmail = async(data)=>{
-console.log("first",data)
     return`
     <!DOCTYPE html>
 <html lang="en">

@@ -79,6 +79,17 @@ let getAllLocationDataByUnitId = async (unit_id) => {
 }
 
 
+let getUnitAndCategoryWiseEmail = async (asset_unit_id,ticket_category_id) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getUnitAndCategoryWiseEmail(),[asset_unit_id,ticket_category_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+
 
 
 let getLocation = async (unit_id = 0,location = '') => {
@@ -180,6 +191,7 @@ module.exports = {
     getAllListAdminWise,
     getAdminWiseTicket,
     adminWiseTicketDetails,
-    getSuperAdminTicket
+    getSuperAdminTicket,
+    getUnitAndCategoryWiseEmail
 }
 

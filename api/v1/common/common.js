@@ -95,7 +95,6 @@ let sentEmailByHtmlFormate = async (receiverEmailAddress, subject,name = "", ass
 }
 
 let sentTicketEmail = async (receiverEmailAddress, subject,data) => {
-  console.log("first")
   // set transport
       var transporter = nodemailer.createTransport({
           service:process.env.send_email_service,

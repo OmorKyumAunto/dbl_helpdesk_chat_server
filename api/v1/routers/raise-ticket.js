@@ -181,11 +181,21 @@ router.post('/', [verifyToken, routeAccessChecker("raiseTicket"),upload.none()],
         created_employee_id : user[0].employee_id,
     }
 
+   //let getUnitAndCategoryMatchEmail = await raiseTicketModel.getUnitAndCategoryWiseEmail(reqData.unit_id,reqData.category_id)
+
+   //let getUnitAndCategoryMatchEmail = [{email: 'alamridoy7@gmail.com'},{email:'omorkyumaunto16@gmail.com'},{email:'ridoy@flyfar.tech'},{email:'omor.aunto@jtml-dbl.com'}]
 
     let result = await raiseTicketModel.addNew(reqData);
+    await common.sentTicketEmail('omorkyumaunto16@gmail.com','Raise Create',data)
+    // if(getUnitAndCategoryMatchEmail.length){
+    //     for (let index = 0; index < getUnitAndCategoryMatchEmail.length; index++) {
+    //         const admin_email = getUnitAndCategoryMatchEmail[index].email;
+    //         console.log("admin_email === >",admin_email)
+    //        // await common.sentTicketEmail(admin_email,'Raise Create',data)
+    //     }
+    // }
 
-
-     await common.sentTicketEmail('omorkyumaunto16@gmail.com','Raise Create',data)
+    
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
         return res.status(500).send({

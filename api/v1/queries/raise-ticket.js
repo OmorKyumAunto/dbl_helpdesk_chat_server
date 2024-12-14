@@ -164,7 +164,9 @@ const updateById = () => {
 }
 
 
-
+let getUnitAndCategoryWiseEmail = () => {
+    return `SELECT * FROM ${admin_wise_ticket_view} where  asset_unit_id = ? and ticket_category_id = ? `;
+}
 
 module.exports = {
     getList,
@@ -184,6 +186,7 @@ module.exports = {
     getAllListAdminWise,
     getAdminWiseTicket,
     adminWiseTicketDetails,
-    getSuperAdminTicket
+    getSuperAdminTicket,
+    getUnitAndCategoryWiseEmail
 
 }

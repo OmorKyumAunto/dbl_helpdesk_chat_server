@@ -41,7 +41,7 @@ let getAllListUserWise = async (id = 0,key,priority,status) => {
 
 let getAdminWiseTicket = async (user_id = 0) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getAdminWiseTicket(user_id), (error, result, fields) => {
+        connectionDblystem.query(queries.getAdminWiseTicket(),[user_id], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });

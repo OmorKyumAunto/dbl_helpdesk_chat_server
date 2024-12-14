@@ -15,8 +15,8 @@ let getAllLocationDataByUnitId = () => {
 
 
 
-let getAdminWiseTicket = (user_id) => {
-    return `SELECT * FROM ${admin_wise_ticket_view}  where user_id = user_id `;
+let getAdminWiseTicket = () => {
+    return `SELECT * FROM ${admin_wise_ticket_view}  where user_id = ? `;
 }
 
 let getSuperAdminTicket = () => {

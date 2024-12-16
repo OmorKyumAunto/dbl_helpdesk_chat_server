@@ -1,6 +1,5 @@
-const isEmpty = require("is-empty");
-let table_name = "dbl_raise_ticket";
-let admin_wise_ticket_view = "admin_wise_ticket";
+let table_name = "dbl_ticket_comment"
+
 
 let getList = () => {
     return `SELECT id,location, unit_id FROM ${table_name} WHERE status = 1 ORDER BY id DESC `;
@@ -148,11 +147,11 @@ let getByTitle = () => {
 }
 
 let getById = () => {
-    return `SELECT * FROM ${table_name} where  id = ? `;
+    return `SELECT * FROM ${table_name} where  ticket_id = ? `;
 }
 
-let employeeWiseTicket = () => {
-    return `SELECT * FROM ${table_name} where  id = ? and created_by = ?`;
+let getByTableId = () => {
+    return `SELECT * FROM ${table_name} where id = ? `;
 }
 
 let adminWiseTicketDetails = () => {
@@ -192,6 +191,6 @@ module.exports = {
     adminWiseTicketDetails,
     getSuperAdminTicket,
     getUnitAndCategoryWiseEmail,
-    employeeWiseTicket
+    getByTableId
 
 }

@@ -1,5 +1,5 @@
 const { connectionDblystem } = require('../connections/connection');
-const queries = require('../queries/raise-ticket');
+const queries = require('../queries/ticket-comment')
 
 // Promises Method
 let getList = async (status) => {
@@ -128,11 +128,11 @@ let getById = async (id = 0) => {
     });
 }
 
-let employeeWiseTicket = async (id = 0, user_id = 0) => {
-    console.log("id",id)
-    console.log("user_id",user_id)
+let getByTableId = async (id = 0) => {
+console.log("first =============== >>>>>>>>>>>>",id)
+
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.employeeWiseTicket(), [id,user_id], (error, result, fields) => {
+        connectionDblystem.query(queries.getByTableId(), [id], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -204,6 +204,6 @@ module.exports = {
     adminWiseTicketDetails,
     getSuperAdminTicket,
     getUnitAndCategoryWiseEmail,
-    employeeWiseTicket
+    getByTableId
 }
 

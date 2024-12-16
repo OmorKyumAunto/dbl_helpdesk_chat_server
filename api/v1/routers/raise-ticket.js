@@ -6,6 +6,7 @@ const raiseTicketModel = require('../models/raise-ticket');
 const assetAssignModel = require('../models/asset-assign');
 const ticketCategoryModel = require('../models/ticket-category');
 const userModel = require('../models/user');
+const ticketCommentModel = require('../models/ticket-comment')
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const moment = require("moment");
@@ -181,21 +182,44 @@ router.post('/', [verifyToken, routeAccessChecker("raiseTicket"),upload.none()],
         created_employee_id : user[0].employee_id,
     }
 
-   //let getUnitAndCategoryMatchEmail = await raiseTicketModel.getUnitAndCategoryWiseEmail(reqData.unit_id,reqData.category_id)
+   let getUnitAndCategoryMatchEmail = await raiseTicketModel.getUnitAndCategoryWiseEmail(reqData.unit_id,reqData.category_id)
 
-   //let getUnitAndCategoryMatchEmail = [{email: 'alamridoy7@gmail.com'},{email:'omorkyumaunto16@gmail.com'},{email:'ridoy@flyfar.tech'},{email:'omor.aunto@jtml-dbl.com'}]
+  // let getUnitAndCategoryMatchEmail = [{email:'omorkyumaunto16@gmail.com'},{email:'omor.aunto@jtml-dbl.com'}]
 
+   let ccData
+   if(reqData.cc){
+    let ccEmail = await userModel.getById(reqData.cc);
+    ccData = {
+        supervisor_name : ccEmail[0]?.name || "",
+        supervisor_email : ccEmail[0]?.email || "",
+        ticket_id : reqData.ticket_id,
+        subject : reqData.subject,
+        priority: reqData.priority.charAt(0).toUpperCase() + reqData.priority.slice(1).toLowerCase(),
+        unit_name : unit[0].title,
+        created_by : user[0].name,
+        created_employee_id : user[0].employee_id,
+    }
+   }
+   
     let result = await raiseTicketModel.addNew(reqData);
-    await common.sentTicketEmail('omorkyumaunto16@gmail.com','Raise Create',data)
-    // if(getUnitAndCategoryMatchEmail.length){
-    //     for (let index = 0; index < getUnitAndCategoryMatchEmail.length; index++) {
-    //         const admin_email = getUnitAndCategoryMatchEmail[index].email;
-    //         console.log("admin_email === >",admin_email)
-    //        // await common.sentTicketEmail(admin_email,'Raise Create',data)
-    //     }
-    // }
 
+    //await common.sentTicketEmail('omorkyumaunto16@gmail.com','Raise Create',data)
+    if (getUnitAndCategoryMatchEmail.length) {
+        // Create a Set to store unique emails
+        const uniqueEmails = new Set(
+            getUnitAndCategoryMatchEmail.map(item => item.email)
+        );
+
+        // Iterate over unique emails
+        for (const admin_email of uniqueEmails) {
+            await common.sentTicketEmail(admin_email, 'Ticket Notification', data );
+        }
+    }
     
+    if(reqData.cc){
+        await common.sentTicketCcEmail(ccData.supervisor_email,'Ticket Notification', data );
+     }
+   
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
         return res.status(500).send({
@@ -323,51 +347,235 @@ router.get('/raise-ticket', [verifyToken, routeAccessChecker("allRaiseTicketList
 
 
 
+// create ticket employee
+router.post('/comment', [verifyToken, routeAccessChecker("ticketComment")], async (req, res) => {
 
-router.delete('/delete/:id', [verifyToken, routeAccessChecker("assetUnitDelete")], async (req, res) => {
+    let reqData = {
+        "ticket_id": parseInt(req.body.ticket_id),
+        "comment_text": req.body.comment_text,
+    }
 
-    let id = req.params.id
-    
-    updated_by = req.decoded.userInfo.id;
+    const id = req.decoded.userInfo.id
 
-    let current_date = new Date(); 
-    let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+    let user = await userModel.getById(id);
 
-    let existingDataById = await locationModel.getById(id);
-    if (isEmpty(existingDataById)) {
+    let existsRaiseTicket = await raiseTicketModel.getById(reqData.ticket_id);
+
+    if (!existsRaiseTicket) {
         return res.status(404).send({
             "success": false,
             "status": 404,
-            "message": "No data found",
+            "message": "This ticket not found.",
 
         });
     }
 
-
-    let data = {
-        status: 0,
-        updated_at: current_time
+    if(user[0].role_id === 3 ){
+        if (existsRaiseTicket[0].created_by !==  id) {
+            return res.status(400).send({
+                "success": false,
+                "status": 400,
+                "message": "This ticket is created by another employee.",
+    
+            });
+        }
+    
     }
 
-    let result = await locationModel.updateById(id, data);
+    if(!reqData.comment_text){
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "Commnet should not be empty.",
+
+        });
+    }
+
+    // if(user.role_id === 3 && id !== existsRaiseTicket[0].created_by){
+    //     return res.status(400).send({
+    //         "success": false,
+    //         "status": 400,
+    //         "message": "You have not access this ticket comment.",
+
+    //     });
+    // }
+
+    if(user[0].role_id === 3 )reqData.employee_id = id
+    if(user[0].role_id === 2 )reqData.admin_id = id
+
+    
+    let result = await ticketCommentModel.addNew(reqData)
 
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
         return res.status(500).send({
-            "success": true,
+            "success": false,
             "status": 500,
             "message": "Something Wrong in system database."
         });
     }
 
-
-    return res.status(200).send({
+    return res.status(201).send({
         "success": true,
-        "status": 200,
-        "message": "Location successfully deleted."
+        "status": 201,
+        "message": "Ticket comment added Successfully."
     });
 
 });
+
+
+// comment details
+router.get('/comment-details/:id', [verifyToken, routeAccessChecker("ticketDetails")], async (req, res) => {
+    const id = parseInt(req.params.id); 
+
+    let existsRaiseTicket = await raiseTicketModel.getById(id);
+    if (!existsRaiseTicket) {
+        return res.status(404).send({
+            success: false,
+            status: 404,
+            message: "This ticket not found.",
+        });
+    }
+    let result = await ticketCommentModel.getById(id);
+
+    for (let index = 0; index < result.length; index++) {
+        const { employee_id, admin_id } = result[index];
+        let user;
+        if (employee_id) {
+            user = await userModel.getById(employee_id);
+        } else if (admin_id) {
+            user = await userModel.getById(admin_id);
+        }
+        if (user && user.length > 0) {
+            result[index].user_name = user[0].name;
+            result[index].employee_id = user[0].employee_id || null;
+        }
+    }
+
+    return res.status(200).send({
+        success: true,
+        status: 200,
+        message: "Get comment list.",
+        count: result.length,
+        data: result,
+    });
+});
+
+
+router.put('/comment/:id', [verifyToken, routeAccessChecker("ticketCommentEdit")], async (req, res) => {
+
+
+   let table_id = parseInt(req.params.id)
+
+    let reqData = {
+        "comment_text": req.body.comment_text,
+    }
+
+    const id = req.decoded.userInfo.id
+
+    let user = await userModel.getById(id);
+
+    let comment = await ticketCommentModel.getByTableId(table_id);
+
+    if (!comment) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "This ticket comment not found.",
+
+        });
+    }
+    
+    if(user[0].role_id == 2){
+        if(comment[0].admin_id !== id){
+            return res.status(400).send({
+                "success": false,
+                "status": 400,
+                "message": "Your have not any edit permission.",
+    
+            });
+        }
+    }
+    if(user[0].role_id == 3){
+        if(comment[0].employee_id !== id){
+            return res.status(400).send({
+                "success": false,
+                "status": 400,
+                "message": "Your have not any edit permission.",
+    
+            });
+        }
+    }
+
+    let update_data = {
+        is_edit : 1,
+        comment_text : reqData.comment_text
+    }
+
+    let result = await ticketCommentModel.updateById(table_id,update_data)
+
+
+    if (result.affectedRows == undefined || result.affectedRows < 1) {
+        return res.status(500).send({
+            "success": false,
+            "status": 500,
+            "message": "Something Wrong in system database."
+        });
+    }
+
+    return res.status(201).send({
+        "success": true,
+        "status": 201,
+        "message": "Ticket comment update Successfully."
+    });
+
+});
+
+
+// router.delete('/delete/:id', [verifyToken, routeAccessChecker("assetUnitDelete")], async (req, res) => {
+
+//     let id = req.params.id
+    
+//     updated_by = req.decoded.userInfo.id;
+
+//     let current_date = new Date(); 
+//     let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+
+//     let existingDataById = await locationModel.getById(id);
+//     if (isEmpty(existingDataById)) {
+//         return res.status(404).send({
+//             "success": false,
+//             "status": 404,
+//             "message": "No data found",
+
+//         });
+//     }
+
+
+//     let data = {
+//         status: 0,
+//         updated_at: current_time
+//     }
+
+//     let result = await locationModel.updateById(id, data);
+
+
+//     if (result.affectedRows == undefined || result.affectedRows < 1) {
+//         return res.status(500).send({
+//             "success": true,
+//             "status": 500,
+//             "message": "Something Wrong in system database."
+//         });
+//     }
+
+
+//     return res.status(200).send({
+//         "success": true,
+//         "status": 200,
+//         "message": "Location successfully deleted."
+//     });
+
+// });
 
 
 // router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeLocationStatus")], async (req, res) => {

@@ -2,7 +2,7 @@ const crypto = require("crypto");
 require('dotenv').config();
 const nodemailer = require('nodemailer');
 const otpGenerator = require('otp-generator')
-const {ticketEmail} = require('../email-template/ticketEmail')
+const {ticketEmail,ticketCcEmail} = require('../email-template/ticketEmail')
 
 
 let decodingUsingCrypto = async (text = "") => {
@@ -94,7 +94,7 @@ let sentEmailByHtmlFormate = async (receiverEmailAddress, subject,name = "", ass
         
 }
 
-let sentTicketEmail = async (receiverEmailAddress, subject,data) => {
+let sentTicketEmail = async (receiverEmailAddress, subject,data,cc) => {
   // set transport
       var transporter = nodemailer.createTransport({
           service:process.env.send_email_service,
@@ -132,6 +132,48 @@ let sentTicketEmail = async (receiverEmailAddress, subject,data) => {
 
       
 }
+
+
+let sentTicketCcEmail = async (receiverEmailAddress, subject, data) => {
+  // set transport
+      var transporter = nodemailer.createTransport({
+          service:process.env.send_email_service,
+          host:process.env.send_email_host,
+          port: process.env.send_email_port,
+          secure: false,
+          auth: {
+              user: process.env.send_email_address,
+              pass: process.env.send_email_password
+          }
+      });
+  
+      var mailOptions = {
+          from: process.env.send_email_address,
+          to: receiverEmailAddress,
+          subject: subject,
+          html: await ticketCcEmail(data)
+      };
+  
+
+    // send email 
+      transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+              return {
+                  success: false,
+                  message: "Email send fail"
+              }
+          } else {
+              return {
+                  success: true,
+                  message: "Email send successfully done"
+              }
+          }
+      });
+
+      
+}
+
+
 
 let getHTMLBody = async (name = "", asset_name = "", type = "", asset_serial_number = "",assign_date = "",assign_by = "",unit_name="") => {
     return `<div style="font-family: Arial, sans-serif; background-color: #e9f0f7; color: #444444; padding: 30px; line-height: 1.6; width: 100%;">
@@ -224,6 +266,7 @@ module.exports = {
     hashingUsingCrypto,
     sentEmailByHtmlFormate,
     rendomGenerator,
-    sentTicketEmail
+    sentTicketEmail,
+    sentTicketCcEmail
    
 }

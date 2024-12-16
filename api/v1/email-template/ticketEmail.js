@@ -97,7 +97,6 @@ const ticketEmail = async(data)=>{
 
 
 const ticketCcEmail = async(data)=>{
-    console.log("firs t   data === ",data)
     return`
     <!DOCTYPE html>
 <html lang="en">

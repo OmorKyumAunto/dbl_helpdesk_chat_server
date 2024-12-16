@@ -97,6 +97,7 @@ const ticketEmail = async(data)=>{
 
 
 const ticketCcEmail = async(data)=>{
+    
     return`
     <!DOCTYPE html>
 <html lang="en">

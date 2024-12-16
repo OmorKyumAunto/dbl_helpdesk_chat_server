@@ -97,6 +97,7 @@ const ticketEmail = async(data)=>{
 
 
 const ticketCcEmail = async(data)=>{
+    console.log("firs t   data === ",data)
     return`
     <!DOCTYPE html>
 <html lang="en">
@@ -138,7 +139,7 @@ const ticketCcEmail = async(data)=>{
                                 </tr>
                                 <tr>
                                     <td style="padding: 12px; color: #003366; font-weight: bold;">Subject:</td>
-                                    <td style="padding: 12px; color: #555;">[Subject]</td>
+                                    <td style="padding: 12px; color: #555;">${data.subject}</td>
                                 </tr>
                                 <tr>
                                     <td style="padding: 12px; background-color: #f3f4f7; font-weight: bold; color: #003366; border-radius: 6px 0 0 6px;">Priority:</td>

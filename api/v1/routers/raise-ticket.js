@@ -72,7 +72,7 @@ router.post('/', [verifyToken, routeAccessChecker("raiseTicket"),upload.none()],
         "category_id": parseInt(req.body.category_id),
         "priority": req.body.priority,
         "subject": req.body.subject,
-        "cc": req.body.cc,
+        "cc": parseInt(req.body.cc),
         "description": req.body.description,
         "attachment": req.body.attachment,
     }
@@ -184,11 +184,11 @@ router.post('/', [verifyToken, routeAccessChecker("raiseTicket"),upload.none()],
 
    let getUnitAndCategoryMatchEmail = await raiseTicketModel.getUnitAndCategoryWiseEmail(reqData.unit_id,reqData.category_id)
 
-  // let getUnitAndCategoryMatchEmail = [{email:'omorkyumaunto16@gmail.com'},{email:'omor.aunto@jtml-dbl.com'}]
+   //let getUnitAndCategoryMatchEmail = [{email:'omorkyumaunto16@gmail.com'},{email:'omor.aunto@jtml-dbl.com'}]
 
    let ccData
    if(reqData.cc){
-    let ccEmail = await userModel.getById(reqData.cc);
+    let ccEmail = await userModel.getById(parseInt(reqData.cc));
     ccData = {
         supervisor_name : ccEmail[0]?.name || "",
         supervisor_email : ccEmail[0]?.email || "",
@@ -217,7 +217,7 @@ router.post('/', [verifyToken, routeAccessChecker("raiseTicket"),upload.none()],
     }
     
     if(reqData.cc){
-        await common.sentTicketCcEmail(ccData.supervisor_email,'Ticket Notification', data );
+        await common.sentTicketCcEmail(ccData.supervisor_email,'Ticket Notification', ccData );
      }
    
 

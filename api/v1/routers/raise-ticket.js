@@ -10,9 +10,10 @@ const ticketCommentModel = require('../models/ticket-comment')
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const moment = require("moment");
-const multer = require('multer');
-const upload = multer();
+//const multer = require('multer');
+//const upload = multer();
 const common = require('../common/common');
+const { upload, multerErrorHandler} = require('../common/upload-image')
 
 require('dotenv').config();
 
@@ -64,8 +65,14 @@ router.get('/user-wise-ticket', [verifyToken, routeAccessChecker("userWiseTicket
 });
 
 
-// create ticket employee
-router.post('/', [verifyToken, routeAccessChecker("raiseTicket"),upload.none()], async (req, res) => {
+router.post('/',[verifyToken,routeAccessChecker("raiseTicket"),upload.single('attachment')],async (req, res, next) => {
+try {               
+   
+    if (req.file) {
+        req.body.attachment = req.file.path; 
+    } else {
+        req.body.attachment = null; 
+    }
 
     let reqData = {
         "unit_id": parseInt(req.body.unit_id),
@@ -234,10 +241,12 @@ router.post('/', [verifyToken, routeAccessChecker("raiseTicket"),upload.none()],
         "status": 201,
         "message": "Raise ticket added Successfully."
     });
-
-});
-
-
+        } catch (error) {
+            next(error); 
+        }
+    },
+    multerErrorHandler 
+);
 
 
 

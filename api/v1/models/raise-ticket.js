@@ -48,6 +48,15 @@ let getAdminWiseTicket = async (user_id = 0,key,priority,status) => {
     });
 }
 
+let getAdminWiseTicketById = async (user_id = 0,ticket_id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getAdminWiseTicketById(),[user_id,ticket_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 let getSuperAdminTicket = async () => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getSuperAdminTicket(), (error, result, fields) => {
@@ -129,8 +138,6 @@ let getById = async (id = 0) => {
 }
 
 let employeeWiseTicket = async (id = 0, user_id = 0) => {
-    console.log("id",id)
-    console.log("user_id",user_id)
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.employeeWiseTicket(), [id,user_id], (error, result, fields) => {
             if (error) reject(error)
@@ -204,6 +211,7 @@ module.exports = {
     adminWiseTicketDetails,
     getSuperAdminTicket,
     getUnitAndCategoryWiseEmail,
-    employeeWiseTicket
+    employeeWiseTicket,
+    getAdminWiseTicketById
 }
 

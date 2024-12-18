@@ -7,6 +7,7 @@ const assetAssignModel = require('../models/asset-assign');
 const ticketCategoryModel = require('../models/ticket-category');
 const userModel = require('../models/user');
 const ticketCommentModel = require('../models/ticket-comment')
+const ticketForwordModel = require('../models/ticket-forword')
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const moment = require("moment");
@@ -540,6 +541,80 @@ router.put('/comment/:id', [verifyToken, routeAccessChecker("ticketCommentEdit")
 
 });
 
+
+router.post('/ticket-forword/:id', [verifyToken, routeAccessChecker("ticketForworded")], async (req, res) => {
+    let table_id = parseInt(req.params.id)
+ 
+     let reqData = {
+        "user_id" : req.body.user_id,
+        "remarks": req.body.remarks,
+     }
+ 
+     const id = req.decoded.userInfo.id
+
+     let ticket = await raiseTicketModel.getById(table_id);
+     if (!ticket) {
+         return res.status(404).send({
+             "success": false,
+             "status": 404,
+             "message": "This ticket  not found.",
+         });
+     }
+      
+
+     let user = await userModel.getById(user_id);
+     if (!user) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "This assign user not found.",
+        });
+    }
+    if (user[0].role_id !== 2) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "This assign user not admin found.",
+        });
+    }
+
+    let adminTicket = await raiseTicketModel.getAdminWiseTicketById(id,table_id);
+    if (!adminTicket) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "This ticket not under you.",
+        });
+    }
+     
+ 
+     let forword_data = {
+         ticket_id : table_id,
+         forword_from : id,
+         forword_to : reqData.user_id,
+         remarks : reqData.remarks
+     }
+
+     // try to apply transaction this api
+ 
+     let result = await ticketForwordModel.addNew(forword_data)
+ 
+ 
+     if (result.affectedRows == undefined || result.affectedRows < 1) {
+         return res.status(500).send({
+             "success": false,
+             "status": 500,
+             "message": "Something Wrong in system database."
+         });
+     }
+ 
+     return res.status(201).send({
+         "success": true,
+         "status": 201,
+         "message": "Ticket comment update Successfully."
+     });
+ 
+ });
 
 // router.delete('/delete/:id', [verifyToken, routeAccessChecker("assetUnitDelete")], async (req, res) => {
 

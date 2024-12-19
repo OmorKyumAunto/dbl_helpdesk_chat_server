@@ -1,5 +1,5 @@
 const isEmpty = require("is-empty");
-let table_name = "dbl_ticket_forword";
+let table_name = "dbl_ticket_forward";
 
 let getList = (status) => {
     let searchCondition = "status != 'delete'"; // Exclude 'delete' status by default

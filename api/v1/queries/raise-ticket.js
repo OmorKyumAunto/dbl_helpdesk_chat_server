@@ -172,6 +172,11 @@ let getUnitAndCategoryWiseEmail = () => {
     return `SELECT * FROM ${admin_wise_ticket_view} where  asset_unit_id = ? and ticket_category_id = ? `;
 }
 
+
+let getAdminWiseTicketById = () => {
+    return `SELECT * FROM ${admin_wise_ticket_view}  where  user_id = ? and ticket_table_id = ?`;
+}
+
 module.exports = {
     getList,
     getActiveList,
@@ -192,6 +197,7 @@ module.exports = {
     adminWiseTicketDetails,
     getSuperAdminTicket,
     getUnitAndCategoryWiseEmail,
-    employeeWiseTicket
+    employeeWiseTicket,
+    getAdminWiseTicketById
 
 }

@@ -7,6 +7,7 @@ const assetAssignModel = require('../models/asset-assign');
 const ticketCategoryModel = require('../models/ticket-category');
 const userModel = require('../models/user');
 const ticketCommentModel = require('../models/ticket-comment')
+const ticketForwordModel = require('../models/ticket-forword')
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const moment = require("moment");
@@ -193,20 +194,61 @@ try {
 
    //let getUnitAndCategoryMatchEmail = [{email:'omorkyumaunto16@gmail.com'},{email:'omor.aunto@jtml-dbl.com'}]
 
-   let ccData
-   if(reqData.cc){
-    let ccEmail = await userModel.getById(parseInt(reqData.cc));
-    ccData = {
-        supervisor_name : ccEmail[0]?.name || "",
-        supervisor_email : ccEmail[0]?.email || "",
-        ticket_id : reqData.ticket_id,
-        subject : reqData.subject,
-        priority: reqData.priority.charAt(0).toUpperCase() + reqData.priority.slice(1).toLowerCase(),
-        unit_name : unit[0].title,
-        created_by : user[0].name,
-        created_employee_id : user[0].employee_id,
+//    let ccData
+//    if(reqData.cc){
+//     let ccEmail = await userModel.getById(parseInt(reqData.cc));
+//     if(ccEmail.length){
+//         ccData = {
+//             supervisor_name : ccEmail[0]?.name || "",
+//             supervisor_email : ccEmail[0]?.email || "",
+//             ticket_id : reqData.ticket_id,
+//             subject : reqData.subject,
+//             priority: reqData.priority.charAt(0).toUpperCase() + reqData.priority.slice(1).toLowerCase(),
+//             unit_name : unit[0].title,
+//             created_by : user[0].name,
+//             created_employee_id : user[0].employee_id,
+//         }
+//         reqData.cc = ccEmail[0].email
+//     }else{
+//         return res.status(404).send({
+//             "success": false,
+//             "status": 404,
+//             "message": "CC user not found",
+
+//         });
+//     }
+   
+//    }
+    let ccData = null; 
+
+    if (reqData.cc) {
+        const ccId = parseInt(reqData.cc); 
+        if (!isNaN(ccId)) {
+            const ccEmail = await userModel.getById(ccId);
+            if (ccEmail.length) {
+                ccData = {
+                    supervisor_name: ccEmail[0]?.name || "",
+                    supervisor_email: ccEmail[0]?.email || "",
+                    ticket_id: reqData.ticket_id,
+                    subject: reqData.subject,
+                    priority: reqData.priority.charAt(0).toUpperCase() + reqData.priority.slice(1).toLowerCase(),
+                    unit_name: unit[0].title,
+                    created_by: user[0].name,
+                    created_employee_id: user[0].employee_id,
+                };
+                reqData.cc = ccEmail[0].email; 
+            } else {
+    
+                reqData.cc = null;
+            }
+        } else {
+        
+            reqData.cc = null;
+        }
+    } else {
+
+        reqData.cc = null;
     }
-   }
    
     let result = await raiseTicketModel.addNew(reqData);
 
@@ -540,6 +582,129 @@ router.put('/comment/:id', [verifyToken, routeAccessChecker("ticketCommentEdit")
 
 });
 
+
+router.post('/ticket-forword/:id', [verifyToken, routeAccessChecker("ticketForworded")], async (req, res) => {
+    
+    let table_id = parseInt(req.params.id)
+
+     let reqData = {
+        "unit_id" : req.body.unit_id,
+        "category_id" : req.body.category_id,
+        "subject": req.body.subject,
+        "remarks": req.body.remarks,
+     }
+ 
+     const id = req.decoded.userInfo.id
+
+     if (!table_id) {
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "Ticket id should not be empty.",
+        });
+    }
+
+     let ticket = await raiseTicketModel.getById(table_id);
+     console.log("first",ticket)
+     if (!ticket.length) {
+         return res.status(404).send({
+             "success": false,
+             "status": 404,
+             "message": "This ticket  not found.",
+         });
+     }
+      
+
+    let adminTicket = await raiseTicketModel.getAdminWiseTicketById(id,table_id);
+    if (!adminTicket.length) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "This ticket not under you.",
+        });
+    }
+
+    if(!reqData.unit_id){
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "Unit should not be empty.",
+
+        });
+    }
+
+    let unit = await assetUnitModel.getById(reqData.unit_id);
+    if (!unit.length) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "This unit not found",
+
+        });
+    }
+
+    if(!reqData.category_id){
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "Category should not be empty.",
+
+        });
+    }
+     
+    let category = await ticketCategoryModel.getById(reqData.category_id);
+    if (!category.length) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "This category not found",
+
+        });
+    }
+ 
+    let user = await userModel.getById(id)
+
+     let forword_data = {
+         ticket_id : table_id,
+         unit_id : reqData.unit_id,
+         category_id : reqData.category_id,
+         remarks : reqData.remarks,
+         details : `The ticket has been forwarded by ${user[0].name} to the Unit: ${unit[0].title} and Category: ${category[0].title}. Remarks: ${reqData.remarks}..`,
+         created_by : id
+     }
+
+    if (!reqData.subject) {
+        reqData.subject = ticket[0]?.subject;
+    }
+
+     let ticket_data = {
+        unit_id : reqData.unit_id,
+        category_id : reqData.category_id,
+        subject : reqData.subject
+     }
+
+  
+     // try to apply transaction this api
+ 
+     let result = await ticketForwordModel.addNew(forword_data)
+     let update_ticket = await raiseTicketModel.updateById(table_id,ticket_data)
+ 
+ 
+     if (result.affectedRows == undefined || result.affectedRows < 1) {
+         return res.status(500).send({
+             "success": false,
+             "status": 500,
+             "message": "Something Wrong in system database."
+         });
+     }
+ 
+     return res.status(201).send({
+         "success": true,
+         "status": 201,
+         "message": "Ticket Successfully Forwarded."
+     });
+ 
+ });
 
 // router.delete('/delete/:id', [verifyToken, routeAccessChecker("assetUnitDelete")], async (req, res) => {
 

@@ -30,18 +30,18 @@ let getAllList = async (status) => {
     });
 }
 
-let getAllListUserWise = async (id = 0,key,priority,status) => {
+let getAllListUserWise = async (id = 0,key,priority,status,offset,limit) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getAllListUserWise(id,key,priority,status), (error, result, fields) => {
+        connectionDblystem.query(queries.getAllListUserWise(id,key,priority,status,offset,limit), (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
     });
 }
 
-let getAdminWiseTicket = async (user_id = 0,key,priority,status) => {
+let getAdminWiseTicket = async (user_id = 0,key,priority,status,offset,limit) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getAdminWiseTicket(key,priority,status),[user_id], (error, result, fields) => {
+        connectionDblystem.query(queries.getAdminWiseTicket(key,priority,status,offset,limit),[user_id], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -57,9 +57,9 @@ let getAdminWiseTicketById = async (user_id = 0,ticket_id = 0) => {
     });
 }
 
-let getSuperAdminTicket = async () => {
+let getSuperAdminTicket = async (key,priority,status, offset , limit)=>{
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getSuperAdminTicket(), (error, result, fields) => {
+        connectionDblystem.query(queries.getSuperAdminTicket(key,priority,status, offset , limit), (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });

@@ -1,17 +1,21 @@
 const isEmpty = require("is-empty");
 let table_name = "dbl_ticket_forward";
 
-let getList = (status) => {
-    let searchCondition = "status != 'delete'"; // Exclude 'delete' status by default
-
-    if (status === 'active') {
-        searchCondition += " AND status = 'active'";
-    } else if (status === 'deactivate') {
-        searchCondition += " AND status = 'deactivate'";
-    }
-
-    return `SELECT * FROM ${table_name} WHERE ${searchCondition} ORDER BY id DESC`;
-}
+let getList = (offset, limit) => {
+    return `
+        SELECT 
+            f.*, 
+            u.name AS forword_by, 
+            u.employee_id AS forword_by_employee_id 
+        FROM 
+            ${table_name} AS f 
+        LEFT JOIN 
+            dbl_users as u ON u.id = f.created_by 
+        ORDER BY 
+            f.id DESC 
+        LIMIT ${limit} OFFSET ${offset};
+    `;
+};
 
 
 

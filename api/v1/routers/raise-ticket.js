@@ -60,7 +60,7 @@ router.get('/user-wise-ticket', [verifyToken, routeAccessChecker("userWiseTicket
         success: true,
         status: 200,
         message: "User wise ticket List.",
-        count: result.length,
+        total: result.length,
         data: result,
     });
 });
@@ -302,7 +302,7 @@ router.get('/admin-ticket-list', [verifyToken, routeAccessChecker("adminWiseTick
         success: true,
         status: 200,
         message: "Admin wise ticket List.",
-        count: result.length,
+        total: result.length,
         data: result,
     });
 });

@@ -21,7 +21,6 @@ require('dotenv').config();
 // ticket dashboard count data
 router.get('/count-data', [verifyToken, routeAccessChecker("TicketDashboardCountData")], async (req, res) => {
     
-
     const id = req.decoded.userInfo.id
     
     const total_ticket = await raiseTicketModel.getTicketDataCounting()

@@ -685,7 +685,8 @@ router.post('/ticket-forword/:id', [verifyToken, routeAccessChecker("ticketForwo
      let ticket_data = {
         unit_id : reqData.unit_id,
         category_id : reqData.category_id,
-        subject : reqData.subject
+        subject : reqData.subject,
+        status : 'forward'
      }
 
   

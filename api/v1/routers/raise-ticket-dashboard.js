@@ -14,7 +14,7 @@ const moment = require("moment");
 //const multer = require('multer');
 //const upload = multer();
 const common = require('../common/common');
-const { upload, multerErrorHandler} = require('../common/upload-image')
+const { connectionDblystem } = require('../connections/connection');
 
 require('dotenv').config();
 
@@ -22,14 +22,29 @@ require('dotenv').config();
 router.get('/count-data', [verifyToken, routeAccessChecker("TicketDashboardCountData")], async (req, res) => {
     
 
-    req.query
-
-    return res.status(500).send({
-        success: false,
-        status: 500,
-        message: "Get ticket dashboard count data.",
-    });
+    const id = req.decoded.userInfo.id
     
+    const total_ticket = await raiseTicketModel.getTicketDataCounting()
+    const total_solved = await raiseTicketModel.getTicketTotalSolved()
+    const total_unsolved = await raiseTicketModel.getTicketTotalUnsolved()
+    const total_forward = await raiseTicketModel.getTicketTotalForward()
+    const total_inprocess = await raiseTicketModel.getTicketTotalInprocess()
+
+    const data = {
+        total_ticket: total_ticket[0]?.total_ticket || 0,
+        total_solve: total_solved[0]?.total_solved || 0,
+        total_unsolved: total_unsolved[0]?.total_unsolved || 0,
+        total_forward: total_forward[0]?.total_forward || 0,
+        total_inprocess: total_inprocess[0]?.total_inprocess || 0,
+    };
+
+    return res.status(200).send({
+        success: true,
+        status: 200,
+        message: "Ticket data retrieved successfully.",
+        data: data, 
+    });
+
 });
 
 

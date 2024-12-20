@@ -219,6 +219,56 @@ let updateById = async (id = 0, data = {}) => {
 }
 
 
+
+// ticket dashboard data
+let getTicketDataCounting = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.ticketCountingData(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+let getTicketTotalSolved = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getTicketTotalSolved(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+let getTicketTotalUnsolved = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getTicketTotalUnsolved(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+let getTicketTotalForward = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getTicketTotalForward(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+let getTicketTotalInprocess = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getTicketTotalInprocess(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+
+
 module.exports = {
     getList,
     getActiveList,
@@ -242,6 +292,11 @@ module.exports = {
     getAdminWiseTicketById,
     getSuperAdminTicketTotalCount,
     getAllListTotalCountUserWise,
-    getAdminWiseTicketTotalCount
+    getAdminWiseTicketTotalCount,
+    getTicketDataCounting,
+    getTicketTotalSolved,
+    getTicketTotalUnsolved,
+    getTicketTotalForward,
+    getTicketTotalInprocess
 }
 

@@ -313,6 +313,7 @@ router.get('/admin-ticket-list', [verifyToken, routeAccessChecker("adminWiseTick
 router.put('/admin-update-status/:id', [verifyToken, routeAccessChecker("adminUpdateStatus")], async (req, res) => {
 
     let id = req.params.id
+    let admin_id = req.decoded.userInfo.id
 
     let user_id = req.decoded.userInfo.id
     let reqData = {
@@ -323,11 +324,21 @@ router.put('/admin-update-status/:id', [verifyToken, routeAccessChecker("adminUp
     let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
 
     let existingDataById = await raiseTicketModel.adminWiseTicketDetails(user_id,id);
-    if (isEmpty(existingDataById)) {
+    if (!existingDataById.length) {
         return res.status(404).send({
             "success": false,
             "status": 404,
             "message": "No data found",
+
+        });
+    }
+
+    let checkIsAlreadySolved = await raiseTicketModel.getById(id);
+    if (checkIsAlreadySolved[0].ticket_status === 'solved') {
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "This ticked already solved.",
 
         });
     }
@@ -354,7 +365,8 @@ router.put('/admin-update-status/:id', [verifyToken, routeAccessChecker("adminUp
 
     if (willWeUpdate == 1) {
         updateData.updated_at = current_time
-        updateData.updated_by = id
+        updateData.updated_by = admin_id
+        updateData.solved_by = admin_id
 
         let result = await raiseTicketModel.updateById(id, updateData);
 
@@ -727,50 +739,48 @@ router.get('/ticket-forword-list', [verifyToken, routeAccessChecker("ticketForwo
 
 });
 
-// router.delete('/delete/:id', [verifyToken, routeAccessChecker("assetUnitDelete")], async (req, res) => {
+router.delete('/delete/:id', [verifyToken, routeAccessChecker("ticketDelete")], async (req, res) => {
 
-//     let id = req.params.id
+    let id = req.params.id
     
-//     updated_by = req.decoded.userInfo.id;
+    let current_date = new Date(); 
+    let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
 
-//     let current_date = new Date(); 
-//     let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+    let existingDataById = await raiseTicketModel.getById(id);
+    if (!existingDataById.length) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "No data found",
 
-//     let existingDataById = await locationModel.getById(id);
-//     if (isEmpty(existingDataById)) {
-//         return res.status(404).send({
-//             "success": false,
-//             "status": 404,
-//             "message": "No data found",
+        });
+    }
 
-//         });
-//     }
-
-
-//     let data = {
-//         status: 0,
-//         updated_at: current_time
-//     }
-
-//     let result = await locationModel.updateById(id, data);
+   
+    let data = {
+        status: 0,
+        updated_at: current_time,
+        updated_by : req.decoded.userInfo.id
+    }
+    let result = await raiseTicketModel.updateById(id, data);
 
 
-//     if (result.affectedRows == undefined || result.affectedRows < 1) {
-//         return res.status(500).send({
-//             "success": true,
-//             "status": 500,
-//             "message": "Something Wrong in system database."
-//         });
-//     }
+    if (result.affectedRows == undefined || result.affectedRows < 1) {
+        return res.status(500).send({
+            "success": true,
+            "status": 500,
+            "message": "Something Wrong in system database."
+        });
+    }
 
 
-//     return res.status(200).send({
-//         "success": true,
-//         "status": 200,
-//         "message": "Location successfully deleted."
-//     });
+    return res.status(200).send({
+        "success": true,
+        "status": 200,
+        "message": "Ticket successfully deleted."
+    });
 
-// });
+});
 
 
 // router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeLocationStatus")], async (req, res) => {

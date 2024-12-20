@@ -129,8 +129,6 @@ let getById = async (id = 0) => {
 }
 
 let getByTableId = async (id = 0) => {
-console.log("first =============== >>>>>>>>>>>>",id)
-
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getByTableId(), [id], (error, result, fields) => {
             if (error) reject(error)

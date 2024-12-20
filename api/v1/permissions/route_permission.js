@@ -31,7 +31,7 @@ let superAdminPermission = [
 "assignCategory","beforeAssignList","afterAssignList","categoryAssignUpdate",
 "allRaiseTicketList",
 "ticketForworded","ticketForwordedList",
-"TicketDashboardCountData"
+"TicketDashboardCountData","ticketDelete"
 ];
 
 let adminPermission = [

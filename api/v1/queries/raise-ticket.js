@@ -237,7 +237,7 @@ let getAllListUserWise = (id, key = '', priority = '', status = '', offset, limi
             dbl_asset AS ass ON ass.id = rt.asset_id
         ${whereClause}
         ORDER BY 
-            rt.created_at DESC
+            rt.id DESC
         ${paginationClause};
     `;
 };
@@ -343,7 +343,7 @@ let getByTitle = () => {
 }
 
 let getById = () => {
-    return `SELECT * FROM ${table_name} where  id = ? `;
+    return `SELECT * FROM ${table_name} where  id = ?  and status = 1 `;  // added status = 1
 }
 
 let employeeWiseTicket = () => {
@@ -372,6 +372,28 @@ let getAdminWiseTicketById = () => {
     return `SELECT * FROM ${admin_wise_ticket_view}  where  user_id = ? and ticket_table_id = ?`;
 }
 
+
+// ticket dashboard counting data
+
+let ticketCountingData = () => {
+    return `SELECT count(id) as total_ticket FROM ${table_name} where status = 1 `; 
+}
+let getTicketTotalSolved = () => {
+    return `SELECT count(id) as total_solved FROM ${table_name} where ticket_status = 'solved' and status = 1 `; 
+}
+
+let getTicketTotalUnsolved = () => {
+    return `SELECT count(id) as total_unsolved FROM ${table_name} where ticket_status = 'unsolved' and status = 1 `; 
+}
+
+let getTicketTotalForward = () => {
+    return `SELECT count(id) as total_forward FROM ${table_name} where ticket_status = 'forward' and status = 1`; 
+}
+let getTicketTotalInprocess = () => {
+    return `SELECT count(id) as total_inprocess FROM ${table_name} where ticket_status = 'inprocess' and status = 1`; 
+}
+
+
 module.exports = {
     getList,
     getActiveList,
@@ -396,6 +418,11 @@ module.exports = {
     getAdminWiseTicketById,
     getSuperAdminTicketTotalCount,
     getAllListTotalCountUserWise,
-    getAdminWiseTicketTotalCount
+    getAdminWiseTicketTotalCount,
+    ticketCountingData,
+    getTicketTotalSolved,
+    getTicketTotalUnsolved,
+    getTicketTotalForward,
+    getTicketTotalInprocess
 
 }

@@ -2,9 +2,9 @@ const { connectionDblystem } = require('../connections/connection');
 const queries = require('../queries/ticket-forword');
 
 // Promises Method
-let getList = async (status) => {
+let getList = async (offset,limit) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getList(status), (error, result, fields) => {
+        connectionDblystem.query(queries.getList(offset,limit), (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });

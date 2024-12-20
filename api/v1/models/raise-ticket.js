@@ -39,6 +39,15 @@ let getAllListUserWise = async (id = 0,key,priority,status,offset,limit) => {
     });
 }
 
+let getAllListTotalCountUserWise = async (id = 0,key,priority,status) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getAllListTotalCountUserWise(id,key,priority,status), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 let getAdminWiseTicket = async (user_id = 0,key,priority,status,offset,limit) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getAdminWiseTicket(key,priority,status,offset,limit),[user_id], (error, result, fields) => {
@@ -47,6 +56,16 @@ let getAdminWiseTicket = async (user_id = 0,key,priority,status,offset,limit) =>
         });
     });
 }
+
+let getAdminWiseTicketTotalCount = async (user_id = 0,key,priority,status) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getAdminWiseTicketTotalCount(key,priority,status),[user_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 
 let getAdminWiseTicketById = async (user_id = 0,ticket_id = 0) => {
     return new Promise((resolve, reject) => {
@@ -66,6 +85,14 @@ let getSuperAdminTicket = async (key,priority,status, offset , limit)=>{
     });
 }
 
+let getSuperAdminTicketTotalCount = async (key,priority,status)=>{
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getSuperAdminTicketTotalCount(key,priority,status), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
 
 
 let getAllListAdminWise = async (id = 0,key,priority,status) => {
@@ -212,6 +239,9 @@ module.exports = {
     getSuperAdminTicket,
     getUnitAndCategoryWiseEmail,
     employeeWiseTicket,
-    getAdminWiseTicketById
+    getAdminWiseTicketById,
+    getSuperAdminTicketTotalCount,
+    getAllListTotalCountUserWise,
+    getAdminWiseTicketTotalCount
 }
 

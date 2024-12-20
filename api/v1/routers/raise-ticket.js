@@ -56,11 +56,12 @@ router.get('/user-wise-ticket', [verifyToken, routeAccessChecker("userWiseTicket
     let id = req.decoded.userInfo.id
     let {key = '',priority='',status='', offset = 0,limit = 10} = req.query
     let result = await raiseTicketModel.getAllListUserWise(id,key,priority,status,offset,limit);
+    let totalResult = await raiseTicketModel.getAllListTotalCountUserWise(id,key,priority,status);
     return res.status(200).send({
         success: true,
         status: 200,
         message: "User wise ticket List.",
-        total: result.length,
+        total: totalResult.length,
         data: result,
     });
 });
@@ -298,11 +299,12 @@ router.get('/admin-ticket-list', [verifyToken, routeAccessChecker("adminWiseTick
     let id = req.decoded.userInfo.id
     let {key = '',priority= '',status= '',offset = 0,limit = 10} = req.query
     let result = await raiseTicketModel.getAdminWiseTicket(id,key,priority,status, offset,limit);
+    let totalCountResult = await raiseTicketModel.getAdminWiseTicketTotalCount(id,key,priority,status);
     return res.status(200).send({
         success: true,
         status: 200,
         message: "Admin wise ticket List.",
-        total: result.length,
+        total: totalCountResult.length,
         data: result,
     });
 });
@@ -385,14 +387,15 @@ router.put('/admin-update-status/:id', [verifyToken, routeAccessChecker("adminUp
 // super admin get raise ticket list
 router.get('/raise-ticket', [verifyToken, routeAccessChecker("allRaiseTicketList")], async (req, res) => {
    
-    let { key = '',priority = '',status = '', offset = 0,limit = 10} = req.query
+   let { key = '',priority = '',status = '', offset = 0,limit = 10} = req.query
 
     let result = await raiseTicketModel.getSuperAdminTicket(key,priority,status,offset,limit)
+    let toalResult = await raiseTicketModel.getSuperAdminTicketTotalCount(key,priority,status)
     return res.status(200).send({
         success: true,
         status: 200,
         message: "Super admin raise ticket List.",
-        total: result.length,
+        total: toalResult.length,
         data: result,
     });
 

@@ -80,8 +80,36 @@ let getAdminWiseTicket = (key, priority, status, offset, limit) => {
     return query;
 };
 
+let getAdminWiseTicketTotalCount = (key, priority, status) => {
+    let conditions = [];
+
+    // Add conditions dynamically based on parameters
+    if (priority) {
+        conditions.push(`priority = '${priority}'`);
+    }
+    if (status) {
+        conditions.push(`ticket_status = '${status}'`);
+    }
+    if (key) {
+        conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+    }
+
+    // Base condition for user_id
+    conditions.push(`user_id = ?`);
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
 
+    // Build query parts conditionally
+    let query = `
+        SELECT 
+            * 
+        FROM 
+            ${admin_wise_ticket_view} 
+        ${whereClause}
+    `;
+
+    return query;
+};
 
 // let getSuperAdminTicket = (key,priority,status, Offset ,limit) => {
 //     return `SELECT * FROM ${admin_wise_ticket_view} `;
@@ -112,6 +140,27 @@ let getSuperAdminTicket = (key, priority, status, offset, limit) => {
 
     return baseQuery;
 };
+
+
+let getSuperAdminTicketTotalCount = (key, priority, status) => {
+    let baseQuery = `SELECT * FROM ${admin_wise_ticket_view}`;
+
+    let conditions = [];
+    if (status) {
+        conditions.push(`ticket_status = '${status}'`);
+    }
+    if (priority) {
+        conditions.push(`priority = '${priority}'`);
+    }
+    if (key) {
+        conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+    }
+    if (conditions.length > 0) {
+        baseQuery += " WHERE " + conditions.join(" AND ");
+    }
+    return baseQuery;
+};
+
 
 
 
@@ -190,6 +239,44 @@ let getAllListUserWise = (id, key = '', priority = '', status = '', offset, limi
         ORDER BY 
             rt.created_at DESC
         ${paginationClause};
+    `;
+};
+
+
+let getAllListTotalCountUserWise = (id, key = '', priority = '', status = '') => {
+    let conditions = [`rt.created_by = ${id}`, `rt.status = 1`]; 
+
+    if (priority) {
+        conditions.push(`rt.priority = '${priority}'`);
+    }
+    if (status) {
+        conditions.push(`rt.ticket_status = '${status}'`);
+    }
+    if (key) {
+        conditions.push(`(rt.subject LIKE '%${key}%' OR rt.ticket_id LIKE '%${key}%')`);
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    return `
+        SELECT 
+            rt.*,  
+            au.title AS unit_name, 
+            tc.title AS category_name,
+            ass.name AS asset_name,
+            ass.category AS asset_category,
+            ass.serial_number AS serial_number
+        FROM 
+            dbl_raise_ticket AS rt
+        JOIN 
+            dbl_asset_unit AS au ON au.id = rt.unit_id 
+        JOIN 
+            dbl_ticket_category AS tc ON tc.id = rt.category_id 
+        LEFT JOIN 
+            dbl_asset AS ass ON ass.id = rt.asset_id
+        ${whereClause}
+        ORDER BY 
+            rt.created_at DESC
     `;
 };
 
@@ -306,6 +393,9 @@ module.exports = {
     getSuperAdminTicket,
     getUnitAndCategoryWiseEmail,
     employeeWiseTicket,
-    getAdminWiseTicketById
+    getAdminWiseTicketById,
+    getSuperAdminTicketTotalCount,
+    getAllListTotalCountUserWise,
+    getAdminWiseTicketTotalCount
 
 }

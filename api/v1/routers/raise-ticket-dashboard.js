@@ -22,6 +22,8 @@ require('dotenv').config();
 router.get('/count-data', [verifyToken, routeAccessChecker("TicketDashboardCountData")], async (req, res) => {
     
 
+    req.query
+
     return res.status(500).send({
         success: false,
         status: 500,

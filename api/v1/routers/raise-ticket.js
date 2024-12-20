@@ -54,7 +54,7 @@ router.get('/active-list', [verifyToken, routeAccessChecker("locationActiveList"
 router.get('/user-wise-ticket', [verifyToken, routeAccessChecker("userWiseTicket")], async (req, res) => {
 
     let id = req.decoded.userInfo.id
-    let {key,priority,status , offset = 0,limit = 10} = req.query
+    let {key = '',priority='',status='', offset = 0,limit = 10} = req.query
     let result = await raiseTicketModel.getAllListUserWise(id,key,priority,status,offset,limit);
     return res.status(200).send({
         success: true,
@@ -296,7 +296,7 @@ try {
 router.get('/admin-ticket-list', [verifyToken, routeAccessChecker("adminWiseTicketList")], async (req, res) => {
 
     let id = req.decoded.userInfo.id
-    let {key,priority,status,offset = 0,limit = 10} = req.query
+    let {key = '',priority= '',status= '',offset = 0,limit = 10} = req.query
     let result = await raiseTicketModel.getAdminWiseTicket(id,key,priority,status, offset,limit);
     return res.status(200).send({
         success: true,
@@ -385,14 +385,14 @@ router.put('/admin-update-status/:id', [verifyToken, routeAccessChecker("adminUp
 // super admin get raise ticket list
 router.get('/raise-ticket', [verifyToken, routeAccessChecker("allRaiseTicketList")], async (req, res) => {
    
-    let { key,priority,status, offset = 0,limit = 10} = req.query
+    let { key = '',priority = '',status = '', offset = 0,limit = 10} = req.query
 
     let result = await raiseTicketModel.getSuperAdminTicket(key,priority,status,offset,limit)
     return res.status(200).send({
         success: true,
         status: 200,
         message: "Super admin raise ticket List.",
-        count: result.length,
+        total: result.length,
         data: result,
     });
 

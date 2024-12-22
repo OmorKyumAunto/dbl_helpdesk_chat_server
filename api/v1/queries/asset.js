@@ -393,8 +393,9 @@ let adminWiseAccessoriesData = () => {
     COUNT(u.id) AS total_count,
     SUM(CASE WHEN asset.category = 'Laptop' THEN 1 ELSE 0 END) AS laptop_count,
     SUM(CASE WHEN asset.category = 'Monitor' THEN 1 ELSE 0 END) AS monitor_count,
-       SUM(CASE WHEN asset.category = 'Desktop' THEN 1 ELSE 0 END) AS desktop_count,
-              SUM(CASE WHEN asset.category = 'Printer' THEN 1 ELSE 0 END) AS printer_count
+    SUM(CASE WHEN asset.category = 'Desktop' THEN 1 ELSE 0 END) AS desktop_count,
+    SUM(CASE WHEN asset.category = 'Printer' THEN 1 ELSE 0 END) AS printer_count,
+    SUM(CASE WHEN asset.category = 'Accessories' THEN 1 ELSE 0 END) AS accessories_count
 FROM 
     dbl_users AS u
 JOIN 

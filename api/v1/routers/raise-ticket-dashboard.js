@@ -46,5 +46,18 @@ router.get('/count-data', [verifyToken, routeAccessChecker("TicketDashboardCount
 
 });
 
+router.get('/top-solve-ticket', [verifyToken, routeAccessChecker("topSolvedTicketData")], async (req, res) => {
+    
+    let data = await raiseTicketModel.getTopSolvedTicketList()
+    return res.status(200).send({
+        success: true,
+        status: 200,
+        message: "Top ticket solve list.",
+        data: data, 
+    });
+
+});
+
+
 
 module.exports = router;

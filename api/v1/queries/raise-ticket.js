@@ -393,6 +393,30 @@ let getTicketTotalInprocess = () => {
     return `SELECT count(id) as total_inprocess FROM ${table_name} where ticket_status = 'inprocess' and status = 1`; 
 }
 
+let getTopSolvedTicketList = () => {
+    return `
+        SELECT 
+            u.id AS id, 
+            u.name AS solved_by_name, 
+                u.employee_id AS employee_id, 
+            COUNT(rt.id) AS solved_ticket_count
+        FROM 
+            dbl_database.dbl_raise_ticket AS rt
+        LEFT JOIN 
+            dbl_users AS u 
+        ON 
+            u.id = rt.solved_by 
+        WHERE 
+            rt.ticket_status = 'solved' 
+        GROUP BY 
+            rt.solved_by 
+        ORDER BY 
+            solved_ticket_count DESC 
+        LIMIT 10;
+        `;
+}
+
+
 
 module.exports = {
     getList,
@@ -423,6 +447,7 @@ module.exports = {
     getTicketTotalSolved,
     getTicketTotalUnsolved,
     getTicketTotalForward,
-    getTicketTotalInprocess
+    getTicketTotalInprocess,
+    getTopSolvedTicketList
 
 }

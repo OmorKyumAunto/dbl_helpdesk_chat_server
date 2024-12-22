@@ -267,7 +267,14 @@ let getTicketTotalInprocess = async () => {
 }
 
 
-
+let getTopSolvedTicketList = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getTopSolvedTicketList(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
 
 module.exports = {
     getList,
@@ -297,6 +304,7 @@ module.exports = {
     getTicketTotalSolved,
     getTicketTotalUnsolved,
     getTicketTotalForward,
-    getTicketTotalInprocess
+    getTicketTotalInprocess,
+    getTopSolvedTicketList
 }
 

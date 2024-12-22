@@ -388,6 +388,29 @@ let alreadyAssignUnit = () => {
 }
 
 
+let adminWiseAccessoriesData = () => {
+  return `SELECT 
+    COUNT(u.id) AS total_count,
+    SUM(CASE WHEN asset.category = 'Laptop' THEN 1 ELSE 0 END) AS laptop_count,
+    SUM(CASE WHEN asset.category = 'Monitor' THEN 1 ELSE 0 END) AS monitor_count,
+       SUM(CASE WHEN asset.category = 'Desktop' THEN 1 ELSE 0 END) AS desktop_count,
+              SUM(CASE WHEN asset.category = 'Printer' THEN 1 ELSE 0 END) AS printer_count
+FROM 
+    dbl_users AS u
+JOIN 
+    admin_search_access AS sa 
+ON 
+    sa.user_id = u.id
+JOIN 
+    dbl_asset AS asset 
+ON 
+    asset.unit_id = sa.unit_id
+WHERE 
+    u.role_id = 2 
+    AND asset.status = 1
+    AND u.id = ?;`;
+}
+
 module.exports = {
     addNew,
     getByEmployee,
@@ -420,7 +443,8 @@ module.exports = {
     monitorCountData,
     employeeWiseAssigntotalAssetCount,
     adminDistributedAssetList,
-    adminDistributedTotalAssetList
+    adminDistributedTotalAssetList,
+    adminWiseAccessoriesData
 
 
 }

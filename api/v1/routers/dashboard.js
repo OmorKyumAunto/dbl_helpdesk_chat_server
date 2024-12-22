@@ -195,4 +195,20 @@ router.get('/employee-wise-asset-assign-count',[verifyToken], async (req, res) =
   
 });
 
+
+router.get('/admin-unit-wise-accessories',[verifyToken], async (req, res) => {
+
+  let id = req.decoded.userInfo.id
+
+  let admin_data = await assetModel.adminWiseAccessoriesData(id)
+  
+    return res.status(200).send({
+      success: false,
+      status: 200,
+      message: "Admin unit wise accessories count.",
+      data: admin_data[0]
+    });
+  
+});
+
 module.exports = router;  

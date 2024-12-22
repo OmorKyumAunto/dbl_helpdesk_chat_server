@@ -484,6 +484,16 @@ let getDistributedData = async (id = 0) => {
   });
 }
 
+// admin wise accessories data
+let adminWiseAccessoriesData = async (user_id) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(queries.adminWiseAccessoriesData(),[user_id], (error, result, fields) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+  });
+}
+
 module.exports = {
    addNew,
    getByExistsEmployee,
@@ -518,6 +528,7 @@ module.exports = {
    monitorCountData,
    employeeWiseAssigntotalAssetCount,
    adminDistributedAssetList,
-   adminDistributedAssetTotalList
+   adminDistributedAssetTotalList,
+   adminWiseAccessoriesData
    
 }

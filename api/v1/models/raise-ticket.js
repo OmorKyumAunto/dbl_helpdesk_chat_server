@@ -276,6 +276,16 @@ let getTopSolvedTicketList = async () => {
     });
 }
 
+
+let priorityBaseTicketList = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.priorityBaseTicketList(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 module.exports = {
     getList,
     getActiveList,
@@ -305,6 +315,7 @@ module.exports = {
     getTicketTotalUnsolved,
     getTicketTotalForward,
     getTicketTotalInprocess,
-    getTopSolvedTicketList
+    getTopSolvedTicketList,
+    priorityBaseTicketList
 }
 

@@ -423,6 +423,28 @@ let getTopSolvedTicketList = () => {
 
 
 
+let priorityBaseTicketList = () => {
+    return `
+        SELECT 
+            tc.id AS category_id,
+            tc.title AS category_title,
+            COUNT(rt.id) AS ticket_count
+        FROM 
+            dbl_ticket_category AS tc
+        LEFT JOIN 
+            dbl_raise_ticket AS rt 
+        ON 
+            tc.id = rt.category_id
+        WHERE 
+            tc.status = 'active'
+        GROUP BY 
+            tc.id, tc.title
+        ORDER BY 
+            ticket_count DESC;
+    `;
+}
+
+
 module.exports = {
     getList,
     getActiveList,
@@ -453,6 +475,7 @@ module.exports = {
     getTicketTotalUnsolved,
     getTicketTotalForward,
     getTicketTotalInprocess,
-    getTopSolvedTicketList
+    getTopSolvedTicketList,
+    priorityBaseTicketList
 
 }

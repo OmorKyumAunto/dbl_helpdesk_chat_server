@@ -79,14 +79,14 @@ let employeeWiseAssigntotalAssetCount = () => {
 let getTotalList = (key, unit, type,location) => {
   let searchCondition = '';
 
+  if (key) {
+    searchCondition += `AND (LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) LIKE LOWER('%${key}%') OR UPPER(serial_number) LIKE UPPER('%${key}%') OR UPPER(po_number) LIKE UPPER('%${key}%')) `;
+  }
   if (unit) {
     searchCondition += `AND unit_id = '${unit}' `;
   }
   if (location) {
     searchCondition += `AND location LIKE '%${location}%' `;
-  }
-  if (key) {
-      searchCondition += `AND (LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) LIKE LOWER('%${key}%') OR UPPER(serial_number) LIKE UPPER('%${key}%') OR UPPER(po_number) LIKE UPPER('%${key}%')) `;
   }
 
   if (type) {

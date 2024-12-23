@@ -59,5 +59,29 @@ router.get('/top-solve-ticket', [verifyToken, routeAccessChecker("topSolvedTicke
 });
 
 
+router.get('/priority-base-ticket', [verifyToken, routeAccessChecker("priorityBaseTicket")], async (req, res) => {
+    // Fetch data
+    let data = await raiseTicketModel.priorityBaseTicketList();
+    
+    // Calculate total ticket count
+    const totalTickets = data.reduce((sum, item) => sum + item.ticket_count, 0);
+
+    // Calculate percentage for each category
+    const result = data.map(item => ({
+        category_id: item.category_id,
+        category_title: item.category_title,
+        ticket_count: item.ticket_count,
+        percentage: totalTickets > 0 ? ((item.ticket_count / totalTickets) * 100).toFixed(0) : "0" 
+    }));
+
+    return res.status(200).send({
+        success: true,
+        status: 200,
+        message: "Priority base ticket data count.",
+        data: result,
+    });
+});
+
+
 
 module.exports = router;

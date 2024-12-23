@@ -255,10 +255,14 @@ let getHTMLBody = async (name = "", asset_name = "", type = "", asset_serial_num
 </style>`
 }
 
-
-const rendomGenerator = ()=>{
- return otpGenerator.generate(6, { upperCaseAlphabets: true, digits: true });
-}
+const rendomGenerator = () => {
+  return otpGenerator.generate(6, { 
+      digits: true, 
+      upperCaseAlphabets: false, 
+      lowerCaseAlphabets: false, 
+      specialChars: false 
+  });
+};
 
 
 module.exports = {

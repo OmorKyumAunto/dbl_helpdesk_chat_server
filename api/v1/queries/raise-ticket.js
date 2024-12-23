@@ -220,26 +220,31 @@ let getAllListUserWise = (id, key = '', priority = '', status = '', offset, limi
     const paginationClause = `LIMIT ${limit} OFFSET ${offset}`;
 
     return `
-        SELECT 
-            rt.*,  
-            au.title AS unit_name, 
-            tc.title AS category_name,
-            ass.name AS asset_name,
-            ass.category AS asset_category,
-            ass.serial_number AS serial_number
-        FROM 
-            dbl_raise_ticket AS rt
-        JOIN 
-            dbl_asset_unit AS au ON au.id = rt.unit_id 
-        JOIN 
-            dbl_ticket_category AS tc ON tc.id = rt.category_id 
-        LEFT JOIN 
-            dbl_asset AS ass ON ass.id = rt.asset_id
-        ${whereClause}
-        ORDER BY 
-            rt.id DESC
-        ${paginationClause};
-    `;
+    SELECT 
+        rt.*,  
+        au.title AS unit_name, 
+        tc.title AS category_name,
+        ass.name AS asset_name,
+        ass.category AS asset_category,
+        ass.serial_number AS serial_number,
+        u.name AS ticket_solved_employee_name,
+        u.employee_id AS ticket_solved_employee_id
+    FROM 
+        dbl_raise_ticket AS rt
+    JOIN 
+        dbl_asset_unit AS au ON au.id = rt.unit_id 
+    JOIN 
+        dbl_ticket_category AS tc ON tc.id = rt.category_id 
+    LEFT JOIN 
+        dbl_asset AS ass ON ass.id = rt.asset_id
+    LEFT JOIN 
+        dbl_users AS u ON u.id = rt.solved_by
+    ${whereClause}
+    ORDER BY 
+        rt.id DESC
+    ${paginationClause};
+`;
+
 };
 
 

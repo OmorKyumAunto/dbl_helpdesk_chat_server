@@ -193,33 +193,6 @@ try {
 
    let getUnitAndCategoryMatchEmail = await raiseTicketModel.getUnitAndCategoryWiseEmail(reqData.unit_id,reqData.category_id)
 
-   //let getUnitAndCategoryMatchEmail = [{email:'omorkyumaunto16@gmail.com'},{email:'omor.aunto@jtml-dbl.com'}]
-
-//    let ccData
-//    if(reqData.cc){
-//     let ccEmail = await userModel.getById(parseInt(reqData.cc));
-//     if(ccEmail.length){
-//         ccData = {
-//             supervisor_name : ccEmail[0]?.name || "",
-//             supervisor_email : ccEmail[0]?.email || "",
-//             ticket_id : reqData.ticket_id,
-//             subject : reqData.subject,
-//             priority: reqData.priority.charAt(0).toUpperCase() + reqData.priority.slice(1).toLowerCase(),
-//             unit_name : unit[0].title,
-//             created_by : user[0].name,
-//             created_employee_id : user[0].employee_id,
-//         }
-//         reqData.cc = ccEmail[0].email
-//     }else{
-//         return res.status(404).send({
-//             "success": false,
-//             "status": 404,
-//             "message": "CC user not found",
-
-//         });
-//     }
-   
-//    }
     let ccData = null; 
 
     if (reqData.cc) {
@@ -342,6 +315,22 @@ router.put('/admin-update-status/:id', [verifyToken, routeAccessChecker("adminUp
 
         });
     }
+
+
+    const solvedBy = Number(checkIsAlreadySolved[0].solved_by);
+    const adminId = Number(admin_id);
+
+    if(checkIsAlreadySolved[0].ticket_status === 'inprocess')
+        if (
+            solvedBy && 
+            solvedBy !== adminId 
+        ) {
+            return res.status(400).send({
+                success: false,
+                status: 400,
+                message: "This ticket is already booked by another admin.",
+            });
+        }
 
     let updateData = {};
 

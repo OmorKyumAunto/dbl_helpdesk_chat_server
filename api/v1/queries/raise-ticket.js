@@ -1,6 +1,7 @@
 const isEmpty = require("is-empty");
 let table_name = "dbl_raise_ticket";
 let admin_wise_ticket_view = "admin_wise_ticket";
+let super_admin_ticket_view = "super_admin_ticket_view";
 
 let getList = () => {
     return `SELECT id,location, unit_id FROM ${table_name} WHERE status = 1 ORDER BY id DESC `;
@@ -15,34 +16,6 @@ let getAllLocationDataByUnitId = () => {
 
 
 
-// let getAdminWiseTicket = (key, priority, status,offset,limit) => {
-//     let conditions = [];
-
-//     // Add conditions dynamically based on parameters
-//     if (priority) {
-//         conditions.push(`priority = '${priority}'`);
-//     }
-//     if (status) {
-//         conditions.push(`ticket_status = '${status}'`);
-//     }
-//     if (key) {
-//         conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
-//     }
-
-//     // Base condition for user_id
-//     conditions.push(`user_id = ?`);
-//     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-
-//     // Final query
-//     return `
-//         SELECT 
-//             * 
-//         FROM 
-//             ${admin_wise_ticket_view} 
-//         ${whereClause} 
-      
-//     `;
-// };
 
 let getAdminWiseTicket = (key, priority, status, offset, limit) => {
     let conditions = [];
@@ -111,11 +84,12 @@ let getAdminWiseTicketTotalCount = (key, priority, status) => {
     return query;
 };
 
-// let getSuperAdminTicket = (key,priority,status, Offset ,limit) => {
-//     return `SELECT * FROM ${admin_wise_ticket_view} `;
-// }
+
 let getSuperAdminTicket = (key, priority, status, offset, limit) => {
-    let baseQuery = `SELECT * FROM ${admin_wise_ticket_view}`;
+    let baseQuery = `
+    SELECT * FROM ${super_admin_ticket_view}
+`;
+
 
     let conditions = [];
     if (status) {
@@ -143,7 +117,7 @@ let getSuperAdminTicket = (key, priority, status, offset, limit) => {
 
 
 let getSuperAdminTicketTotalCount = (key, priority, status) => {
-    let baseQuery = `SELECT * FROM ${admin_wise_ticket_view}`;
+    let baseQuery = `SELECT * FROM ${super_admin_ticket_view}`;
 
     let conditions = [];
     if (status) {
@@ -163,43 +137,6 @@ let getSuperAdminTicketTotalCount = (key, priority, status) => {
 
 
 
-
-
-// let getAllListUserWise = (id, key = '', priority = '', status = '',offset,limit) => {
-//     let conditions = [`rt.created_by = ${id}`, `rt.status = 1`]; 
-
-//     if (priority) {
-//         conditions.push(`rt.priority = '${priority}'`);
-//     }
-//     if (status) {
-//         conditions.push(`rt.ticket_status = '${status}'`);
-//     }
-//     if (key) {
-//         conditions.push(`(rt.subject LIKE '%${key}%' OR rt.ticket_id LIKE '%${key}%')`);
-//     }
-//     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-
-//     return `
-//         SELECT 
-//             rt.*,  
-//             au.title AS unit_name, 
-//             tc.title AS category_name,
-//             ass.name AS asset_name,
-//             ass.category AS asset_category,
-//             ass.serial_number AS serial_number
-//         FROM 
-//             dbl_raise_ticket AS rt
-//         JOIN 
-//             dbl_asset_unit AS au ON au.id = rt.unit_id 
-//         JOIN 
-//             dbl_ticket_category AS tc ON tc.id = rt.category_id 
-//         LEFT JOIN 
-//             dbl_asset AS ass ON ass.id = rt.asset_id
-//         ${whereClause}
-//         ORDER BY 
-//             rt.created_at DESC;
-//     `;
-// };
 
 let getAllListUserWise = (id, key = '', priority = '', status = '', offset, limit) => {
     let conditions = [`rt.created_by = ${id}`, `rt.status = 1`]; 
@@ -445,6 +382,76 @@ let priorityBaseTicketList = () => {
 }
 
 
+
+let categoryBaseTicketList = () => {
+    return `
+           SELECT 
+            SUM(CASE WHEN priority = 'high' THEN 1 ELSE 0 END) AS priority_high,
+            SUM(CASE WHEN priority = 'low' THEN 1 ELSE 0 END) AS priority_low,
+            SUM(CASE WHEN priority = 'medium' THEN 1 ELSE 0 END) AS priority_medium,
+            SUM(CASE WHEN priority = 'urgent' THEN 1 ELSE 0 END) AS priority_urgent
+        FROM dbl_raise_ticket AS rt 
+        WHERE status = 1;
+    `
+}
+
+
+let monthWiseTicketCount = () => {
+    return `
+        SELECT 
+            COUNT(CASE WHEN status = 1 THEN id END) AS total_asset,
+            COUNT(CASE WHEN status = 1 AND ticket_status = 'solved' THEN id END) AS total_solved
+        FROM dbl_raise_ticket
+        WHERE created_at >= NOW() - INTERVAL 30 DAY;
+    `
+}
+
+
+let graphTicketTotalData = () => {
+    return `
+      SELECT 
+        MONTH(created_at) as month,
+        COUNT(id) as total_ticket 
+      FROM 
+        dbl_raise_ticket 
+      WHERE 
+        status = 1 
+        AND created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+      GROUP BY 
+        MONTH(created_at)
+      ORDER BY 
+        MONTH(created_at) DESC
+    `;
+  };
+
+let graphTicketTotalSolveData = () => {
+    return `
+      SELECT 
+        MONTH(created_at) as month,
+        COUNT(id) as total_ticket_solve 
+      FROM 
+        dbl_raise_ticket 
+      WHERE 
+        status = 1  AND ticket_status = 'solved'
+        AND created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+      GROUP BY 
+        MONTH(created_at)
+      ORDER BY 
+        MONTH(created_at) DESC
+    `;
+};
+
+
+
+let existsUnitHasAssign = () => {
+    return `SELECT * FROM admin_search_access  where  unit_id = ? `;
+}
+
+let existsCategoryHasAssign = () => {
+    return `SELECT * FROM dbl_user_category_access  where  category_id = ? `;
+}
+
+
 module.exports = {
     getList,
     getActiveList,
@@ -476,6 +483,12 @@ module.exports = {
     getTicketTotalForward,
     getTicketTotalInprocess,
     getTopSolvedTicketList,
-    priorityBaseTicketList
+    priorityBaseTicketList,
+    categoryBaseTicketList,
+    monthWiseTicketCount,
+    graphTicketTotalData,
+    graphTicketTotalSolveData,
+    existsUnitHasAssign,
+    existsCategoryHasAssign
 
 }

@@ -286,6 +286,70 @@ let priorityBaseTicketList = async () => {
     });
 }
 
+
+
+let categoryBaseTicketList = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.categoryBaseTicketList(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+let monthWiseTicketCount = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.monthWiseTicketCount(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+
+
+let graphTicketTotalData = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.graphTicketTotalData(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+let graphTicketTotalSolveData = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.graphTicketTotalSolveData(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+let existsUnitHasAssign = async (unit_id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.existsUnitHasAssign(),[unit_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+let existsCategoryHasAssign = async (category_id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.existsCategoryHasAssign(),[category_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+
 module.exports = {
     getList,
     getActiveList,
@@ -316,6 +380,12 @@ module.exports = {
     getTicketTotalForward,
     getTicketTotalInprocess,
     getTopSolvedTicketList,
-    priorityBaseTicketList
+    priorityBaseTicketList,
+    categoryBaseTicketList,
+    monthWiseTicketCount,
+    graphTicketTotalData,
+    graphTicketTotalSolveData,
+    existsUnitHasAssign,
+    existsCategoryHasAssign,
 }
 

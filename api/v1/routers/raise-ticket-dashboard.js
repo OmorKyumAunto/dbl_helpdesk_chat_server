@@ -116,7 +116,7 @@ router.get('/raise-solve-ticket', [verifyToken, routeAccessChecker("raiseSolveTi
       message: "Monthly wise raise and solve ticket.",
       data: {
           total_ticket: totalTicket,
-          total_asset_percent: totalAssetPercent,
+          total_ticket_percent: totalAssetPercent,
           total_solved: totalSolved,
           total_solved_percent: parseInt(totalSolvedPercent.toFixed(0)), 
       },

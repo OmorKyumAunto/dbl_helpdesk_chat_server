@@ -411,7 +411,7 @@ let graphTicketTotalData = () => {
     return `
       SELECT 
         MONTH(created_at) as month,
-        COUNT(id) as total_ticket 
+        COUNT(id) as raiseTickets 
       FROM 
         dbl_raise_ticket 
       WHERE 
@@ -428,7 +428,7 @@ let graphTicketTotalSolveData = () => {
     return `
       SELECT 
         MONTH(created_at) as month,
-        COUNT(id) as total_ticket_solve 
+        COUNT(id) as solvedTickets 
       FROM 
         dbl_raise_ticket 
       WHERE 

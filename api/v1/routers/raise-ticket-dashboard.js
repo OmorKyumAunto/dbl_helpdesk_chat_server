@@ -126,57 +126,62 @@ router.get('/raise-solve-ticket', [verifyToken, routeAccessChecker("raiseSolveTi
 
 
 
-router.get('/ticket-dashboard-data',[verifyToken,routeAccessChecker("ticketDashboardGraphData")], async (req, res) => {
-    try {
+router.get('/ticket-dashboard-data', [verifyToken, routeAccessChecker("ticketDashboardGraphData")], async (req, res) => {
+  try {
       let resultAssign = await raiseTicketModel.graphTicketTotalData();
       let resultTotal = await raiseTicketModel.graphTicketTotalSolveData();
+      
+      // Month names mapping
+      const monthNames = [
+          "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      ];
 
-      console.log("resultAssign",resultAssign)
-      console.log("resultTotal",resultTotal)
-  
       // Initialize an array with all months set to 0
       let data = [];
       const currentMonth = new Date().getMonth() + 1; 
       for (let i = 0; i < 12; i++) {
-        const month = (currentMonth - i + 12) % 12 || 12;
-        data.push({ 
-          month: month.toString(), 
-          total_solve: 0, 
-          total_raise: 0 
-        });
+          const month = (currentMonth - i + 12) % 12 || 12;
+          data.push({ 
+              month: month.toString(),
+              name: monthNames[month - 1], // Add month name
+              raiseTickets: 0,
+              solvedTickets: 0 
+          });
       }
-  
+
       // Populate the array with total_assign_asset data
       resultAssign.forEach(item => {
-        const monthIndex = data.findIndex(d => d.month === item.month.toString());
-        if (monthIndex !== -1) {
-          data[monthIndex].total_solve = item.total_ticket;
-        }
+          const monthIndex = data.findIndex(d => d.month === item.month.toString());
+          if (monthIndex !== -1) {
+              data[monthIndex].raiseTickets = item.raiseTickets;
+          }
       });
-  
+
       // Populate the array with total_asset data
       resultTotal.forEach(item => {
-        const monthIndex = data.findIndex(d => d.month === item.month.toString());
-        if (monthIndex !== -1) {
-          data[monthIndex].total_raise = item.total_ticket_solve;
-        }
+          const monthIndex = data.findIndex(d => d.month === item.month.toString());
+          if (monthIndex !== -1) {
+              data[monthIndex].solvedTickets = item.solvedTickets;
+          }
       });
-  
+
       return res.status(200).send({
-        success: true,
-        status: 200,
-        message: "Ticket dashboard data.",
-        data: data.reverse(),
+          success: true,
+          status: 200,
+          message: "Ticket dashboard data.",
+          data: data.reverse(),
       });
-    } catch (error) {
+  } catch (error) {
       return res.status(500).send({
-        success: false,
-        status: 500,
-        message: "An error occurred while fetching dashboard graph data.",
-        error: error.message,
+          success: false,
+          status: 500,
+          message: "An error occurred while fetching dashboard graph data.",
+          error: error.message,
       });
-    }
-  });
+  }
+});
+
   
 
 module.exports = router;

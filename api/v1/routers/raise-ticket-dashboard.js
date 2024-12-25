@@ -103,19 +103,19 @@ router.get('/raise-solve-ticket', [verifyToken, routeAccessChecker("raiseSolveTi
   let data = await raiseTicketModel.monthWiseTicketCount();
 
   // Extract counts
-  let totalAsset = data[0]?.total_asset || 0; 
+  let totalTicket = data[0]?.total_ticket || 0; 
   let totalSolved = data[0]?.total_solved || 0; 
 
   // Calculate percentages
   let totalAssetPercent = 100; // Always 100%
-  let totalSolvedPercent = ((totalSolved / totalAsset) * 100) || 0; 
+  let totalSolvedPercent = ((totalSolved / totalTicket) * 100) || 0; 
 
   return res.status(200).send({
       success: true,
       status: 200,
       message: "Monthly wise raise and solve ticket.",
       data: {
-          total_asset: totalAsset,
+          total_ticket: totalTicket,
           total_asset_percent: totalAssetPercent,
           total_solved: totalSolved,
           total_solved_percent: parseInt(totalSolvedPercent.toFixed(0)), 

@@ -391,12 +391,12 @@ router.get('/raise-ticket', [verifyToken, routeAccessChecker("allRaiseTicketList
    let { key = '',priority = '',status = '', offset = 0,limit = 10} = req.query
 
     let result = await raiseTicketModel.getSuperAdminTicket(key,priority,status,offset,limit)
-    let toalResult = await raiseTicketModel.getSuperAdminTicketTotalCount(key,priority,status)
+    let totalResult = await raiseTicketModel.getSuperAdminTicketTotalCount(key,priority,status)
     return res.status(200).send({
         success: true,
         status: 200,
         message: "Super admin raise ticket List.",
-        total: toalResult.length,
+        total: totalResult.length,
         data: result,
     });
 
@@ -667,6 +667,18 @@ router.post('/ticket-forword/:id', [verifyToken, routeAccessChecker("ticketForwo
 
         });
     }
+
+    
+    let existsAdmin = await raiseTicketModel.existsUnitHasAssign(reqData.unit_id);
+    let existsCategoryAdmin = await raiseTicketModel.existsCategoryHasAssign(reqData.category_id);
+    if (!existsAdmin.length && !existsCategoryAdmin.length) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "This Unit and category under not has any admin.",
+        });
+    }
+
  
     let user = await userModel.getById(id)
 

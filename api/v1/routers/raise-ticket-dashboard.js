@@ -84,4 +84,99 @@ router.get('/priority-base-ticket', [verifyToken, routeAccessChecker("priorityBa
 
 
 
+
+router.get('/category-base-ticket', [verifyToken, routeAccessChecker("categoryWisePriorityCount")], async (req, res) => {
+    // Fetch data
+    let data = await raiseTicketModel.categoryBaseTicketList();
+    
+    return res.status(200).send({
+        success: true,
+        status: 200,
+        message: "Category base ticket data count.",
+        data: data[0],
+    });
+});
+
+
+router.get('/raise-solve-ticket', [verifyToken, routeAccessChecker("raiseSolveTicketMOnthlyCount")], async (req, res) => {
+  // Fetch data
+  let data = await raiseTicketModel.monthWiseTicketCount();
+
+  // Extract counts
+  let totalAsset = data[0]?.total_asset || 0; 
+  let totalSolved = data[0]?.total_solved || 0; 
+
+  // Calculate percentages
+  let totalAssetPercent = 100; // Always 100%
+  let totalSolvedPercent = ((totalSolved / totalAsset) * 100) || 0; 
+
+  return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Monthly wise raise and solve ticket.",
+      data: {
+          total_asset: totalAsset,
+          total_asset_percent: totalAssetPercent,
+          total_solved: totalSolved,
+          total_solved_percent: parseInt(totalSolvedPercent.toFixed(0)), 
+      },
+  });
+});
+
+
+
+
+router.get('/ticket-dashboard-data',[verifyToken,routeAccessChecker("ticketDashboardGraphData")], async (req, res) => {
+    try {
+      let resultAssign = await raiseTicketModel.graphTicketTotalData();
+      let resultTotal = await raiseTicketModel.graphTicketTotalSolveData();
+
+      console.log("resultAssign",resultAssign)
+      console.log("resultTotal",resultTotal)
+  
+      // Initialize an array with all months set to 0
+      let data = [];
+      const currentMonth = new Date().getMonth() + 1; 
+      for (let i = 0; i < 12; i++) {
+        const month = (currentMonth - i + 12) % 12 || 12;
+        data.push({ 
+          month: month.toString(), 
+          total_solve: 0, 
+          total_raise: 0 
+        });
+      }
+  
+      // Populate the array with total_assign_asset data
+      resultAssign.forEach(item => {
+        const monthIndex = data.findIndex(d => d.month === item.month.toString());
+        if (monthIndex !== -1) {
+          data[monthIndex].total_solve = item.total_ticket;
+        }
+      });
+  
+      // Populate the array with total_asset data
+      resultTotal.forEach(item => {
+        const monthIndex = data.findIndex(d => d.month === item.month.toString());
+        if (monthIndex !== -1) {
+          data[monthIndex].total_raise = item.total_ticket_solve;
+        }
+      });
+  
+      return res.status(200).send({
+        success: true,
+        status: 200,
+        message: "Ticket dashboard data.",
+        data: data.reverse(),
+      });
+    } catch (error) {
+      return res.status(500).send({
+        success: false,
+        status: 500,
+        message: "An error occurred while fetching dashboard graph data.",
+        error: error.message,
+      });
+    }
+  });
+  
+
 module.exports = router;

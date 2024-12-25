@@ -31,7 +31,7 @@ let superAdminPermission = [
 "assignCategory","beforeAssignList","afterAssignList","categoryAssignUpdate",
 "allRaiseTicketList",
 "ticketForworded","ticketForwordedList",
-"TicketDashboardCountData","ticketDelete","topSolvedTicketData","priorityBaseTicket"
+"TicketDashboardCountData","ticketDelete","topSolvedTicketData","priorityBaseTicket","categoryWisePriorityCount","raiseSolveTicketMOnthlyCount","ticketDashboardGraphData",
 ];
 
 let adminPermission = [
@@ -70,7 +70,7 @@ let adminPermission = [
 "adminWiseTicketList","ticketDetails",
 "ticketComment","ticketCommentEdit",
 "ticketForworded","ticketForwordedList",
-"TicketDashboardCountData","topSolvedTicketData","priorityBaseTicket"
+"TicketDashboardCountData","topSolvedTicketData","priorityBaseTicket","categoryWisePriorityCount","raiseSolveTicketMOnthlyCount","ticketDashboardGraphData",
 ];
 
 let employeePermission = [
@@ -105,7 +105,7 @@ let employeePermission = [
 "ticketCategoryActiveList",
 "raiseTicket","userWiseTicket","ticketDetails",
 "ticketComment","ticketCommentEdit","ticketForwordedList",
-"TicketDashboardCountData","topSolvedTicketData"
+"TicketDashboardCountData","topSolvedTicketData","categoryWisePriorityCount","raiseSolveTicketMOnthlyCount","ticketDashboardGraphData",
 ];
 
 

@@ -33,10 +33,16 @@ router.get('/dashboard-data',[verifyToken,routeAccessChecker("dashboardData")], 
   
 });
 
-router.get('/dashboard-graph-data',[verifyToken,routeAccessChecker("dashboardGraphData")], async (req, res) => {
+router.get('/dashboard-graph-data', [verifyToken, routeAccessChecker("dashboardGraphData")], async (req, res) => {
   try {
     let resultAssign = await assetModel.getListOfDashboardGraph();
     let resultTotal = await assetModel.getListOfDashboardGraph2();
+
+    // Month names mapping
+    const monthNames = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
 
     // Initialize an array with all months set to 0
     let data = [];
@@ -44,7 +50,8 @@ router.get('/dashboard-graph-data',[verifyToken,routeAccessChecker("dashboardGra
     for (let i = 0; i < 12; i++) {
       const month = (currentMonth - i + 12) % 12 || 12;
       data.push({ 
-        month: month.toString(), 
+        month: month.toString(),
+        name: monthNames[month - 1], // Add month name here
         total_assign_asset: 0, 
         total_asset: 0 
       });
@@ -81,6 +88,7 @@ router.get('/dashboard-graph-data',[verifyToken,routeAccessChecker("dashboardGra
     });
   }
 });
+
 
 
 router.get('/accessories-count', async (req, res) => {

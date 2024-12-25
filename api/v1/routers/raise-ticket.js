@@ -671,13 +671,22 @@ router.post('/ticket-forword/:id', [verifyToken, routeAccessChecker("ticketForwo
     
     let existsAdmin = await raiseTicketModel.existsUnitHasAssign(reqData.unit_id);
     let existsCategoryAdmin = await raiseTicketModel.existsCategoryHasAssign(reqData.category_id);
-    if (!existsAdmin.length && !existsCategoryAdmin.length) {
+    if (!existsAdmin.length) {
         return res.status(404).send({
             "success": false,
             "status": 404,
             "message": "This Unit and category under not has any admin.",
         });
     }
+
+    if (!existsCategoryAdmin.length) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "This Unit and category under not has any admin.",
+        });
+    }
+
 
  
     let user = await userModel.getById(id)

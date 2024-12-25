@@ -399,7 +399,7 @@ let categoryBaseTicketList = () => {
 let monthWiseTicketCount = () => {
     return `
         SELECT 
-            COUNT(CASE WHEN status = 1 THEN id END) AS total_asset,
+            COUNT(CASE WHEN status = 1 THEN id END) AS total_ticket,
             COUNT(CASE WHEN status = 1 AND ticket_status = 'solved' THEN id END) AS total_solved
         FROM dbl_raise_ticket
         WHERE created_at >= NOW() - INTERVAL 30 DAY;

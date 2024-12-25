@@ -59,7 +59,7 @@ router.get('/top-solve-ticket', [verifyToken, routeAccessChecker("topSolvedTicke
 });
 
 
-router.get('/priority-base-ticket', [verifyToken, routeAccessChecker("priorityBaseTicket")], async (req, res) => {
+router.get('/category-base-ticket', [verifyToken, routeAccessChecker("priorityBaseTicket")], async (req, res) => {
     // Fetch data
     let data = await raiseTicketModel.priorityBaseTicketList();
     
@@ -77,7 +77,7 @@ router.get('/priority-base-ticket', [verifyToken, routeAccessChecker("priorityBa
     return res.status(200).send({
         success: true,
         status: 200,
-        message: "Priority base ticket data count.",
+        message: "Category base ticket data count.",
         data: result,
     });
 });
@@ -85,14 +85,14 @@ router.get('/priority-base-ticket', [verifyToken, routeAccessChecker("priorityBa
 
 
 
-router.get('/category-base-ticket', [verifyToken, routeAccessChecker("categoryWisePriorityCount")], async (req, res) => {
+router.get('/priority-base-ticket', [verifyToken, routeAccessChecker("categoryWisePriorityCount")], async (req, res) => {
     // Fetch data
     let data = await raiseTicketModel.categoryBaseTicketList();
     
     return res.status(200).send({
         success: true,
         status: 200,
-        message: "Category base ticket data count.",
+        message: "Priority base ticket data count.",
         data: data[0],
     });
 });

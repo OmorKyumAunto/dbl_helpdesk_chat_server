@@ -473,7 +473,7 @@ let getSuperAdminTicketReport = (key, priority, category, unit, status,from_date
         conditions.push(`priority = '${priority}'`);
     }
     if (category) {
-        conditions.push(`ticket_category_title = '${category}'`);
+        conditions.push(`ticket_category_id = '${category}'`);
     }
     if (from_date && to_date) {
         conditions.push(`ticket_created_at BETWEEN '${from_date} 00:00:00' AND '${to_date} 23:59:59'`);
@@ -528,7 +528,7 @@ let getSuperAdminTicketReportTotalCount = (key, priority, category, unit,status 
         conditions.push(`priority = '${priority}'`);
     }
     if (category) {
-        conditions.push(`ticket_category_title = '${category}'`);
+        conditions.push(`ticket_category_id = '${category}'`);
     }
     if (from_date && to_date) {
         conditions.push(`ticket_created_at BETWEEN '${from_date} 00:00:00' AND '${to_date} 23:59:59'`);

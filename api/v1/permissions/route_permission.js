@@ -32,6 +32,7 @@ let superAdminPermission = [
 "allRaiseTicketList",
 "ticketForworded","ticketForwordedList",
 "TicketDashboardCountData","ticketDelete","topSolvedTicketData","priorityBaseTicket","categoryWisePriorityCount","raiseSolveTicketMOnthlyCount","ticketDashboardGraphData",
+"superAdminTicketReport"
 ];
 
 let adminPermission = [

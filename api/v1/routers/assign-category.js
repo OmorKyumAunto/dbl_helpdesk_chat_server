@@ -124,7 +124,6 @@ router.post('/:id', [verifyToken, routeAccessChecker("assignCategory")], async (
 
 
 router.post('/assign-update/:id', [verifyToken, routeAccessChecker("categoryAssignUpdate")], async (req, res) => {
-
     const id = req.params.id
     let reqData = {
         "category_id": req.body.category_id
@@ -384,6 +383,91 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("ticketCategory
     });
 
 });
+
+
+
+
+// router.post('/:id', [verifyToken, routeAccessChecker("assignCategory")], async (req, res) => {
+//     console.log("first")
+//     const id = req.params.id; // User ID
+//     let reqData = {
+//         "category_id": req.body.category_id // Array of category IDs
+//     };
+
+//     let current_date = new Date();
+//     let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+//     reqData.created_at = current_time;
+
+//     // Validate user existence
+//     let result = await userModel.getById(id);
+//     if (isEmpty(result)) {
+//         return res.status(404).send({
+//             success: false,
+//             status: 404,
+//             message: "User data not found."
+//         });
+//     }
+
+//     if (!Array.isArray(reqData.category_id)) {
+//         return res.status(400).send({
+//             success: false,
+//             status: 400,
+//             message: "Category should be an array."
+//         });
+//     }
+
+//     // Fetch all existing assigned categories for the user
+//     let existingCategories = await assignCategoryModel.getByUserId(id);
+//     let existingCategoryIds = existingCategories.map(item => item.category_id);
+
+//     // Find new categories to add and old categories to remove
+//     let categoriesToAdd = reqData.category_id.filter(catId => !existingCategoryIds.includes(catId));
+//     let categoriesToRemove = existingCategoryIds.filter(catId => !reqData.category_id.includes(catId));
+
+//     // Remove categories that are no longer assigned
+//     if (categoriesToRemove.length > 0) {
+//         let deleteResult = await assignCategoryModel.deleteByUserAndCategories(id, categoriesToRemove);
+//         if (!deleteResult.affectedRows) {
+//             return res.status(500).send({
+//                 success: false,
+//                 status: 500,
+//                 message: "Failed to remove unselected categories."
+//             });
+//         }
+//     }
+
+//     // Add new categories
+//     for (let categoryId of categoriesToAdd) {
+//         let unitData = await ticketCategoryModel.getById(categoryId);
+//         if (isEmpty(unitData)) {
+//             return res.status(404).send({
+//                 success: false,
+//                 status: 404,
+//                 message: `Ticket category ${categoryId} not found.`
+//             });
+//         }
+
+//         let data = {
+//             user_id: id,
+//             category_id: categoryId,
+//             created_at: reqData.created_at,
+//         };
+//         let createData = await assignCategoryModel.addNew(data);
+//         if (!createData.affectedRows) {
+//             return res.status(500).send({
+//                 success: false,
+//                 status: 500,
+//                 message: "Failed to assign new category."
+//             });
+//         }
+//     }
+
+//     return res.status(200).send({
+//         success: true,
+//         status: 200,
+//         message: "Ticket category access updated successfully."
+//     });
+// });
 
 
 

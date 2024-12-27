@@ -168,6 +168,27 @@ let getDetailsByIdAndWhereIn = async (expertTypeId = []) => {
 }
 
 
+
+let deleteByUserAndCategories = async (userId = 0, categoryIds = []) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.deleteByUserAndCategories(), [userId,categoryIds], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+
+let getByUserId = async (userId = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByUserId(), [userId], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 module.exports = {
     getList,
     getActiveList,
@@ -180,6 +201,8 @@ module.exports = {
     getOnlyDataList,
     getByIdAndUser,
     getBeforeCategoryAssignList,
-    getAfterCategoryAssignList
+    getAfterCategoryAssignList,
+    deleteByUserAndCategories,
+    getByUserId
 }
 

@@ -452,6 +452,111 @@ let existsCategoryHasAssign = () => {
 }
 
 
+
+let getSuperAdminTicketReport = (key, priority, category, unit, status,from_date, to_date, offset, limit) => {
+    let baseQuery = `
+    SELECT ticket_table_id, ticket_id, ticket_status ,subject, priority, ticket_category_title, asset_serial_number,
+    ticket_created_employee_name, ticket_created_employee_id,
+    ticket_solved_employee_name, ticket_solved_employee_id, asset_unit_title, ticket_updated_at, asset_unit_id,ticket_created_at
+    FROM super_admin_ticket_view
+    `;
+
+    let conditions = [];
+
+    if (unit) {
+        conditions.push(`asset_unit_id = '${unit}'`);
+    }
+    if (status) {
+        conditions.push(`ticket_status = '${status}'`);
+    }
+    if (priority) {
+        conditions.push(`priority = '${priority}'`);
+    }
+    if (category) {
+        conditions.push(`ticket_category_title = '${category}'`);
+    }
+    if (from_date && to_date) {
+        conditions.push(`ticket_created_at BETWEEN '${from_date} 00:00:00' AND '${to_date} 23:59:59'`);
+    }
+    if (key) {
+        conditions.push(`(
+            subject LIKE '%${key}%' 
+            OR ticket_id LIKE '%${key}%' 
+            OR ticket_solved_employee_name LIKE '%${key}%' 
+            OR ticket_created_employee_name LIKE '%${key}%' 
+            OR ticket_solved_employee_id LIKE '%${key}%' 
+            OR ticket_created_employee_id LIKE '%${key}%'
+        )`);
+    }
+    if (from_date && to_date) {
+        conditions.push(`ticket_updated_at BETWEEN '${from_date}' AND '${to_date}'`);
+    }
+
+    if (conditions.length > 0) {
+        baseQuery += " WHERE " + conditions.join(" AND ");
+    }
+
+    if (limit) {
+        baseQuery += ` LIMIT ${limit}`;
+    }
+    if (offset) {
+        baseQuery += ` OFFSET ${offset}`;
+    }
+
+    return baseQuery;
+};
+
+
+let getSuperAdminTicketReportTotalCount = (key, priority, category, unit,status ,from_date, to_date) => {
+    
+    let baseQuery = `
+    SELECT ticket_table_id, ticket_id, ticket_status,subject, priority, ticket_category_title, asset_serial_number,
+    ticket_created_employee_name, ticket_created_employee_id,
+    ticket_solved_employee_name, ticket_solved_employee_id, asset_unit_title, ticket_updated_at, asset_unit_id,ticket_created_at
+    FROM super_admin_ticket_view
+    `;
+
+    let conditions = [];
+
+    if (unit) {
+        conditions.push(`asset_unit_id = '${unit}'`);
+    }
+    if (status) {
+        conditions.push(`ticket_status = '${status}'`);
+    }
+    if (priority) {
+        conditions.push(`priority = '${priority}'`);
+    }
+    if (category) {
+        conditions.push(`ticket_category_title = '${category}'`);
+    }
+    if (from_date && to_date) {
+        conditions.push(`ticket_created_at BETWEEN '${from_date} 00:00:00' AND '${to_date} 23:59:59'`);
+    }
+    if (key) {
+        conditions.push(`(
+            subject LIKE '%${key}%' 
+            OR ticket_id LIKE '%${key}%' 
+            OR ticket_solved_employee_name LIKE '%${key}%' 
+            OR ticket_created_employee_name LIKE '%${key}%' 
+            OR ticket_solved_employee_id LIKE '%${key}%' 
+            OR ticket_created_employee_id LIKE '%${key}%'
+        )`);
+    }
+    if (from_date && to_date) {
+        conditions.push(`ticket_updated_at BETWEEN '${from_date}' AND '${to_date}'`);
+    }
+
+    if (conditions.length > 0) {
+        baseQuery += " WHERE " + conditions.join(" AND ");
+    }
+
+    return baseQuery;
+};
+
+
+
+
 module.exports = {
     getList,
     getActiveList,
@@ -489,6 +594,8 @@ module.exports = {
     graphTicketTotalData,
     graphTicketTotalSolveData,
     existsUnitHasAssign,
-    existsCategoryHasAssign
+    existsCategoryHasAssign,
+    getSuperAdminTicketReport,
+    getSuperAdminTicketReportTotalCount
 
 }

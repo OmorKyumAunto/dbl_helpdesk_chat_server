@@ -198,6 +198,22 @@ let getDetailsByIdAndWhereIn = () => {
     return `SELECT id,name,status FROM ${table_name} where  id IN (?) and status = 1`;
 }
 
+let getByUserId = () => {
+    // return `SELECT id,name,status FROM ${table_name} where  id IN (?) and status = 1`;
+    return `SELECT category_id FROM ${table_name} WHERE user_id = ?`
+}
+let deleteByUserAndCategories = () => {
+    // return `SELECT id,name,status FROM ${table_name} where  id IN (?) and status = 1`;
+    return `DELETE FROM ${table_name} WHERE user_id = ? AND category_id IN (?)`;
+}
+
+// async getByUserId(userId) {
+//     return db.query('SELECT category_id FROM assign_categories WHERE user_id = ?', [userId]);
+// }
+
+// async deleteByUserAndCategories(userId, categoryIds) {
+//     return db.query('DELETE FROM assign_categories WHERE user_id = ? AND category_id IN (?)', [userId, categoryIds]);
+// }
 
 
 
@@ -213,6 +229,8 @@ module.exports = {
     getOnlyDataList,
     getByIdAndUser,
     getBeforeCategoryAssignList,
-    getAfterCategoryAssignList
+    getAfterCategoryAssignList,
+    getByUserId,
+    deleteByUserAndCategories
 
 }

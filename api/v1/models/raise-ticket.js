@@ -349,6 +349,25 @@ let existsCategoryHasAssign = async (category_id = 0) => {
 }
 
 
+let getSuperAdminTicketReport = async (key,priority,category,unit,status, form_date,to_date,offset,limit)=>{
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getSuperAdminTicketReport(key,priority,category,unit,status, form_date,to_date,offset,limit), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+let getSuperAdminTicketReportTotalCount = async (key,priority,category,unit,status,form_date,to_date)=>{
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getSuperAdminTicketReportTotalCount(key,priority,category,unit,status,form_date,to_date), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 
 module.exports = {
     getList,
@@ -387,5 +406,7 @@ module.exports = {
     graphTicketTotalSolveData,
     existsUnitHasAssign,
     existsCategoryHasAssign,
+    getSuperAdminTicketReport,
+    getSuperAdminTicketReportTotalCount
 }
 

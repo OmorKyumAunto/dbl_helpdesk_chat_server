@@ -11,6 +11,7 @@ const ticketForwordModel = require('../models/ticket-forword')
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const moment = require("moment");
+const path = require('path');
 //const multer = require('multer');
 //const upload = multer();
 const common = require('../common/common');
@@ -71,7 +72,7 @@ router.post('/',[verifyToken,routeAccessChecker("raiseTicket"),upload.single('at
 try {               
    
     if (req.file) {
-        req.body.attachment = req.file.path; 
+        req.body.attachment = path.basename(req.file.path);
     } else {
         req.body.attachment = null; 
     }
@@ -320,7 +321,7 @@ router.put('/admin-update-status/:id', [verifyToken, routeAccessChecker("adminUp
     const solvedBy = Number(checkIsAlreadySolved[0].solved_by);
     const adminId = Number(admin_id);
 
-    if(checkIsAlreadySolved[0].ticket_status === 'inprocess')
+    if(checkIsAlreadySolved[0].ticket_status === 'inprogress')
         if (
             solvedBy && 
             solvedBy !== adminId 
@@ -792,48 +793,6 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("ticketDelete")], 
 
 });
 
-
-// router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeLocationStatus")], async (req, res) => {
-
-//     let id = req.params.id
-
-//     let current_date = new Date(); 
-//     let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
-
-//     let existingDataById = await locationModel.getByNonDeleteData(id);
-//     if (isEmpty(existingDataById)) {
-//         return res.status(404).send({
-//             "success": false,
-//             "status": 404,
-//             "message": "No data found",
-
-//         });
-//     }
-
-//     let data = {
-//         status: existingDataById[0].status == 1 ? 2 : 1,
-//         updated_at: current_time
-//     }
-
-//     let result = await locationModel.updateById(id, data);
-
-
-//     if (result.affectedRows == undefined || result.affectedRows < 1) {
-//         return res.status(500).send({
-//             "success": true,
-//             "status": 500,
-//             "message": "Something Wrong in system database."
-//         });
-//     }
-
-
-//     return res.status(200).send({
-//         "success": true,
-//         "status": 200,
-//         "message": "Location status has successfully changed."
-//     });
-
-// });
 
 
 

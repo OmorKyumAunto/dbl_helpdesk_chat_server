@@ -331,8 +331,8 @@ let getTicketTotalUnsolved = () => {
 let getTicketTotalForward = () => {
     return `SELECT count(id) as total_forward FROM ${table_name} where ticket_status = 'forward' and status = 1`; 
 }
-let getTicketTotalInprocess = () => {
-    return `SELECT count(id) as total_inprocess FROM ${table_name} where ticket_status = 'inprocess' and status = 1`; 
+let getTicketTotalInprogress = () => {
+    return `SELECT count(id) as total_inprogress FROM ${table_name} where ticket_status = 'inprogress' and status = 1`; 
 }
 
 let getTopSolvedTicketList = () => {
@@ -481,7 +481,7 @@ module.exports = {
     getTicketTotalSolved,
     getTicketTotalUnsolved,
     getTicketTotalForward,
-    getTicketTotalInprocess,
+    getTicketTotalInprogress,
     getTopSolvedTicketList,
     priorityBaseTicketList,
     categoryBaseTicketList,

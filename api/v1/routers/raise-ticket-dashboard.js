@@ -27,14 +27,14 @@ router.get('/count-data', [verifyToken, routeAccessChecker("TicketDashboardCount
     const total_solved = await raiseTicketModel.getTicketTotalSolved()
     const total_unsolved = await raiseTicketModel.getTicketTotalUnsolved()
     const total_forward = await raiseTicketModel.getTicketTotalForward()
-    const total_inprocess = await raiseTicketModel.getTicketTotalInprocess()
+    const total_inprogress = await raiseTicketModel.getTicketTotalInprogress()
 
     const data = {
         total_ticket: total_ticket[0]?.total_ticket || 0,
         total_solve: total_solved[0]?.total_solved || 0,
         total_unsolved: total_unsolved[0]?.total_unsolved || 0,
         total_forward: total_forward[0]?.total_forward || 0,
-        total_inprocess: total_inprocess[0]?.total_inprocess || 0,
+        total_inprogress: total_inprogress[0]?.total_inprogress || 0,
     };
 
     return res.status(200).send({

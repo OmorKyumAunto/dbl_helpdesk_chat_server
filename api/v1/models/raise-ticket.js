@@ -257,9 +257,9 @@ let getTicketTotalForward = async () => {
     });
 }
 
-let getTicketTotalInprocess = async () => {
+let getTicketTotalInprogress = async () => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getTicketTotalInprocess(), (error, result, fields) => {
+        connectionDblystem.query(queries.getTicketTotalInprogress(), (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -378,7 +378,7 @@ module.exports = {
     getTicketTotalSolved,
     getTicketTotalUnsolved,
     getTicketTotalForward,
-    getTicketTotalInprocess,
+    getTicketTotalInprogress,
     getTopSolvedTicketList,
     priorityBaseTicketList,
     categoryBaseTicketList,

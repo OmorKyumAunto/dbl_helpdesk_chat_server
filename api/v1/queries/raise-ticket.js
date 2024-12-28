@@ -337,6 +337,29 @@ let getTicketTotalInprogress = () => {
     return `SELECT count(id) as total_inprogress FROM ${table_name} where ticket_status = 'inprogress' and status = 1`; 
 }
 
+
+
+
+let ticketAdminCountingData = () => {
+    return `SELECT count(ticket_table_id) as total_ticket FROM ${admin_wise_ticket_view} where user_id = ? `; 
+}
+let getAdminTicketTotalSolved = () => {
+    return `SELECT count(ticket_table_id) as total_solved FROM ${admin_wise_ticket_view} where ticket_status = 'solved' and user_id = ? `; 
+}
+
+let getAdminTicketTotalUnsolved = () => {
+    return `SELECT count(ticket_table_id) as total_unsolved FROM ${admin_wise_ticket_view} where ticket_status = 'unsolved' and user_id = ? `; 
+}
+
+let getAdminTicketTotalForward = () => {
+    return `SELECT count(ticket_table_id) as total_forward FROM ${admin_wise_ticket_view} where ticket_status = 'forward' and user_id = ?`; 
+}
+let getAdminTicketTotalInprogress = () => {
+    return `SELECT count(ticket_table_id) as total_inprogress FROM ${admin_wise_ticket_view} where ticket_status = 'inprogress' and user_id = ?`; 
+}
+
+
+
 let getTopSolvedTicketList = () => {
     return `
         SELECT 
@@ -396,6 +419,21 @@ let categoryBaseTicketList = () => {
         WHERE status = 1;
     `
 }
+
+let categoryBaseTicketListAdmin = () => {
+    return `
+        SELECT 
+            SUM(CASE WHEN priority = 'high' THEN 1 ELSE 0 END) AS priority_high,
+            SUM(CASE WHEN priority = 'low' THEN 1 ELSE 0 END) AS priority_low,
+            SUM(CASE WHEN priority = 'medium' THEN 1 ELSE 0 END) AS priority_medium,
+            SUM(CASE WHEN priority = 'urgent' THEN 1 ELSE 0 END) AS priority_urgent
+        FROM admin_wise_ticket AS awt
+        WHERE user_id = ?;
+    `
+}
+
+
+
 
 
 let monthWiseTicketCount = () => {
@@ -599,6 +637,13 @@ module.exports = {
     existsUnitHasAssign,
     existsCategoryHasAssign,
     getSuperAdminTicketReport,
-    getSuperAdminTicketReportTotalCount
+    getSuperAdminTicketReportTotalCount,
+    ticketAdminCountingData,
+    getAdminTicketTotalSolved,
+    getAdminTicketTotalUnsolved,
+    getAdminTicketTotalForward,
+    getAdminTicketTotalInprogress,
+    categoryBaseTicketListAdmin
 
 }
+

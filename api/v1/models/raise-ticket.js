@@ -267,6 +267,54 @@ let getTicketTotalInprogress = async () => {
 }
 
 
+let getAdminTicketDataCounting = async (user_id) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.ticketAdminCountingData(),[user_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+let getAdminTicketTotalSolved = async (user_id) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getAdminTicketTotalSolved(),[user_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+let getAdminTicketTotalUnsolved = async (user_id) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getAdminTicketTotalUnsolved(),[user_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+let getAdminTicketTotalForward = async (user_id) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getAdminTicketTotalForward(), [user_id],(error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+let getAdminTicketTotalInprogress = async (user_id) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getAdminTicketTotalInprogress(),[user_id],(error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+
+
 let getTopSolvedTicketList = async () => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getTopSolvedTicketList(), (error, result, fields) => {
@@ -291,6 +339,16 @@ let priorityBaseTicketList = async () => {
 let categoryBaseTicketList = async () => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.categoryBaseTicketList(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+let categoryBaseTicketListAdmin = async (user_id) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.categoryBaseTicketListAdmin(),[user_id],(error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -407,6 +465,13 @@ module.exports = {
     existsUnitHasAssign,
     existsCategoryHasAssign,
     getSuperAdminTicketReport,
-    getSuperAdminTicketReportTotalCount
+    getSuperAdminTicketReportTotalCount,
+    getAdminTicketDataCounting,
+    getAdminTicketTotalSolved,
+    getAdminTicketTotalUnsolved,
+    getAdminTicketTotalForward,
+    getAdminTicketTotalInprogress,
+    categoryBaseTicketListAdmin
 }
+
 

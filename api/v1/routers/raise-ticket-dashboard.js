@@ -21,13 +21,29 @@ require('dotenv').config();
 // ticket dashboard count data
 router.get('/count-data', [verifyToken, routeAccessChecker("TicketDashboardCountData")], async (req, res) => {
     
-    const id = req.decoded.userInfo.id
+    const {id,role_id} = req.decoded.userInfo
+
+    let total_ticket
+    let total_solved
+    let total_unsolved
+    let total_forward
+    let total_inprogress
+
+    if(role_id === 1){
+         total_ticket = await raiseTicketModel.getTicketDataCounting()
+         total_solved = await raiseTicketModel.getTicketTotalSolved()
+         total_unsolved = await raiseTicketModel.getTicketTotalUnsolved()
+         total_forward = await raiseTicketModel.getTicketTotalForward()
+         total_inprogress = await raiseTicketModel.getTicketTotalInprogress()
+    }else{
+        total_ticket = await raiseTicketModel.getAdminTicketDataCounting(id)
+        total_solved = await raiseTicketModel.getAdminTicketTotalSolved(id)
+        total_unsolved = await raiseTicketModel.getAdminTicketTotalUnsolved(id)
+        total_forward = await raiseTicketModel.getAdminTicketTotalForward(id)
+        total_inprogress = await raiseTicketModel.getAdminTicketTotalInprogress(id) 
+    }
     
-    const total_ticket = await raiseTicketModel.getTicketDataCounting()
-    const total_solved = await raiseTicketModel.getTicketTotalSolved()
-    const total_unsolved = await raiseTicketModel.getTicketTotalUnsolved()
-    const total_forward = await raiseTicketModel.getTicketTotalForward()
-    const total_inprogress = await raiseTicketModel.getTicketTotalInprogress()
+
 
     const data = {
         total_ticket: total_ticket[0]?.total_ticket || 0,
@@ -86,8 +102,16 @@ router.get('/category-base-ticket', [verifyToken, routeAccessChecker("priorityBa
 
 
 router.get('/priority-base-ticket', [verifyToken, routeAccessChecker("categoryWisePriorityCount")], async (req, res) => {
-    // Fetch data
-    let data = await raiseTicketModel.categoryBaseTicketList();
+
+    const {id,role_id} = req.decoded.userInfo
+    let data
+
+    if(role_id === 1){
+        data = await raiseTicketModel.categoryBaseTicketList();
+    }else{
+        data = await raiseTicketModel.categoryBaseTicketListAdmin(id);
+    }
+  
     
     return res.status(200).send({
         success: true,

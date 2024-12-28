@@ -14,7 +14,10 @@ require('dotenv').config();
 
 router.get('/active-list', [verifyToken, routeAccessChecker("locationActiveList")], async (req, res) => {
     try {
-        let result = await locationModel.getList();
+
+        const { unit, key, offset = 0,limit = 50 } = req.query
+        let result = await locationModel.getList(unit, key,offset,limit);
+        let resultTotalCount = await locationModel.getListTotalCount(unit,key);
 
         for (let index = 0; index < result.length; index++) {
             const element = result[index].unit_id;
@@ -30,7 +33,7 @@ router.get('/active-list', [verifyToken, routeAccessChecker("locationActiveList"
             success: true,
             status: 200,
             message: "Location active List.",
-            count: result.length,
+            count: resultTotalCount.length,
             data: result,
         });
     } catch (error) {
@@ -47,7 +50,9 @@ router.get('/active-list', [verifyToken, routeAccessChecker("locationActiveList"
 router.get('/list', [verifyToken, routeAccessChecker("locationList")], async (req, res) => {
 
     try {
-        let result = await locationModel.getAllList();
+        const { unit, key, offset = 0,limit = 50 } = req.query
+        let result = await locationModel.getAllList(unit, key,offset,limit);
+        let resultTotalCountList = await locationModel.getAllLocationDataByUnitId(unit,key);
 
         for (let index = 0; index < result.length; index++) {
             const element = result[index].unit_id;
@@ -63,7 +68,7 @@ router.get('/list', [verifyToken, routeAccessChecker("locationList")], async (re
             success: true,
             status: 200,
             message: "Location List.",
-            count: result.length,
+            count: resultTotalCountList.length,
             data: result,
         });
     } catch (error) {

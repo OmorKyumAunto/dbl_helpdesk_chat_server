@@ -99,30 +99,35 @@ router.get('/priority-base-ticket', [verifyToken, routeAccessChecker("categoryWi
 
 
 router.get('/raise-solve-ticket', [verifyToken, routeAccessChecker("raiseSolveTicketMOnthlyCount")], async (req, res) => {
-  // Fetch data
-  let data = await raiseTicketModel.monthWiseTicketCount();
 
-  // Extract counts
-  let totalTicket = data[0]?.total_ticket || 0; 
-  let totalSolved = data[0]?.total_solved || 0; 
-
-  // Calculate percentages
-  let totalAssetPercent = 100; // Always 100%
-  let totalSolvedPercent = ((totalSolved / totalTicket) * 100) || 0; 
-
-  return res.status(200).send({
-      success: true,
-      status: 200,
-      message: "Monthly wise raise and solve ticket.",
-      data: {
-          total_ticket: totalTicket,
-          total_ticket_percent: totalAssetPercent,
-          total_solved: totalSolved,
-          total_solved_percent: parseInt(totalSolvedPercent.toFixed(0)), 
-      },
+    let data = await raiseTicketModel.monthWiseTicketCount();
+  
+    // Extract counts
+    let totalTicket = data[0]?.total_ticket || 0; 
+    let totalSolved = data[0]?.total_solved || 0; 
+    let totalUnSolved = data[0]?.total_unsolved || 0; 
+  
+    // Calculate percentages
+    let totalAssetPercent = 100;
+    let totalSolvedPercent = ((totalSolved / totalTicket) * 100) || 0;
+    totalSolvedPercent = Math.round(totalSolvedPercent); 
+    let totalUnSolvedPercent = totalAssetPercent - totalSolvedPercent; 
+  
+    return res.status(200).send({
+        success: true,
+        status: 200,
+        message: "Monthly wise raise and solve ticket.",
+        data: {
+            total_ticket: totalTicket,
+            total_ticket_percent: totalAssetPercent, 
+            total_solved: totalSolved,
+            total_solved_percent: totalSolvedPercent, 
+            total_unsolved: totalUnSolved,
+            total_unsolved_percent: totalUnSolvedPercent, 
+        },
+    });
   });
-});
-
+  
 
 
 

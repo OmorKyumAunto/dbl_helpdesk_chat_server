@@ -2,14 +2,24 @@ const { connectionDblystem } = require('../connections/connection');
 const queries = require('../queries/location');
 
 // Promises Method
-let getList = async (status) => {
+let getList = async (unit ,key,offset,limit) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getList(status), (error, result, fields) => {
+        connectionDblystem.query(queries.getList(unit,key,offset,limit), (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
     });
 }
+
+let getListTotalCount = async (unit,key) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getListTotalCount(unit,key), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 
 
 let getOnlyDataList = async () => {
@@ -21,9 +31,9 @@ let getOnlyDataList = async () => {
     });
 }
 
-let getAllList = async (status) => {
+let getAllList = async (unit, key,offset,limit) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getAllList(status), (error, result, fields) => {
+        connectionDblystem.query(queries.getAllList(unit, key,offset,limit), (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -31,9 +41,9 @@ let getAllList = async (status) => {
 }
 
 
-let getAllLocationDataByUnitId = async (unit_id) => {
+let getAllLocationDataByUnitId = async (unit, key,) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getAllLocationDataByUnitId(),[unit_id], (error, result, fields) => {
+        connectionDblystem.query(queries.getAllLocationDataByUnitId(unit, key),(error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -127,7 +137,8 @@ module.exports = {
     getByNonDeleteData,
     getAllLocationDataByUnitId,
     getUnitWiseLocation,
-    getOnlyDataList
+    getOnlyDataList,
+    getListTotalCount
 
 
 }

@@ -1,17 +1,88 @@
 const isEmpty = require("is-empty");
 let table_name = "location";
 
-let getList = () => {
-    return `SELECT id,location, unit_id FROM ${table_name} WHERE status = 1 ORDER BY id DESC `;
-}
-let getAllList = () => {
-    return `SELECT id,location, unit_id,status FROM ${table_name} WHERE status != 0 ORDER BY id DESC `;
-}
+let getList = (unit, key, offset, limit) => {
+    let baseQuery = `SELECT * FROM ${table_name} WHERE status = 1`;
 
-let getAllLocationDataByUnitId = () => {
-    return `SELECT id,location,unit_id,status FROM ${table_name} WHERE unit_id = ? and status = 1 ORDER BY id DESC `;
-}
+    if (unit) {
+        baseQuery += ` AND unit_id = ${unit}`; 
+    }
 
+    if (key) {
+        baseQuery += ` AND location LIKE '%${key}%'`;
+    }
+
+    // Add ordering, limit, and offset
+    baseQuery += ` ORDER BY id DESC`;
+
+    if (limit) {
+        baseQuery += ` LIMIT ${limit}`;
+    }
+    if (offset) {
+        baseQuery += ` OFFSET ${offset}`;
+    }
+
+    return baseQuery;
+};
+
+
+
+let getListTotalCount = (unit,key) => {
+    let baseQuery = `SELECT * FROM ${table_name} WHERE status = 1`;
+    if (unit) {
+        baseQuery += ` AND unit_id = ${unit}`; 
+    }
+
+    if (key) {
+        baseQuery += ` AND (location LIKE '%${key}%')`;
+    }
+
+    baseQuery += ` ORDER BY id DESC`;
+
+    return baseQuery;
+};
+
+
+
+let getAllList = (unit, key, offset, limit) => {
+    let baseQuery = `SELECT * FROM ${table_name} WHERE status != 0`;
+
+    if (unit) {
+        baseQuery += ` AND unit_id = ${unit}`; 
+    }
+
+    if (key) {
+        baseQuery += ` AND location LIKE '%${key}%'`;
+    }
+
+    baseQuery += ` ORDER BY id DESC`;
+
+    if (limit) {
+        baseQuery += ` LIMIT ${limit}`;
+    }
+    if (offset) {
+        baseQuery += ` OFFSET ${offset}`;
+    }
+
+    return baseQuery;
+};
+
+
+let getAllLocationDataByUnitId = (unit, key) => {
+    let baseQuery = `SELECT * FROM ${table_name} WHERE status != 0`;
+
+    if (unit) {
+        baseQuery += ` AND unit_id = ${unit}`; 
+    }
+
+    if (key) {
+        baseQuery += ` AND location LIKE '%${key}%'`;
+    }
+
+    baseQuery += ` ORDER BY id DESC`;
+
+    return baseQuery;
+};
 
 
 let getLocation = () => {
@@ -70,6 +141,7 @@ module.exports = {
     getAllList,
     getByNonDeleteData,
     getAllLocationDataByUnitId,
-    getUnitWiseLocation
+    getUnitWiseLocation,
+    getListTotalCount
 
 }

@@ -176,6 +176,8 @@ let getAllListUserWise = (id, key = '', priority = '', status = '', offset, limi
         dbl_asset AS ass ON ass.id = rt.asset_id
     LEFT JOIN 
         dbl_users AS u ON u.id = rt.solved_by
+
+
     ${whereClause}
     ORDER BY 
         rt.id DESC
@@ -400,7 +402,8 @@ let monthWiseTicketCount = () => {
     return `
         SELECT 
             COUNT(CASE WHEN status = 1 THEN id END) AS total_ticket,
-            COUNT(CASE WHEN status = 1 AND ticket_status = 'solved' THEN id END) AS total_solved
+            COUNT(CASE WHEN status = 1 AND ticket_status = 'solved' THEN id END) AS total_solved,
+            COUNT(CASE WHEN status = 1 AND ticket_status = 'unsolved' THEN id END) AS total_unsolved
         FROM dbl_raise_ticket
         WHERE created_at >= NOW() - INTERVAL 30 DAY;
     `

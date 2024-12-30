@@ -1244,26 +1244,29 @@ let getAssinDate = await assetAssignModel.getById(id)
 
 // get assign name
 let getAssignName = await userModel.getById(result[0].created_by)
-
 // get unit name
 let getUnitName = await unitModel.getById(result[0].unit_id)
 
-if (employeeData) {
-  let assignDate = new Date(getAssinDate[0].assign_date).toDateString(); // Convert to readable date format
-
-  let sendEmail = await commonObject.sentEmailByHtmlFormate(
-    userData[0].email,
-    "Asset Disbursement",
-    userData[0].name || "", // employee name
-    result[0].name || "",   // asset name
-    result[0].category || "",  // asset type - category
-    result[0].serial_number || "", // serial no
-    assignDate,  // formatted assign date
-    getAssignName[0].name || "", // assigned by
-    getUnitName[0].title || ""  // assigned unit
-  );
+try {
+  if (employeeData) {
+    let assignDate = new Date(getAssinDate[0].assign_date).toDateString(); // Convert to readable date format
+  
+    let sendEmail = await commonObject.sentEmailByHtmlFormate(
+      userData[0].email,
+      "Asset Disbursement",
+      userData[0].name || "", // employee name
+      result[0].name || "",   // asset name
+      result[0].category || "",  // asset type - category
+      result[0].serial_number || "", // serial no
+      assignDate,  // formatted assign date
+      getAssignName[0].name || "", // assigned by
+      getUnitName[0].title || ""  // assigned unit
+    );
+  }
+  
+} catch (error) {
+  console.log("Assign asset email sending error : ",error)
 }
-
 if (createAssetHistory.affectedRows == undefined || createAssetHistory.affectedRows < 1) {
   return res.status(500).send({
       "success": true,

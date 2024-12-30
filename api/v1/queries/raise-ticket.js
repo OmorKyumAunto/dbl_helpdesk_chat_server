@@ -406,6 +406,42 @@ let priorityBaseTicketList = () => {
     `;
 }
 
+let priorityBaseTicketListForAdmin = () => {
+
+    return `
+
+        SELECT 
+    *
+    FROM 
+        dbl_users AS u
+    JOIN 
+        admin_search_access AS sa 
+    ON 
+        sa.user_id = u.id
+    JOIN 
+        dbl_asset AS asset 
+    ON 
+        asset.unit_id = sa.unit_id
+
+        
+        SELECT 
+            tc.id AS category_id,
+            tc.title AS category_title,
+            COUNT(rt.id) AS ticket_count
+        FROM 
+            dbl_ticket_category AS tc
+        LEFT JOIN 
+            dbl_raise_ticket AS rt 
+        ON 
+            tc.id = rt.category_id
+        WHERE 
+            tc.status = 'active'
+        GROUP BY 
+            tc.id, tc.title
+        ORDER BY 
+            ticket_count DESC;
+    `;
+}
 
 
 let categoryBaseTicketList = () => {
@@ -643,7 +679,8 @@ module.exports = {
     getAdminTicketTotalUnsolved,
     getAdminTicketTotalForward,
     getAdminTicketTotalInprogress,
-    categoryBaseTicketListAdmin
+    categoryBaseTicketListAdmin, 
+    priorityBaseTicketListForAdmin
 
 }
 

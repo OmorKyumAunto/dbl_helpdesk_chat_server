@@ -47,13 +47,15 @@ let getAfterCategoryAssignList = () => {
            ucv.asset_unit_titles,
            ucv.ticket_category_titles,
            ucv.ticket_category_ids,
-           JSON_ARRAYAGG(
-               JSON_OBJECT(
-                   'access_id', uc.id,
-                   'category_id', uc.category_id,
-                   'category_name', tc.title
-               )
-           ) AS assign_category
+          CONCAT('[', 
+                    GROUP_CONCAT(
+                        CONCAT(
+                            '{"access_id":', uc.id,
+                            ',"category_id":', uc.category_id,
+                            ',"category_name":"', tc.title, '"}'
+                        )
+                    ), 
+                ']') AS assign_category
        FROM 
            user_unit_category AS ucv
        LEFT JOIN 

@@ -99,7 +99,7 @@ router.get('/category-base-ticket', [verifyToken, routeAccessChecker("priorityBa
 
     }else if(role_id === 2){
         // Fetch data
-         data = await raiseTicketModel.priorityBaseTicketList();
+         data = await raiseTicketModel.priorityBaseTicketListForAdmin();
                 
         // Calculate total ticket count
          totalTickets = data.reduce((sum, item) => sum + item.ticket_count, 0);
@@ -121,7 +121,6 @@ router.get('/category-base-ticket', [verifyToken, routeAccessChecker("priorityBa
         data: result,
     });
 });
-
 
 
 

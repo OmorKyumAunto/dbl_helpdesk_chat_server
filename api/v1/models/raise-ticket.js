@@ -334,6 +334,15 @@ let priorityBaseTicketList = async () => {
     });
 }
 
+let priorityBaseTicketListForAdmin = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.priorityBaseTicketListForAdmin(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 
 
 let categoryBaseTicketList = async () => {
@@ -471,7 +480,9 @@ module.exports = {
     getAdminTicketTotalUnsolved,
     getAdminTicketTotalForward,
     getAdminTicketTotalInprogress,
-    categoryBaseTicketListAdmin
+    categoryBaseTicketListAdmin,
+    priorityBaseTicketListForAdmin,
+    priorityBaseTicketListForAdmin
 }
 
 

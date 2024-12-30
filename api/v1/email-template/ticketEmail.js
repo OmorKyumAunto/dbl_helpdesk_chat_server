@@ -1,197 +1,190 @@
 
-const ticketEmail = async(data)=>{
-    return`
-    <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Ticket Notification</title>
-</head>
-<body style="margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: #f7f9fc; color: #333;">
+const ticketEmail = async (data) => {
+    return `
+  <div style="font-family: Arial, sans-serif; background-color: #f7f9fc; color: #444444; line-height: 1.6; width: 100%; padding: 20px 0;">
 
-    <!-- Email Wrapper -->
-    <table width="100%" cellspacing="0" cellpadding="0" style="background-color: #f7f9fc; padding: 20px;">
-        <tr>
-            <td>
-                <!-- Email Container -->
-                <table width="600" cellspacing="0" cellpadding="0" align="center" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
-                    
-                    <!-- Header Section -->
-                    <tr>
-                        <td style="background-color: #003366; padding: 20px; text-align: center;">
-                            <img src="https://i.postimg.cc/Df8xNNt0/DBL-Logo.jpg" alt="DBL Logo" style="width: 100px; border-radius: 8px; margin-bottom: 10px;">
-                            <h1 style="color: #ffffff; font-size: 22px; margin: 0;">New Ticket Notification</h1>
-                        </td>
-                    </tr>
+  <!-- Main Container (Table-based for Outlook compatibility) -->
+  <table align="center" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 15px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); overflow: hidden;">
+    
+    <!-- Header -->
+    <tr>
+      <td style="background-color: #003366; padding: 40px; text-align: center; color: white; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+        <h1 style="font-size: 30px; margin: 0; font-weight: 700; letter-spacing: 1px;">New Ticket Notification</h1>
+        <p style="font-size: 16px; margin-top: 10px;">A notification for your attention</p>
+      </td>
+    </tr>
 
-                    <!-- Body Section -->
-                    <tr>
-                        <td style="padding: 30px;">
-                            <h2 style="font-size: 20px; color: #003366; margin: 0 0 15px;">Hello Admin,</h2>
-                            <p style="font-size: 16px; line-height: 1.8; color: #555;">
-                                A new ticket has been assigned to you. Below are the details:
-                            </p>
+    <!-- Main Content -->
+    <tr>
+      <td style="padding: 40px; color: #444444; font-size: 16px;">
+        <h2 style="font-size: 24px; color: #003366; margin-top: 0;">Hello,</h2>
+        <p style="margin-bottom: 20px; font-size: 16px;">You have been assigned a new ticket. Please review the details below:</p>
 
-                            <!-- Ticket Details -->
-                            <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse; margin: 20px 0;">
-                                <tr>
-                                    <td style="padding: 12px; background-color: #f3f4f7; font-weight: bold; color: #003366; border-radius: 6px 0 0 6px;">Ticket ID:</td>
-                                    <td style="padding: 12px; background-color: #f3f4f7; border-radius: 0 6px 6px 0;">${data.ticket_id}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 12px; color: #003366; font-weight: bold;">Subject:</td>
-                                    <td style="padding: 12px; color: #555;">${data.subject}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 12px; background-color: #f3f4f7; font-weight: bold; color: #003366; border-radius: 6px 0 0 6px;">Priority:</td>
-                                    <td style="padding: 12px; background-color: #f3f4f7; border-radius: 0 6px 6px 0;">${data.priority}</td>
-                                </tr>
- <tr>
-                                    <td style="padding: 12px; color: #003366; font-weight: bold;">Employee Name:</td>
-                                    <td style="padding: 12px; color: #555;">${data.created_by}</td>
-                                </tr>
- <tr>
-                                    <td style="padding: 12px; color: #003366; font-weight: bold;">Employee ID:</td>
-                                    <td style="padding: 12px; color: #555;">${data.created_employee_id}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 12px; color: #003366; font-weight: bold;">Unit Name:</td>
-                                    <td style="padding: 12px; color: #555;">${data.unit_name}</td>
-                                </tr>
-                            </table>
+        <!-- Ticket Details -->
+        <div style="background-color: #f4f8fc; border-radius: 10px; border: 1px solid #dde6f2; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); padding: 25px; font-size: 16px;">
+          <table style="width: 100%; font-size: 16px; border-spacing: 0; line-height: 1.8;">
+            <tr>
+              <td style="font-weight: bold; padding: 8px 0; width: 40%; color: #003366;">Ticket ID:</td>
+              <td style="padding: 8px 0;">${data.ticket_id}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 8px 0; color: #003366;">Subject:</td>
+              <td style="padding: 8px 0;">${data.subject}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 8px 0; color: #003366;">Priority:</td>
+              <td style="padding: 8px 0; color: ${data.priority === 'High' ? '#d9534f' : data.priority === 'Medium' ? '#f0ad4e' : '#5cb85c'};">
+                ${data.priority}
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 8px 0; color: #003366;">Employee Name:</td>
+              <td style="padding: 8px 0;">${data.created_by}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 8px 0; color: #003366;">Employee ID:</td>
+              <td style="padding: 8px 0;">${data.created_employee_id}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 8px 0; color: #003366;">Ticketing Unit:</td>
+              <td style="padding: 8px 0;">${data.unit_name}</td>
+            </tr>
+          </table>
+        </div>
 
-                            <p style="font-size: 16px; line-height: 1.8; color: #555;">
-                                Please log in to the <a href="[Your Web App Link]" style="color: #003366; font-weight: bold; text-decoration: none;">Ticketing System</a> to manage this ticket.
-                            </p>
-                        </td>
-                    </tr>
+        <p style="margin-top: 30px; font-size: 16px; line-height: 1.8;">
+          Please log in to the <a href="https://helpdesk.dbl-group.com/" style="color: #003366; text-decoration: underline;">IT Ticketing System</a> to manage this ticket.
+        </p>
+        <!-- Closing Section -->
+        <p style="margin-top: 40px; font-size: 16px; font-weight: bold;">Regards,</p>
+        <p style="font-size: 16px; font-weight: bold; color: #003366;">IT Support Team</p>
+      </td>
+    </tr>
 
-                    <!-- Call to Action -->
-                    <tr>
-                        <td style="text-align: center; padding: 20px;">
-                            <a href="[Your Web App Link]" style="display: inline-block; padding: 12px 30px; background-color: #003366; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">View Ticket</a>
-                        </td>
-                    </tr>
+    <!-- Footer -->
+    <tr>
+      <td style="background-color: #003366; padding: 15px; text-align: center; color: white; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;">
+        
+        <p style=" font-size: 14px;">This is an automated email, please do not reply.</p>
+      </td>
+    </tr>
 
-                    <!-- Footer Section -->
-                    <tr>
-                        <td style="background-color: #f7f9fc; text-align: center; padding: 20px; font-size: 14px; color: #888;">
-                            <p style="margin: 0;">&copy; 2024 DBL Group. All Rights Reserved.</p>
-                            <p style="margin: 5px 0;">Need help? Contact <a href="mailto:support@dblgroup.com" style="color: #003366; text-decoration: none;">support@dblgroup.com</a>.</p>
-                        </td>
-                    </tr>
+  </table>
+</div>
 
-                </table>
-                <!-- End Email Container -->
-            </td>
-        </tr>
-    </table>
+<!-- Responsive Styling -->
+<style>
+  @media (max-width: 600px) {
+    table {
+      width: 100% !important;
+    }
+    h1, h2, p {
+      font-size: 90%;
+    }
+    td {
+      font-size: 90%;
+    }
+  }
+</style>
 
-</body>
-</html>
+
 
 
     `
 }
 
 
-const ticketCcEmail = async(data)=>{   
-    return`
+const ticketCcEmail = async (data) => {
+    return `
 
-    <!DOCTYPE html>
-   <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Ticket Notification (Supervisor)</title>
-</head>
-<body style="margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: #f7f9fc; color: #333;">
+ <div style="font-family: Arial, sans-serif; background-color: #f7f9fc; color: #444444; line-height: 1.6; width: 100%;">
 
-    <!-- Email Wrapper -->
-    <table width="100%" cellspacing="0" cellpadding="0" style="background-color: #f7f9fc; padding: 20px;">
-        <tr>
-            <td>
-                <!-- Email Container -->
-                <table width="600" cellspacing="0" cellpadding="0" align="center" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
-                    
-                    <!-- Header Section -->
-                    <tr>
-                        <td style="background-color: #003366; padding: 20px; text-align: center;">
-                            <img src="https://i.postimg.cc/Df8xNNt0/DBL-Logo.jpg" alt="DBL Logo" style="width: 100px; border-radius: 8px; margin-bottom: 10px;">
-                            <h1 style="color: #ffffff; font-size: 22px; margin: 0;">New Ticket Created</h1>
-                        </td>
-                    </tr>
+  <!-- Main Container (Table-based for Outlook compatibility) -->
+  <table align="center" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 15px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);">
+    
+    <!-- Header -->
+    <tr>
+      <td style="background-color: #003366; padding: 40px; text-align: center; color: white; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+        <h1 style="font-size: 24px; margin: 0;">New Ticket Notification</h1>
+        <p style="font-size: 14px; margin-top: 10px;">A notification for your attention</p>
+      </td>
+    </tr>
 
-                    <!-- Body Section -->
-                    <tr>
-                        <td style="padding: 30px;">
-                            <h2 style="font-size: 20px; color: #003366; margin: 0 0 15px;">Hello ${data.supervisor_name},</h2>
-                            <p style="font-size: 16px; line-height: 1.8; color: #555;">
-                                You have been CC'd on a new ticket created by ${data.created_by}. Here are the details:
-                            </p>
+    <!-- Main Content -->
+    <tr>
+      <td style="padding: 40px; color: #444444; font-size: 16px;">
+        <h2 style="font-size: 22px; color: #003366;">Hello ${data.supervisor_name},</h2>
+        <p style="margin-bottom: 20px;">You have been added as a CC recipient for a new ticket created by ${data.created_by}. Please review the details below:</p>
 
-                            <!-- Ticket Details -->
-                            <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse; margin: 20px 0;">
-                                <tr>
-                                    <td style="padding: 12px; background-color: #f3f4f7; font-weight: bold; color: #003366; border-radius: 6px 0 0 6px;">Ticket ID:</td>
-                                    <td style="padding: 12px; background-color: #f3f4f7; border-radius: 0 6px 6px 0;">${data.ticket_id}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 12px; color: #003366; font-weight: bold;">Subject:</td>
-                                    <td style="padding: 12px; color: #555;">${data.subject}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 12px; background-color: #f3f4f7; font-weight: bold; color: #003366; border-radius: 6px 0 0 6px;">Priority:</td>
-                                    <td style="padding: 12px; background-color: #f3f4f7; border-radius: 0 6px 6px 0;">${data.priority}</td>
-                                </tr>
-                                                                </tr>
-                                <tr>
-                                    <td style="padding: 12px; background-color: #f3f4f7; font-weight: bold; color: #003366; border-radius: 6px 0 0 6px;">Created By:</td>
-                                    <td style="padding: 12px; background-color: #f3f4f7; border-radius: 0 6px 6px 0;">${data.created_by}</td>
-                                </tr>
+        <!-- Ticket Details -->
+        <div style="background-color: #f4f8fc; border-radius: 10px; border: 1px solid #dde6f2; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); padding: 20px;">
+          <table style="width: 100%; font-size: 14px; border-spacing: 0; line-height: 1.8;">
+            <tr>
+              <td style="font-weight: bold; padding: 5px 0; width: 40%;">Ticket ID:</td>
+              <td style="padding: 5px 0;">${data.ticket_id}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 5px 0;">Subject:</td>
+              <td style="padding: 5px 0;">${data.subject}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 5px 0;">Priority:</td>
+              <td style="padding: 5px 0; color: ${data.priority === 'High' ? '#d9534f' : data.priority === 'Medium' ? '#f0ad4e' : '#5cb85c'};">
+                ${data.priority}
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 5px 0;">Employee Name:</td>
+              <td style="padding: 5px 0;">${data.created_by}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 5px 0;">Employee ID:</td>
+              <td style="padding: 5px 0;">${data.created_employee_id}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 5px 0;">Ticketing Unit:</td>
+              <td style="padding: 5px 0;">${data.unit_name}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 5px 0;">Ticket Message:</td>
+              <td style="padding: 5px 0;">${data.ticket_message}</td>
+            </tr>
+          </table>
+        </div>
 
- <tr>
-                                    <td style="padding: 12px; color: #003366; font-weight: bold;">Employee ID:</td>
-                                    <td style="padding: 12px; color: #555;">${data.created_employee_id}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 12px; color: #003366; font-weight: bold;">Unit Name:</td>
-                                    <td style="padding: 12px; color: #555;">${data.unit_name}</td>
+        <p style="margin-top: 30px; line-height: 1.8;">
+          Please log in to the <a href="https://helpdesk.dbl-group.com/" style="color: #003366; text-decoration: underline;">IT Ticketing System</a> to manage this ticket.
+        </p>
+        <!-- Closing Section -->
+        <p style="margin-top: 40px;">Regards,</p>
+        <p style="font-weight: bold;">IT Support Team</p>
+      </td>
+    </tr>
 
-                            </table>
+    <!-- Footer -->
+    <tr>
+      <td style="background-color: #003366; padding: 20px; text-align: center; color: white; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;">
+        <p style="margin: 0;">This is an automated email, please do not reply.</p>
+      </td>
+    </tr>
 
-                            <p style="font-size: 16px; line-height: 1.8; color: #555;">
-                                Please note that you are CC'd on this ticket. You can view the ticket details and stay informed about its progress.
-                            </p>
-                        </td>
-                    </tr>
+  </table>
+</div>
 
-                    <!-- Call to Action -->
-                    <tr>
-                        <td style="text-align: center; padding: 20px;">
-                            <a href="[Your Web App Link]" style="display: inline-block; padding: 12px 30px; background-color: #003366; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">View Ticket</a>
-                        </td>
-                    </tr>
-
-                    <!-- Footer Section -->
-                    <tr>
-                        <td style="background-color: #f7f9fc; text-align: center; padding: 20px; font-size: 14px; color: #888;">
-                            <p style="margin: 0;">&copy; 2024 DBL Group. All Rights Reserved.</p>
-                            <p style="margin: 5px 0;">For support, contact <a href="mailto:support@dblgroup.com" style="color: #003366; text-decoration: none;">support@dblgroup.com</a>.</p>
-                        </td>
-                    </tr>
-
-                </table>
-                <!-- End Email Container -->
-            </td>
-        </tr>
-    </table>
-
-</body>
-</html>
-
-
+<!-- Responsive Styling -->
+<style>
+  @media (max-width: 600px) {
+    table {
+      width: 100% !important;
+    }
+    h1, h2, p {
+      font-size: 90%;
+    }
+    td {
+      font-size: 90%;
+    }
+  }
+</style>
 
     `
 }

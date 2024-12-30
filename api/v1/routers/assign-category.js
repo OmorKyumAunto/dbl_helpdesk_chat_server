@@ -27,99 +27,109 @@ router.get('/before-assign-list', [verifyToken, routeAccessChecker("beforeAssign
 
 router.get('/after-assign-list', [verifyToken, routeAccessChecker("afterAssignList")], async (req, res) => {
 
-    let result = await assignCategoryModel.getAfterCategoryAssignList();
 
-    return res.status(200).send({
-        "success": true,
-        "status": 200,
-        "message": "Before assign category List.",
-        "count": result.length,
-        "data": result
+    const transformData = (data) => {
+        return data.map(item => ({
+            ...item,
+            assign_category: JSON.parse(item.assign_category || '[]') 
+        }));
+    };
+    
+    // Fetch Data and Transform:
+     let result = await assignCategoryModel.getAfterCategoryAssignList();
+    const transformedResult = transformData(result);
+    
+    res.status(200).json({
+        success: true,
+        status: 200,
+        message: "Before assign category List.",
+        count: transformedResult.length,
+        data: transformedResult
     });
 });
 
 
 
 
-router.post('/:id', [verifyToken, routeAccessChecker("assignCategory")], async (req, res) => {
+// router.post('/:id', [verifyToken, routeAccessChecker("assignCategory")], async (req, res) => {
 
-    const id = req.params.id
-    let reqData = {
-        "category_id": req.body.category_id
-    }
+//     const id = req.params.id
+//     let reqData = {
+//         "category_id": req.body.category_id
+//     }
 
-    let current_date = new Date(); 
-    let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+//     let current_date = new Date(); 
+//     let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
     
 
-    reqData.created_at = current_time;
+//     reqData.created_at = current_time;
 
 
-     // Get data from the database by id
-    let result = await userModel.getById(id);
-        if (isEmpty(result)) {
-        return res.status(404).send({
-            success: false,
-            status: 404,
-            message: "User data not found."
-        });
-        }
+//      // Get data from the database by id
+//     let result = await userModel.getById(id);
+//         if (isEmpty(result)) {
+//         return res.status(404).send({
+//             success: false,
+//             status: 404,
+//             message: "User data not found."
+//         });
+//         }
 
 
-    if(!Array.isArray(reqData.category_id)){
-        return res.status(400).send({
-            success: false,
-            status: 400,
-            message: "Category should be array."
-        });
-    }
+//     if(!Array.isArray(reqData.category_id)){
+//         return res.status(400).send({
+//             success: false,
+//             status: 400,
+//             message: "Category should be array."
+//         });
+//     }
 
 
-    for (let index = 0; index < reqData.category_id.length; index++) {
-        const element = reqData.category_id[index];
-          // Get data from the database by id
-        let unitData = await ticketCategoryModel.getById(element);
-        if (isEmpty(unitData)) {
-            return res.status(404).send({
-                success: false,
-                status: 404,
-                message: "This ticket category not found."
-            });
-        }
+//     for (let index = 0; index < reqData.category_id.length; index++) {
+//         const element = reqData.category_id[index];
+//           // Get data from the database by id
+//         let unitData = await ticketCategoryModel.getById(element);
+//         if (isEmpty(unitData)) {
+//             return res.status(404).send({
+//                 success: false,
+//                 status: 404,
+//                 message: "This ticket category not found."
+//             });
+//         }
 
-        let existsData = await assignCategoryModel.getByIdAndUser(element,id);
-        if (existsData.length) {
-            return res.status(400).send({
-                success: false,
-                status: 400,
-                message: "This ticket category id already exists."
-            });
-        }
+//         let existsData = await assignCategoryModel.getByIdAndUser(element,id);
+//         if (existsData.length) {
+//             return res.status(400).send({
+//                 success: false,
+//                 status: 400,
+//                 message: "This ticket category id already exists."
+//             });
+//         }
 
-        let data = {
-            user_id : id,
-            category_id : element,
-            created_at : reqData.created_at,
-        }
-        let createData = await assignCategoryModel.addNew(data);   
+//         let data = {
+//             user_id : id,
+//             category_id : element,
+//             created_at : reqData.created_at,
+//         }
+//         let createData = await assignCategoryModel.addNew(data);   
 
-        if (createData.affectedRows == undefined || createData.affectedRows < 1) {
-            return res.status(500).send({
-                "success": false,
-                "status": 500,
-                "message": "Something Wrong in system database."
-            });
-        }
+//         if (createData.affectedRows == undefined || createData.affectedRows < 1) {
+//             return res.status(500).send({
+//                 "success": false,
+//                 "status": 500,
+//                 "message": "Something Wrong in system database."
+//             });
+//         }
     
-    }
+//     }
 
-    return res.status(201).send({
-        "success": true,
-        "status": 201,
-        "message": "Ticket category access added Successfully."
-    });
+//     return res.status(201).send({
+//         "success": true,
+//         "status": 201,
+//         "message": "Ticket category access added Successfully."
+//     });
 
-});
+// });
 
 
 
@@ -387,87 +397,87 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("ticketCategory
 
 
 
-// router.post('/:id', [verifyToken, routeAccessChecker("assignCategory")], async (req, res) => {
-//     console.log("first")
-//     const id = req.params.id; // User ID
-//     let reqData = {
-//         "category_id": req.body.category_id // Array of category IDs
-//     };
+router.post('/:id', [verifyToken, routeAccessChecker("assignCategory")], async (req, res) => {
+    console.log("first")
+    const id = req.params.id; // User ID
+    let reqData = {
+        "category_id": req.body.category_id // Array of category IDs
+    };
 
-//     let current_date = new Date();
-//     let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
-//     reqData.created_at = current_time;
+    let current_date = new Date();
+    let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+    reqData.created_at = current_time;
 
-//     // Validate user existence
-//     let result = await userModel.getById(id);
-//     if (isEmpty(result)) {
-//         return res.status(404).send({
-//             success: false,
-//             status: 404,
-//             message: "User data not found."
-//         });
-//     }
+    // Validate user existence
+    let result = await userModel.getById(id);
+    if (isEmpty(result)) {
+        return res.status(404).send({
+            success: false,
+            status: 404,
+            message: "User data not found."
+        });
+    }
 
-//     if (!Array.isArray(reqData.category_id)) {
-//         return res.status(400).send({
-//             success: false,
-//             status: 400,
-//             message: "Category should be an array."
-//         });
-//     }
+    if (!Array.isArray(reqData.category_id)) {
+        return res.status(400).send({
+            success: false,
+            status: 400,
+            message: "Category should be an array."
+        });
+    }
 
-//     // Fetch all existing assigned categories for the user
-//     let existingCategories = await assignCategoryModel.getByUserId(id);
-//     let existingCategoryIds = existingCategories.map(item => item.category_id);
+    // Fetch all existing assigned categories for the user
+    let existingCategories = await assignCategoryModel.getByUserId(id);
+    let existingCategoryIds = existingCategories.map(item => item.category_id);
 
-//     // Find new categories to add and old categories to remove
-//     let categoriesToAdd = reqData.category_id.filter(catId => !existingCategoryIds.includes(catId));
-//     let categoriesToRemove = existingCategoryIds.filter(catId => !reqData.category_id.includes(catId));
+    // Find new categories to add and old categories to remove
+    let categoriesToAdd = reqData.category_id.filter(catId => !existingCategoryIds.includes(catId));
+    let categoriesToRemove = existingCategoryIds.filter(catId => !reqData.category_id.includes(catId));
 
-//     // Remove categories that are no longer assigned
-//     if (categoriesToRemove.length > 0) {
-//         let deleteResult = await assignCategoryModel.deleteByUserAndCategories(id, categoriesToRemove);
-//         if (!deleteResult.affectedRows) {
-//             return res.status(500).send({
-//                 success: false,
-//                 status: 500,
-//                 message: "Failed to remove unselected categories."
-//             });
-//         }
-//     }
+    // Remove categories that are no longer assigned
+    if (categoriesToRemove.length > 0) {
+        let deleteResult = await assignCategoryModel.deleteByUserAndCategories(id, categoriesToRemove);
+        if (!deleteResult.affectedRows) {
+            return res.status(500).send({
+                success: false,
+                status: 500,
+                message: "Failed to remove unselected categories."
+            });
+        }
+    }
 
-//     // Add new categories
-//     for (let categoryId of categoriesToAdd) {
-//         let unitData = await ticketCategoryModel.getById(categoryId);
-//         if (isEmpty(unitData)) {
-//             return res.status(404).send({
-//                 success: false,
-//                 status: 404,
-//                 message: `Ticket category ${categoryId} not found.`
-//             });
-//         }
+    // Add new categories
+    for (let categoryId of categoriesToAdd) {
+        let unitData = await ticketCategoryModel.getById(categoryId);
+        if (isEmpty(unitData)) {
+            return res.status(404).send({
+                success: false,
+                status: 404,
+                message: `Ticket category ${categoryId} not found.`
+            });
+        }
 
-//         let data = {
-//             user_id: id,
-//             category_id: categoryId,
-//             created_at: reqData.created_at,
-//         };
-//         let createData = await assignCategoryModel.addNew(data);
-//         if (!createData.affectedRows) {
-//             return res.status(500).send({
-//                 success: false,
-//                 status: 500,
-//                 message: "Failed to assign new category."
-//             });
-//         }
-//     }
+        let data = {
+            user_id: id,
+            category_id: categoryId,
+            created_at: reqData.created_at,
+        };
+        let createData = await assignCategoryModel.addNew(data);
+        if (!createData.affectedRows) {
+            return res.status(500).send({
+                success: false,
+                status: 500,
+                message: "Failed to assign new category."
+            });
+        }
+    }
 
-//     return res.status(200).send({
-//         success: true,
-//         status: 200,
-//         message: "Ticket category access updated successfully."
-//     });
-// });
+    return res.status(200).send({
+        success: true,
+        status: 200,
+        message: "Ticket category access updated successfully."
+    });
+});
 
 
 

@@ -61,7 +61,7 @@ let sentEmailByHtmlFormate = async (receiverEmailAddress, subject,name = "", ass
             service:process.env.send_email_service,
             host:process.env.send_email_host,
             port: process.env.send_email_port,
-            secure: true,
+            secure: false,
             auth: {
                 user: process.env.send_email_address,
                 pass: process.env.send_email_password
@@ -176,35 +176,31 @@ let sentTicketCcEmail = async (receiverEmailAddress, subject, data) => {
 
 
 let getHTMLBody = async (name = "", asset_name = "", type = "", asset_serial_number = "",assign_date = "",assign_by = "",unit_name="") => {
-    return `<div style="font-family: Arial, sans-serif; background-color: #e9f0f7; color: #444444; padding: 30px; line-height: 1.6; width: 100%;">
+    return ` <div style="font-family: Arial, sans-serif; background-color: #f3f4f6; color: #444444; padding: 20px; width: 100%;">
 
-  <!-- Main Container (Table-based for Outlook compatibility) -->
-  <table align="center" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 15px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);">
-    
-    <!-- VML Fallback for Outlook Border Radius -->
-    <!--[if mso]>
-    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="#" style="height: 600px; v-text-anchor:middle; width:600px;" arcsize="15%" strokecolor="#003366" fillcolor="#ffffff">
-      <w:anchorlock/>
-      <center style="color:#ffffff; font-family:sans-serif; font-size:16px;">Asset Assignment Notification</center>
-    </v:roundrect>
-    <![endif]-->
-    
-    <!-- Header -->
+  <!-- Main Container -->
+  <table align="center" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width: 600px; margin: auto; background-color: #ffffff; border: 1px solid #dddddd;">
+
+    <!-- Header Section -->
     <tr>
-      <td style="background-color: #003366; padding: 40px; text-align: center; color: white; border-top-left-radius: 15px; border-top-right-radius: 15px;">
-        <img src="https://i.postimg.cc/Df8xNNt0/DBL-Logo.jpg" alt="Company Logo" style="max-width: 100px; border-radius: 10%; margin-bottom: 5px;">
-        <h1 style="font-size: 24px; margin: 0;">Asset Disbursement Notification</h1>
+      <td style="background-color: #003366; padding: 20px; text-align: center; color: white;">
+        <img 
+          src="https://www.dropbox.com/scl/fi/92203jo81u7ui9xxdhhye/DBL-Logo.jpg?rlkey=3qu2kkolcqm0otly31d7a0wmo&st=hr3xfp7b&raw=1" 
+          alt="Company Logo" 
+          width="80" 
+          style="display: block; margin: auto; border-radius: 10%;">
+        <h1 style="font-size: 20px; margin: 10px 0 0; color: white;">Asset Assignment Notification</h1>
       </td>
     </tr>
 
-    <!-- Main Content -->
+    <!-- Main Content Section -->
     <tr>
-      <td style="padding: 40px; color: #444444; font-size: 16px;">
-        <h2 style="font-size: 22px; color: #003366;">Hello, ${name}</h2>
+      <td style="padding: 20px; font-size: 14px; color: #444444;">
+        <h2 style="font-size: 18px; color: #003366; margin-top: 0;">Hello ${name},</h2>
         <p>We are pleased to inform you that the following asset has been assigned to you:</p>
 
         <!-- Asset Details -->
-        <div style="background-color: #f4f8fc; padding: 20px; border-radius: 10px; border: 1px solid #dde6f2; margin-top: 20px;">
+        <div style="background-color: #f4f8fc; padding: 15px; border-radius: 5px; border: 1px solid #dde6f2; margin-top: 20px;">
           <p style="margin: 0;"><strong>Asset Name:</strong> ${asset_name}</p>
           <p style="margin: 0;"><strong>Asset Type:</strong> ${type}</p>
           <p style="margin: 0;"><strong>Serial Number:</strong> ${asset_serial_number}</p>
@@ -214,7 +210,7 @@ let getHTMLBody = async (name = "", asset_name = "", type = "", asset_serial_num
         </div>
 
         <!-- Notes -->
-        <p style="margin-top: 30px;">Please note the following guidelines:</p>
+        <p style="margin-top: 20px;">Please note the following guidelines:</p>
         <ul style="padding-left: 20px;">
           <li>Ensure proper usage and maintenance of the asset.</li>
           <li>Report any issues or damages to the IT department.</li>
@@ -222,20 +218,31 @@ let getHTMLBody = async (name = "", asset_name = "", type = "", asset_serial_num
         </ul>
 
         <p>If you have any questions, feel free to contact your IT Department.</p>
+        <p style="font-size: 14px; color: #444444; line-height: 1.6;">
+  For more about your IT Asset Info, visit 
+  <a href="https://helpdesk.dbl-group.com" target="_blank" style="text-decoration: none; color: #003366; font-weight: bold;">
+    DBL Group Asset Management System
+  </a>
+</p>
 
         <!-- Closing Section -->
-        <p style="margin-top: 30px;">Regards,</p>
+        <p style="margin-top: 10px;">Regards,</p>
         <p><strong>IT Infrastructure and Operation</strong></p>
 
-        <!-- Small Logo After Credentials -->
-        <img src="https://i.postimg.cc/Df8xNNt0/DBL-Logo.jpg" alt="Company Logo" style="width: 60px; margin-top: 20px; border-radius: 10%;">
+        <!-- Small Logo -->
+        <img 
+          src="https://www.dropbox.com/scl/fi/92203jo81u7ui9xxdhhye/DBL-Logo.jpg?rlkey=3qu2kkolcqm0otly31d7a0wmo&st=hr3xfp7b&raw=1" 
+          alt="Company Logo" 
+          width="60" 
+          height="60" 
+          style="display: block; margin:2px auto 0; border-radius: 10%;">
       </td>
     </tr>
 
     <!-- Footer -->
     <tr>
-      <td style="background-color: #003366; padding: 20px; text-align: center; color: white; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;">
-        <p style="margin: 0;">This is an automated email, please do not reply.</p>
+      <td style="background-color: #003366; padding: 10px; text-align: center; color: white;">
+        <p style="margin: 0; font-size: 12px;">This is an automated email, please do not reply.</p>
       </td>
     </tr>
 
@@ -252,7 +259,10 @@ let getHTMLBody = async (name = "", asset_name = "", type = "", asset_serial_num
       font-size: 90%;
     }
   }
-</style>`
+</style>
+
+
+`
 }
 
 const rendomGenerator = () => {

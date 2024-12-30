@@ -379,7 +379,7 @@ let getTopSolvedTicketList = () => {
             rt.solved_by 
         ORDER BY 
             solved_ticket_count DESC 
-        LIMIT 10;
+        LIMIT 5;
         `;
 }
 

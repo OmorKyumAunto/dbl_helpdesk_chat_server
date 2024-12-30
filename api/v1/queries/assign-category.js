@@ -33,9 +33,50 @@ let getBeforeCategoryAssignList = () => {
         u.id, u.employee_id;`;
 }
 
+// let getAfterCategoryAssignList = () => {
+//     return `SELECT *, uc.*  FROM ${user_unit_category_view} as ucv left join dbl_user_category_access as uc on ucv.user_id = uc.user_id`;
+// }
 let getAfterCategoryAssignList = () => {
-    return `SELECT * FROM ${user_unit_category_view}`;
-}
+    return `
+       SELECT 
+           ucv.user_id,
+           ucv.employee_id,
+           ucv.name,
+           ucv.email,
+           ucv.asset_unit_ids,
+           ucv.asset_unit_titles,
+           ucv.ticket_category_titles,
+           ucv.ticket_category_ids,
+           JSON_ARRAYAGG(
+               JSON_OBJECT(
+                   'access_id', uc.id,
+                   'category_id', uc.category_id,
+                   'category_name', tc.title
+               )
+           ) AS assign_category
+       FROM 
+           user_unit_category AS ucv
+       LEFT JOIN 
+           dbl_user_category_access AS uc 
+       ON 
+           ucv.user_id = uc.user_id
+       LEFT JOIN 
+           dbl_ticket_category AS tc 
+       ON 
+           uc.category_id = tc.id
+       GROUP BY 
+           ucv.user_id, 
+           ucv.employee_id, 
+           ucv.name, 
+           ucv.email, 
+           ucv.asset_unit_ids, 
+           ucv.asset_unit_titles, 
+           ucv.ticket_category_titles, 
+           ucv.ticket_category_ids;
+    `;
+};
+
+
 
 
 let getOnlyDataList = () => {

@@ -167,7 +167,8 @@ let getAllListUserWise = (id, key = '', priority = '', status = '', offset, limi
         u.name AS ticket_solved_employee_name,
         u.employee_id AS ticket_solved_employee_id,
         u.unit_name AS ticket_solved_unit_name,
-        u.contact_no AS ticket_solved_contact_no
+        u.contact_no AS ticket_solved_contact_no,
+        u.email AS ticket_solved_email
     FROM 
         dbl_raise_ticket AS rt
     JOIN 

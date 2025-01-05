@@ -366,6 +366,7 @@ let getTopSolvedTicketList = () => {
             u.id AS id, 
             u.name AS solved_by_name, 
                 u.employee_id AS employee_id, 
+                uv.email , uv.contact_no ,uv.unit_name,
             COUNT(rt.id) AS solved_ticket_count
         FROM 
             dbl_database.dbl_raise_ticket AS rt
@@ -373,6 +374,10 @@ let getTopSolvedTicketList = () => {
             dbl_users AS u 
         ON 
             u.id = rt.solved_by 
+        LEFT JOIN 
+            users_view AS uv 
+        ON 
+           rt.solved_by = uv.id 
         WHERE 
             rt.ticket_status = 'solved' 
         GROUP BY 

@@ -800,10 +800,10 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("ticketDelete")], 
 router.get('/super-admin-ticket-report', [verifyToken, routeAccessChecker("superAdminTicketReport")], async (req, res) => {
    
 
-    let { key = '',priority = '',category = '',unit = '',status = '' ,offset = 0,form_date,to_date,limit = 10} = req.query
+    let { key = '',priority = '',category = '',unit = '',status = '' ,offset = 0,from_date,to_date,limit = 10} = req.query
  
-     let result = await raiseTicketModel.getSuperAdminTicketReport(key,priority,category,unit,status,form_date,to_date,offset,limit)
-     let totalResult = await raiseTicketModel.getSuperAdminTicketReportTotalCount(key,priority,category,unit,status,form_date,to_date)
+     let result = await raiseTicketModel.getSuperAdminTicketReport(key,priority,category,unit,status,from_date,to_date,offset,limit)
+     let totalResult = await raiseTicketModel.getSuperAdminTicketReportTotalCount(key,priority,category,unit,status,from_date,to_date)
      return res.status(200).send({
          success: true,
          status: 200,

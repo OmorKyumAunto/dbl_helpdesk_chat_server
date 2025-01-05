@@ -190,6 +190,7 @@ try {
         unit_name : unit[0].title,
         created_by : user[0].name,
         created_employee_id : user[0].employee_id,
+        ticket_message : reqData.description
     }
 
    let getUnitAndCategoryMatchEmail = await raiseTicketModel.getUnitAndCategoryWiseEmail(reqData.unit_id,reqData.category_id)
@@ -210,6 +211,7 @@ try {
                     unit_name: unit[0].title,
                     created_by: user[0].name,
                     created_employee_id: user[0].employee_id,
+                    ticket_message : reqData.description
                 };
                 reqData.cc = ccEmail[0].email; 
             } else {

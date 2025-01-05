@@ -15,7 +15,7 @@ require('dotenv').config();
 router.get('/active-list', [verifyToken, routeAccessChecker("locationActiveList")], async (req, res) => {
     try {
 
-        const { unit, key, offset = 0,limit = 50 } = req.query
+        const { unit, key, offset = 0,limit = 1000 } = req.query
         let result = await locationModel.getList(unit, key,offset,limit);
         let resultTotalCount = await locationModel.getListTotalCount(unit,key);
 
@@ -50,7 +50,7 @@ router.get('/active-list', [verifyToken, routeAccessChecker("locationActiveList"
 router.get('/list', [verifyToken, routeAccessChecker("locationList")], async (req, res) => {
 
     try {
-        const { unit, key, offset = 0,limit = 50 } = req.query
+        const { unit, key, offset = 0,limit = 1000 } = req.query
         let result = await locationModel.getAllList(unit, key,offset,limit);
         let resultTotalCountList = await locationModel.getAllLocationDataByUnitId(unit,key);
 

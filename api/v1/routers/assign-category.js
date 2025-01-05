@@ -29,10 +29,19 @@ router.get('/after-assign-list', [verifyToken, routeAccessChecker("afterAssignLi
 
 
     const transformData = (data) => {
-        return data.map(item => ({
-            ...item,
-            assign_category: JSON.parse(item.assign_category || '[]') 
-        }));
+        return data.map(item => {
+            let assignCategory = [];
+            try {
+                assignCategory = JSON.parse(item.assign_category || '[]');
+            } catch (error) {
+                console.error('Invalid JSON in assign_category:', item.assign_category);
+                // Optionally handle the error (e.g., log it, assign a default value, etc.)
+            }
+            return {
+                ...item,
+                assign_category: assignCategory
+            };
+        });
     };
     
     // Fetch Data and Transform:

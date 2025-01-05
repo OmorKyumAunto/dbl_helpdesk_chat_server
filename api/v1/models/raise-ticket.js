@@ -334,9 +334,9 @@ let priorityBaseTicketList = async () => {
     });
 }
 
-let priorityBaseTicketListForAdmin = async () => {
+let priorityBaseTicketListForAdmin = async (user_id) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.priorityBaseTicketListForAdmin(), (error, result, fields) => {
+        connectionDblystem.query(queries.priorityBaseTicketListForAdmin(),[user_id], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });

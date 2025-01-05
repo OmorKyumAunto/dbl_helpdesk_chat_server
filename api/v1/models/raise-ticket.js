@@ -374,6 +374,14 @@ let monthWiseTicketCount = async () => {
     });
 }
 
+let monthWiseTicketCountAdmin = async (user_id) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.monthWiseTicketCountAdmin(),[user_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
 
 
 
@@ -386,6 +394,34 @@ let graphTicketTotalData = async () => {
     });
 }
 
+let graphTicketTotalDataAdmin = async (user_id) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.graphTicketTotalDataAdmin(),[user_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+let graphTicketTotalSolveDataAdmin = async (user_id) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.graphTicketTotalSolveDataAdmin(),[user_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+let graphTicketTotalUnSolveDataAdmin = async (user_id) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.graphTicketTotalUnSolveDataAdmin(),[user_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
 
 let graphTicketTotalSolveData = async () => {
     return new Promise((resolve, reject) => {
@@ -395,6 +431,16 @@ let graphTicketTotalSolveData = async () => {
         });
     });
 }
+
+let graphTicketTotalUnSolveData = async () => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.graphTicketTotalUnSolveData(), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 
 
 let existsUnitHasAssign = async (unit_id = 0) => {
@@ -482,7 +528,12 @@ module.exports = {
     getAdminTicketTotalInprogress,
     categoryBaseTicketListAdmin,
     priorityBaseTicketListForAdmin,
-    priorityBaseTicketListForAdmin
+    priorityBaseTicketListForAdmin,
+    monthWiseTicketCountAdmin,
+    graphTicketTotalDataAdmin,
+    graphTicketTotalSolveDataAdmin,
+    graphTicketTotalUnSolveData,
+    graphTicketTotalUnSolveDataAdmin
 }
 
 

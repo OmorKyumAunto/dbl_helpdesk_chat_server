@@ -127,9 +127,15 @@ router.get('/priority-base-ticket', [verifyToken, routeAccessChecker("categoryWi
 
 
 router.get('/raise-solve-ticket', [verifyToken, routeAccessChecker("raiseSolveTicketMOnthlyCount")], async (req, res) => {
-
-    let data = await raiseTicketModel.monthWiseTicketCount();
+    const { id, role_id } = req.decoded.userInfo
+    let data
+    if(role_id === 1){
+         data = await raiseTicketModel.monthWiseTicketCount();
   
+    }else{
+        data = await raiseTicketModel.monthWiseTicketCountAdmin(id);
+    }
+ 
     // Extract counts
     let totalTicket = data[0]?.total_ticket || 0; 
     let totalSolved = data[0]?.total_solved || 0; 
@@ -161,8 +167,24 @@ router.get('/raise-solve-ticket', [verifyToken, routeAccessChecker("raiseSolveTi
 
 router.get('/ticket-dashboard-data', [verifyToken, routeAccessChecker("ticketDashboardGraphData")], async (req, res) => {
   try {
-      let resultAssign = await raiseTicketModel.graphTicketTotalData();
-      let resultTotal = await raiseTicketModel.graphTicketTotalSolveData();
+    const { id, role_id } = req.decoded.userInfo
+    
+    let resultAssign
+    let resultTotal
+    let resultTotalUnsolved
+    if(role_id === 1){
+         resultAssign = await raiseTicketModel.graphTicketTotalData();
+         resultTotal = await raiseTicketModel.graphTicketTotalSolveData();
+         resultTotalUnsolved = await raiseTicketModel.graphTicketTotalUnSolveData();
+  
+    }else{
+        resultAssign = await raiseTicketModel.graphTicketTotalDataAdmin(id);
+
+        resultTotal = await raiseTicketModel.graphTicketTotalSolveDataAdmin(id);
+        resultTotalUnsolved = await raiseTicketModel.graphTicketTotalUnSolveDataAdmin(id);
+    }
+
+
       
       // Month names mapping
       const monthNames = [
@@ -179,7 +201,9 @@ router.get('/ticket-dashboard-data', [verifyToken, routeAccessChecker("ticketDas
               month: month.toString(),
               name: monthNames[month - 1], // Add month name
               raiseTickets: 0,
-              solvedTickets: 0 
+              solvedTickets: 0,
+              unsolvedTickets: 0
+
           });
       }
 
@@ -198,6 +222,13 @@ router.get('/ticket-dashboard-data', [verifyToken, routeAccessChecker("ticketDas
               data[monthIndex].solvedTickets = item.solvedTickets;
           }
       });
+
+      resultTotalUnsolved.forEach(item => {
+        const monthIndex = data.findIndex(d => d.month === item.month.toString());
+        if (monthIndex !== -1) {
+            data[monthIndex].unsolvedTickets = item.unsolvedTickets;
+        }
+    });
 
       return res.status(200).send({
           success: true,
@@ -218,3 +249,4 @@ router.get('/ticket-dashboard-data', [verifyToken, routeAccessChecker("ticketDas
   
 
 module.exports = router;
+

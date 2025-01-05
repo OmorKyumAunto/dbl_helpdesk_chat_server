@@ -466,6 +466,21 @@ let monthWiseTicketCount = () => {
     `
 }
 
+let monthWiseTicketCountAdmin = () => {
+    return `
+        SELECT 
+    COUNT(CASE WHEN status = 1 THEN ticket_table_id END) AS total_ticket,
+    COUNT(CASE WHEN status = 1 AND ticket_status = 'solved' THEN ticket_table_id END) AS total_solved,
+    COUNT(CASE WHEN status = 1 AND ticket_status = 'unsolved' THEN ticket_table_id END) AS total_unsolved
+    FROM 
+        admin_wise_ticket
+    WHERE 
+        ticket_created_at >= NOW() - INTERVAL 30 DAY
+        AND user_id = ?;
+
+    `
+}
+
 
 let graphTicketTotalData = () => {
     return `
@@ -484,6 +499,59 @@ let graphTicketTotalData = () => {
     `;
   };
 
+  
+let graphTicketTotalDataAdmin = () => {
+    return `
+      SELECT 
+        MONTH(ticket_created_at) as month,
+        COUNT(ticket_table_id) as raiseTickets 
+      FROM 
+        admin_wise_ticket 
+      WHERE 
+        status = 1 AND user_id = ? 
+        AND ticket_created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+      GROUP BY 
+        MONTH(ticket_created_at)
+      ORDER BY 
+        MONTH(ticket_created_at) DESC
+    `;
+};
+
+let graphTicketTotalSolveDataAdmin = () => {
+    return `
+      SELECT 
+        MONTH(ticket_created_at) as month,
+        COUNT(ticket_table_id) as solvedTickets 
+      FROM 
+        admin_wise_ticket 
+      WHERE 
+        status = 1 AND user_id = ?  AND ticket_status = 'solved'
+        AND ticket_created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+      GROUP BY 
+        MONTH(ticket_created_at)
+      ORDER BY 
+        MONTH(ticket_created_at) DESC
+    `;
+};
+let graphTicketTotalUnSolveDataAdmin = () => {
+    return `
+      SELECT 
+        MONTH(ticket_created_at) as month,
+        COUNT(ticket_table_id) as unsolvedTickets 
+      FROM 
+        admin_wise_ticket 
+      WHERE 
+        status = 1 AND user_id = ?  AND ticket_status = 'unsolved'
+        AND ticket_created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+      GROUP BY 
+        MONTH(ticket_created_at)
+      ORDER BY 
+        MONTH(ticket_created_at) DESC
+    `;
+};
+
+  
+
 let graphTicketTotalSolveData = () => {
     return `
       SELECT 
@@ -493,6 +561,22 @@ let graphTicketTotalSolveData = () => {
         dbl_raise_ticket 
       WHERE 
         status = 1  AND ticket_status = 'solved'
+        AND created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+      GROUP BY 
+        MONTH(created_at)
+      ORDER BY 
+        MONTH(created_at) DESC
+    `;
+};
+let graphTicketTotalUnSolveData = () => {
+    return `
+      SELECT 
+        MONTH(created_at) as month,
+        COUNT(id) as unsolvedTickets 
+      FROM 
+        dbl_raise_ticket 
+      WHERE 
+        status = 1  AND ticket_status = 'unsolved'
         AND created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
       GROUP BY 
         MONTH(created_at)
@@ -663,7 +747,12 @@ module.exports = {
     getAdminTicketTotalForward,
     getAdminTicketTotalInprogress,
     categoryBaseTicketListAdmin, 
-    priorityBaseTicketListForAdmin
+    priorityBaseTicketListForAdmin,
+    monthWiseTicketCountAdmin,
+    graphTicketTotalDataAdmin,
+    graphTicketTotalSolveDataAdmin,
+    graphTicketTotalUnSolveData,
+    graphTicketTotalUnSolveDataAdmin
 
 }
 

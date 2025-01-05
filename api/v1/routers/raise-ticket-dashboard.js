@@ -77,42 +77,23 @@ router.get('/top-solve-ticket', [verifyToken, routeAccessChecker("topSolvedTicke
 
 router.get('/category-base-ticket', [verifyToken, routeAccessChecker("priorityBaseTicket")], async (req, res) => {
 
-    const { id, role_id } = req.decoded.userInfo
-
-    let data
-    let totalTickets
-    let result
-    if(role_id === 1){
-        // Fetch data
+     const { id, role_id } = req.decoded.userInfo
+     let data
+     if(role_id === 1){
          data = await raiseTicketModel.priorityBaseTicketList();
-        
-        // Calculate total ticket count
-         totalTickets = data.reduce((sum, item) => sum + item.ticket_count, 0);
+     }else{
+         data = await raiseTicketModel.priorityBaseTicketListForAdmin(id);
+     }
+      // Calculate total ticket count
+      let  totalTickets = data.reduce((sum, item) => sum + item.ticket_count, 0);
 
-        // Calculate percentage for each category
-         result = data.map(item => ({
-            category_id: item.category_id,
-            category_title: item.category_title,
-            ticket_count: item.ticket_count,
-            percentage: totalTickets > 0 ? ((item.ticket_count / totalTickets) * 100).toFixed(0) : "0" 
-        }));
-
-    }else if(role_id === 2){
-        // Fetch data
-         data = await raiseTicketModel.priorityBaseTicketListForAdmin();
-                
-        // Calculate total ticket count
-         totalTickets = data.reduce((sum, item) => sum + item.ticket_count, 0);
-
-        // Calculate percentage for each category
-         result = data.map(item => ({
-            category_id: item.category_id,
-            category_title: item.category_title,
-            ticket_count: item.ticket_count,
-            percentage: totalTickets > 0 ? ((item.ticket_count / totalTickets) * 100).toFixed(0) : "0" 
-        }));
-
-    }
+      // Calculate percentage for each category
+      let  result = data.map(item => ({
+          category_id: item.category_id,
+          category_title: item.category_title,
+          ticket_count: item.ticket_count,
+          percentage: totalTickets > 0 ? ((item.ticket_count / totalTickets) * 100).toFixed(0) : "0" 
+      }));
     
     return res.status(200).send({
         success: true,

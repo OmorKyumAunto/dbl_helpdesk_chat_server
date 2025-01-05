@@ -1139,6 +1139,7 @@ else if(reqData.assign_update == 0){
 router.put('/assign-employee/:id',[verifyToken,routeAccessChecker("assignEmployee")],async(req,res) =>{
 
   let id = req.params.id
+  let user_id = req.decoded.userInfo.id
   let reqData = {
     "user_id": req.body.user_id,
     "assign_date":req.body.assign_date
@@ -1243,7 +1244,7 @@ let employeeData = await employeeModel.getById(userData[0].profile_id)
 let getAssinDate = await assetAssignModel.getById(id)
 
 // get assign name
-let getAssignName = await userModel.getById(result[0].created_by)
+let getAssignName = await userModel.getById(user_id)
 // get unit name
 let getUnitName = await unitModel.getById(result[0].unit_id)
 

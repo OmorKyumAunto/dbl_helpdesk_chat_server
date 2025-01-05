@@ -165,7 +165,9 @@ let getAllListUserWise = (id, key = '', priority = '', status = '', offset, limi
         ass.category AS asset_category,
         ass.serial_number AS serial_number,
         u.name AS ticket_solved_employee_name,
-        u.employee_id AS ticket_solved_employee_id
+        u.employee_id AS ticket_solved_employee_id,
+        u.unit_name AS ticket_solved_unit_name,
+        u.contact_no AS ticket_solved_contact_no
     FROM 
         dbl_raise_ticket AS rt
     JOIN 
@@ -175,7 +177,7 @@ let getAllListUserWise = (id, key = '', priority = '', status = '', offset, limi
     LEFT JOIN 
         dbl_asset AS ass ON ass.id = rt.asset_id
     LEFT JOIN 
-        dbl_users AS u ON u.id = rt.solved_by
+        users_view AS u ON u.id = rt.solved_by
 
 
     ${whereClause}

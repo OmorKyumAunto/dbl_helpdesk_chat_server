@@ -620,7 +620,7 @@ let getSuperAdminTicketReport = (key, priority, category, unit, status,from_date
         conditions.push(`ticket_category_id = '${category}'`);
     }
     if (from_date && to_date) {
-        conditions.push(`ticket_created_at BETWEEN '${from_date} 00:00:00' AND '${to_date} 23:59:59'`);
+        conditions.push(`ticket_created_at BETWEEN '${from_date}' AND '${to_date}'`);
     }
     if (key) {
         conditions.push(`(
@@ -675,7 +675,7 @@ let getSuperAdminTicketReportTotalCount = (key, priority, category, unit,status 
         conditions.push(`ticket_category_id = '${category}'`);
     }
     if (from_date && to_date) {
-        conditions.push(`ticket_created_at BETWEEN '${from_date} 00:00:00' AND '${to_date} 23:59:59'`);
+        conditions.push(`ticket_created_at BETWEEN '${from_date}' AND '${to_date}'`);
     }
     if (key) {
         conditions.push(`(
@@ -687,9 +687,9 @@ let getSuperAdminTicketReportTotalCount = (key, priority, category, unit,status 
             OR ticket_created_employee_id LIKE '%${key}%'
         )`);
     }
-    if (from_date && to_date) {
-        conditions.push(`ticket_updated_at BETWEEN '${from_date}' AND '${to_date}'`);
-    }
+    // if (from_date && to_date) {
+    //     conditions.push(`ticket_updated_at BETWEEN '${from_date}' AND '${to_date}'`);
+    // }
 
     if (conditions.length > 0) {
         baseQuery += " WHERE " + conditions.join(" AND ");

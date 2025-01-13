@@ -315,7 +315,59 @@ let getListOfDashboardGraph = () => {
     `;
   };
   
+
+  // let getListOfDashboardGraphAdmin = () => {
+  //   return `
+  //     SELECT 
+  //       MONTH(assign_date) as month,
+  //       COUNT(id) as total_assign_asset 
+  //     FROM 
+  //       dbl_asset_assign 
+  //     WHERE 
+  //       status = 1 AND user_id = ?
+  //       AND assign_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+  //     GROUP BY 
+  //       MONTH(assign_date)
+  //     ORDER BY 
+  //       MONTH(assign_date) DESC
+  //   `;
+  // };
+  let getListOfDashboardGraphAdmin = () => {
+    return `
+      SELECT 
+        MONTH(aas.assign_date) AS month,
+        COUNT(aas.id) AS total_assign_asset
+      FROM 
+        dbl_users AS u
+      JOIN 
+        admin_search_access AS sa 
+      ON 
+        sa.user_id = u.id
+      JOIN 
+        dbl_asset AS asset 
+      ON 
+        asset.unit_id = sa.unit_id
+      LEFT JOIN 
+        dbl_asset_assign AS aas 
+      ON 
+        aas.user_id = u.id
+      WHERE 
+        u.role_id = 2 
+        AND asset.status = 1
+        AND aas.status = 1        -- Filter by active asset assignments
+        AND aas.assign_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+        AND u.id = ?
+      GROUP BY 
+        MONTH(aas.assign_date)
+      ORDER BY 
+        MONTH(aas.assign_date) DESC;
+    `;
+  };
   
+  
+
+
+
   let getListOfDashboardGraph2 = () => {
     return `
       SELECT 
@@ -334,6 +386,34 @@ let getListOfDashboardGraph = () => {
   };
 
 
+let getListOfDashboardGraph2Admin = () => {
+    return `
+SELECT 
+    MONTH(aav.purchase_date) AS month,
+    COUNT(aav.id) AS total_asset
+FROM 
+    dbl_users AS u
+JOIN 
+    admin_search_access AS sa 
+ON 
+    sa.user_id = u.id
+JOIN 
+    asset_assign_user_view AS aav 
+ON 
+    aav.asset_unit_id = sa.unit_id
+WHERE 
+    u.role_id = 2 
+    AND u.id = ?  -- Replace ? with the actual value in your code
+    AND aav.purchase_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+GROUP BY 
+    MONTH(aav.purchase_date)
+ORDER BY 
+    MONTH(aav.purchase_date) DESC;
+
+        `
+  };
+  
+  
 const updateByAlbum = () => {
     return `UPDATE ${table_name} SET ? WHERE id = ?`;
 }
@@ -445,7 +525,9 @@ module.exports = {
     employeeWiseAssigntotalAssetCount,
     adminDistributedAssetList,
     adminDistributedTotalAssetList,
-    adminWiseAccessoriesData
+    adminWiseAccessoriesData,
+    getListOfDashboardGraphAdmin,
+    getListOfDashboardGraph2Admin
 
 
 }

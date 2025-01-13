@@ -35,8 +35,22 @@ router.get('/dashboard-data',[verifyToken,routeAccessChecker("dashboardData")], 
 
 router.get('/dashboard-graph-data', [verifyToken, routeAccessChecker("dashboardGraphData")], async (req, res) => {
   try {
-    let resultAssign = await assetModel.getListOfDashboardGraph();
-    let resultTotal = await assetModel.getListOfDashboardGraph2();
+
+    const {id , role_id} = req.decoded.userInfo
+
+    // let resultAssign = await assetModel.getListOfDashboardGraph();
+    // let resultTotal = await assetModel.getListOfDashboardGraph2();
+
+    let resultAssign 
+    let resultTotal 
+
+    if(role_id === 1){
+       resultAssign = await assetModel.getListOfDashboardGraph();
+       resultTotal = await assetModel.getListOfDashboardGraph2();
+    }else {
+      resultAssign = await assetModel.getListOfDashboardGraphAdmin(id);
+      resultTotal = await assetModel.getListOfDashboardGraph2Admin(id);
+    }
 
     // Month names mapping
     const monthNames = [

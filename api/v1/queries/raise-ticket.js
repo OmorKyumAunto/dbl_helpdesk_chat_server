@@ -293,6 +293,10 @@ let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ?  and status = 1 `;  // added status = 1
 }
 
+let adminWiseUnitAndCategory = () => {
+    return `SELECT * FROM admin_wise_ticket where  asset_unit_id = ?  and ticket_category_id = ? `;  
+}
+
 let employeeWiseTicket = () => {
     return `SELECT * FROM ${table_name} where  id = ? and created_by = ?`;
 }
@@ -760,7 +764,8 @@ module.exports = {
     graphTicketTotalDataAdmin,
     graphTicketTotalSolveDataAdmin,
     graphTicketTotalUnSolveData,
-    graphTicketTotalUnSolveDataAdmin
+    graphTicketTotalUnSolveDataAdmin,
+    adminWiseUnitAndCategory
 
 }
 

@@ -180,6 +180,18 @@ try {
 
         });
     }
+    
+
+    let existsUnitAndCategory = await raiseTicketModel.adminWiseUnitAndCategory(reqData.unit_id,reqData.category_id);
+    if (!existsUnitAndCategory.length) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "Unit and category not found for the admin.",
+
+        });
+    }
+
    
     reqData.ticket_id = common.rendomGenerator()
     let  user = await userModel.getById(req.decoded.userInfo.id);

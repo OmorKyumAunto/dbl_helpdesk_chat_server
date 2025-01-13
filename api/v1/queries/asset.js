@@ -386,33 +386,33 @@ let getListOfDashboardGraph = () => {
   };
 
 
-let getListOfDashboardGraph2Admin = () => {
-    return `
-SELECT 
-    MONTH(aav.purchase_date) AS month,
-    COUNT(aav.id) AS total_asset
-FROM 
-    dbl_users AS u
-JOIN 
-    admin_search_access AS sa 
-ON 
-    sa.user_id = u.id
-JOIN 
-    asset_assign_user_view AS aav 
-ON 
-    aav.asset_unit_id = sa.unit_id
-WHERE 
-    u.role_id = 2 
-    AND u.id = ?  -- Replace ? with the actual value in your code
-    AND aav.purchase_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
-GROUP BY 
-    MONTH(aav.purchase_date)
-ORDER BY 
-    MONTH(aav.purchase_date) DESC;
+  let getListOfDashboardGraph2Admin = () => {
+      return `
+  SELECT 
+      MONTH(aav.purchase_date) AS month,
+      COUNT(aav.id) AS total_asset
+  FROM 
+      dbl_users AS u
+  JOIN 
+      admin_search_access AS sa 
+  ON 
+      sa.user_id = u.id
+  JOIN 
+      asset_assign_user_view AS aav 
+  ON 
+      aav.asset_unit_id = sa.unit_id
+  WHERE 
+      u.role_id = 2 
+      AND u.id = ?  -- Replace ? with the actual value in your code
+      AND aav.purchase_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+  GROUP BY 
+      MONTH(aav.purchase_date)
+  ORDER BY 
+      MONTH(aav.purchase_date) DESC;
 
-        `
-  };
-  
+          `
+    };
+    
   
 const updateByAlbum = () => {
     return `UPDATE ${table_name} SET ? WHERE id = ?`;

@@ -164,6 +164,16 @@ let getById = async (id = 0) => {
     });
 }
 
+let adminWiseUnitAndCategory = async (asset_unit_id = 0 , ticket_category_id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.adminWiseUnitAndCategory(), [asset_unit_id,ticket_category_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
 let employeeWiseTicket = async (id = 0, user_id = 0) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.employeeWiseTicket(), [id,user_id], (error, result, fields) => {
@@ -533,7 +543,8 @@ module.exports = {
     graphTicketTotalDataAdmin,
     graphTicketTotalSolveDataAdmin,
     graphTicketTotalUnSolveData,
-    graphTicketTotalUnSolveDataAdmin
+    graphTicketTotalUnSolveDataAdmin,
+    adminWiseUnitAndCategory
 }
 
 

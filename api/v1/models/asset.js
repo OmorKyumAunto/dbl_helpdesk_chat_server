@@ -278,6 +278,16 @@ let getListOfDashboard = async () => {
   };
   
 
+  let getListOfDashboardGraphAdmin = async (user_id = 0) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getListOfDashboardGraphAdmin(),[user_id],(error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  };
+  
+
   let getListOfDashboardGraph2 = async () => {
     return new Promise((resolve, reject) => {
       connectionDblystem.query(queries.getListOfDashboardGraph2(), (error, result, fields) => {
@@ -287,7 +297,15 @@ let getListOfDashboard = async () => {
     });
   };
   
-
+  let getListOfDashboardGraph2Admin = async (user_id) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getListOfDashboardGraph2Admin(),[user_id], (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  };
+  
 
 
 
@@ -529,6 +547,8 @@ module.exports = {
    employeeWiseAssigntotalAssetCount,
    adminDistributedAssetList,
    adminDistributedAssetTotalList,
-   adminWiseAccessoriesData
+   adminWiseAccessoriesData,
+   getListOfDashboardGraphAdmin,
+   getListOfDashboardGraph2Admin
    
 }

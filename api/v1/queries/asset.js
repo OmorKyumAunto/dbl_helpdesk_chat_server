@@ -350,11 +350,11 @@ let getListOfDashboardGraph = () => {
       LEFT JOIN 
         dbl_asset_assign AS aas 
       ON 
-        aas.user_id = u.id
+        aas.asset_id = asset.id
       WHERE 
         u.role_id = 2 
         AND asset.status = 1
-        AND aas.status = 1        -- Filter by active asset assignments
+        AND aas.status = 1        
         AND aas.assign_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
         AND u.id = ?
       GROUP BY 

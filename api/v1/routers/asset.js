@@ -774,9 +774,17 @@ router.delete('/delete/:id',[verifyToken, routeAccessChecker("assetUpdate")],asy
         status: 404,
         message: "Asset data not found."
       });
-  
+
     } 
-  
+   let checkAlreadyAssign = await assetAssignModel.getById(id);
+   if (checkAlreadyAssign.length) {
+    return res.status(400).send({
+      success: false,
+      status: 400,
+      message: "This asset already assign.Please move to stock first."
+    });
+
+  } 
     let current_date = new Date(); 
     let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
   
@@ -787,6 +795,8 @@ router.delete('/delete/:id',[verifyToken, routeAccessChecker("assetUpdate")],asy
   
       // get id wise data form db 
       let result = await assetModel.updateById(id,data);
+      // let deleteAssignStock = await assetAssignModel.deleteAssetById(id);
+      // let deleteAssignStockHistory = await assetHistoryModel.deleteAssetById(id);
   
        if (result.affectedRows == undefined || result.affectedRows < 1) {
            return res.status(500).send({
@@ -859,7 +869,6 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateAsset")],
   async (req, res) => {
     
    let id = req.params.id
-  
       // body data
       let reqData = {
         "name": req.body.name,
@@ -872,14 +881,13 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateAsset")],
         "model":req.body.model,
         "specification":req.body.specification,
         "device_remarks":req.body.device_remarks,
-        "assign_update": req.body.assign_update,
+        "assign_update": parseInt(req.body.assign_update),
         "user_id":req.body.user_id,
         "location":req.body.location,
         "assign_date":req.body.assign_date,
         "price":req.body.price,
       }
 
-  
     let current_date = new Date(); 
     let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
 
@@ -1019,13 +1027,91 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateAsset")],
   }
 
 
-if(reqData.assign_update == 1){
+  if(reqData.assign_update === 1){
+    // get asset assign data 
+    let assetAssignData = await assetAssignModel.getById(id)
 
-  // get asset assign data 
-  let assetAssignData = await assetAssignModel.getById(id)
+    if(assetAssignData.length){
+      if(assetAssignData[0].user_id != reqData.user_id ){
+        // employee validation
+        if(isEmpty(reqData.user_id)){
+          return res.status(400).send({
+              "success": false,
+              "status": 400,
+              "message":"User id cannot be empty."
+        });
+        }
 
-  if(assetAssignData.length){
-    if(assetAssignData[0].user_id != reqData.user_id ){
+
+
+        if (!moment(reqData.assign_date, "YYYY-MM-DD", true).isValid()) {
+        return res.status(400).send({
+          success: false,
+          status: 400,
+          message: "Invalid assign date."
+        });
+        } else if (current_time.isBefore(moment(reqData.assign_date, "YYYY-MM-DD"))) {
+        return res.status(400).send({
+          success: false,
+          status: 400,
+          message: "Invalid assign date."
+        });
+        }
+
+
+        let updateEmployeeDataCreate = {
+        asset_id : id,
+        user_id : reqData.user_id,
+        assign_date : reqData.assign_date
+        }
+
+        let updateEmployeeData = {
+          asset_id : id,
+          status : 0
+          }
+    
+
+        let result2 = await assetAssignModel.updateById(id,updateEmployeeData);
+
+        let createNew = await assetAssignModel.addNew(updateEmployeeDataCreate);
+
+
+        // get history id
+        let assetHistoryData = await assetHistoryModel.getByAssetId(id)
+
+        let userData = await userModel.getById(reqData.user_id)
+
+        
+        let assetHistoryUpdate = {
+          asset_id : id,
+          status : 0,
+        }
+
+        let assetHistoryCreate = {
+          asset_id : id,
+          user_id : reqData.user_id,
+          history : `This asset assign To ${userData[0].name} and employee id: ${userData[0].employee_id}`,
+          asset_assign_date : reqData.assign_date
+        }
+
+        
+
+        let historyUpdate = await assetHistoryModel.updateById(id,assetHistoryUpdate);
+        let historyCreate = await assetHistoryModel.addNew(assetHistoryCreate);
+
+
+
+        if (historyCreate.affectedRows == undefined || historyCreate.affectedRows < 1) {
+        return res.status(500).send({
+            "success": true,
+            "status": 500,
+            "message": "Something Wrong in system database."
+        });
+        }
+
+      }
+    
+    }else{
       // employee validation
       if(isEmpty(reqData.user_id)){
         return res.status(400).send({
@@ -1052,49 +1138,18 @@ if(reqData.assign_update == 1){
       }
 
 
-      let updateEmployeeDataCreate = {
+      let updateEmployeeData = {
       asset_id : id,
-      user_id : reqData.user_id,
+      user_id : reqData.employee_id,
       assign_date : reqData.assign_date
       }
 
-      let updateEmployeeData = {
-        asset_id : id,
-        status : 0
-        }
-  
 
-      let result2 = await assetAssignModel.updateById(id,updateEmployeeData);
-
-      let createNew = await assetAssignModel.addNew(updateEmployeeDataCreate);
+      let result = await assetModel.updateById(id,{is_assign :1 , remarks: 'assigned'});
+      let result2 = await assetAssignModel.addNew(updateEmployeeData);
 
 
-      // get history id
-      let assetHistoryData = await assetHistoryModel.getByAssetId(id)
-
-      let userData = await userModel.getById(reqData.user_id)
-
-      
-      let assetHistoryUpdate = {
-        asset_id : id,
-        status : 0,
-      }
-
-      let assetHistoryCreate = {
-        asset_id : id,
-        user_id : reqData.user_id,
-        history : `This asset assign To ${userData[0].name} and employee id: ${userData[0].employee_id}`,
-        asset_assign_date : reqData.assign_date
-      }
-
-      
-
-      let historyUpdate = await assetHistoryModel.updateById(id,assetHistoryUpdate);
-      let historyCreate = await assetHistoryModel.addNew(assetHistoryCreate);
-
-
-
-      if (historyCreate.affectedRows == undefined || historyCreate.affectedRows < 1) {
+      if (result2.affectedRows == undefined || result2.affectedRows < 1) {
       return res.status(500).send({
           "success": true,
           "status": 500,
@@ -1103,71 +1158,25 @@ if(reqData.assign_update == 1){
       }
 
     }
-  
-  }else{
-     // employee validation
-     if(isEmpty(reqData.user_id)){
-      return res.status(400).send({
-          "success": false,
-          "status": 400,
-          "message":"User id cannot be empty."
-    });
+  }else if(reqData.assign_update === 0){
+    let data = {
+      status : 0
     }
+    let updateAssignDataStatus = await assetAssignModel.updateById(id,data);
+    let updateAssignDataHistoryStatus = await assetHistoryModel.updateById(id,data);
 
-
-
-    if (!moment(reqData.assign_date, "YYYY-MM-DD", true).isValid()) {
-    return res.status(400).send({
-      success: false,
-      status: 400,
-      message: "Invalid assign date."
-    });
-    } else if (current_time.isBefore(moment(reqData.assign_date, "YYYY-MM-DD"))) {
-    return res.status(400).send({
-      success: false,
-      status: 400,
-      message: "Invalid assign date."
-    });
+    let result = await assetModel.updateById(id,{remarks: 'in_stock',is_assign : 0});
+    
+    
+    if (result.affectedRows == undefined || result.affectedRows < 1) {
+      return res.status(500).send({
+          "success": true,
+          "status": 500,
+          "message": "Something Wrong in system database."
+      });
     }
-
-
-    let updateEmployeeData = {
-    asset_id : id,
-    user_id : reqData.employee_id,
-    assign_date : reqData.assign_date
-    }
-
-
-    let result = await assetModel.updateById(id,{is_assign :1 , remarks: 'assigned'});
-    let result2 = await assetAssignModel.addNew(updateEmployeeData);
-
-
-    if (result2.affectedRows == undefined || result2.affectedRows < 1) {
-    return res.status(500).send({
-        "success": true,
-        "status": 500,
-        "message": "Something Wrong in system database."
-    });
-    }
-
+    
   }
-  }
-else if(reqData.assign_update == 0){
-  
-  let deleteData = await assetAssignModel.deleteAssetById(id);
-
-  let result = await assetModel.updateById(id,{remarks: 'in_stock',is_assign : 0});
-  
-  
-  if (result.affectedRows == undefined || result.affectedRows < 1) {
-    return res.status(500).send({
-        "success": true,
-        "status": 500,
-        "message": "Something Wrong in system database."
-    });
-  }
-  
-}
 
   
   if (willWeUpdate == 1) {

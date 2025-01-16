@@ -31,10 +31,12 @@ router.post('/add',[verifyToken, routeAccessChecker("addAsset")],async (req, res
       "purchase_date":req.body.purchase_date,
       "serial_number":req.body.serial_number,
       "po_number":req.body.po_number,
+      "asset_no":req.body.asset_no,
       "unit_id":req.body.unit_id,
       "location":req.body.location,
       "model":req.body.model,
       "specification":req.body.specification,
+      "device_remarks":req.body.device_remarks,
       "is_assign":req.body.is_assign,
       "employee_id":req.body.employee_id,
       "is_new_employee": req.body.is_new_employee,
@@ -218,12 +220,14 @@ if (reqData.is_new_employee == 0  && reqData.is_assign == 1) {
   purchase_date: reqData.purchase_date,
   serial_number: reqData.serial_number,
   po_number: reqData.po_number,
+  asset_no: reqData.asset_no,
   is_assign: reqData.is_assign,
   remarks : 'assigned',
   unit_id : reqData.unit_id,
   location : reqData.location,
   model : reqData.model,
   specification : reqData.specification,
+  device_remarks : reqData.device_remarks,
   price:reqData.price
 }
 
@@ -274,11 +278,13 @@ let data2 = {
   purchase_date: reqData.purchase_date,
   serial_number: reqData.serial_number,
   po_number: reqData.po_number,
+  asset_no: reqData.asset_no,
   is_assign: reqData.is_assign,
   unit_id : reqData.unit_id,
   location : reqData.location,
   model : reqData.model,
   specification : reqData.specification,
+  device_remarks : reqData.device_remarks,
   price : parseInt(reqData.price),
   created_by : req.decoded.userInfo.id
 }
@@ -551,11 +557,12 @@ router.get('/list', [verifyToken, routeAccessChecker("assetList")],async (req, r
     "unit": req.query.unit,
     "location": req.query.location,
     "type": req.query.type,
+    "status": parseInt(req.query.status)
   };
-  
-  let { offset, limit, key, unit, type , location} = reqData;
 
-  let result = await assetModel.getList(offset, limit, key, unit, type, location);
+  let { offset, limit, key, unit, type , location,status} = reqData;
+ 
+  let result = await assetModel.getList(offset, limit, key, unit, type, location,status);
 
   for (let index = 0; index < result.length; index++) {
     const element = result[index].unit_id;
@@ -589,7 +596,7 @@ router.get('/list', [verifyToken, routeAccessChecker("assetList")],async (req, r
 
 
   }
-  let totalCount = await assetModel.getTotalList(key, unit, type,location);
+  let totalCount = await assetModel.getTotalList(key, unit, type,location,status);
 
   return res.status(200).send({
     success: true,
@@ -800,6 +807,52 @@ router.delete('/delete/:id',[verifyToken, routeAccessChecker("assetUpdate")],asy
 });
 
 
+// active / deactivate
+router.put('/changeStatus/:id',[verifyToken, routeAccessChecker("assetChangeStatus")],async (req, res) => {
+
+  let id = req.params.id
+
+  // get id wise data form db 
+  let existingById = await assetModel.getByIdActiveData(id);
+
+  // check this id already existing in database or not
+  if (isEmpty(existingById)) {
+    return res.status(404).send({
+      success: false,
+      status: 404,
+      message: "Asset data not found."
+    });
+
+  } 
+
+  let current_date = new Date(); 
+  let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+
+  let data = {
+    status: existingById[0].status == 1 ? 2 : 1,
+   }
+
+
+    // get id wise data form db 
+    let result = await assetModel.updateById(id,data);
+
+     if (result.affectedRows == undefined || result.affectedRows < 1) {
+         return res.status(500).send({
+             "success": true,
+             "status": 500,
+             "message": "Something Wrong in system database."
+         });
+     }
+   
+   
+     return res.status(200).send({
+         "success": true,
+         "status": 200,
+         "message": "Asset status successfully updated."
+     });
+  
+
+});
 
 //update
 router.put('/update/:id', [verifyToken, routeAccessChecker("updateAsset")],
@@ -814,9 +867,11 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateAsset")],
         "purchase_date":req.body.purchase_date,
         "serial_number":req.body.serial_number,
         "po_number":req.body.po_number,
+        "asset_no":req.body.asset_no,
         "unit_id":req.body.unit_id,
         "model":req.body.model,
         "specification":req.body.specification,
+        "device_remarks":req.body.device_remarks,
         "assign_update": req.body.assign_update,
         "user_id":req.body.user_id,
         "location":req.body.location,
@@ -900,6 +955,13 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateAsset")],
   
     }
 
+  // check asset no
+    if(existingDataById[0].asset_no != reqData.asset_no){
+      willWeUpdate = 1
+      updateData.asset_no = reqData.asset_no
+  
+    }
+
    // check unit_id
    if(existingDataById[0].unit_id != reqData.unit_id){
     willWeUpdate = 1
@@ -932,6 +994,12 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateAsset")],
    if(existingDataById[0].specification != reqData.specification){
     willWeUpdate = 1
     updateData.specification = reqData.specification
+
+  }
+
+  if(existingDataById[0].device_remarks != reqData.device_remarks){
+    willWeUpdate = 1
+    updateData.device_remarks = reqData.device_remarks
 
   }
 
@@ -1511,8 +1579,10 @@ router.post('/upload-asset', [verifyToken, routeAccessChecker("uploadAsset")], u
               purchase_date: purchase_date,
               serial_number: row['Serial number'],
               po_number: row['PO number'],
+              asset_no: row['Asset no'],
               model: row['Model'],
               specification: row['Specification'],
+              device_remarks: row['Device remarks'],
               unit_name: row['Unit name'],
               location_name: row['Location'],
               price : row['Price'],

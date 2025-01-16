@@ -15,8 +15,8 @@ let getByEmployee = () => {
 }
 
 
-let getList = (offset, limit, key, unit, type , location) => {
-  let searchCondition = '';
+let getList = (offset, limit, key, unit, type, location, status) => {
+  let searchCondition = 'status != 0 '; // Default condition to exclude deleted records
   if (key) {
       searchCondition += `AND (LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) LIKE LOWER('%${key}%') OR UPPER(serial_number) LIKE UPPER('%${key}%') OR UPPER(po_number) LIKE UPPER('%${key}%')) `;
   }
@@ -29,9 +29,13 @@ let getList = (offset, limit, key, unit, type , location) => {
   if (type) {
     searchCondition += `AND lower(remarks) LIKE lower('%${type}%') `;
   }
+  if (status) {
+    searchCondition += `AND status = '${status}' `;
+  }
 
-  return `SELECT * FROM ${table_name} WHERE status = 1 ${searchCondition} ORDER BY id desc LIMIT ${limit} OFFSET ${offset}`;
-}
+  return `SELECT * FROM ${table_name} WHERE ${searchCondition} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+};
+
 
 
 let adminUnitWisetotalAssetCount = () => {
@@ -76,8 +80,8 @@ let employeeWiseAssigntotalAssetCount = () => {
 
 
 
-let getTotalList = (key, unit, type,location) => {
-  let searchCondition = '';
+let getTotalList = (key, unit, type,location,status) => {
+  let searchCondition = 'status != 0 ';
 
   if (key) {
     searchCondition += `AND (LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) LIKE LOWER('%${key}%') OR UPPER(serial_number) LIKE UPPER('%${key}%') OR UPPER(po_number) LIKE UPPER('%${key}%')) `;
@@ -92,8 +96,11 @@ let getTotalList = (key, unit, type,location) => {
   if (type) {
     searchCondition += `AND lower(remarks) LIKE lower('%${type}%') `;
   }
+  if (status) {
+    searchCondition += `AND status = '${status}' `;
+  }
 
-  return `SELECT * FROM ${table_name} WHERE status = 1 ${searchCondition} ORDER BY id desc `;
+  return `SELECT * FROM ${table_name} WHERE  ${searchCondition} ORDER BY id desc `;
 }
 
 
@@ -260,6 +267,10 @@ let getLastData = () => {
 
 let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ? and status = 1 `;
+}
+
+let getByIdActiveData = () => {
+  return `SELECT * FROM ${table_name} where  id = ? and status != 0 `;
 }
 
 let getDuplicateSerialNumber = () => {
@@ -527,7 +538,6 @@ module.exports = {
     adminDistributedTotalAssetList,
     adminWiseAccessoriesData,
     getListOfDashboardGraphAdmin,
-    getListOfDashboardGraph2Admin
-
-
+    getListOfDashboardGraph2Admin,
+    getByIdActiveData
 }

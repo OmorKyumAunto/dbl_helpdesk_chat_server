@@ -79,9 +79,9 @@ let getByExistsEmployee = async(employee_id = "") => {
 
 
 
-let getList = async (offset, limit, key,unit,type, location) => {
+let getList = async (offset, limit, key,unit,type, location,status) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getList(offset, limit, key,unit,type,location), (error, result, fields) => {
+      connectionDblystem.query(queries.getList(offset, limit, key,unit,type,location,status), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -117,9 +117,9 @@ let employeeWiseAssigntotalAssetCount = async (user_id) => {
   }
 
 
-let getTotalList = async (key, unit, type,location) => {
+let getTotalList = async (key, unit, type,location,status) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getTotalList(key, unit, type,location), (error, result, fields) => {
+      connectionDblystem.query(queries.getTotalList(key, unit, type,location,status), (error, result, fields) => {
         if (error) reject(error)
         else resolve(result);
       });
@@ -184,6 +184,17 @@ let getById = async (id = 0) => {
         });
     });
 }
+
+let getByIdActiveData = async (id = 0) => {
+  return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getByIdActiveData(), [id], (error, result, fields) => {
+          if (error) reject(error)
+          else resolve(result)
+      });
+  });
+}
+
+
 
 let getDuplicateSerialNumber = async (serial_number = 0) => {
   return new Promise((resolve, reject) => {
@@ -549,6 +560,7 @@ module.exports = {
    adminDistributedAssetTotalList,
    adminWiseAccessoriesData,
    getListOfDashboardGraphAdmin,
-   getListOfDashboardGraph2Admin
+   getListOfDashboardGraph2Admin,
+   getByIdActiveData
    
 }

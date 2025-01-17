@@ -38,7 +38,6 @@ router.post('/send-otp', async (req, res) => {
     otp : otp
   }
    let result = await forgetPasswordModel.addNew(otpData);
-   console.log("first",result)
 
     await common.forgetPasswordSendOtp(email, 'Password Reset Request', emailData );
 
@@ -55,8 +54,7 @@ router.post('/send-otp', async (req, res) => {
         "status": 201,
         "message": "Successfully send email otp.Please check your email.",
         "data" : {
-            email : email,
-            created_at : result.created_at
+            email : email
         }
     });
 
@@ -119,5 +117,52 @@ router.post('/verify-otp', async (req, res) => {
 });
 
 
+router.post('/reset-password', async (req, res) => {
+
+    let email =  req.body.email
+
+    let existingEmail = await userModel.getUserByEmail(email);
+    if (!existingEmail.length) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "This email not register.",
+
+        });
+    }
+
+   let otp = await common.rendomGenerator()
+
+   let otpData = {
+     user_id : existingEmail[0].id,
+     otp : otp
+   }
+
+   let emailData = {
+   name : existingEmail[0].name,
+    otp : otp
+  }
+   let result = await forgetPasswordModel.addNew(otpData);
+
+    await common.forgetPasswordSendOtp(email, 'Password Reset Request', emailData );
+
+    if (result.affectedRows == undefined || result.affectedRows < 1) {
+        return res.status(500).send({
+            "success": false,
+            "status": 500,
+            "message": "Something Wrong in system database."
+        });
+    }
+
+    return res.status(201).send({
+        "success": true,
+        "status": 201,
+        "message": "Successfully send email otp.Please check your email.",
+        "data" : {
+            email : email
+        }
+    });
+
+});
 
 module.exports = router;

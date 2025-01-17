@@ -125,10 +125,24 @@ let addNew = () => {
     return `INSERT INTO ${table_name} SET ?`;
 }
 
-const updateById = () => {
-    return `UPDATE ${table_name} SET ? WHERE user_id = ? order by created_at desc`;
-}
 
+
+const updateById = () => {
+    return `
+        UPDATE ${table_name}
+        SET ?
+        WHERE id = (
+            SELECT id 
+            FROM (
+                SELECT id 
+                FROM ${table_name}
+                WHERE user_id = ?
+                ORDER BY created_at DESC
+                LIMIT 1
+            ) AS subquery
+        )
+    `;
+};
 
 
 

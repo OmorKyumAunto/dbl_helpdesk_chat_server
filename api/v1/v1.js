@@ -22,6 +22,7 @@ const  ticketCategoryRouter = require('./routers/ticket-category');
 const  assignCategoryRouter = require('./routers/assign-category');
 const  raiseTicketRouter = require('./routers/raise-ticket');
 const  raiseTicketDashboardRouter = require('./routers/raise-ticket-dashboard');
+const  forgetPasswordRouter = require('./routers/forget-password');
 
 
 
@@ -39,6 +40,7 @@ router.use('/ticket-category', ticketCategoryRouter);
 router.use('/assign-category', assignCategoryRouter);
 router.use('/raise-ticket', raiseTicketRouter);
 router.use('/raise-ticket-deshboard', raiseTicketDashboardRouter);
+router.use('/forget-password', forgetPasswordRouter);
 
 
 

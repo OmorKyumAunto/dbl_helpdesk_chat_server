@@ -6,7 +6,7 @@ let asset_table_view = "asset_assign_user_view"
 
 
 let getUserByEmail = () => {
-    return `SELECT * FROM ${table_name} where  email = ? and status = 1 `;
+    return `SELECT * FROM ${table_name} where  email = ? `;
 }
 
 let addNew = () => {

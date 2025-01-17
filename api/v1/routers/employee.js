@@ -760,7 +760,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("employeeUpdate")],
    if(existingDataById[0].email != reqData.email){
     willWeUpdate = 1
     updateData.email = reqData.email
-
+    userUpdateData.email = reqData.email
   }
 
 

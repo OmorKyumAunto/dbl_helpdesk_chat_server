@@ -38,6 +38,7 @@ router.post('/send-otp', async (req, res) => {
     otp : otp
   }
    let result = await forgetPasswordModel.addNew(otpData);
+   console.log("first",result)
 
     await common.forgetPasswordSendOtp(email, 'Password Reset Request', emailData );
 
@@ -52,7 +53,11 @@ router.post('/send-otp', async (req, res) => {
     return res.status(201).send({
         "success": true,
         "status": 201,
-        "message": "Successfully send email otp.Please check your email."
+        "message": "Successfully send email otp.Please check your email.",
+        "data" : {
+            email : email,
+            created_at : result.created_at
+        }
     });
 
 });
@@ -105,10 +110,10 @@ router.post('/verify-otp', async (req, res) => {
         });
     }
 
-    return res.status(201).send({
+    return res.status(200).send({
         "success": true,
-        "status": 201,
-        "message": "Successfully send email otp.Please check your email."
+        "status": 200,
+        "message": "Successfully matched your otp."
     });
 
 });

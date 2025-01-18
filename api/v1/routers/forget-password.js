@@ -4,7 +4,7 @@ const router = express.Router();
 const forgetPasswordModel = require('../models/forget-password');
 const userModel = require('../models/user');
 const common = require('../common/common');
-
+const jwt = require('jsonwebtoken');
 const verifyToken = require('../middlewares/verifyToken');
 
 

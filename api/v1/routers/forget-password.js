@@ -91,11 +91,16 @@ router.post('/verify-otp', async (req, res) => {
         });
     }
 
-    let emailData = {
-        name : existingEmail[0].name,
+    let data = {
+        email : existingEmail[0].name,
         otp : reqData.otp
     }
 
+    let token = jwt.sign(profileData, global.config.secretKey, {
+        algorithm: global.config.algorithm,
+        expiresIn: global.config.forgetPasswordExpiresIn, // 10 min
+    });
+    
    let result = await forgetPasswordModel.updateById(existingEmail[0].id,{is_matched : 1});
 
   //  await common.forgetPasswordSendOtp(email, 'Password Reset Request', emailData );

@@ -16,6 +16,7 @@ let getByEmployee = () => {
 
 
 let getList = (offset, limit, key, unit, type, location, status) => {
+  console.log("status" , status)
   let searchCondition = 'status != 0 '; // Default condition to exclude deleted records
   if (key) {
       searchCondition += `AND (LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) LIKE LOWER('%${key}%') OR UPPER(serial_number) LIKE UPPER('%${key}%') OR UPPER(po_number) LIKE UPPER('%${key}%')) `;

@@ -1705,11 +1705,12 @@ router.get('/admin-unit-assign-list', [verifyToken, routeAccessChecker("adminAss
     "unit": req.query.unit,
     "location": req.query.location,
     "type": req.query.type,
+    "status": req.query.status
   };
   let user_id = req.decoded.userInfo.id;
-  let { offset, limit, key, unit, type ,location} = reqData;
+  let { offset, limit, key, unit, type ,location, status} = reqData;
 
-  let result = await assetModel.getList(offset, limit, key, unit, type,location);
+  let result = await assetModel.getList(offset, limit, key, unit, type,location,status);
 
   let getUnitAssignList = await unitAccessModel.getUserWise(user_id);
 
@@ -1756,7 +1757,7 @@ router.get('/admin-unit-assign-list', [verifyToken, routeAccessChecker("adminAss
     
     if (getUnitAssignList.length > 1 && isEmpty(unit)) {
       unitDefine = getUnitAssignList[0].unit_id;
-      totalCount = await assetModel.getTotalList(key, unitDefine, type);
+      totalCount = await assetModel.getTotalList(key, unitDefine, type,status);
       count = totalCount.length;
     }else if(!isEmpty(unit)){
       totalCount = await assetModel.getTotalList(key, unit, type);

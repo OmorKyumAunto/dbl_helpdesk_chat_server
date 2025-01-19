@@ -66,7 +66,6 @@ const forgetPasswordSendOtpTemplate = async (data) => {
 }
 
 const resetPasswordComplete = async (data) => {
-  console.log("data",data)
   return `
 <div style="font-family: Arial, sans-serif; background-color: #f7f9fc; color: #444444; line-height: 1.6; width: 100%; padding: 20px 0;">
 

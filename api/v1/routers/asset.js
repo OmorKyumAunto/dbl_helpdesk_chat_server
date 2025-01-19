@@ -835,8 +835,17 @@ router.put('/changeStatus/:id',[verifyToken, routeAccessChecker("assetChangeStat
 
   } 
 
-  let current_date = new Date(); 
-  let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss");
+  let alreadyAssignAsset = await assetAssignModel.getById(id);
+
+  // check this id already existing in database or not
+  if (alreadyAssignAsset.length) {
+    return res.status(400).send({
+      success: false,
+      status: 400,
+      message: "This asset already assign.In this moment your could not inactive this asset."
+    });
+
+  } 
 
   let data = {
     status: existingById[0].status == 1 ? 2 : 1,

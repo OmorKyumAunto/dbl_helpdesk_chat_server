@@ -136,6 +136,25 @@ router.post('/reset-password',[resetPassTokenVerify], async (req, res) => {
         confirmPassword : req.body.confirmPassword,
     }
 
+    if (!reqData.newPassword) {
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "New password can not be empty.",
+
+        });
+    }
+
+    if (!reqData.confirmPassword) {
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "Confirm password can not be empty.",
+
+
+        });
+    }
+
     let existingEmail = await userModel.getById(id);
     if (!existingEmail.length) {
         return res.status(404).send({
@@ -146,7 +165,6 @@ router.post('/reset-password',[resetPassTokenVerify], async (req, res) => {
         });
     }
  
-
     if (reqData.newPassword !== reqData.confirmPassword) {
         return res.status(400).send({
             "success": false,
@@ -159,7 +177,7 @@ router.post('/reset-password',[resetPassTokenVerify], async (req, res) => {
    let password = bcrypt.hashSync(reqData.newPassword.toString(), 10);
    let result = await userModel.updateById(id,{password : password});
 
-    await common.passwordResetSuccessful('alamridoy7@gmail.com', 'Password Reset Completed', existingEmail[0].name );
+    await common.passwordResetSuccessful(existingEmail[0].email, 'Password Reset Completed', existingEmail[0].name );
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
         return res.status(500).send({

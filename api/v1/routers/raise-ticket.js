@@ -607,6 +607,7 @@ router.put('/comment/:id', [verifyToken, routeAccessChecker("ticketCommentEdit")
 router.post('/ticket-forword/:id', [verifyToken, routeAccessChecker("ticketForworded")], async (req, res) => {
     
     let table_id = parseInt(req.params.id)
+    let user_id = req.decoded.userInfo.id
 
      let reqData = {
         "unit_id" : req.body.unit_id,
@@ -626,7 +627,6 @@ router.post('/ticket-forword/:id', [verifyToken, routeAccessChecker("ticketForwo
     }
 
      let ticket = await raiseTicketModel.getById(table_id);
-     console.log("first",ticket)
      if (!ticket.length) {
          return res.status(404).send({
              "success": false,
@@ -723,7 +723,8 @@ router.post('/ticket-forword/:id', [verifyToken, routeAccessChecker("ticketForwo
         unit_id : reqData.unit_id,
         category_id : reqData.category_id,
         subject : reqData.subject,
-        ticket_status : 'forward'
+        ticket_status : 'forward',
+        updated_by : user_id
      }
 
   

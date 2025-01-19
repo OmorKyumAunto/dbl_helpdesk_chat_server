@@ -133,7 +133,7 @@ router.post('/reset-password',[resetPassTokenVerify], async (req, res) => {
     let id = req.decodedInfo.id
     let reqData = {
         newPassword : req.body.newPassword,
-        confirmPassword : req.body.confirmPassword,
+        confirmPassword : req.body.newPassword,
     }
 
     if (!reqData.newPassword) {

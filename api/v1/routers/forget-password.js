@@ -5,9 +5,8 @@ const forgetPasswordModel = require('../models/forget-password');
 const userModel = require('../models/user');
 const common = require('../common/common');
 const jwt = require('jsonwebtoken');
-const verifyToken = require('../middlewares/verifyToken');
-
-
+const resetPassTokenVerify = require('../middlewares/forgetPasswordToken');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 
@@ -79,8 +78,15 @@ router.post('/verify-otp', async (req, res) => {
     }
 
     let getRecentOtp = await forgetPasswordModel.getRecentOtp(existingEmail[0].id)
-    console.log("first",getRecentOtp[0])
-    console.log("reqData",reqData.otp)
+
+    if(getRecentOtp[0].is_matched === 1){
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "This otp already used.",
+
+        });
+    }
 
     if(getRecentOtp[0].otp !== reqData.otp){
         return res.status(400).send({
@@ -92,11 +98,10 @@ router.post('/verify-otp', async (req, res) => {
     }
 
     let data = {
-        email : existingEmail[0].name,
-        otp : reqData.otp
+        id : existingEmail[0].id,
     }
 
-    let token = jwt.sign(profileData, global.config.secretKey, {
+    let token = jwt.sign(data, global.config.forgetPasswordSecretKey, {
         algorithm: global.config.algorithm,
         expiresIn: global.config.forgetPasswordExpiresIn, // 10 min
     });
@@ -116,17 +121,22 @@ router.post('/verify-otp', async (req, res) => {
     return res.status(200).send({
         "success": true,
         "status": 200,
-        "message": "Successfully matched your otp."
+        "message": "Successfully matched your otp.",
+        "data" : {token : token}
     });
 
 });
 
 
-router.post('/reset-password', async (req, res) => {
+router.post('/reset-password',[resetPassTokenVerify], async (req, res) => {
 
-    let email =  req.body.email
+    let id = req.decodedInfo.id
+    let reqData = {
+        newPassword : req.body.newPassword,
+        confirmPassword : req.body.confirmPassword,
+    }
 
-    let existingEmail = await userModel.getUserByEmail(email);
+    let existingEmail = await userModel.getById(id);
     if (!existingEmail.length) {
         return res.status(404).send({
             "success": false,
@@ -135,21 +145,21 @@ router.post('/reset-password', async (req, res) => {
 
         });
     }
+ 
 
-   let otp = await common.rendomGenerator()
+    if (reqData.newPassword !== reqData.confirmPassword) {
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "New password and confirm password are not same.",
 
-   let otpData = {
-     user_id : existingEmail[0].id,
-     otp : otp
-   }
+        });
+    }
 
-   let emailData = {
-   name : existingEmail[0].name,
-    otp : otp
-  }
-   let result = await forgetPasswordModel.addNew(otpData);
+   let password = bcrypt.hashSync(reqData.newPassword.toString(), 10);
+   let result = await userModel.updateById(id,{password : password});
 
-    await common.forgetPasswordSendOtp(email, 'Password Reset Request', emailData );
+    await common.passwordResetSuccessful('alamridoy7@gmail.com', 'Password Reset Completed', existingEmail[0].name );
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
         return res.status(500).send({
@@ -159,13 +169,10 @@ router.post('/reset-password', async (req, res) => {
         });
     }
 
-    return res.status(201).send({
+    return res.status(200).send({
         "success": true,
-        "status": 201,
-        "message": "Successfully send email otp.Please check your email.",
-        "data" : {
-            email : email
-        }
+        "status": 200,
+        "message": "Successfully change successfully.",
     });
 
 });

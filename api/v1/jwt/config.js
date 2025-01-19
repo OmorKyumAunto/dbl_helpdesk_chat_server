@@ -1,8 +1,8 @@
 module.exports = {
-    // secretKey: "dblAccessToken$$##@#@@",
-    secretKey: 'BenZ8bHDBvJi4v5D77VYo3vCXO97APZRwyt7bceMM15J1QzX/SE6tT3wwBICdBiC9qxke3Bl21Nw5/kiwIzAZSum1+IJrwV6WRASgtSfPbnY+6R6uMGejFnYFlBa3QAZYGnCTL7Fn2czwwGL5MySSoX6VKDj+PCYI1pfL6aAThE4KlerdH9O0vhG9pLpNU9W5ORxq25jCf+JriLSXOupPFhDgcSHmTEsT/Pzat4hqWU+zJY8IBx/N80mMjnLbOvK2VOt7NsxKtoqXygeBhmHFCpESLbBS0QIYoC6ebRV/gwqQVC6T6fK7jLLtXsDw26x+orAxSV7Ub/H8QCr5PucEw==',
+    secretKey: "dblAccessToken$$##@#@@",
     algorithm: 'HS256', //default: HS256
-    expiresIn: '90d', // expires in 1 day
+    expiresIn: '90d', // expires in 90 day
+    forgetPasswordSecretKey: "NeF+P27ZekQbfmzmzupHmckZ2N/9LyXkhsbS94SCpWLG18ZKw9kH3jnK7J3rJtjPwEECHiEe3UFhVRiUFHsuSLxSvlLuZqivBWmyRvXUCIv+RPIrs/+uZaJBMSsvPBYOJGWbYTSGs7lYIYGVFJOfOxYEw1Hk6VsAnznL4xViPPQj82p3qSO68DwflHxF8uDjGcXCjenuFDPW+GAUOqJ6IAstNAe85szElJavVdfA7uQFDwN55X9u6POZNDQ0KfO0PuLmoZT1phyGUP2pcUS54VTjkOCGIybkIqJom3fdfvHSktg6GlRrDMcyOM6gm8HGnON+iFd4bkIUUHOHkVoc/Q==",
     forgetPasswordExpiresIn: '10m', 
 
 };

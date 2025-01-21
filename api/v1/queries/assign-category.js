@@ -36,47 +36,63 @@ let getBeforeCategoryAssignList = () => {
 // let getAfterCategoryAssignList = () => {
 //     return `SELECT *, uc.*  FROM ${user_unit_category_view} as ucv left join dbl_user_category_access as uc on ucv.user_id = uc.user_id`;
 // }
-let getAfterCategoryAssignList = () => {
+let getAfterCategoryAssignList = (offset, limit, key) => {
+    let searchCondition = '';
+    
+    if (key) {
+        searchCondition = ` AND (
+            LOWER(ucv.employee_id) LIKE LOWER('%${key}%') OR 
+            LOWER(ucv.name) LIKE LOWER('%${key}%')
+        )`;
+    }
+    
     return `
-       SELECT 
-           ucv.user_id,
-           ucv.employee_id,
-           ucv.name,
-           ucv.email,
-           ucv.asset_unit_ids,
-           ucv.asset_unit_titles,
-           ucv.ticket_category_titles,
-           ucv.ticket_category_ids,
-          CONCAT('[', 
-                    GROUP_CONCAT(
-                        CONCAT(
-                            '{"access_id":', uc.id,
-                            ',"category_id":', uc.category_id,
-                            ',"category_name":"', tc.title, '"}'
-                        )
-                    ), 
-                ']') AS assign_category
-       FROM 
-           user_unit_category AS ucv
-       LEFT JOIN 
-           dbl_user_category_access AS uc 
-       ON 
-           ucv.user_id = uc.user_id
-       LEFT JOIN 
-           dbl_ticket_category AS tc 
-       ON 
-           uc.category_id = tc.id
-       GROUP BY 
-           ucv.user_id, 
-           ucv.employee_id, 
-           ucv.name, 
-           ucv.email, 
-           ucv.asset_unit_ids, 
-           ucv.asset_unit_titles, 
-           ucv.ticket_category_titles, 
-           ucv.ticket_category_ids;
+        SELECT 
+            ucv.user_id,
+            ucv.employee_id,
+            ucv.name,
+            ucv.email,
+            ucv.asset_unit_ids,
+            ucv.asset_unit_titles,
+            ucv.ticket_category_titles,
+            ucv.ticket_category_ids,
+            CONCAT('[', 
+                GROUP_CONCAT(
+                    CONCAT(
+                        '{"access_id":', uc.id,
+                        ',"category_id":', uc.category_id,
+                        ',"category_name":"', tc.title, '"}'
+                    )
+                ), 
+            ']') AS assign_category
+        FROM 
+            user_unit_category AS ucv
+        LEFT JOIN 
+            dbl_user_category_access AS uc 
+        ON 
+            ucv.user_id = uc.user_id
+        LEFT JOIN 
+            dbl_ticket_category AS tc 
+        ON 
+            uc.category_id = tc.id
+        WHERE 
+            1=1
+            ${searchCondition}
+        GROUP BY 
+            ucv.user_id, 
+            ucv.employee_id, 
+            ucv.name, 
+            ucv.email, 
+            ucv.asset_unit_ids, 
+            ucv.asset_unit_titles, 
+            ucv.ticket_category_titles, 
+            ucv.ticket_category_ids
+        ORDER BY 
+            ucv.user_id DESC
+        LIMIT ${limit} OFFSET ${offset};
     `;
 };
+
 
 
 

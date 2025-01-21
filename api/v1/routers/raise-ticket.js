@@ -716,7 +716,7 @@ router.post('/ticket-forword/:id', [verifyToken, routeAccessChecker("ticketForwo
          unit_id : reqData.unit_id,
          category_id : reqData.category_id,
          remarks : reqData.remarks,
-         details : `The ticket has been forwarded by ${user[0].name} to the Unit: ${unit[0].title} and Category: ${category[0].title}. Remarks: ${reqData.remarks}..`,
+         details : `The ticket has been forwarded by ${user[0].name} to the Unit: ${unit[0].title} and Category: ${category[0].title}.`,
          created_by : id
      }
 

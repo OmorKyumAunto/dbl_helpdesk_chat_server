@@ -20,9 +20,9 @@ let getBeforeCategoryAssignList = async () => {
     });
 }
 
-let getAfterCategoryAssignList = async () => {
+let getAfterCategoryAssignList = async (offset, limit, key) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getAfterCategoryAssignList(), (error, result, fields) => {
+        connectionDblystem.query(queries.getAfterCategoryAssignList(offset, limit, key), (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });

@@ -27,7 +27,13 @@ router.get('/before-assign-list', [verifyToken, routeAccessChecker("beforeAssign
 
 router.get('/after-assign-list', [verifyToken, routeAccessChecker("afterAssignList")], async (req, res) => {
 
-
+    let reqData = {
+        "limit": req.query.limit || 50,
+        "offset": req.query.offset || 0,
+        "key": req.query.key,
+      };
+    
+      let { offset, limit, key} = reqData;
     const transformData = (data) => {
         return data.map(item => {
             let assignCategory = [];
@@ -45,13 +51,13 @@ router.get('/after-assign-list', [verifyToken, routeAccessChecker("afterAssignLi
     };
     
     // Fetch Data and Transform:
-     let result = await assignCategoryModel.getAfterCategoryAssignList();
+     let result = await assignCategoryModel.getAfterCategoryAssignList(offset, limit, key);
     const transformedResult = transformData(result);
     
     res.status(200).json({
         success: true,
         status: 200,
-        message: "Before assign category List.",
+        message: "After assign category List.",
         count: transformedResult.length,
         data: transformedResult
     });

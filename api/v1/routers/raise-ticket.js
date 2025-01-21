@@ -182,15 +182,15 @@ try {
     }
     
 
-    let existsUnitAndCategory = await raiseTicketModel.adminWiseUnitAndCategory(reqData.unit_id,reqData.category_id);
-    if (!existsUnitAndCategory.length) {
-        return res.status(404).send({
-            "success": false,
-            "status": 404,
-            "message": "Unit and category not found for the admin.",
+    // let existsUnitAndCategory = await raiseTicketModel.adminWiseUnitAndCategory(reqData.unit_id,reqData.category_id);
+    // if (!existsUnitAndCategory.length) {
+    //     return res.status(404).send({
+    //         "success": false,
+    //         "status": 404,
+    //         "message": "Unit and category not found for the admin.",
 
-        });
-    }
+    //     });
+    // }
 
    
     reqData.ticket_id = common.rendomGenerator()
@@ -302,7 +302,8 @@ router.put('/admin-update-status/:id', [verifyToken, routeAccessChecker("adminUp
 
     let id = req.params.id
     let admin_id = req.decoded.userInfo.id
-
+    let updateData = {};
+    
     let user_id = req.decoded.userInfo.id
     let reqData = {
         "ticket_status": req.body.ticket_status
@@ -335,6 +336,10 @@ router.put('/admin-update-status/:id', [verifyToken, routeAccessChecker("adminUp
     const solvedBy = Number(checkIsAlreadySolved[0].solved_by);
     const adminId = Number(admin_id);
 
+    if (reqData.ticket_status === 'solved') {
+        updateData.solved_by = admin_id
+    }
+
     if(checkIsAlreadySolved[0].ticket_status === 'inprogress')
         if (
             solvedBy && 
@@ -347,7 +352,7 @@ router.put('/admin-update-status/:id', [verifyToken, routeAccessChecker("adminUp
             });
         }
 
-    let updateData = {};
+
 
     let errorMessage = "";
     let isError = 0; // 1 = yes, 0 = no
@@ -370,7 +375,7 @@ router.put('/admin-update-status/:id', [verifyToken, routeAccessChecker("adminUp
     if (willWeUpdate == 1) {
         updateData.updated_at = current_time
         updateData.updated_by = admin_id
-        updateData.solved_by = admin_id
+
 
         let result = await raiseTicketModel.updateById(id, updateData);
 

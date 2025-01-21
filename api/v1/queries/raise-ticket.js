@@ -170,7 +170,17 @@ let getAllListUserWise = (id, key = '', priority = '', status = '', offset, limi
         u.contact_no AS ticket_solved_contact_no,
         u.email AS ticket_solved_email,
         u.department AS ticket_solved_department,
-        u.designation AS ticket_solved_designation
+        u.designation AS ticket_solved_designation,
+        auv.name AS action_by_name,
+        auv.designation AS action_by_designation,
+        auv.department AS action_by_department,
+        auv.name AS action_by_name,
+        auv.email AS action_by_email,
+        auv.unit_name AS action_by_unit_name,
+        tf.details AS forward_details,
+        tf.remarks AS forward_remarks,
+        tf.created_at AS forward_date
+
     FROM 
         dbl_raise_ticket AS rt
     JOIN 
@@ -181,6 +191,10 @@ let getAllListUserWise = (id, key = '', priority = '', status = '', offset, limi
         dbl_asset AS ass ON ass.id = rt.asset_id
     LEFT JOIN 
         users_view AS u ON u.id = rt.solved_by
+    LEFT JOIN 
+        users_view AS auv ON auv.id = rt.updated_by
+    LEFT JOIN 
+        dbl_ticket_forward AS tf ON tf.ticket_id = rt.id
 
 
     ${whereClause}

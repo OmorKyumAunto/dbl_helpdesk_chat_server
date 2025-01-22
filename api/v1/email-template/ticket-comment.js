@@ -83,7 +83,7 @@ const commentAdminToEmployee = async (data) => {
     <!-- Main Content -->
     <tr>
       <td style="padding: 40px; color: #444444; font-size: 16px;">
-        <h2 style="font-size: 24px; color: #003366; margin-top: 0;">Hello ${data.employee_name_name},</h2>
+        <h2 style="font-size: 24px; color: #003366; margin-top: 0;">Hello ${data.employee_name},</h2>
         <p style="margin-bottom: 20px; font-size: 16px;">An admin has posted a comment on your ticket:</p>
 
         

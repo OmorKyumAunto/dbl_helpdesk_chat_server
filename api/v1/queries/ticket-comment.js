@@ -176,7 +176,7 @@ let getAllTicketWiseAdmin = () => {
 }
 
 let getAllTicketWiseAdminSingleData = () => {
-    return `SELECT user_id,employee_id,name,email,subject,ticket_id,ticket_created_employee_name,ticket_created_employee_email FROM admin_wise_ticket WHERE ticket_table_id = ? AND status = 1 `;
+    return `SELECT user_id,employee_id,name,email,subject,ticket_id,ticket_created_employee_name,ticket_created_employee_email,ticket_solved_employee_user_id FROM admin_wise_ticket WHERE ticket_table_id = ? AND status = 1 `;
 }
 
 

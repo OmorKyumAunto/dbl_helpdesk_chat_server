@@ -376,10 +376,14 @@ router.put('/admin-update-status/:id', [verifyToken, routeAccessChecker("adminUp
         updateData.updated_at = current_time
         updateData.updated_by = admin_id
 
+
         let result = await raiseTicketModel.updateById(id, updateData);
 
         if (reqData.ticket_status === 'solved') {
             const getTicketWiseEmployeeGetById  = await ticketCommentModel.getAllTicketWiseAdminSingleData(id)
+
+            const adminData = await userModel.getById(getTicketWiseEmployeeGetById[0].ticket_solved_employee_user_id)
+         
             const options = {
                 day: '2-digit',
                 month: 'short',
@@ -397,12 +401,13 @@ router.put('/admin-update-status/:id', [verifyToken, routeAccessChecker("adminUp
             const employeeData = {
                 employee_name : getTicketWiseEmployeeGetById[0].ticket_created_employee_name,
                 ticket_id : getTicketWiseEmployeeGetById[0].ticket_id,
-                resolved_by : getTicketWiseEmployeeGetById[0].name,
+                subject : getTicketWiseEmployeeGetById[0].subject,
+                resolved_by : adminData[0].name,
                 solving_date : formattedDate,
             }
-            await common.ticketSolvedEmail(getTicketWiseEmployeeGetById[0].ticket_created_employee_email,'Notification for new comment',employeeData)
+ 
+            await common.ticketSolvedEmail(adminData[0].email,'Your issue is solved.',employeeData)
         }
-
 
 
         if (result.affectedRows == undefined || result.affectedRows < 1) {

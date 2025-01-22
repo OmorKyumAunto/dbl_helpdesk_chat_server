@@ -406,7 +406,7 @@ router.put('/admin-update-status/:id', [verifyToken, routeAccessChecker("adminUp
                 solving_date : formattedDate,
             }
  
-            await common.ticketSolvedEmail(adminData[0].email,'Your issue is solved.',employeeData)
+            await common.ticketSolvedEmail(getTicketWiseEmployeeGetById[0].ticket_created_employee_email,'Your issue is solved.',employeeData)
         }
 
 

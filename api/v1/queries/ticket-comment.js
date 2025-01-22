@@ -171,6 +171,15 @@ let getUnitAndCategoryWiseEmail = () => {
     return `SELECT * FROM ${admin_wise_ticket_view} where  asset_unit_id = ? and ticket_category_id = ? `;
 }
 
+let getAllTicketWiseAdmin = () => {
+    return `SELECT user_id,employee_id,name,email,subject,ticket_id,ticket_created_employee_name FROM admin_wise_ticket WHERE ticket_table_id = ? AND status = 1 `;
+}
+
+let getAllTicketWiseAdminSingleData = () => {
+    return `SELECT user_id,employee_id,name,email,subject,ticket_id,ticket_created_employee_name,ticket_created_employee_email FROM admin_wise_ticket WHERE ticket_table_id = ? AND status = 1 `;
+}
+
+
 module.exports = {
     getList,
     getActiveList,
@@ -191,6 +200,8 @@ module.exports = {
     adminWiseTicketDetails,
     getSuperAdminTicket,
     getUnitAndCategoryWiseEmail,
-    getByTableId
+    getByTableId,
+    getAllTicketWiseAdmin,
+    getAllTicketWiseAdminSingleData
 
 }

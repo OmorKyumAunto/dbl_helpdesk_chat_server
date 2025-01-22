@@ -183,6 +183,27 @@ let updateById = async (id = 0, data = {}) => {
 }
 
 
+
+let getAllTicketWiseAdmin = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getAllTicketWiseAdmin(),[id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+let getAllTicketWiseAdminSingleData = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getAllTicketWiseAdminSingleData(),[id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
 module.exports = {
     getList,
     getActiveList,
@@ -202,6 +223,8 @@ module.exports = {
     adminWiseTicketDetails,
     getSuperAdminTicket,
     getUnitAndCategoryWiseEmail,
-    getByTableId
+    getByTableId,
+    getAllTicketWiseAdmin,
+    getAllTicketWiseAdminSingleData
 }
 

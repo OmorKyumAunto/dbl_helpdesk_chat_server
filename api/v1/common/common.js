@@ -3,6 +3,7 @@ require('dotenv').config();
 const nodemailer = require('nodemailer');
 const otpGenerator = require('otp-generator')
 const {ticketEmail,ticketCcEmail} = require('../email-template/ticketEmail')
+const {commentEmployeeToAdmin,commentAdminToEmployee} = require('../email-template/ticket-comment')
 const {forgetPasswordSendOtpTemplate,resetPasswordComplete} = require('../email-template/forget-password')
 
 
@@ -252,6 +253,89 @@ let passwordResetSuccessful = async (receiverEmailAddress, subject, data) => {
       
 }
 
+// create ticket comment employee to admin
+let ticketCommentEmployeeToAdmin = async (receiverEmailAddress, subject, data) => {
+    // set transport
+        var transporter = nodemailer.createTransport({
+            service:process.env.send_email_service,
+            host:process.env.send_email_host,
+            port: process.env.send_email_port,
+            secure: false,
+            auth: {
+                user: process.env.send_email_address,
+                pass: process.env.send_email_password
+            }
+        });
+    
+        var mailOptions = {
+            from: process.env.send_email_address,
+            to: receiverEmailAddress,
+            subject: subject,
+            html: await commentEmployeeToAdmin(data)
+        };
+    
+  
+      // send email 
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                return {
+                    success: false,
+                    message: "Email send fail"
+                }
+            } else {
+                return {
+                    success: true,
+                    message: "Email send successfully done"
+                }
+            }
+        });
+  
+        
+}
+
+
+let ticketCommentAdminToEmployee = async (receiverEmailAddress, subject, data) => {
+    // set transport
+        var transporter = nodemailer.createTransport({
+            service:process.env.send_email_service,
+            host:process.env.send_email_host,
+            port: process.env.send_email_port,
+            secure: false,
+            auth: {
+                user: process.env.send_email_address,
+                pass: process.env.send_email_password
+            }
+        });
+    
+        var mailOptions = {
+            from: process.env.send_email_address,
+            to: receiverEmailAddress,
+            subject: subject,
+            html: await commentAdminToEmployee(data)
+        };
+    
+  
+      // send email 
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                return {
+                    success: false,
+                    message: "Email send fail"
+                }
+            } else {
+                return {
+                    success: true,
+                    message: "Email send successfully done"
+                }
+            }
+        });
+  
+        
+}
+
+
+
+
 let getHTMLBody = async (name = "", asset_name = "", type = "", asset_serial_number = "",assign_date = "",assign_by = "",unit_name="") => {
     return ` <div style="font-family: Arial, sans-serif; background-color: #f3f4f6; color: #444444; padding: 20px; width: 100%;">
 
@@ -360,5 +444,7 @@ module.exports = {
     sentTicketEmail,
     sentTicketCcEmail,
     forgetPasswordSendOtp,
-    passwordResetSuccessful
+    passwordResetSuccessful,
+    ticketCommentEmployeeToAdmin,
+    ticketCommentAdminToEmployee
 }

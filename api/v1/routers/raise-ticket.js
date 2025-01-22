@@ -427,12 +427,12 @@ router.get('/raise-ticket', [verifyToken, routeAccessChecker("allRaiseTicketList
 // create ticket employee
 router.post('/comment', [verifyToken, routeAccessChecker("ticketComment")], async (req, res) => {
 
+    let { id, role_id }  = req.decoded.userInfo
     let reqData = {
         "ticket_id": parseInt(req.body.ticket_id),
         "comment_text": req.body.comment_text,
     }
 
-    const id = req.decoded.userInfo.id
 
     let user = await userModel.getById(id);
 
@@ -463,27 +463,56 @@ router.post('/comment', [verifyToken, routeAccessChecker("ticketComment")], asyn
         return res.status(400).send({
             "success": false,
             "status": 400,
-            "message": "Commnet should not be empty.",
+            "message": "Comment should not be empty.",
 
         });
     }
 
-    // if(user.role_id === 3 && id !== existsRaiseTicket[0].created_by){
-    //     return res.status(400).send({
-    //         "success": false,
-    //         "status": 400,
-    //         "message": "You have not access this ticket comment.",
-
-    //     });
-    // }
-
     if(user[0].role_id === 3 )reqData.employee_id = id
     if(user[0].role_id === 2 )reqData.admin_id = id
 
-    
     let result = await ticketCommentModel.addNew(reqData)
 
+    // send email at first all admin
+    if(role_id === 3){
+        if(existsRaiseTicket[0].ticket_status === 'unsolved'){
+            const getTicketWiseAdmin  = await ticketCommentModel.getAllTicketWiseAdmin(reqData.ticket_id)
+            for (let index = 0; index < getTicketWiseAdmin.length; index++) {
+                const data = getTicketWiseAdmin[index];
+              
+                const employeeToAdminEmailData = {
+                    employee_name : data.ticket_created_employee_name,
+                    ticket_id : data.ticket_id,
+                    subject : data.subject,
+                    comment : reqData.comment_text
+                }
+                await common.ticketCommentEmployeeToAdmin(data.email,'Notification for new comment',employeeToAdminEmailData)
+            }
+        }else if(existsRaiseTicket[0].ticket_status === 'inprogress'){
+            const getTicketWiseAdminGetById  = await ticketCommentModel.getAllTicketWiseAdminSingleData(reqData.ticket_id)
+            let admin_email = await userModel.getById(existsRaiseTicket[0].updated_by);
+            const employeeToAdminEmailDataSingle = {
+                employee_name : getTicketWiseAdminGetById[0].ticket_created_employee_name,
+                ticket_id : getTicketWiseAdminGetById[0].ticket_id,
+                subject : getTicketWiseAdminGetById[0].subject,
+                comment :  reqData.comment_text
+            }
+            await common.ticketCommentEmployeeToAdmin(admin_email[0].email,'Notification for new comment',employeeToAdminEmailDataSingle)
+        }
 
+    }else if(role_id === 2){
+        const getTicketWiseEmployeeGetById  = await ticketCommentModel.getAllTicketWiseAdminSingleData(reqData.ticket_id)
+        const employeeData = {
+            employee_name : getTicketWiseEmployeeGetById[0].ticket_created_employee_name,
+            ticket_id : getTicketWiseEmployeeGetById[0].ticket_id,
+            subject : getTicketWiseEmployeeGetById[0].subject,
+            comment :  reqData.comment_text
+        }
+        await common.ticketCommentAdminToEmployee(getTicketWiseEmployeeGetById[0].ticket_created_employee_email,'Notification for new comment',employeeData)
+    }
+
+
+    
     if (result.affectedRows == undefined || result.affectedRows < 1) {
         return res.status(500).send({
             "success": false,
@@ -497,7 +526,6 @@ router.post('/comment', [verifyToken, routeAccessChecker("ticketComment")], asyn
         "status": 201,
         "message": "Ticket comment added Successfully."
     });
-
 });
 
 

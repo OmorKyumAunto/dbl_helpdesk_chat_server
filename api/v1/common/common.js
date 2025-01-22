@@ -2,7 +2,7 @@ const crypto = require("crypto");
 require('dotenv').config();
 const nodemailer = require('nodemailer');
 const otpGenerator = require('otp-generator')
-const {ticketEmail,ticketCcEmail} = require('../email-template/ticketEmail')
+const {ticketEmail,ticketCcEmail,ticketSolvedEmailTemplate} = require('../email-template/ticketEmail')
 const {commentEmployeeToAdmin,commentAdminToEmployee} = require('../email-template/ticket-comment')
 const {forgetPasswordSendOtpTemplate,resetPasswordComplete} = require('../email-template/forget-password')
 
@@ -334,6 +334,46 @@ let ticketCommentAdminToEmployee = async (receiverEmailAddress, subject, data) =
 }
 
 
+let ticketSolvedEmail = async (receiverEmailAddress, subject, data) => {
+    // set transport
+        var transporter = nodemailer.createTransport({
+            service:process.env.send_email_service,
+            host:process.env.send_email_host,
+            port: process.env.send_email_port,
+            secure: false,
+            auth: {
+                user: process.env.send_email_address,
+                pass: process.env.send_email_password
+            }
+        });
+    
+        var mailOptions = {
+            from: process.env.send_email_address,
+            to: receiverEmailAddress,
+            subject: subject,
+            html: await ticketSolvedEmailTemplate(data)
+        };
+    
+  
+      // send email 
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                return {
+                    success: false,
+                    message: "Email send fail"
+                }
+            } else {
+                return {
+                    success: true,
+                    message: "Email send successfully done"
+                }
+            }
+        });
+  
+        
+}
+
+
 
 
 let getHTMLBody = async (name = "", asset_name = "", type = "", asset_serial_number = "",assign_date = "",assign_by = "",unit_name="") => {
@@ -446,5 +486,6 @@ module.exports = {
     forgetPasswordSendOtp,
     passwordResetSuccessful,
     ticketCommentEmployeeToAdmin,
-    ticketCommentAdminToEmployee
+    ticketCommentAdminToEmployee,
+    ticketSolvedEmail
 }

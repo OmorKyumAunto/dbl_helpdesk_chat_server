@@ -176,6 +176,7 @@ let getAllListUserWise = (id, key = '', priority = '', status = '', offset, limi
         auv.department AS action_by_department,
         auv.name AS action_by_name,
         auv.email AS action_by_email,
+        auv.contact_no AS action_by_contact_no,
         auv.unit_name AS action_by_unit_name,
         auv.employee_id AS action_by_employee_id,
         tf.details AS forward_details,

@@ -23,6 +23,7 @@ const  assignCategoryRouter = require('./routers/assign-category');
 const  raiseTicketRouter = require('./routers/raise-ticket');
 const  raiseTicketDashboardRouter = require('./routers/raise-ticket-dashboard');
 const  forgetPasswordRouter = require('./routers/forget-password');
+const  slaConfigurationRouter = require('./routers/sla-configuration');
 
 
 
@@ -41,6 +42,7 @@ router.use('/assign-category', assignCategoryRouter);
 router.use('/raise-ticket', raiseTicketRouter);
 router.use('/raise-ticket-deshboard', raiseTicketDashboardRouter);
 router.use('/forget-password', forgetPasswordRouter);
+router.use('/sla-configuration', slaConfigurationRouter);
 
 
 

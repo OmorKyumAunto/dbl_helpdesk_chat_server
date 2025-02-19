@@ -4,76 +4,73 @@ let admin_wise_ticket_view = "admin_wise_ticket";
 let super_admin_ticket_view = "super_admin_ticket_view";
 
 let getList = () => {
-    return `SELECT id,location, unit_id FROM ${table_name} WHERE status = 1 ORDER BY id DESC `;
-}
+  return `SELECT id,location, unit_id FROM ${table_name} WHERE status = 1 ORDER BY id DESC `;
+};
 let getAllList = () => {
-    return `SELECT id,location, unit_id,status FROM ${table_name} WHERE status != 0 ORDER BY id DESC `;
-}
+  return `SELECT id,location, unit_id,status FROM ${table_name} WHERE status != 0 ORDER BY id DESC `;
+};
 
 let getAllLocationDataByUnitId = () => {
-    return `SELECT id,location,unit_id,status FROM ${table_name} WHERE unit_id = ? and status = 1 ORDER BY id DESC `;
-}
-
-
-
+  return `SELECT id,location,unit_id,status FROM ${table_name} WHERE unit_id = ? and status = 1 ORDER BY id DESC `;
+};
 
 let getAdminWiseTicket = (key, priority, status, offset, limit) => {
-    let conditions = [];
+  let conditions = [];
 
-    // Add conditions dynamically based on parameters
-    if (priority) {
-        conditions.push(`priority = '${priority}'`);
-    }
-    if (status) {
-        conditions.push(`ticket_status = '${status}'`);
-    }
-    if (key) {
-        conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
-    }
+  // Add conditions dynamically based on parameters
+  if (priority) {
+    conditions.push(`priority = '${priority}'`);
+  }
+  if (status) {
+    conditions.push(`ticket_status = '${status}'`);
+  }
+  if (key) {
+    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
 
-    // Base condition for user_id
-    conditions.push(`user_id = ?`);
-    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+  // Base condition for user_id
+  conditions.push(`user_id = ?`);
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-    // Pagination clause
-    const paginationClause = `LIMIT ${limit} OFFSET ${offset}`;
+  // Pagination clause
+  const paginationClause = `LIMIT ${limit} OFFSET ${offset}`;
 
-    // Build query parts conditionally
-    let query = `
+  // Build query parts conditionally
+  let query = `
         SELECT 
             * 
         FROM 
             ${admin_wise_ticket_view} 
         ${whereClause}
     `;
-    
 
-    query += ` ${paginationClause}`;
+  query += ` ${paginationClause}`;
 
-    return query;
+  return query;
 };
 
 let getAdminWiseTicketTotalCount = (key, priority, status) => {
-    let conditions = [];
+  let conditions = [];
 
-    // Add conditions dynamically based on parameters
-    if (priority) {
-        conditions.push(`priority = '${priority}'`);
-    }
-    if (status) {
-        conditions.push(`ticket_status = '${status}'`);
-    }
-    if (key) {
-        conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
-    }
+  // Add conditions dynamically based on parameters
+  if (priority) {
+    conditions.push(`priority = '${priority}'`);
+  }
+  if (status) {
+    conditions.push(`ticket_status = '${status}'`);
+  }
+  if (key) {
+    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
 
-    // Base condition for user_id
-    conditions.push(`user_id = ?`);
-    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+  // Base condition for user_id
+  conditions.push(`user_id = ?`);
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-
-    // Build query parts conditionally
-    let query = `
+  // Build query parts conditionally
+  let query = `
         SELECT 
             * 
         FROM 
@@ -81,82 +78,86 @@ let getAdminWiseTicketTotalCount = (key, priority, status) => {
         ${whereClause}
     `;
 
-    return query;
+  return query;
 };
 
-
 let getSuperAdminTicket = (key, priority, status, offset, limit) => {
-    let baseQuery = `
+  let baseQuery = `
     SELECT * FROM ${super_admin_ticket_view}
 `;
 
+  let conditions = [];
+  if (status) {
+    conditions.push(`ticket_status = '${status}'`);
+  }
+  if (priority) {
+    conditions.push(`priority = '${priority}'`);
+  }
+  if (key) {
+    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
+  if (conditions.length > 0) {
+    baseQuery += " WHERE " + conditions.join(" AND ");
+  }
 
-    let conditions = [];
-    if (status) {
-        conditions.push(`ticket_status = '${status}'`);
-    }
-    if (priority) {
-        conditions.push(`priority = '${priority}'`);
-    }
-    if (key) {
-        conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
-    }
-    if (conditions.length > 0) {
-        baseQuery += " WHERE " + conditions.join(" AND ");
-    }
+  if (limit) {
+    baseQuery += ` LIMIT ${limit}`;
+  }
+  if (offset) {
+    baseQuery += ` OFFSET ${offset}`;
+  }
 
-    if (limit) {
-        baseQuery += ` LIMIT ${limit}`;
-    }
-    if (offset) {
-        baseQuery += ` OFFSET ${offset}`;
-    }
-
-    return baseQuery;
+  return baseQuery;
 };
-
 
 let getSuperAdminTicketTotalCount = (key, priority, status) => {
-    let baseQuery = `SELECT * FROM ${super_admin_ticket_view}`;
+  let baseQuery = `SELECT * FROM ${super_admin_ticket_view}`;
 
-    let conditions = [];
-    if (status) {
-        conditions.push(`ticket_status = '${status}'`);
-    }
-    if (priority) {
-        conditions.push(`priority = '${priority}'`);
-    }
-    if (key) {
-        conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
-    }
-    if (conditions.length > 0) {
-        baseQuery += " WHERE " + conditions.join(" AND ");
-    }
-    return baseQuery;
+  let conditions = [];
+  if (status) {
+    conditions.push(`ticket_status = '${status}'`);
+  }
+  if (priority) {
+    conditions.push(`priority = '${priority}'`);
+  }
+  if (key) {
+    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
+  if (conditions.length > 0) {
+    baseQuery += " WHERE " + conditions.join(" AND ");
+  }
+  return baseQuery;
 };
 
+let getAllListUserWise = (
+  id,
+  key = "",
+  priority = "",
+  status = "",
+  offset,
+  limit
+) => {
+  let conditions = [`rt.created_by = ${id}`, `rt.status = 1`];
 
+  if (priority) {
+    conditions.push(`rt.priority = '${priority}'`);
+  }
+  if (status) {
+    conditions.push(`rt.ticket_status = '${status}'`);
+  }
+  if (key) {
+    conditions.push(
+      `(rt.subject LIKE '%${key}%' OR rt.ticket_id LIKE '%${key}%')`
+    );
+  }
 
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-let getAllListUserWise = (id, key = '', priority = '', status = '', offset, limit) => {
-    let conditions = [`rt.created_by = ${id}`, `rt.status = 1`]; 
+  // Append LIMIT and OFFSET for pagination
+  const paginationClause = `LIMIT ${limit} OFFSET ${offset}`;
 
-    if (priority) {
-        conditions.push(`rt.priority = '${priority}'`);
-    }
-    if (status) {
-        conditions.push(`rt.ticket_status = '${status}'`);
-    }
-    if (key) {
-        conditions.push(`(rt.subject LIKE '%${key}%' OR rt.ticket_id LIKE '%${key}%')`);
-    }
-
-    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-
-    // Append LIMIT and OFFSET for pagination
-    const paginationClause = `LIMIT ${limit} OFFSET ${offset}`;
-
-    return `
+  return `
     SELECT 
         rt.*,  
         au.title AS unit_name, 
@@ -181,7 +182,11 @@ let getAllListUserWise = (id, key = '', priority = '', status = '', offset, limi
         auv.employee_id AS action_by_employee_id,
         tf.details AS forward_details,
         tf.remarks AS forward_remarks,
-        tf.created_at AS forward_date
+        tf.created_at AS forward_date,
+        slac.priority AS sla_priority,
+        slac.response_time_value AS response_time_value,
+        slac.response_time_unit AS response_time_unit,
+        slac.resolve_time_value AS resolve_time_value
 
     FROM 
         dbl_raise_ticket AS rt
@@ -197,6 +202,7 @@ let getAllListUserWise = (id, key = '', priority = '', status = '', offset, limi
         users_view AS auv ON auv.id = rt.updated_by
     LEFT JOIN 
         dbl_ticket_forward AS tf ON tf.ticket_id = rt.id
+    LEFT JOIN dbl_sla_configuration as slac ON slac.priority = rt.priority
 
 
     ${whereClause}
@@ -204,26 +210,32 @@ let getAllListUserWise = (id, key = '', priority = '', status = '', offset, limi
         rt.id DESC
     ${paginationClause};
 `;
-
 };
 
+let getAllListTotalCountUserWise = (
+  id,
+  key = "",
+  priority = "",
+  status = ""
+) => {
+  let conditions = [`rt.created_by = ${id}`, `rt.status = 1`];
 
-let getAllListTotalCountUserWise = (id, key = '', priority = '', status = '') => {
-    let conditions = [`rt.created_by = ${id}`, `rt.status = 1`]; 
+  if (priority) {
+    conditions.push(`rt.priority = '${priority}'`);
+  }
+  if (status) {
+    conditions.push(`rt.ticket_status = '${status}'`);
+  }
+  if (key) {
+    conditions.push(
+      `(rt.subject LIKE '%${key}%' OR rt.ticket_id LIKE '%${key}%')`
+    );
+  }
 
-    if (priority) {
-        conditions.push(`rt.priority = '${priority}'`);
-    }
-    if (status) {
-        conditions.push(`rt.ticket_status = '${status}'`);
-    }
-    if (key) {
-        conditions.push(`(rt.subject LIKE '%${key}%' OR rt.ticket_id LIKE '%${key}%')`);
-    }
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-
-    return `
+  return `
         SELECT 
             rt.*,  
             au.title AS unit_name, 
@@ -245,22 +257,24 @@ let getAllListTotalCountUserWise = (id, key = '', priority = '', status = '') =>
     `;
 };
 
+let getAllListAdminWise = (id, key = "", priority = "", status = "") => {
+  let conditions = [`rt.created_by = ${id}`, `rt.status = 1`];
 
-let getAllListAdminWise = (id, key = '', priority = '', status = '') => {
-    let conditions = [`rt.created_by = ${id}`, `rt.status = 1`]; 
+  if (priority) {
+    conditions.push(`rt.priority = '${priority}'`);
+  }
+  if (status) {
+    conditions.push(`rt.ticket_status = '${status}'`);
+  }
+  if (key) {
+    conditions.push(
+      `(rt.subject LIKE '%${key}%' OR rt.ticket_id LIKE '%${key}%')`
+    );
+  }
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-    if (priority) {
-        conditions.push(`rt.priority = '${priority}'`);
-    }
-    if (status) {
-        conditions.push(`rt.ticket_status = '${status}'`);
-    }
-    if (key) {
-        conditions.push(`(rt.subject LIKE '%${key}%' OR rt.ticket_id LIKE '%${key}%')`);
-    }
-    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-
-    return `
+  return `
         SELECT 
             rt.*,  
             au.title AS unit_name, 
@@ -281,112 +295,98 @@ let getAllListAdminWise = (id, key = '', priority = '', status = '') => {
     `;
 };
 
-
 let getLocation = () => {
-
-    return `SELECT * FROM ${table_name}  where location = ? and unit_id = ? and status = 1`;
-}
-
+  return `SELECT * FROM ${table_name}  where location = ? and unit_id = ? and status = 1`;
+};
 
 let getUnitWiseLocation = () => {
-    return `SELECT * FROM ${table_name}  where location = ? and unit_id = ? and status = 1`;
-}
-
+  return `SELECT * FROM ${table_name}  where location = ? and unit_id = ? and status = 1`;
+};
 
 let getOnlyDataList = () => {
-    return `SELECT * FROM ${table_name}  where status != 0 `;
-}
+  return `SELECT * FROM ${table_name}  where status != 0 `;
+};
 
 let getActiveList = () => {
-    return `SELECT * FROM ${table_name}  where status = 'active'`;
-}
-
-
+  return `SELECT * FROM ${table_name}  where status = 'active'`;
+};
 
 let getByTitle = () => {
-    return `SELECT * FROM ${table_name} where  title = ? and status = 'active'`;
-}
+  return `SELECT * FROM ${table_name} where  title = ? and status = 'active'`;
+};
 
 let getById = () => {
-    return `SELECT * FROM ${table_name} where  id = ?  and status = 1 `;  // added status = 1
-}
+  return `SELECT * FROM ${table_name} where  id = ?  and status = 1 `; // added status = 1
+};
 
 let adminWiseUnitAndCategory = () => {
-    return `SELECT * FROM admin_wise_ticket where  asset_unit_id = ?  and ticket_category_id = ? `;  
-}
+  return `SELECT * FROM admin_wise_ticket where  asset_unit_id = ?  and ticket_category_id = ? `;
+};
 
 let employeeWiseTicket = () => {
-    return `SELECT * FROM ${table_name} where  id = ? and created_by = ?`;
-}
+  return `SELECT * FROM ${table_name} where  id = ? and created_by = ?`;
+};
 
 let adminWiseTicketDetails = () => {
-    return `SELECT * FROM ${admin_wise_ticket_view} where  user_id = ? and ticket_table_id = ? `;
-}
+  return `SELECT * FROM ${admin_wise_ticket_view} where  user_id = ? and ticket_table_id = ? `;
+};
 
 let addNew = () => {
-    return `INSERT INTO ${table_name} SET ?`;
-}
+  return `INSERT INTO ${table_name} SET ?`;
+};
 
 const updateById = () => {
-    return `UPDATE ${table_name} SET ? WHERE id = ?`;
-}
-
+  return `UPDATE ${table_name} SET ? WHERE id = ?`;
+};
 
 let getUnitAndCategoryWiseEmail = () => {
-    return `SELECT * FROM ${admin_wise_ticket_view} where  asset_unit_id = ? and ticket_category_id = ? `;
-}
-
+  return `SELECT * FROM ${admin_wise_ticket_view} where  asset_unit_id = ? and ticket_category_id = ? `;
+};
 
 let getAdminWiseTicketById = () => {
-    return `SELECT * FROM ${admin_wise_ticket_view}  where  user_id = ? and ticket_table_id = ?`;
-}
-
+  return `SELECT * FROM ${admin_wise_ticket_view}  where  user_id = ? and ticket_table_id = ?`;
+};
 
 // ticket dashboard counting data
 
 let ticketCountingData = () => {
-    return `SELECT count(id) as total_ticket FROM ${table_name} where status = 1 `; 
-}
+  return `SELECT count(id) as total_ticket FROM ${table_name} where status = 1 `;
+};
 let getTicketTotalSolved = () => {
-    return `SELECT count(id) as total_solved FROM ${table_name} where ticket_status = 'solved' and status = 1 `; 
-}
+  return `SELECT count(id) as total_solved FROM ${table_name} where ticket_status = 'solved' and status = 1 `;
+};
 
 let getTicketTotalUnsolved = () => {
-    return `SELECT count(id) as total_unsolved FROM ${table_name} where ticket_status = 'unsolved' and status = 1 `; 
-}
+  return `SELECT count(id) as total_unsolved FROM ${table_name} where ticket_status = 'unsolved' and status = 1 `;
+};
 
 let getTicketTotalForward = () => {
-    return `SELECT count(id) as total_forward FROM ${table_name} where ticket_status = 'forward' and status = 1`; 
-}
+  return `SELECT count(id) as total_forward FROM ${table_name} where ticket_status = 'forward' and status = 1`;
+};
 let getTicketTotalInprogress = () => {
-    return `SELECT count(id) as total_inprogress FROM ${table_name} where ticket_status = 'inprogress' and status = 1`; 
-}
-
-
-
+  return `SELECT count(id) as total_inprogress FROM ${table_name} where ticket_status = 'inprogress' and status = 1`;
+};
 
 let ticketAdminCountingData = () => {
-    return `SELECT count(ticket_table_id) as total_ticket FROM ${admin_wise_ticket_view} where user_id = ? `; 
-}
+  return `SELECT count(ticket_table_id) as total_ticket FROM ${admin_wise_ticket_view} where user_id = ? `;
+};
 let getAdminTicketTotalSolved = () => {
-    return `SELECT count(ticket_table_id) as total_solved FROM ${admin_wise_ticket_view} where ticket_status = 'solved' and user_id = ? `; 
-}
+  return `SELECT count(ticket_table_id) as total_solved FROM ${admin_wise_ticket_view} where ticket_status = 'solved' and user_id = ? `;
+};
 
 let getAdminTicketTotalUnsolved = () => {
-    return `SELECT count(ticket_table_id) as total_unsolved FROM ${admin_wise_ticket_view} where ticket_status = 'unsolved' and user_id = ? `; 
-}
+  return `SELECT count(ticket_table_id) as total_unsolved FROM ${admin_wise_ticket_view} where ticket_status = 'unsolved' and user_id = ? `;
+};
 
 let getAdminTicketTotalForward = () => {
-    return `SELECT count(ticket_table_id) as total_forward FROM ${admin_wise_ticket_view} where ticket_status = 'forward' and user_id = ?`; 
-}
+  return `SELECT count(ticket_table_id) as total_forward FROM ${admin_wise_ticket_view} where ticket_status = 'forward' and user_id = ?`;
+};
 let getAdminTicketTotalInprogress = () => {
-    return `SELECT count(ticket_table_id) as total_inprogress FROM ${admin_wise_ticket_view} where ticket_status = 'inprogress' and user_id = ?`; 
-}
-
-
+  return `SELECT count(ticket_table_id) as total_inprogress FROM ${admin_wise_ticket_view} where ticket_status = 'inprogress' and user_id = ?`;
+};
 
 let getTopSolvedTicketList = () => {
-    return `
+  return `
         SELECT 
             u.id AS id, 
             u.name AS solved_by_name, 
@@ -411,12 +411,10 @@ let getTopSolvedTicketList = () => {
             solved_ticket_count DESC 
         LIMIT 5;
         `;
-}
-
-
+};
 
 let priorityBaseTicketList = () => {
-    return `
+  return `
         SELECT 
             tc.id AS category_id,
             tc.title AS category_title,
@@ -434,11 +432,10 @@ let priorityBaseTicketList = () => {
         ORDER BY 
             ticket_count DESC;
     `;
-}
+};
 
 let priorityBaseTicketListForAdmin = () => {
-
-    return `
+  return `
 
         SELECT 
             awt.ticket_category_id AS category_id,
@@ -452,11 +449,10 @@ let priorityBaseTicketListForAdmin = () => {
             awt.ticket_category_id, awt.ticket_category_title
       
     `;
-}
-
+};
 
 let categoryBaseTicketList = () => {
-    return `
+  return `
            SELECT 
             SUM(CASE WHEN priority = 'high' THEN 1 ELSE 0 END) AS priority_high,
             SUM(CASE WHEN priority = 'low' THEN 1 ELSE 0 END) AS priority_low,
@@ -464,13 +460,11 @@ let categoryBaseTicketList = () => {
             SUM(CASE WHEN priority = 'urgent' THEN 1 ELSE 0 END) AS priority_urgent
         FROM dbl_raise_ticket AS rt 
         WHERE status = 1;
-    `
-}
-
-
+    `;
+};
 
 let categoryBaseTicketListAdmin = () => {
-    return `
+  return `
         SELECT 
             SUM(CASE WHEN priority = 'high' THEN 1 ELSE 0 END) AS priority_high,
             SUM(CASE WHEN priority = 'low' THEN 1 ELSE 0 END) AS priority_low,
@@ -478,26 +472,22 @@ let categoryBaseTicketListAdmin = () => {
             SUM(CASE WHEN priority = 'urgent' THEN 1 ELSE 0 END) AS priority_urgent
         FROM admin_wise_ticket AS awt
         WHERE user_id = ?;
-    `
-}
-
-
-
-
+    `;
+};
 
 let monthWiseTicketCount = () => {
-    return `
+  return `
         SELECT 
             COUNT(CASE WHEN status = 1 THEN id END) AS total_ticket,
             COUNT(CASE WHEN status = 1 AND ticket_status = 'solved' THEN id END) AS total_solved,
             COUNT(CASE WHEN status = 1 AND ticket_status = 'unsolved' THEN id END) AS total_unsolved
         FROM dbl_raise_ticket
         WHERE created_at >= NOW() - INTERVAL 30 DAY;
-    `
-}
+    `;
+};
 
 let monthWiseTicketCountAdmin = () => {
-    return `
+  return `
         SELECT 
     COUNT(CASE WHEN status = 1 THEN ticket_table_id END) AS total_ticket,
     COUNT(CASE WHEN status = 1 AND ticket_status = 'solved' THEN ticket_table_id END) AS total_solved,
@@ -508,12 +498,11 @@ let monthWiseTicketCountAdmin = () => {
         ticket_created_at >= NOW() - INTERVAL 30 DAY
         AND user_id = ?;
 
-    `
-}
-
+    `;
+};
 
 let graphTicketTotalData = () => {
-    return `
+  return `
       SELECT 
         MONTH(created_at) as month,
         COUNT(id) as raiseTickets 
@@ -527,11 +516,10 @@ let graphTicketTotalData = () => {
       ORDER BY 
         MONTH(created_at) DESC
     `;
-  };
+};
 
-  
 let graphTicketTotalDataAdmin = () => {
-    return `
+  return `
       SELECT 
         MONTH(ticket_created_at) as month,
         COUNT(ticket_table_id) as raiseTickets 
@@ -548,7 +536,7 @@ let graphTicketTotalDataAdmin = () => {
 };
 
 let graphTicketTotalSolveDataAdmin = () => {
-    return `
+  return `
       SELECT 
         MONTH(ticket_created_at) as month,
         COUNT(ticket_table_id) as solvedTickets 
@@ -564,7 +552,7 @@ let graphTicketTotalSolveDataAdmin = () => {
     `;
 };
 let graphTicketTotalUnSolveDataAdmin = () => {
-    return `
+  return `
       SELECT 
         MONTH(ticket_created_at) as month,
         COUNT(ticket_table_id) as unsolvedTickets 
@@ -580,10 +568,8 @@ let graphTicketTotalUnSolveDataAdmin = () => {
     `;
 };
 
-  
-
 let graphTicketTotalSolveData = () => {
-    return `
+  return `
       SELECT 
         MONTH(created_at) as month,
         COUNT(id) as solvedTickets 
@@ -599,7 +585,7 @@ let graphTicketTotalSolveData = () => {
     `;
 };
 let graphTicketTotalUnSolveData = () => {
-    return `
+  return `
       SELECT 
         MONTH(created_at) as month,
         COUNT(id) as unsolvedTickets 
@@ -615,45 +601,53 @@ let graphTicketTotalUnSolveData = () => {
     `;
 };
 
-
-
 let existsUnitHasAssign = () => {
-    return `SELECT * FROM admin_search_access  where  unit_id = ? `;
-}
+  return `SELECT * FROM admin_search_access  where  unit_id = ? `;
+};
 
 let existsCategoryHasAssign = () => {
-    return `SELECT * FROM dbl_user_category_access  where  category_id = ? `;
-}
+  return `SELECT * FROM dbl_user_category_access  where  category_id = ? `;
+};
 
-
-
-let getSuperAdminTicketReport = (key, priority, category, unit, status,from_date, to_date, offset, limit) => {
-    let baseQuery = `
+let getSuperAdminTicketReport = (
+  key,
+  priority,
+  category,
+  unit,
+  status,
+  from_date,
+  to_date,
+  offset,
+  limit
+) => {
+  let baseQuery = `
     SELECT ticket_table_id, ticket_id, ticket_status ,subject, priority, ticket_category_title, asset_serial_number,
     ticket_created_employee_name, ticket_created_employee_id,
     ticket_solved_employee_name, ticket_solved_employee_id, asset_unit_title, ticket_updated_at, asset_unit_id,ticket_created_at
     FROM super_admin_ticket_view
     `;
 
-    let conditions = [];
+  let conditions = [];
 
-    if (unit) {
-        conditions.push(`asset_unit_id = '${unit}'`);
-    }
-    if (status) {
-        conditions.push(`ticket_status = '${status}'`);
-    }
-    if (priority) {
-        conditions.push(`priority = '${priority}'`);
-    }
-    if (category) {
-        conditions.push(`ticket_category_id = '${category}'`);
-    }
-    if (from_date && to_date) {
-        conditions.push(`ticket_created_at BETWEEN '${from_date}' AND '${to_date}'`);
-    }
-    if (key) {
-        conditions.push(`(
+  if (unit) {
+    conditions.push(`asset_unit_id = '${unit}'`);
+  }
+  if (status) {
+    conditions.push(`ticket_status = '${status}'`);
+  }
+  if (priority) {
+    conditions.push(`priority = '${priority}'`);
+  }
+  if (category) {
+    conditions.push(`ticket_category_id = '${category}'`);
+  }
+  if (from_date && to_date) {
+    conditions.push(
+      `ticket_created_at BETWEEN '${from_date}' AND '${to_date}'`
+    );
+  }
+  if (key) {
+    conditions.push(`(
             subject LIKE '%${key}%' 
             OR ticket_id LIKE '%${key}%' 
             OR ticket_solved_employee_name LIKE '%${key}%' 
@@ -661,54 +655,64 @@ let getSuperAdminTicketReport = (key, priority, category, unit, status,from_date
             OR ticket_solved_employee_id LIKE '%${key}%' 
             OR ticket_created_employee_id LIKE '%${key}%'
         )`);
-    }
-    if (from_date && to_date) {
-        conditions.push(`ticket_updated_at BETWEEN '${from_date}' AND '${to_date}'`);
-    }
+  }
+  if (from_date && to_date) {
+    conditions.push(
+      `ticket_updated_at BETWEEN '${from_date}' AND '${to_date}'`
+    );
+  }
 
-    if (conditions.length > 0) {
-        baseQuery += " WHERE " + conditions.join(" AND ");
-    }
+  if (conditions.length > 0) {
+    baseQuery += " WHERE " + conditions.join(" AND ");
+  }
 
-    if (limit) {
-        baseQuery += ` LIMIT ${limit}`;
-    }
-    if (offset) {
-        baseQuery += ` OFFSET ${offset}`;
-    }
+  if (limit) {
+    baseQuery += ` LIMIT ${limit}`;
+  }
+  if (offset) {
+    baseQuery += ` OFFSET ${offset}`;
+  }
 
-    return baseQuery;
+  return baseQuery;
 };
 
-
-let getSuperAdminTicketReportTotalCount = (key, priority, category, unit,status ,from_date, to_date) => {
-    
-    let baseQuery = `
+let getSuperAdminTicketReportTotalCount = (
+  key,
+  priority,
+  category,
+  unit,
+  status,
+  from_date,
+  to_date
+) => {
+  let baseQuery = `
     SELECT ticket_table_id, ticket_id, ticket_status,subject, priority, ticket_category_title, asset_serial_number,
     ticket_created_employee_name, ticket_created_employee_id,
     ticket_solved_employee_name, ticket_solved_employee_id, asset_unit_title, ticket_updated_at, asset_unit_id,ticket_created_at
     FROM super_admin_ticket_view
     `;
 
-    let conditions = [];
+  let conditions = [];
 
-    if (unit) {
-        conditions.push(`asset_unit_id = '${unit}'`);
-    }
-    if (status) {
-        conditions.push(`ticket_status = '${status}'`);
-    }
-    if (priority) {
-        conditions.push(`priority = '${priority}'`);
-    }
-    if (category) {
-        conditions.push(`ticket_category_id = '${category}'`);
-    }
-    if (from_date && to_date) {
-        conditions.push(`ticket_created_at BETWEEN '${from_date}' AND '${to_date}'`);
-    }
-    if (key) {
-        conditions.push(`(
+  if (unit) {
+    conditions.push(`asset_unit_id = '${unit}'`);
+  }
+  if (status) {
+    conditions.push(`ticket_status = '${status}'`);
+  }
+  if (priority) {
+    conditions.push(`priority = '${priority}'`);
+  }
+  if (category) {
+    conditions.push(`ticket_category_id = '${category}'`);
+  }
+  if (from_date && to_date) {
+    conditions.push(
+      `ticket_created_at BETWEEN '${from_date}' AND '${to_date}'`
+    );
+  }
+  if (key) {
+    conditions.push(`(
             subject LIKE '%${key}%' 
             OR ticket_id LIKE '%${key}%' 
             OR ticket_solved_employee_name LIKE '%${key}%' 
@@ -716,74 +720,68 @@ let getSuperAdminTicketReportTotalCount = (key, priority, category, unit,status 
             OR ticket_solved_employee_id LIKE '%${key}%' 
             OR ticket_created_employee_id LIKE '%${key}%'
         )`);
-    }
-    // if (from_date && to_date) {
-    //     conditions.push(`ticket_updated_at BETWEEN '${from_date}' AND '${to_date}'`);
-    // }
+  }
+  // if (from_date && to_date) {
+  //     conditions.push(`ticket_updated_at BETWEEN '${from_date}' AND '${to_date}'`);
+  // }
 
-    if (conditions.length > 0) {
-        baseQuery += " WHERE " + conditions.join(" AND ");
-    }
+  if (conditions.length > 0) {
+    baseQuery += " WHERE " + conditions.join(" AND ");
+  }
 
-    return baseQuery;
+  return baseQuery;
 };
 
-
-
-
 module.exports = {
-    getList,
-    getActiveList,
-    getByTitle,
-    getById,
-    addNew,
-    updateById,
-    getOnlyDataList,
+  getList,
+  getActiveList,
+  getByTitle,
+  getById,
+  addNew,
+  updateById,
+  getOnlyDataList,
 
-
-    getLocation,
-    getAllList,
-    getAllLocationDataByUnitId,
-    getUnitWiseLocation,
-    getAllListUserWise,
-    getAllListAdminWise,
-    getAdminWiseTicket,
-    adminWiseTicketDetails,
-    getSuperAdminTicket,
-    getUnitAndCategoryWiseEmail,
-    employeeWiseTicket,
-    getAdminWiseTicketById,
-    getSuperAdminTicketTotalCount,
-    getAllListTotalCountUserWise,
-    getAdminWiseTicketTotalCount,
-    ticketCountingData,
-    getTicketTotalSolved,
-    getTicketTotalUnsolved,
-    getTicketTotalForward,
-    getTicketTotalInprogress,
-    getTopSolvedTicketList,
-    priorityBaseTicketList,
-    categoryBaseTicketList,
-    monthWiseTicketCount,
-    graphTicketTotalData,
-    graphTicketTotalSolveData,
-    existsUnitHasAssign,
-    existsCategoryHasAssign,
-    getSuperAdminTicketReport,
-    getSuperAdminTicketReportTotalCount,
-    ticketAdminCountingData,
-    getAdminTicketTotalSolved,
-    getAdminTicketTotalUnsolved,
-    getAdminTicketTotalForward,
-    getAdminTicketTotalInprogress,
-    categoryBaseTicketListAdmin, 
-    priorityBaseTicketListForAdmin,
-    monthWiseTicketCountAdmin,
-    graphTicketTotalDataAdmin,
-    graphTicketTotalSolveDataAdmin,
-    graphTicketTotalUnSolveData,
-    graphTicketTotalUnSolveDataAdmin,
-    adminWiseUnitAndCategory
-
-}
-
+  getLocation,
+  getAllList,
+  getAllLocationDataByUnitId,
+  getUnitWiseLocation,
+  getAllListUserWise,
+  getAllListAdminWise,
+  getAdminWiseTicket,
+  adminWiseTicketDetails,
+  getSuperAdminTicket,
+  getUnitAndCategoryWiseEmail,
+  employeeWiseTicket,
+  getAdminWiseTicketById,
+  getSuperAdminTicketTotalCount,
+  getAllListTotalCountUserWise,
+  getAdminWiseTicketTotalCount,
+  ticketCountingData,
+  getTicketTotalSolved,
+  getTicketTotalUnsolved,
+  getTicketTotalForward,
+  getTicketTotalInprogress,
+  getTopSolvedTicketList,
+  priorityBaseTicketList,
+  categoryBaseTicketList,
+  monthWiseTicketCount,
+  graphTicketTotalData,
+  graphTicketTotalSolveData,
+  existsUnitHasAssign,
+  existsCategoryHasAssign,
+  getSuperAdminTicketReport,
+  getSuperAdminTicketReportTotalCount,
+  ticketAdminCountingData,
+  getAdminTicketTotalSolved,
+  getAdminTicketTotalUnsolved,
+  getAdminTicketTotalForward,
+  getAdminTicketTotalInprogress,
+  categoryBaseTicketListAdmin,
+  priorityBaseTicketListForAdmin,
+  monthWiseTicketCountAdmin,
+  graphTicketTotalDataAdmin,
+  graphTicketTotalSolveDataAdmin,
+  graphTicketTotalUnSolveData,
+  graphTicketTotalUnSolveDataAdmin,
+  adminWiseUnitAndCategory,
+};

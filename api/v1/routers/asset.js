@@ -20,7 +20,6 @@ const { routeAccessChecker } = require("../middlewares/routeAccess");
 const commonObject = require("../common/common");
 const licensesModel = require("../models/licenses");
 const unitAccessModel = require("../models/unit-access");
-
 router.post(
   "/add",
   [verifyToken, routeAccessChecker("addAsset")],

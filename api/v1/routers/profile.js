@@ -1,19 +1,19 @@
 const express = require("express");
 const isEmpty = require("is-empty");
 const router = express.Router();
-const verifyToken = require('../middlewares/verifyToken')
-const {check,validationResult} = require('express-validator')
+const verifyToken = require("../middlewares/verifyToken");
+const { check, validationResult } = require("express-validator");
 const moment = require("moment");
 const e = require("express");
-const userModel = require('../models/user');
-const assignModel = require('../models/asset-assign');
-const unitAccessModel = require('../models/unit-access');
-const licensesModel = require('../models/licenses');
-const assetUnitModel = require('../models/asset-unit');
+const userModel = require("../models/user");
+const assignModel = require("../models/asset-assign");
+const unitAccessModel = require("../models/unit-access");
+const licensesModel = require("../models/licenses");
+const assetUnitModel = require("../models/asset-unit");
 // list
-router.get('/me', [verifyToken], async (req, res) => {
+router.get("/me", [verifyToken], async (req, res) => {
   let id = req.decoded.userInfo.id;
-  
+
   // Get data from the database by id
   let result = await userModel.getById(id);
 
@@ -22,7 +22,7 @@ router.get('/me', [verifyToken], async (req, res) => {
     return res.status(404).send({
       success: false,
       status: 404,
-      message: "Employee data not found."
+      message: "Employee data not found.",
     });
   }
 
@@ -47,7 +47,7 @@ router.get('/me', [verifyToken], async (req, res) => {
             licenseDetails.push({
               id: license.id,
               title: license.title,
-              price: license.price
+              price: license.price,
             });
           }
         }
@@ -58,7 +58,11 @@ router.get('/me', [verifyToken], async (req, res) => {
         console.error("Licenses is not a valid array:", employee.licenses);
       }
     } catch (error) {
-      console.error("Error parsing licenses for employee:", employee.employee_id, error);
+      console.error(
+        "Error parsing licenses for employee:",
+        employee.employee_id,
+        error
+      );
     }
   }
 
@@ -73,18 +77,19 @@ router.get('/me', [verifyToken], async (req, res) => {
       // Fetch the title (unit_name) from the assetUnitModel based on unit_id
       const existingDataById = await assetUnitModel.getById(access.unit_id);
 
-      const unit_name = existingDataById && existingDataById.length > 0
-        ? existingDataById[0].title
-        : null;
+      const unit_name =
+        existingDataById && existingDataById.length > 0
+          ? existingDataById[0].title
+          : null;
 
       // Add the unit_name to the access object and push it into searchAccess
       employee.searchAccess.push({
         ...access,
-        unit_name: unit_name
+        unit_name: unit_name,
       });
     }
   } else {
-    employee.searchAccess = [];  // Ensure searchAccess is an empty array if no access data
+    employee.searchAccess = []; // Ensure searchAccess is an empty array if no access data
   }
 
   // Return the employee details
@@ -92,11 +97,9 @@ router.get('/me', [verifyToken], async (req, res) => {
     success: true,
     status: 200,
     message: "Employee details.",
-    data: employee
+    data: employee,
   });
 });
-
-
 
 // router.get('/me', [verifyToken], async (req, res) => {
 //   let id = req.decoded.userInfo.id;
@@ -121,7 +124,6 @@ router.get('/me', [verifyToken], async (req, res) => {
 //     try {
 //       // Try parsing the licenses string to an array
 //       let licenses = JSON.parse(employee.licenses);
-    
 
 //       // Ensure licenses is an array before proceeding
 //       if (Array.isArray(licenses)) {
@@ -163,5 +165,4 @@ router.get('/me', [verifyToken], async (req, res) => {
 //   });
 // });
 
-
-module.exports = router;  
+module.exports = router;

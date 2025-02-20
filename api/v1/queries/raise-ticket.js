@@ -367,12 +367,17 @@ let getTicketTotalInprogress = () => {
   return `SELECT count(id) as total_inprogress FROM ${table_name} where ticket_status = 'inprogress' and status = 1`;
 };
 
-let getTicketTotalSolveTime = () => {
+let getTicketTotalAvgTime = () => {
   return `SELECT 
     COUNT(id) AS ticket_count,
-    SEC_TO_TIME(SUM(TIMESTAMPDIFF(SECOND, created_at, updated_at))) AS total_ticket_solve_time
+    CASE 
+        WHEN COUNT(id) > 0 
+        THEN TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(SECOND, created_at, updated_at)) / COUNT(id)), '%H:%i:%s')
+        ELSE '00:00:00'
+    END AS avg_ticket_solve_time
 FROM ${table_name}
-WHERE ticket_status = 'solved'
+WHERE ticket_status = 'solved';
+
 `;
 };
 let ticketAdminCountingData = () => {
@@ -792,5 +797,5 @@ module.exports = {
   graphTicketTotalUnSolveData,
   graphTicketTotalUnSolveDataAdmin,
   adminWiseUnitAndCategory,
-  getTicketTotalSolveTime,
+  getTicketTotalAvgTime,
 };

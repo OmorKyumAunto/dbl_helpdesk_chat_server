@@ -115,15 +115,6 @@ router.post(
         message: "Serial number cannot be empty.",
       });
     }
-
-    // if(isEmpty(reqData.po_number)){
-    //   return res.status(400).send({
-    //     "success": false,
-    //     "status": 400,
-    //     "message":"Po number cannot be empty."
-    //   });
-    // }
-
     // unit validation
     if (isEmpty(reqData.unit_id)) {
       return res.status(400).send({
@@ -149,14 +140,7 @@ router.post(
         message: "This location not found.",
       });
     }
-    // const checkUnitWiseLocation = await locationModel.getLocation(reqData.unit_id,reqData.location)
-    // if(isEmpty(checkUnitWiseLocation)){
-    //   return res.status(404).send({
-    //       "success": false,
-    //       "status": 404,
-    //       "message":"This location is not under this unit."
-    // });
-    // }
+
     // unit validation
     if (isEmpty(reqData.model)) {
       return res.status(400).send({
@@ -165,17 +149,6 @@ router.post(
         message: "Model  cannot be empty.",
       });
     }
-
-    // // unit validation
-    // if(isEmpty(reqData.specification)){
-    //   return res.status(400).send({
-    //       "success": false,
-    //       "status": 400,
-    //       "message":"Specification cannot be empty."
-    // });
-    // }
-
-    // if is_assign employee
 
     // yes =1 , no = 0
 

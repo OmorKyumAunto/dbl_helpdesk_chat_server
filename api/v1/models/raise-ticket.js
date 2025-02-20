@@ -387,10 +387,10 @@ let getTicketTotalInprogress = async () => {
   });
 };
 
-let getTicketTotalSolveTime = async () => {
+let getTicketTotalAvgTime = async () => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getTicketTotalSolveTime(),
+      queries.getTicketTotalAvgTime(),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -765,5 +765,5 @@ module.exports = {
   graphTicketTotalUnSolveData,
   graphTicketTotalUnSolveDataAdmin,
   adminWiseUnitAndCategory,
-  getTicketTotalSolveTime,
+  getTicketTotalAvgTime,
 };

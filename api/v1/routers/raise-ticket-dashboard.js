@@ -30,7 +30,7 @@ router.get(
     let total_unsolved;
     let total_forward;
     let total_inprogress;
-    let total_solve_time;
+    let total_avg_time;
 
     if (role_id === 1) {
       total_ticket = await raiseTicketModel.getTicketDataCounting();
@@ -38,7 +38,7 @@ router.get(
       total_unsolved = await raiseTicketModel.getTicketTotalUnsolved();
       total_forward = await raiseTicketModel.getTicketTotalForward();
       total_inprogress = await raiseTicketModel.getTicketTotalInprogress();
-      total_solve_time = await raiseTicketModel.getTicketTotalSolveTime();
+      total_avg_time = await raiseTicketModel.getTicketTotalAvgTime();
     } else {
       total_ticket = await raiseTicketModel.getAdminTicketDataCounting(id);
       total_solved = await raiseTicketModel.getAdminTicketTotalSolved(id);
@@ -47,11 +47,11 @@ router.get(
       total_inprogress = await raiseTicketModel.getAdminTicketTotalInprogress(
         id
       );
-      total_solve_time = 0;
+      total_avg_time = 0;
     }
     console.log(
       "Total time : +++ >>",
-      total_solve_time[0]?.total_ticket_solve_time
+      total_avg_time[0]?.avg_ticket_solve_time
     );
     const data = {
       total_ticket: total_ticket[0]?.total_ticket || 0,
@@ -59,7 +59,7 @@ router.get(
       total_unsolved: total_unsolved[0]?.total_unsolved || 0,
       total_forward: total_forward[0]?.total_forward || 0,
       total_inprogress: total_inprogress[0]?.total_inprogress || 0,
-      total_solve_time: total_solve_time[0]?.total_ticket_solve_time || 0,
+      total_avg_time: total_avg_time[0]?.avg_ticket_solve_time || 0,
     };
 
     return res.status(200).send({

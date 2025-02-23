@@ -399,6 +399,18 @@ let getTicketTotalAvgTime = async () => {
   });
 };
 
+let getTicketAdminTotalAvgTime = async (user_id) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getTicketAdminTotalAvgTime(),
+      [user_id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
 let getAdminTicketDataCounting = async (user_id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
@@ -766,4 +778,5 @@ module.exports = {
   graphTicketTotalUnSolveDataAdmin,
   adminWiseUnitAndCategory,
   getTicketTotalAvgTime,
+  getTicketAdminTotalAvgTime,
 };

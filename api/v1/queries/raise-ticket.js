@@ -377,7 +377,7 @@ let getTicketTotalAvgTime = () => {
         ELSE '00:00:00'
     END AS avg_ticket_solve_time
 FROM ${table_name}
-WHERE ticket_status = 'solved';
+WHERE ticket_status = 'solved' AND status = 1;
 
 `;
 };

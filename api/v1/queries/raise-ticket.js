@@ -186,7 +186,8 @@ let getAllListUserWise = (
         slac.priority AS sla_priority,
         slac.response_time_value AS response_time_value,
         slac.response_time_unit AS response_time_unit,
-        slac.resolve_time_value AS resolve_time_value
+        slac.resolve_time_value AS resolve_time_value,
+        slac.resolve_time_unit AS resolve_time_unit
 
     FROM 
         dbl_raise_ticket AS rt

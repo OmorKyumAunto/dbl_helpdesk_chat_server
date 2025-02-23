@@ -378,9 +378,22 @@ let getTicketTotalAvgTime = () => {
     END AS avg_ticket_solve_time
 FROM ${table_name}
 WHERE ticket_status = 'solved' AND status = 1;
-
 `;
 };
+
+let getTicketAdminTotalAvgTime = () => {
+  return `SELECT 
+    COUNT(user_id) AS ticket_count,
+    CASE 
+        WHEN COUNT(user_id) > 0 
+        THEN TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(SECOND, ticket_created_at, ticket_updated_at)) / COUNT(ticket_updated_at)), '%H:%i:%s')
+        ELSE '00:00:00'
+    END AS avg_ticket_solve_time
+FROM ${admin_wise_ticket_view}
+WHERE user_id = ? AND ticket_status = 'solved' AND status = 1;
+`;
+};
+
 let ticketAdminCountingData = () => {
   return `SELECT count(ticket_table_id) as total_ticket FROM ${admin_wise_ticket_view} where user_id = ? `;
 };
@@ -799,4 +812,5 @@ module.exports = {
   graphTicketTotalUnSolveDataAdmin,
   adminWiseUnitAndCategory,
   getTicketTotalAvgTime,
+  getTicketAdminTotalAvgTime,
 };

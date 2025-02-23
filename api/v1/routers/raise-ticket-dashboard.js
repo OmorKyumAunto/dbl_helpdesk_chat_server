@@ -47,7 +47,8 @@ router.get(
       total_inprogress = await raiseTicketModel.getAdminTicketTotalInprogress(
         id
       );
-      total_avg_time = 0;
+      total_avg_time = await raiseTicketModel.getTicketAdminTotalAvgTime(id);
+      // total_avg_time = 0;
     }
     console.log(
       "Total time : +++ >>",

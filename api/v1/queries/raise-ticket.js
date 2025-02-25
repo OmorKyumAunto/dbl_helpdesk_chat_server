@@ -431,7 +431,7 @@ let getTopSolvedTicketList = () => {
         ON 
            rt.solved_by = uv.id 
         WHERE 
-            rt.ticket_status = 'solved' 
+           rt.status = 1 AND rt.ticket_status = 'solved' 
         GROUP BY 
             rt.solved_by 
         ORDER BY 

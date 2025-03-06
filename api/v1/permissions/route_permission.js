@@ -131,6 +131,8 @@ let superAdminPermission = [
   "superAdminTicketReport",
   "slaConfiguration",
   "slaList",
+  "addTaskCategories",
+  "taskCategoriesList"
 ];
 
 let adminPermission = [
@@ -253,6 +255,9 @@ let adminPermission = [
   "raiseSolveTicketMOnthlyCount",
   "ticketDashboardGraphData",
   "changePriority",
+  "addTaskCategories",
+  "createTask",
+  "taskCategoriesList"
 ];
 
 let employeePermission = [
@@ -366,6 +371,7 @@ let employeePermission = [
   "categoryWisePriorityCount",
   "raiseSolveTicketMOnthlyCount",
   "ticketDashboardGraphData",
+  "createTask",
 ];
 
 let getRouterPermissionList = async (id = 0) => {

@@ -132,7 +132,10 @@ let superAdminPermission = [
   "slaConfiguration",
   "slaList",
   "addTaskCategories",
-  "taskCategoriesList"
+  "taskCategoriesList",
+  "updateTaskCategories",
+  "deleteTaskCategories",
+  "starredTaskCategories"
 ];
 
 let adminPermission = [
@@ -257,7 +260,10 @@ let adminPermission = [
   "changePriority",
   "addTaskCategories",
   "createTask",
-  "taskCategoriesList"
+  "taskCategoriesList",
+  "updateTaskCategories",
+  "deleteTaskCategories",
+  "starredTaskCategories"
 ];
 
 let employeePermission = [

@@ -1,11 +1,6 @@
 const express = require("express");
 const isEmpty = require("is-empty");
-const router = express.Router();
-const assetUnitModel = require("../models/asset-unit");
-const assetModel = require("../models/asset");
-const unitAccessModel = require("../models/unit-access");
-const userModel = require("../models/user");
-const locationModel = require("../models/location");
+const router = express.Router()
 const verifyToken = require("../middlewares/verifyToken");
 const { routeAccessChecker } = require("../middlewares/routeAccess");
 const moment = require("moment");
@@ -14,6 +9,8 @@ const { current_time } = require("../validation/task/task");
 const { taskCreateSchema } = require("../validator/validate-request/task");
 const common = require("../common/common");
 const validateRequest = require("../validator/middleware");
+const taskCategoriesModel = require("../models/task-categories");
+const userModel = require("../models/user");
 require("dotenv").config();
 
 router.get(
@@ -77,15 +74,44 @@ router.post(
       start_time: req.body.start_time,
       end_time: req.body.end_time,
       is_assign: req.body.is_assign || 0,
-      assign_to_id: req.body.assign_to_id || null,
+      user_id: req.body.user_id || null,
+      task_categories_id: req.body.task_categories_id || null,
     };
 
-    reqData.created_by = req.decoded.userInfo.id;
-    reqData.updated_by = req.decoded.userInfo.id;
+  
+    const user_id = req.decoded.userInfo.id;
+
+    reqData.created_by = user_id
+    reqData.updated_by = user_id
+
+    if(reqData.user_id){
+      let checkIsAdmin = await userModel.getById(reqData.user_id);
+      if (checkIsAdmin[0].role_id !== 2) {
+          return res.status(404).send({
+              "success": false,
+              "status": 404,
+              "message": "This assign user is not admin.",
+          });
+      }
+      reqData.user_id = reqData.user_id,
+      reqData.assign_from_id = user_id
+      
+    }else{
+      reqData.user_id = user_id
+    }
 
     reqData.created_at = current_time;
     reqData.updated_at = current_time;
     reqData.task_code = common.rendomGenerator();
+
+    let existingDataById = await taskCategoriesModel.getById(reqData.task_categories_id,user_id);
+    if (isEmpty(existingDataById)) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "No data found",
+        });
+    }
 
     let result = await taskModel.addNew(reqData);
 

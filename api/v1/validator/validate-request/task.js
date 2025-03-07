@@ -17,7 +17,7 @@ const taskCreateSchema = z
     start_time: timeSchema(),
     end_time: timeSchema(),
     is_assign: z.number().optional(),
-    assign_to_id: z.number().optional(),
+    user_id: z.number().optional(),
     task_categories_id: z.number()
   })
   .refine((data) => new Date(data.start_date) <= new Date(data.end_date), {

@@ -5,7 +5,7 @@ const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const moment = require("moment");
 const validateRequest = require("../validator/middleware");
-const { taskCategoriesCreateSchema ,taskCategoriesUpdateSchema} = require("../validator/validate-request/task-categories");
+const { taskCategoriesCreateSchema ,taskCategoriesUpdateSchema,taskCategoriesStarredUpdateSchema} = require("../validator/validate-request/task-categories");
 require('dotenv').config();
 const { current_time } = require("../validation/task/task");
 const taskCategoriesModel = require("../models/task-categories");
@@ -67,7 +67,7 @@ router.post('/', [verifyToken, routeAccessChecker("addTaskCategories"), validate
 
 
 
-router.put('/update/:id', [verifyToken, routeAccessChecker("assetUnitUpdate"),validateRequest(taskCategoriesUpdateSchema)], async (req, res) => {
+router.put('/update/:id', [verifyToken, routeAccessChecker("updateTaskCategories"),validateRequest(taskCategoriesUpdateSchema)], async (req, res) => {
 
     const id = req.params.id
     const user_id = req.decoded.userInfo.id;
@@ -164,7 +164,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("assetUnitUpdate"),va
 
 
 
-router.delete('/delete/:id', [verifyToken, routeAccessChecker("assetUnitDelete")], async (req, res) => {
+router.delete('/delete/:id', [verifyToken, routeAccessChecker("deleteTaskCategories")], async (req, res) => {
 
     let id = req.params.id
     const user_id = req.decoded.userInfo.id;
@@ -217,6 +217,86 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("assetUnitDelete")
         "status": 200,
         "message": "Task category successfully deleted."
     });
+
+});
+
+
+
+router.put('/starred/:id', [verifyToken, routeAccessChecker("starredTaskCategories"),validateRequest(taskCategoriesStarredUpdateSchema)], async (req, res) => {
+
+    const id = parseInt(req.params.id)
+    const user_id = req.decoded.userInfo.id;
+    const reqData = {
+        "starred": req.body.starred,
+    }
+
+    reqData.updated_by = user_id;
+
+    let existingDataById = await taskCategoriesModel.getById(id,user_id);
+    if (isEmpty(existingDataById)) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "No data found",
+        });
+    }
+
+    let updateData = {};
+
+    let errorMessage = "";
+    let isError = 0; // 1 = yes, 0 = no
+    let willWeUpdate = 0; // 1 = yes , 0 = no;
+
+
+    // starred
+    if (existingDataById[0].starred !== reqData.starred) {
+
+        willWeUpdate = 1;
+        updateData.starred = reqData.starred;
+    }
+
+
+
+    if (isError == 1) {
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": errorMessage
+        });
+    }
+
+    if (willWeUpdate == 1) {
+
+        updateData.updated_by = user_id;
+        updateData.updated_at = current_time
+
+
+        let result = await taskCategoriesModel.updateById(id, updateData);
+
+
+        if (result.affectedRows == undefined || result.affectedRows < 1) {
+            return res.status(500).send({
+                "success": true,
+                "status": 500,
+                "message": "Something Wrong in system database."
+            });
+        }
+
+
+        return res.status(200).send({
+            "success": true,
+            "status": 200,
+            "message": "Task category successfully updated."
+        });
+
+
+    } else {
+        return res.status(200).send({
+            "success": true,
+            "status": 200,
+            "message": "Nothing to update."
+        });
+    }
 
 });
 

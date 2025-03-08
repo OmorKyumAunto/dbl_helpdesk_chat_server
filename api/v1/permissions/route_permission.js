@@ -135,7 +135,9 @@ let superAdminPermission = [
   "taskCategoriesList",
   "updateTaskCategories",
   "deleteTaskCategories",
-  "starredTaskCategories"
+  "starredTaskChange",
+  "taskList",
+  "taskDetails"
 ];
 
 let adminPermission = [
@@ -263,7 +265,9 @@ let adminPermission = [
   "taskCategoriesList",
   "updateTaskCategories",
   "deleteTaskCategories",
-  "starredTaskCategories"
+  "starredTaskChange",
+  "taskList",
+  "taskDetails"
 ];
 
 let employeePermission = [

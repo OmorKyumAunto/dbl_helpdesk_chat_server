@@ -2,10 +2,10 @@ const { connectionDblystem } = require("../connections/connection");
 const queries = require("../queries/task");
 
 // Promises Method
-let getList = async (status) => {
+let getList = async (offset, limit, key, category ,id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getList(status),
+      queries.getList(offset, limit, key, category,id),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -51,11 +51,11 @@ let getByTitle = async (title = "") => {
   });
 };
 
-let getById = async (id = 0) => {
+let getById = async (id = 0,user_id = 0) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
       queries.getById(),
-      [id],
+      [id,user_id],
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);

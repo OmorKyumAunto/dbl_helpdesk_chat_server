@@ -11,12 +11,8 @@ const taskCategoriesUpdateSchema = z.object({
   description: z.string().optional(),
 });
 
-const taskCategoriesStarredUpdateSchema = z.object({
-  starred: z.number(),
-});
 
 module.exports = { 
   taskCategoriesCreateSchema,
-  taskCategoriesUpdateSchema,
-  taskCategoriesStarredUpdateSchema 
+  taskCategoriesUpdateSchema
 };

@@ -18,7 +18,7 @@ const taskCreateSchema = z
     end_time: timeSchema(),
     is_assign: z.number().optional(),
     user_id: z.number().optional(),
-    task_categories_id: z.number()
+    task_categories_id: z.number().optional()
   })
   .refine((data) => new Date(data.start_date) <= new Date(data.end_date), {
     message: "Start date cannot be later than end date",
@@ -34,4 +34,28 @@ const taskCreateSchema = z
   );
 
 
-module.exports = { taskCreateSchema };
+
+  const taskListSchema = z
+    .object({
+      key: z.string().optional().refine(value => value === undefined || value.length > 0, {
+        message: 'The search key must be a non-empty string.',
+      }),
+      limit: z.string().optional().refine(value => value === undefined || value > 0, {
+        message: 'Limit must be a positive number.',
+      }),
+      offset: z.string().optional().refine(value => value === undefined || value >= 0, {
+        message: 'Offset must be a non-negative number.',
+      }),
+      category: z.string().optional().refine(value => value === undefined || value > 0, {
+        message: 'Category ID must be a positive number.',
+      }),
+    });
+  
+  
+  const taskStarredUpdateSchema = z.object({
+      starred: z.number(),
+  });
+    
+
+
+module.exports = { taskCreateSchema ,taskListSchema,taskStarredUpdateSchema};

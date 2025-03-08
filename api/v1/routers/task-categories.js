@@ -14,6 +14,9 @@ router.get('/list', [verifyToken, routeAccessChecker("taskCategoriesList")], asy
 
     const id = req.decoded.userInfo.id;
     const result = await taskCategoriesModel.getList(id);
+    result.forEach(row => {
+        row.tasks = JSON.parse(row.tasks); // Convert string to JSON array
+    });
     return res.status(200).send({
         "success": true,
         "status": 200,
@@ -24,7 +27,7 @@ router.get('/list', [verifyToken, routeAccessChecker("taskCategoriesList")], asy
 });
 
 
-router.post('/', [verifyToken, routeAccessChecker("addTaskCategories"), validateRequest(taskCategoriesCreateSchema)], async (req, res) => {
+router.post('/', [verifyToken, routeAccessChecker("addTaskCategories"), validateRequest(taskCategoriesCreateSchema,'body')], async (req, res) => {
 
     let reqData = {
         "title": req.body.title,
@@ -67,7 +70,7 @@ router.post('/', [verifyToken, routeAccessChecker("addTaskCategories"), validate
 
 
 
-router.put('/update/:id', [verifyToken, routeAccessChecker("updateTaskCategories"),validateRequest(taskCategoriesUpdateSchema)], async (req, res) => {
+router.put('/update/:id', [verifyToken, routeAccessChecker("updateTaskCategories"),validateRequest(taskCategoriesUpdateSchema,'body')], async (req, res) => {
 
     const id = req.params.id
     const user_id = req.decoded.userInfo.id;
@@ -221,84 +224,6 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("deleteTaskCategor
 });
 
 
-
-router.put('/starred/:id', [verifyToken, routeAccessChecker("starredTaskCategories"),validateRequest(taskCategoriesStarredUpdateSchema)], async (req, res) => {
-
-    const id = parseInt(req.params.id)
-    const user_id = req.decoded.userInfo.id;
-    const reqData = {
-        "starred": req.body.starred,
-    }
-
-    reqData.updated_by = user_id;
-
-    let existingDataById = await taskCategoriesModel.getById(id,user_id);
-    if (isEmpty(existingDataById)) {
-        return res.status(404).send({
-            "success": false,
-            "status": 404,
-            "message": "No data found",
-        });
-    }
-
-    let updateData = {};
-
-    let errorMessage = "";
-    let isError = 0; // 1 = yes, 0 = no
-    let willWeUpdate = 0; // 1 = yes , 0 = no;
-
-
-    // starred
-    if (existingDataById[0].starred !== reqData.starred) {
-
-        willWeUpdate = 1;
-        updateData.starred = reqData.starred;
-    }
-
-
-
-    if (isError == 1) {
-        return res.status(400).send({
-            "success": false,
-            "status": 400,
-            "message": errorMessage
-        });
-    }
-
-    if (willWeUpdate == 1) {
-
-        updateData.updated_by = user_id;
-        updateData.updated_at = current_time
-
-
-        let result = await taskCategoriesModel.updateById(id, updateData);
-
-
-        if (result.affectedRows == undefined || result.affectedRows < 1) {
-            return res.status(500).send({
-                "success": true,
-                "status": 500,
-                "message": "Something Wrong in system database."
-            });
-        }
-
-
-        return res.status(200).send({
-            "success": true,
-            "status": 200,
-            "message": "Task category successfully updated."
-        });
-
-
-    } else {
-        return res.status(200).send({
-            "success": true,
-            "status": 200,
-            "message": "Nothing to update."
-        });
-    }
-
-});
 
 
 

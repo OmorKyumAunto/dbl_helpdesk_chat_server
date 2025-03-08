@@ -1,17 +1,26 @@
 const isEmpty = require("is-empty");
 let table_name = "dbl_tasks";
+let task_view_table = "task_info_view";
 
-let getList = (status) => {
-  let searchCondition = "status != 'delete'"; // Exclude 'delete' status by default
-
-  if (status === "active") {
-    searchCondition += " AND status = 'active'";
-  } else if (status === "") {
-    searchCondition += " AND status = ''";
+let getList = (offset, limit, key, category,id) => {
+  let searchCondition = "1=1";  // Ensures WHERE clause is always valid
+  
+  if (id) {
+    searchCondition += ` AND user_id = '${id}' `;
+  }
+  if (category) {
+    searchCondition += ` AND task_categories_id = '${category}' `;
+  }
+  if (key) {
+    searchCondition += ` AND (LOWER(title) LIKE LOWER('%${key}%')`;
   }
 
-  return `SELECT * FROM ${table_name} WHERE ${searchCondition} ORDER BY id DESC`;
+
+  return `SELECT id,title,description,start_date,end_date,start_time,end_time,task_code,task_status FROM ${task_view_table} WHERE ${searchCondition} 
+         LIMIT ${limit} OFFSET ${offset};`;
 };
+
+
 
 let getOnlyDataList = () => {
   return `SELECT id,title FROM ${table_name}  where status IN ('active', 'inactive')`;
@@ -26,7 +35,7 @@ let getByTitle = () => {
 };
 
 let getById = () => {
-  return `SELECT * FROM ${table_name} where  id = ? and status IN ('active', 'inactive') `;
+  return `SELECT * FROM ${task_view_table} where  id = ? and user_id = ? `;
 };
 
 let addNew = () => {

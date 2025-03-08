@@ -6,7 +6,7 @@ const { routeAccessChecker } = require("../middlewares/routeAccess");
 const moment = require("moment");
 const taskModel = require("../models/task");
 const { current_time } = require("../validation/task/task");
-const { taskCreateSchema } = require("../validator/validate-request/task");
+const { taskCreateSchema,taskListSchema,taskStarredUpdateSchema } = require("../validator/validate-request/task");
 const common = require("../common/common");
 const validateRequest = require("../validator/middleware");
 const taskCategoriesModel = require("../models/task-categories");
@@ -15,22 +15,25 @@ require("dotenv").config();
 
 router.get(
   "/list",
-  [verifyToken, routeAccessChecker("assetUnitList")],
+  [verifyToken, routeAccessChecker("taskList"), validateRequest(taskListSchema, 'query')],
   async (req, res) => {
-    const status = req.query.status;
+  
+    let reqData = {
+      limit: parseInt(req.query.limit) || 20,
+      offset: parseInt(req.query.offset) || 0,
+      key: req.query.key,
+      category: req.query.category,
+    };
 
-    let result = await assetUnitModel.getList(status);
-    for (let index = 0; index < result.length; index++) {
-      const element = result[index].id;
-      let location = await locationModel.getAllLocationDataByUnitId(element);
+    let { offset, limit, key, category } = reqData;
+    let id = req.decoded.userInfo.id
 
-      result[index].location = location;
-    }
+    let result = await taskModel.getList(offset, limit, key, category ,id);
 
     return res.status(200).send({
       success: true,
       status: 200,
-      message: "Asset Unit List.",
+      message: "Task List.",
       count: result.length,
       data: result,
     });
@@ -38,22 +41,19 @@ router.get(
 );
 
 router.get(
-  "/active-list",
-  [verifyToken, routeAccessChecker("assetUnitActiveList")],
+  "/task-details/:id",
+  [verifyToken, routeAccessChecker("taskDetails")],
   async (req, res) => {
-    let result = await assetUnitModel.getActiveList();
-    for (let index = 0; index < result.length; index++) {
-      const element = result[index].id;
-      let location = await locationModel.getAllLocationDataByUnitId(element);
+    let id = req.params.id
+    let user_id =  req.decoded.userInfo.id
 
-      result[index].location = location;
-    }
+    let result = await taskModel.getById(id,user_id);
+
     return res.status(200).send({
       success: true,
       status: 200,
-      message: "Asset Unit List.",
-      count: result.length,
-      data: result,
+      message: "Task details.",
+      data: result[0],
     });
   }
 );
@@ -63,7 +63,7 @@ router.post(
   [
     verifyToken,
     routeAccessChecker("createTask"),
-    validateRequest(taskCreateSchema),
+    validateRequest(taskCreateSchema,'body'),
   ],
   async (req, res) => {
     let reqData = {
@@ -100,10 +100,10 @@ router.post(
       reqData.user_id = user_id
     }
 
-    reqData.created_at = current_time;
-    reqData.updated_at = current_time;
+
     reqData.task_code = common.rendomGenerator();
 
+   if(reqData.task_categories_id){
     let existingDataById = await taskCategoriesModel.getById(reqData.task_categories_id,user_id);
     if (isEmpty(existingDataById)) {
         return res.status(404).send({
@@ -112,6 +112,9 @@ router.post(
             "message": "No data found",
         });
     }
+   }else{
+      reqData.task_categories_id = null
+   }
 
     let result = await taskModel.addNew(reqData);
 
@@ -387,5 +390,83 @@ router.post(
     });
   }
 );
+
+router.put('/starred/:id', [verifyToken, routeAccessChecker("starredTaskChange"),validateRequest(taskStarredUpdateSchema,'body')], async (req, res) => {
+
+  const id = parseInt(req.params.id)
+  const user_id = req.decoded.userInfo.id;
+  const reqData = {
+      "starred": req.body.starred,
+  }
+
+  reqData.updated_by = user_id;
+
+  let existingDataById = await taskModel.getById(id,user_id);
+  if (isEmpty(existingDataById)) {
+      return res.status(404).send({
+          "success": false,
+          "status": 404,
+          "message": "No data found",
+      });
+  }
+
+  let updateData = {};
+
+  let errorMessage = "";
+  let isError = 0; // 1 = yes, 0 = no
+  let willWeUpdate = 0; // 1 = yes , 0 = no;
+
+
+  // starred
+  if (existingDataById[0].starred !== reqData.starred) {
+
+      willWeUpdate = 1;
+      updateData.starred = reqData.starred;
+  }
+
+
+
+  if (isError == 1) {
+      return res.status(400).send({
+          "success": false,
+          "status": 400,
+          "message": errorMessage
+      });
+  }
+
+  if (willWeUpdate == 1) {
+
+      updateData.updated_by = user_id;
+  
+      let result = await taskModel.updateById(id, updateData);
+
+
+      if (result.affectedRows == undefined || result.affectedRows < 1) {
+          return res.status(500).send({
+              "success": true,
+              "status": 500,
+              "message": "Something Wrong in system database."
+          });
+      }
+
+
+      return res.status(200).send({
+          "success": true,
+          "status": 200,
+          "message": "Task successfully updated."
+      });
+
+
+  } else {
+      return res.status(200).send({
+          "success": true,
+          "status": 200,
+          "message": "Nothing to update."
+      });
+  }
+
+});
+
+
 
 module.exports = router;

@@ -137,7 +137,8 @@ let superAdminPermission = [
   "deleteTaskCategories",
   "starredTaskChange",
   "taskList",
-  "taskDetails"
+  "taskDetails",
+  "taskUpdate"
 ];
 
 let adminPermission = [
@@ -267,7 +268,11 @@ let adminPermission = [
   "deleteTaskCategories",
   "starredTaskChange",
   "taskList",
-  "taskDetails"
+  "taskDetails",
+  "taskDelete",
+  "taskStart",
+   "taskEnd",
+   "taskUpdate"
 ];
 
 let employeePermission = [
@@ -382,6 +387,10 @@ let employeePermission = [
   "raiseSolveTicketMOnthlyCount",
   "ticketDashboardGraphData",
   "createTask",
+  "taskDelete",
+  "taskStart",
+  "taskEnd"
+
 ];
 
 let getRouterPermissionList = async (id = 0) => {

@@ -5,14 +5,17 @@ const verifyToken = require("../middlewares/verifyToken");
 const { routeAccessChecker } = require("../middlewares/routeAccess");
 const moment = require("moment");
 const taskModel = require("../models/task");
-const { current_time } = require("../validation/task/task");
-const { taskCreateSchema,taskListSchema,taskStarredUpdateSchema } = require("../validator/validate-request/task");
+const { current_time , today_date} = require("../validation/task/task");
+const { taskCreateSchema,taskListSchema,taskStarredUpdateSchema,taskUpdateSchema } = require("../validator/validate-request/task");
 const common = require("../common/common");
 const validateRequest = require("../validator/middleware");
 const taskCategoriesModel = require("../models/task-categories");
 const userModel = require("../models/user");
+const { parseConnectionUrl } = require("nodemailer/lib/shared");
 require("dotenv").config();
 
+
+// task list
 router.get(
   "/list",
   [verifyToken, routeAccessChecker("taskList"), validateRequest(taskListSchema, 'query')],
@@ -40,12 +43,22 @@ router.get(
   }
 );
 
+// task details
 router.get(
   "/task-details/:id",
   [verifyToken, routeAccessChecker("taskDetails")],
   async (req, res) => {
     let id = req.params.id
     let user_id =  req.decoded.userInfo.id
+
+    let existingDataById = await taskModel.getById(id,user_id);
+    if (isEmpty(existingDataById)) {
+      return res.status(404).send({
+        success: false,
+        status: 404,
+        message: "No data found",
+      });
+    }
 
     let result = await taskModel.getById(id,user_id);
 
@@ -58,6 +71,7 @@ router.get(
   }
 );
 
+// task create
 router.post(
   "/",
   [
@@ -134,27 +148,40 @@ router.post(
   }
 );
 
+// task update
 router.put(
   "/update/:id",
-  [verifyToken, routeAccessChecker("assetUnitUpdate")],
+  [verifyToken, routeAccessChecker("taskUpdate"),validateRequest(taskUpdateSchema,'body'),],
   async (req, res) => {
-    let id = req.params.id;
+    let id = parseInt(req.params.id);
     let reqData = {
       title: req.body.title,
+      description: req.body.description,
+      start_date: req.body.start_date,
+      end_date: req.body.end_date,
+      start_time: req.body.start_time,
+      end_time: req.body.end_time,
     };
 
-    reqData.updated_by = req.decoded.userInfo.id;
-    let current_date = new Date();
-    let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format(
-      "YYYY-MM-DD HH:mm:ss"
-    );
 
-    let existingDataById = await assetUnitModel.getById(id);
+    const user_id = req.decoded.userInfo.id
+    reqData.updated_by = user_id;
+
+    let existingDataById = await taskModel.getById(id,user_id);
     if (isEmpty(existingDataById)) {
       return res.status(404).send({
         success: false,
         status: 404,
         message: "No data found",
+      });
+    }
+
+    // if task already start
+    if (existingDataById[0].task_start_date || existingDataById[0].task_start_time) {
+      return res.status(400).send({
+        success: false,
+        status: 400,
+        message: "You already start your task.In this time task not updated.",
       });
     }
 
@@ -164,22 +191,59 @@ router.put(
     let isError = 0; // 1 = yes, 0 = no
     let willWeUpdate = 0; // 1 = yes , 0 = no;
 
-    // name
-    if (existingDataById[0].title !== reqData.title) {
-      let existingDataByname = await assetUnitModel.getByTitle(reqData.title);
 
-      if (!isEmpty(existingDataByname) && existingDataByname[0].id != id) {
-        isError = 1;
-        errorMessage +=
-          existingDataByname[0].status == "active"
-            ? "This title Already Exist."
-            : "This title Already Exist but Deactivate, You can activate it.";
+    // title
+    if (existingDataById[0].title !== reqData.title) {
+      let existingDataByName = await taskModel.getByTitle(reqData.title,user_id,existingDataById[0].task_categories_id);
+      if (existingDataByName.length) {
+        return res.status(400).send({
+          success: false,
+          status: 400,
+          message: "This title already exists in category.",
+        });
       }
 
       willWeUpdate = 1;
       updateData.title = reqData.title;
     }
 
+
+    //description
+    if (existingDataById[0].description !== reqData.description) {
+
+      willWeUpdate = 1;
+      updateData.description = reqData.description;
+    }
+
+    //start_date
+    if (existingDataById[0].start_date !== reqData.start_date) {
+
+      willWeUpdate = 1;
+      updateData.start_date = reqData.start_date;
+    }
+
+    //start_date
+    if (existingDataById[0].end_date !== reqData.end_date) {
+
+      willWeUpdate = 1;
+      updateData.end_date = reqData.end_date;
+    }
+    
+    //start_time
+    if (existingDataById[0].start_time !== reqData.start_time) {
+
+      willWeUpdate = 1;
+      updateData.start_time = reqData.start_time;
+    }
+    
+    //end_time
+    if (existingDataById[0].end_time !== reqData.end_time) {
+
+      willWeUpdate = 1;
+      updateData.end_time = reqData.end_time;
+    }
+    
+    
     if (isError == 1) {
       return res.status(400).send({
         success: false,
@@ -189,10 +253,9 @@ router.put(
     }
 
     if (willWeUpdate == 1) {
-      updateData.updated_by = req.decoded.userInfo.id;
-      updateData.updated_at = current_time;
+      updateData.updated_by = user_id;
 
-      let result = await assetUnitModel.updateById(id, updateData);
+      let result = await taskModel.updateById(id, updateData);
 
       if (result.affectedRows == undefined || result.affectedRows < 1) {
         return res.status(500).send({
@@ -205,7 +268,7 @@ router.put(
       return res.status(200).send({
         success: true,
         status: 200,
-        message: "Asset Unit successfully updated.",
+        message: "Task successfully updated.",
       });
     } else {
       return res.status(200).send({
@@ -217,20 +280,17 @@ router.put(
   }
 );
 
+// task delete
 router.delete(
   "/delete/:id",
-  [verifyToken, routeAccessChecker("assetUnitDelete")],
+  [verifyToken, routeAccessChecker("taskDelete")],
   async (req, res) => {
-    let id = req.params.id;
+    let id = parseInt(req.params.id);
 
-    updated_by = req.decoded.userInfo.id;
+    const user_id = req.decoded.userInfo.id;
+    const  updated_by = user_id;
 
-    let current_date = new Date();
-    let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format(
-      "YYYY-MM-DD HH:mm:ss"
-    );
-
-    let existingDataById = await assetUnitModel.getById(id);
+    let existingDataById = await taskModel.getById(id,user_id);
     if (isEmpty(existingDataById)) {
       return res.status(404).send({
         success: false,
@@ -239,23 +299,14 @@ router.delete(
       });
     }
 
-    // check already assign this unit
-    let alreadyAssignThisUnit = await assetModel.alreadyAssignUnit(id);
-    if (alreadyAssignThisUnit.length) {
-      return res.status(400).send({
-        success: false,
-        status: 400,
-        message: "This unit already assign in asset.",
-      });
-    }
 
     let data = {
-      status: "delete",
+      status: 0,
       updated_by: updated_by,
       updated_at: current_time,
     };
 
-    let result = await assetUnitModel.updateById(id, data);
+    let result = await taskModel.updateById(id, data);
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
       return res.status(500).send({
@@ -273,19 +324,16 @@ router.delete(
   }
 );
 
+// start task
 router.put(
-  "/changeStatus/:id",
-  [verifyToken, routeAccessChecker("changeAssetUnitStatus")],
+  "/task-start/:id",
+  [verifyToken, routeAccessChecker("taskStart")],
   async (req, res) => {
-    let id = req.params.id;
+    let id = parseInt(req.params.id);
 
-    updated_by = req.decoded.userInfo.id;
-    let current_date = new Date();
-    let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format(
-      "YYYY-MM-DD HH:mm:ss"
-    );
+    const user_id = req.decoded.userInfo.id;
 
-    let existingDataById = await assetUnitModel.getById(id);
+    let existingDataById = await taskModel.getById(id,user_id);
     if (isEmpty(existingDataById)) {
       return res.status(404).send({
         success: false,
@@ -294,13 +342,24 @@ router.put(
       });
     }
 
+    let alreadyStartTask = await taskModel.getById(id,user_id);
+    if (alreadyStartTask[0].task_start_date || alreadyStartTask[0].task_start_time) {
+      return res.status(400).send({
+        success: false,
+        status: 400,
+        message: "You already start your task.",
+      });
+    }
+
+
     let data = {
-      status: existingDataById[0].status == "active" ? "inactive" : "active",
-      updated_by: updated_by,
-      updated_at: current_time,
+      task_start_date: today_date,
+      task_start_time: current_time,
+      task_status : 'inprogress',
+      updated_by : user_id
     };
 
-    let result = await assetUnitModel.updateById(id, data);
+    let result = await taskModel.updateById(id, data);
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
       return res.status(500).send({
@@ -313,84 +372,65 @@ router.put(
     return res.status(200).send({
       success: true,
       status: 200,
-      message: "Asset unit status has successfully changed.",
+      message: "Task is successfully started.",
     });
   }
 );
 
-router.post(
-  "/search-access/:id",
-  [verifyToken, routeAccessChecker("searchAccess")],
+// end task
+router.put(
+  "/task-end/:id",
+  [verifyToken, routeAccessChecker("taskEnd")],
   async (req, res) => {
-    const id = req.params.id;
-    let reqData = {
-      unit_id: req.body.unit_id,
+    let id = parseInt(req.params.id);
+
+    const user_id = req.decoded.userInfo.id;
+
+    let existingDataById = await taskModel.getById(id,user_id);
+    if (isEmpty(existingDataById)) {
+      return res.status(404).send({
+        success: false,
+        status: 404,
+        message: "No data found",
+      });
+    }
+
+    let alreadyStartTask = await taskModel.getById(id,user_id);
+    if (alreadyStartTask[0].task_end_date || alreadyStartTask[0].task_end_time) {
+      return res.status(400).send({
+        success: false,
+        status: 400,
+        message: "You already end your task.",
+      });
+    }
+
+
+    let data = {
+      task_end_date: today_date,
+      task_end_time: current_time,
+      task_status : 'complete',
+      updated_by : user_id
     };
 
-    let current_date = new Date();
-    let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format(
-      "YYYY-MM-DD HH:mm:ss"
-    );
+    let result = await taskModel.updateById(id, data);
 
-    reqData.created_at = current_time;
-
-    // Get data from the database by id
-    let result = await userModel.getById(id);
-    // Check if this id already exists in the database
-    if (isEmpty(result)) {
-      return res.status(404).send({
-        success: false,
-        status: 404,
-        message: "User data not found.",
-      });
-    }
-    if (result[0].role_id !== 2) {
-      return res.status(404).send({
-        success: false,
-        status: 404,
-        message: "This user is not admin.",
+    if (result.affectedRows == undefined || result.affectedRows < 1) {
+      return res.status(500).send({
+        success: true,
+        status: 500,
+        message: "Something Wrong in system database.",
       });
     }
 
-    let deletePreviusId = await unitAccessModel.deletePreviusId(id);
-
-    for (let index = 0; index < reqData.unit_id.length; index++) {
-      const element = reqData.unit_id[index];
-
-      // Get data from the database by id
-      let unitData = await unitModel.getById(element);
-      if (isEmpty(unitData)) {
-        return res.status(404).send({
-          success: false,
-          status: 404,
-          message: "Unit data not found.",
-        });
-      }
-
-      let data = {
-        user_id: id,
-        unit_id: element,
-        created_at: reqData.created_at,
-      };
-      let createData = await unitAccessModel.addNew(data);
-
-      if (createData.affectedRows == undefined || createData.affectedRows < 1) {
-        return res.status(500).send({
-          success: false,
-          status: 500,
-          message: "Something Wrong in system database.",
-        });
-      }
-    }
-
-    return res.status(201).send({
+    return res.status(200).send({
       success: true,
-      status: 201,
-      message: "Admin unit access added Successfully.",
+      status: 200,
+      message: "Task is successfully end.",
     });
   }
 );
 
+// selected starred
 router.put('/starred/:id', [verifyToken, routeAccessChecker("starredTaskChange"),validateRequest(taskStarredUpdateSchema,'body')], async (req, res) => {
 
   const id = parseInt(req.params.id)

@@ -31,12 +31,17 @@ let getActiveList = () => {
 };
 
 let getByTitle = () => {
-  return `SELECT * FROM ${table_name} where  title = ? and status = 'active'`;
+  return `SELECT * FROM ${table_name} where  title = ? and user_id = ? and task_categories_id = ? and status = 1`;
 };
 
 let getById = () => {
   return `SELECT * FROM ${task_view_table} where  id = ? and user_id = ? `;
 };
+
+let getByCategoryId = () => {
+  return `SELECT * FROM ${task_view_table} where  task_categories_id = ? and user_id = ? `;
+};
+
 
 let addNew = () => {
   return `INSERT INTO ${table_name} SET ?`;
@@ -216,4 +221,5 @@ module.exports = {
   getDataByWhereCondition,
   getDetailsByIdAndWhereIn,
   getOnlyDataList,
+  getByCategoryId
 };

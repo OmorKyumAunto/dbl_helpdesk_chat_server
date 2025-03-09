@@ -9,6 +9,7 @@ const { taskCategoriesCreateSchema ,taskCategoriesUpdateSchema,taskCategoriesSta
 require('dotenv').config();
 const { current_time } = require("../validation/task/task");
 const taskCategoriesModel = require("../models/task-categories");
+const taskModel = require("../models/task");
 
 router.get('/list', [verifyToken, routeAccessChecker("taskCategoriesList")], async (req, res) => {
 
@@ -169,7 +170,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateTaskCategories
 
 router.delete('/delete/:id', [verifyToken, routeAccessChecker("deleteTaskCategories")], async (req, res) => {
 
-    let id = req.params.id
+    let id = parseInt(req.params.id)
     const user_id = req.decoded.userInfo.id;
     updated_by = user_id
 
@@ -184,16 +185,15 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("deleteTaskCategor
         });
     }
 
-    // // check already assign this unit 
-    // let alreadyAssignThisUnit = await assetModel.alreadyAssignUnit(id);
-    // if (alreadyAssignThisUnit.length) {
-    //     return res.status(400).send({
-    //         "success": false,
-    //         "status": 400,
-    //         "message": "This unit already assign in asset.",
-
-    //     });
-    // }
+    // check already assign task under category 
+    let alreadyHasCategoryUnderTask = await taskModel.getByCategoryId(id,user_id);
+    if (alreadyHasCategoryUnderTask[0].task_categories_id) {
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "This category under already assign task.",
+        });
+    }
 
 
 

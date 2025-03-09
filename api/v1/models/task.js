@@ -38,11 +38,11 @@ let getActiveList = async () => {
   });
 };
 
-let getByTitle = async (title = "") => {
+let getByTitle = async (title = "",user_id = 0, category_id = 0) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
       queries.getByTitle(),
-      [title],
+      [title,user_id,category_id],
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -63,6 +63,21 @@ let getById = async (id = 0,user_id = 0) => {
     );
   });
 };
+
+let getByCategoryId = async (id = 0,user_id = 0) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getByCategoryId(),
+      [id,user_id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
 
 let addNew = async (info) => {
   return new Promise((resolve, reject) => {
@@ -202,4 +217,5 @@ module.exports = {
   getDetailsByIdAndWhereIn,
   getByTitle,
   getOnlyDataList,
+  getByCategoryId
 };

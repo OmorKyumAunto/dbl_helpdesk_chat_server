@@ -57,5 +57,26 @@ const taskCreateSchema = z
   });
     
 
+  const taskUpdateSchema = z
+  .object({
+    title: z.string().optional(),
+    description: z.string().optional(),
+    start_date: dateSchema().optional(),
+    end_date: dateSchema().optional(),
+    start_time: timeSchema().optional(),
+    end_time: timeSchema().optional(),
+  })
+  .refine((data) => new Date(data.start_date) <= new Date(data.end_date), {
+    message: "Start date cannot be later than end date",
+    path: ["start_date"],
+  })
+  .refine(
+    (data) =>
+      data.start_date !== data.end_date || data.start_time <= data.end_time,
+    {
+      message: "Start time cannot be later than end time on the same day",
+      path: ["start_time"],
+    }
+  );
 
-module.exports = { taskCreateSchema ,taskListSchema,taskStarredUpdateSchema};
+module.exports = { taskCreateSchema ,taskListSchema,taskStarredUpdateSchema,taskUpdateSchema};

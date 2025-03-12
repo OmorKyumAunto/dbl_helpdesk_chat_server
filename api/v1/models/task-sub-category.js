@@ -1,5 +1,5 @@
 const { connectionDblystem } = require('../connections/connection');
-const queries = require('../queries/task-categories');
+const queries = require('../queries/task-sub-category');
 
 // Promises Method
 let getList = async () => {
@@ -32,9 +32,9 @@ let getActiveList = async () => {
     });
 }
 
-let getByTitle = async (title = "") => {
+let getByTitle = async (title = "",categories_id = 0) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getByTitle(), [title], (error, result, fields) => {
+        connectionDblystem.query(queries.getByTitle(), [title,categories_id], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });

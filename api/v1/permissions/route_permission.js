@@ -138,7 +138,11 @@ let superAdminPermission = [
   "starredTaskChange",
   "taskList",
   "taskDetails",
-  "taskUpdate"
+  "taskUpdate",
+  "addTaskSubCategory",
+  "updateTaskSubCategory",
+  "deleteTaskSubCategory"
+
 ];
 
 let adminPermission = [
@@ -261,11 +265,7 @@ let adminPermission = [
   "raiseSolveTicketMOnthlyCount",
   "ticketDashboardGraphData",
   "changePriority",
-  "addTaskCategories",
   "createTask",
-  "taskCategoriesList",
-  "updateTaskCategories",
-  "deleteTaskCategories",
   "starredTaskChange",
   "taskList",
   "taskDetails",

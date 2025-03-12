@@ -22,6 +22,9 @@ const forgetPasswordRouter = require("./routers/forget-password");
 const slaConfigurationRouter = require("./routers/sla-configuration");
 const taskRouter = require("./routers/task");
 const taskCategoriesRouter = require("./routers/task-categories");
+const taskSubCategoryRouter = require("./routers/task-sub-category");
+
+
 
 router.use("/authentication", authenticationRouter);
 router.use("/employee", employeeRouter);
@@ -40,5 +43,6 @@ router.use("/forget-password", forgetPasswordRouter);
 router.use("/sla-configuration", slaConfigurationRouter);
 router.use("/task", taskRouter);
 router.use("/task-category", taskCategoriesRouter);
+router.use("/task-sub-category", taskSubCategoryRouter);
 
 module.exports = router;

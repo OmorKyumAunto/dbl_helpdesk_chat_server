@@ -39,7 +39,7 @@ let getById = () => {
 };
 
 let getByCategoryId = () => {
-  return `SELECT * FROM ${task_view_table} where  task_categories_id = ? and user_id = ? `;
+  return `SELECT * FROM ${task_view_table} where  task_categories_id = ? `;
 };
 
 

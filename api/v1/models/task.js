@@ -64,7 +64,7 @@ let getById = async (id = 0,user_id = 0) => {
   });
 };
 
-let getByCategoryId = async (id = 0,user_id = 0) => {
+let getByCategoryId = async (id = 0) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
       queries.getByCategoryId(),

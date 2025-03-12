@@ -1,39 +1,9 @@
 const isEmpty = require("is-empty");
-let table_name = "dbl_task_categories";
+let table_name = "dbl_task_sub_categories";
 
 let getList = () => {
  return `select * from ${table_name} where status = 1 order by id desc`
 }
-// return `
-// SELECT 
-//     ca.id,
-//     ca.title AS category_title,
-//     ca.description AS category_description,
-//     ca.status AS category_status,
-//     ca.created_by AS category_created_by,
-//     ca.created_at AS category_created_at,
-//     IFNULL(
-//         CONCAT('[', GROUP_CONCAT(
-//             JSON_OBJECT(
-//                 'id', ts.id,
-//                 'title', ts.title,
-//                 'description', ts.description,
-//                 'start_date', ts.start_date,
-//                 'end_date', ts.end_date,
-//                 'start_time', ts.start_time,
-//                 'end_time', ts.end_time,
-//                 'task_status', ts.task_status
-//             )
-//         ), ']'),
-//         '[]'
-//     ) AS tasks
-// FROM dbl_database.dbl_task_categories AS ca
-// LEFT JOIN dbl_tasks AS ts ON ca.id = ts.task_categories_id
-// WHERE ca.status = 1 
-// AND ca.created_by = ?
-// GROUP BY ca.id, ca.title, ca.description, ca.status, ca.created_by, ca.created_at
-// ORDER BY ca.id DESC;
-
 
 
 //  `;
@@ -47,7 +17,7 @@ let getActiveList = () => {
 }
 
 let getByTitle = () => {
-    return `SELECT * FROM ${table_name} where  title = ?  and status = 1`;
+    return `SELECT * FROM ${table_name} where  title = ? and categories_id = ? and status = 1`;
 }
 
 let getById = () => {

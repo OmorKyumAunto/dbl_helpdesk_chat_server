@@ -13,11 +13,17 @@ const taskModel = require("../models/task");
 
 router.get('/list', [verifyToken, routeAccessChecker("taskCategoriesList")], async (req, res) => {
 
-    const id = req.decoded.userInfo.id;
-    const result = await taskCategoriesModel.getList(id);
-    result.forEach(row => {
-        row.tasks = JSON.parse(row.tasks); // Convert string to JSON array
+    const result = await taskCategoriesModel.getList();
+
+    //convert json
+     result.forEach(row => {
+        try {
+            row.tsc = JSON.parse(row.tsc);
+        } catch (error) {
+            row.tsc = []; 
+        }
     });
+
     return res.status(200).send({
         "success": true,
         "status": 200,
@@ -32,16 +38,13 @@ router.post('/', [verifyToken, routeAccessChecker("addTaskCategories"), validate
 
     let reqData = {
         "title": req.body.title,
-        "description": req.body.description,
+        "set_time": req.body.set_time,
+        "format": req.body.format,
     }
 
     reqData.created_by = req.decoded.userInfo.id;
 
-    reqData.created_at = current_time;
-    reqData.updated_at = current_time;
-
-
-    let existingData = await taskCategoriesModel.getByTitle(reqData.title,reqData.created_by);
+    let existingData = await taskCategoriesModel.getByTitle(reqData.title);
     if (existingData.length) {
         return res.status(409).send({
             "success": false,
@@ -77,12 +80,13 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateTaskCategories
     const user_id = req.decoded.userInfo.id;
     const reqData = {
         "title": req.body.title,
-        "description": req.body.description
+        "set_time": req.body.set_time,
+        "format": req.body.format,
     }
 
     reqData.updated_by = user_id;
 
-    let existingDataById = await taskCategoriesModel.getById(id,user_id);
+    let existingDataById = await taskCategoriesModel.getById(id);
     if (isEmpty(existingDataById)) {
         return res.status(404).send({
             "success": false,
@@ -100,7 +104,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateTaskCategories
 
     // title
     if (existingDataById[0].title !== reqData.title) {
-        let existingDataTitle = await taskCategoriesModel.getByTitle(reqData.title, user_id);
+        let existingDataTitle = await taskCategoriesModel.getByTitle(reqData.title);
         
         if (existingDataTitle.length > 0 && existingDataTitle[0].title === reqData.title) {
             return res.status(400).send({
@@ -115,12 +119,17 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateTaskCategories
     }
 
 
-    // description
-    if (existingDataById[0].description !== reqData.description) {
+    // set_time
+    if (existingDataById[0].set_time !== reqData.set_time) {
         willWeUpdate = 1;
-        updateData.title = reqData.title;
+        updateData.set_time = reqData.set_time;
     } 
 
+    // format
+    if (existingDataById[0].format !== reqData.format) {
+        willWeUpdate = 1;
+        updateData.format = reqData.format;
+    } 
 
 
     if (isError == 1) {
@@ -134,8 +143,6 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateTaskCategories
     if (willWeUpdate == 1) {
 
         updateData.updated_by = user_id;
-        updateData.updated_at = current_time
-
 
         let result = await taskCategoriesModel.updateById(id, updateData);
 
@@ -175,7 +182,7 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("deleteTaskCategor
     updated_by = user_id
 
 
-    let existingDataById = await taskCategoriesModel.getById(id,user_id);
+    let existingDataById = await taskCategoriesModel.getById(id);
     if (isEmpty(existingDataById)) {
         return res.status(404).send({
             "success": false,
@@ -185,22 +192,21 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("deleteTaskCategor
         });
     }
 
-    // check already assign task under category 
-    let alreadyHasCategoryUnderTask = await taskModel.getByCategoryId(id,user_id);
-    if (alreadyHasCategoryUnderTask[0].task_categories_id) {
-        return res.status(400).send({
-            "success": false,
-            "status": 400,
-            "message": "This category under already assign task.",
-        });
-    }
+    // // check already assign task under category 
+    // let alreadyHasCategoryUnderTask = await taskModel.getByCategoryId(id);
+    // if (alreadyHasCategoryUnderTask[0].task_categories_id) {
+    //     return res.status(400).send({
+    //         "success": false,
+    //         "status": 400,
+    //         "message": "This category under already assign task.",
+    //     });
+    // }
 
 
 
     let data = {
         status: 0,
         updated_by: updated_by,
-        updated_at: current_time
     }
 
     let result = await taskCategoriesModel.updateById(id, data);

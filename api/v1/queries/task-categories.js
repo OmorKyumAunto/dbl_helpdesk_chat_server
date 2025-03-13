@@ -2,8 +2,37 @@ const isEmpty = require("is-empty");
 let table_name = "dbl_task_categories";
 
 let getList = () => {
- return `select * from ${table_name} where status = 1 order by id desc`
-}
+    return `
+      SELECT 
+        tc.id,
+        tc.title,
+        tc.set_time,
+        tc.format,
+        tc.status,
+        IFNULL(
+          CONCAT(
+            '[',
+            GROUP_CONCAT(
+              CASE 
+                WHEN tsc.id IS NOT NULL 
+                THEN JSON_OBJECT('id', tsc.id, 'title', tsc.title) 
+              END
+            ),
+            ']'
+          ),
+          '[]'
+        ) AS tsc
+      FROM dbl_task_categories AS tc
+      LEFT JOIN dbl_task_sub_categories AS tsc
+        ON tsc.categories_id = tc.id AND tsc.status = 1
+      WHERE tc.status = 1
+      GROUP BY tc.id
+      ORDER BY tc.id DESC
+    `;
+  }
+  
+  
+
 // return `
 // SELECT 
 //     ca.id,

@@ -15,6 +15,14 @@ router.get('/list', [verifyToken, routeAccessChecker("taskCategoriesList")], asy
 
     const result = await taskCategoriesModel.getList();
 
+     result.forEach(row => {
+        try {
+            row.tsc = JSON.parse(row.tsc);
+        } catch (error) {
+            row.tsc = []; 
+        }
+    });
+
     return res.status(200).send({
         "success": true,
         "status": 200,

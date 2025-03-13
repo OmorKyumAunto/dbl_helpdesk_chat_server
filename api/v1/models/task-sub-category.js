@@ -50,6 +50,15 @@ let getById = async (id = 0) => {
     });
 }
 
+let getByCategoryId = async (category_id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByCategoryId(), [category_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 let addNew = async (info) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.addNew(), [info], (error, result, fields) => {
@@ -151,6 +160,7 @@ module.exports = {
     updateById,
     getDetailsByIdAndWhereIn,
     getByTitle,
-    getOnlyDataList
+    getOnlyDataList,
+    getByCategoryId
 }
 

@@ -24,6 +24,10 @@ let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ?  and status = 1 `;
 }
 
+let getByCategoryId = () => {
+    return `SELECT * FROM ${table_name} where  categories_id = ?  and status = 1 `;
+}
+
 let addNew = () => {
     return `INSERT INTO ${table_name} SET ?`;
 }
@@ -176,6 +180,7 @@ module.exports = {
     updateById,
     getDataByWhereCondition,
     getDetailsByIdAndWhereIn,
-    getOnlyDataList
+    getOnlyDataList,
+    getByCategoryId
 
 }

@@ -30,6 +30,7 @@ router.post('/', [verifyToken, routeAccessChecker("addTaskCategories"), validate
     let reqData = {
         "title": req.body.title,
         "set_time": req.body.set_time,
+        "format": req.body.format,
     }
 
     reqData.created_by = req.decoded.userInfo.id;
@@ -70,7 +71,8 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateTaskCategories
     const user_id = req.decoded.userInfo.id;
     const reqData = {
         "title": req.body.title,
-        "set_time": req.body.set_time
+        "set_time": req.body.set_time,
+        "format": req.body.format,
     }
 
     reqData.updated_by = user_id;
@@ -93,7 +95,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateTaskCategories
 
     // title
     if (existingDataById[0].title !== reqData.title) {
-        let existingDataTitle = await taskCategoriesModel.getByTitle(reqData.title, user_id);
+        let existingDataTitle = await taskCategoriesModel.getByTitle(reqData.title);
         
         if (existingDataTitle.length > 0 && existingDataTitle[0].title === reqData.title) {
             return res.status(400).send({
@@ -114,6 +116,11 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("updateTaskCategories
         updateData.set_time = reqData.set_time;
     } 
 
+    // format
+    if (existingDataById[0].format !== reqData.format) {
+        willWeUpdate = 1;
+        updateData.format = reqData.format;
+    } 
 
 
     if (isError == 1) {

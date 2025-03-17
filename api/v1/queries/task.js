@@ -12,14 +12,35 @@ let getList = (offset, limit, key, category,id) => {
     searchCondition += ` AND task_categories_id = '${category}' `;
   }
   if (key) {
-    searchCondition += ` AND (LOWER(title) LIKE LOWER('%${key}%')`;
+    searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%')`;
   }
 
 
-  return `SELECT id,title,description,start_date,end_date,start_time,end_time,task_code,task_status FROM ${task_view_table} WHERE ${searchCondition} 
+  return `SELECT id,category_title,description,start_date,start_time,task_code,task_status,starred FROM ${task_view_table} WHERE ${searchCondition} 
          LIMIT ${limit} OFFSET ${offset};`;
 };
 
+
+let assignToMeList = (offset, limit, key, category,assign_to,assign_from_others,id) => {
+  let searchCondition = "1=1";  
+  
+  if (assign_to) {
+    searchCondition += ` AND is_assign =  1 AND assign_from_id = '${id}' `;
+  }
+  if (assign_from_others) {
+    searchCondition += ` AND is_assign =  1 AND user_id = '${id}' `;
+  }
+  if (category) {
+    searchCondition += ` AND task_categories_id = '${category}' `;
+  }
+  if (key) {
+    searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%')`;
+  }
+
+
+  return `SELECT id,category_title,description,start_date,start_time,task_code,task_status,starred FROM ${task_view_table} WHERE ${searchCondition} 
+         LIMIT ${limit} OFFSET ${offset};`;
+};
 
 
 let getOnlyDataList = () => {
@@ -221,5 +242,6 @@ module.exports = {
   getDataByWhereCondition,
   getDetailsByIdAndWhereIn,
   getOnlyDataList,
-  getByCategoryId
+  getByCategoryId,
+  assignToMeList
 };

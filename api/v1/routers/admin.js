@@ -69,12 +69,11 @@ router.get('/list',[verifyToken, routeAccessChecker("adminList")],async (req, re
         data: result
       });
   
-  });
+});
+
+
+
   
-
-
-
-
 
 
 module.exports = router;

@@ -141,7 +141,9 @@ let superAdminPermission = [
   "taskUpdate",
   "addTaskSubCategory",
   "updateTaskSubCategory",
-  "deleteTaskSubCategory"
+  "deleteTaskSubCategory",
+  "taskAssignList",
+  "assetUnitWiseAdminList"
 
 ];
 
@@ -271,8 +273,10 @@ let adminPermission = [
   "taskDetails",
   "taskDelete",
   "taskStart",
-   "taskEnd",
-   "taskUpdate"
+  "taskEnd",
+  "taskUpdate",
+  "taskAssignList",
+  "assetUnitWiseAdminList"
 ];
 
 let employeePermission = [

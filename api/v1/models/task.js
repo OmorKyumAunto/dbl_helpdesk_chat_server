@@ -14,6 +14,18 @@ let getList = async (offset, limit, key, category ,id) => {
   });
 };
 
+let assignToMeList = async (offset, limit, key, category ,assign_to,assign_from_others,id) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.assignToMeList(offset, limit, key, category,assign_to,assign_from_others,id),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
 let getOnlyDataList = async () => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
@@ -217,5 +229,6 @@ module.exports = {
   getDetailsByIdAndWhereIn,
   getByTitle,
   getOnlyDataList,
-  getByCategoryId
+  getByCategoryId,
+  assignToMeList
 };

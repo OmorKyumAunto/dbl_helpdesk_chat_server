@@ -10,28 +10,14 @@ const timeSchema = () =>
 
 const taskCreateSchema = z
   .object({
-    title: z.string().min(1, "Title is required").max(255, "Title maximum value 255 characters"),
-    description: z.string().min(1, "Description is required"),
+    description: z.string().optional(),
+    sub_list_selected: z.array(z.number()).optional(), 
     start_date: dateSchema(),
-    end_date: dateSchema(),
     start_time: timeSchema(),
-    end_time: timeSchema(),
     is_assign: z.number().optional(),
     user_id: z.number().optional(),
-    task_categories_id: z.number().optional()
-  })
-  .refine((data) => new Date(data.start_date) <= new Date(data.end_date), {
-    message: "Start date cannot be later than end date",
-    path: ["start_date"],
-  })
-  .refine(
-    (data) =>
-      data.start_date !== data.end_date || data.start_time <= data.end_time,
-    {
-      message: "Start time cannot be later than end time on the same day",
-      path: ["start_time"],
-    }
-  );
+    task_categories_id: z.number().optional(),
+  });
 
 
 
@@ -49,6 +35,12 @@ const taskCreateSchema = z
       category: z.string().optional().refine(value => value === undefined || value > 0, {
         message: 'Category ID must be a positive number.',
       }),
+      assign_to: z.string().optional().refine(value => value === undefined || value > 0, {
+        message: 'Assign to must be a positive number.',
+      }),
+      assign_from_others: z.string().optional().refine(value => value === undefined || value > 0, {
+        message: 'Assign from others must be a positive number.',
+      }),
     });
   
   
@@ -57,26 +49,13 @@ const taskCreateSchema = z
   });
     
 
-  const taskUpdateSchema = z
+const taskUpdateSchema = z
   .object({
-    title: z.string().optional(),
     description: z.string().optional(),
+    sub_list_selected: z.array(z.number()).optional(), 
     start_date: dateSchema().optional(),
-    end_date: dateSchema().optional(),
     start_time: timeSchema().optional(),
-    end_time: timeSchema().optional(),
   })
-  .refine((data) => new Date(data.start_date) <= new Date(data.end_date), {
-    message: "Start date cannot be later than end date",
-    path: ["start_date"],
-  })
-  .refine(
-    (data) =>
-      data.start_date !== data.end_date || data.start_time <= data.end_time,
-    {
-      message: "Start time cannot be later than end time on the same day",
-      path: ["start_time"],
-    }
-  );
+  
 
 module.exports = { taskCreateSchema ,taskListSchema,taskStarredUpdateSchema,taskUpdateSchema};

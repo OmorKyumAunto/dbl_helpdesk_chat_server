@@ -13,6 +13,28 @@ let getList = (status) => {
     return `SELECT * FROM ${table_name} WHERE ${searchCondition} ORDER BY id DESC`;
 }
 
+let unitWiseAdminList = () => {
+   
+    return `SELECT 
+    u.id,
+    u.title,
+    CONCAT('[', 
+        GROUP_CONCAT(
+            JSON_OBJECT(
+                'user_id', ua.id,
+                'name', ua.name,
+                'employee_id', ua.employee_id
+            )
+        ), 
+    ']') AS user_list
+FROM dbl_database.dbl_asset_unit AS u
+LEFT JOIN admin_search_access AS sa ON sa.unit_id = u.id
+LEFT JOIN dbl_users AS ua ON sa.user_id = ua.id
+WHERE u.id = ? AND u.status = 'active'
+GROUP BY u.id, u.title;
+`;
+}
+
 
 
 
@@ -186,6 +208,6 @@ module.exports = {
     updateById,
     getDataByWhereCondition,
     getDetailsByIdAndWhereIn,
-    getOnlyDataList
-
+    getOnlyDataList,
+    unitWiseAdminList
 }

@@ -378,6 +378,26 @@ router.post('/search-access/:id', [verifyToken, routeAccessChecker("searchAccess
 });
 
 
+router.get('/unit-wise-admin/:id', [verifyToken, routeAccessChecker("assetUnitWiseAdminList")], async (req, res) => {
 
+    const id = parseInt(req.params.id)
+
+    let result = await assetUnitModel.unitWiseAdminList(id);
+    //convert json
+    result.forEach(row => {
+        try {
+            row.user_list = JSON.parse(row.user_list);
+        } catch (error) {
+            row.user_list = []; 
+        }
+    })
+    return res.status(200).send({
+        "success": true,
+        "status": 200,
+        "message": "Asset Unit List.",
+        "count": result.length,
+        "data": result
+    });
+});
 
 module.exports = router;

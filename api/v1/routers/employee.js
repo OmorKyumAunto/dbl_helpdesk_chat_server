@@ -1314,7 +1314,6 @@ router.get(
     };
 
     let { offset, limit, key, unit_name } = reqData;
-
     // Fetch employee list and total employee count
     let result = await userModel.getEmployeeList(offset, limit, key, unit_name);
     let countResult = await userModel.getTotalEmployeeList(key, unit_name);

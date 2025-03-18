@@ -11,7 +11,7 @@ const common = require("../common/common");
 const validateRequest = require("../validator/middleware");
 const taskCategoriesModel = require("../models/task-categories");
 const userModel = require("../models/user");
-const { parseConnectionUrl } = require("nodemailer/lib/shared");
+const taskSubCategoryModel = require("../models/task-sub-category");
 require("dotenv").config();
 
 
@@ -43,6 +43,37 @@ router.get(
   }
 );
 
+
+// task assign list
+router.get(
+  "/assign-task",
+  [verifyToken, routeAccessChecker("taskAssignList"), validateRequest(taskListSchema, 'query')],
+  async (req, res) => {
+  
+    let reqData = {
+      limit: parseInt(req.query.limit) || 20,
+      offset: parseInt(req.query.offset) || 0,
+      key: req.query.key,
+      category: req.query.category,
+      assign_to :  req.query.assign_to,
+      assign_from_others: req.query.assign_from_others
+    };
+
+    let { offset, limit, key, category ,assign_to, assign_from_others} = reqData;
+    let id = req.decoded.userInfo.id
+
+    let result = await taskModel.assignToMeList(offset, limit, key, category ,assign_to,assign_from_others,id);
+
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Task List.",
+      count: result.length,
+      data: result,
+    });
+  }
+);
+
 // task details
 router.get(
   "/task-details/:id",
@@ -61,6 +92,15 @@ router.get(
     }
 
     let result = await taskModel.getById(id,user_id);
+    // Parse sub_list_details if it's a string
+    if (result[0].sub_list_details) {
+      try {
+        result[0].sub_list_details = JSON.parse(result[0].sub_list_details);
+      } catch (error) {
+       
+        result[0].sub_list_details = []; 
+      }
+    }
 
     return res.status(200).send({
       success: true,
@@ -77,76 +117,126 @@ router.post(
   [
     verifyToken,
     routeAccessChecker("createTask"),
-    validateRequest(taskCreateSchema,'body'),
+    validateRequest(taskCreateSchema, "body"),
   ],
   async (req, res) => {
     let reqData = {
-      title: req.body.title,
       description: req.body.description,
+      sub_list_selected: req.body.sub_list_selected || [],
       start_date: req.body.start_date,
-      end_date: req.body.end_date,
       start_time: req.body.start_time,
-      end_time: req.body.end_time,
       is_assign: req.body.is_assign || 0,
       user_id: req.body.user_id || null,
       task_categories_id: req.body.task_categories_id || null,
     };
 
-  
     const user_id = req.decoded.userInfo.id;
+    reqData.created_by = user_id;
+    reqData.updated_by = user_id;
 
-    reqData.created_by = user_id
-    reqData.updated_by = user_id
-
-    if(reqData.user_id){
+    if (reqData.user_id) {
       let checkIsAdmin = await userModel.getById(reqData.user_id);
-      if (checkIsAdmin[0].role_id !== 2) {
-          return res.status(404).send({
-              "success": false,
-              "status": 404,
-              "message": "This assign user is not admin.",
-          });
+      if (checkIsAdmin.length === 0 || checkIsAdmin[0].role_id !== 2) {
+        return res.status(404).send({
+          success: false,
+          status: 404,
+          message: "This assign user is not admin.",
+        });
       }
-      reqData.user_id = reqData.user_id,
-      reqData.assign_from_id = user_id
-      
-    }else{
-      reqData.user_id = user_id
+      reqData.user_id = reqData.user_id;
+      reqData.assign_from_id = user_id;
+    } else {
+      reqData.user_id = user_id;
     }
 
 
+    // check self assign
+    if (reqData.is_assign && reqData.user_id  === user_id) {
+      return res.status(400).send({
+        success: false,
+        status: 400,
+        message: "You can not assign your id.",
+      });
+    }
     reqData.task_code = common.rendomGenerator();
 
-   if(reqData.task_categories_id){
-    let existingDataById = await taskCategoriesModel.getById(reqData.task_categories_id,user_id);
-    if (isEmpty(existingDataById)) {
+    if (reqData.task_categories_id) {
+      let existingDataById = await taskCategoriesModel.getById(
+        reqData.task_categories_id
+      );
+      if (isEmpty(existingDataById)) {
         return res.status(404).send({
-            "success": false,
-            "status": 404,
-            "message": "No data found",
+          success: false,
+          status: 404,
+          message: "No data found",
         });
+      }
+    } else {
+      reqData.task_categories_id = null;
     }
-   }else{
-      reqData.task_categories_id = null
-   }
 
+
+    const sub_list_arr = [];
+
+    // Get category-wise data
+    let existingDataByCategoryId = await taskSubCategoryModel.getByCategoryId(reqData.task_categories_id);
+    for (let index = 0; index < existingDataByCategoryId.length; index++) {
+      const element = existingDataByCategoryId[index].id;
+      sub_list_arr.push(element);
+    }
+    
+
+    // Process selected sub list and get title
+    const sub_list = reqData.sub_list_selected || [];
+    let sub_list_details = [];
+    
+    // Loop through sub_list_arr to ensure all subcategories are included
+    for (let index = 0; index < sub_list_arr.length; index++) {
+      const subCategoryId = sub_list_arr[index];
+    
+      let existingDataById = await taskSubCategoryModel.getById(subCategoryId);
+    
+      if (isEmpty(existingDataById)) {
+        return res.status(404).send({
+          success: false,
+          status: 404,
+          message: "Sub list data not found",
+        });
+      }
+    
+      // Determine if the current sub-category is in the selected list
+      const isChecked = sub_list.includes(subCategoryId) ? 1 : 0;
+    
+      existingDataById.forEach((item) => {
+        sub_list_details.push({
+          id: item.id,
+          title: item.title,
+          is_checked: isChecked, 
+        });
+      });
+    }
+    // Convert to string format for database storage
+    reqData.sub_list_details = JSON.stringify(sub_list_details);
+
+    delete reqData.sub_list_selected
     let result = await taskModel.addNew(reqData);
 
-    if (result.affectedRows == undefined || result.affectedRows < 1) {
+    if (!result.affectedRows || result.affectedRows < 1) {
       return res.status(500).send({
         success: false,
         status: 500,
-        message: "Something Wrong in system database.",
+        message: "Something went wrong in the system database.",
       });
     }
 
     return res.status(201).send({
       success: true,
       status: 201,
-      message: "Asset unit added Successfully.",
+      message: "Task added successfully.",
     });
   }
 );
+
 
 // task update
 router.put(
@@ -155,12 +245,10 @@ router.put(
   async (req, res) => {
     let id = parseInt(req.params.id);
     let reqData = {
-      title: req.body.title,
       description: req.body.description,
+      sub_list_selected: req.body.sub_list_selected || [],
       start_date: req.body.start_date,
-      end_date: req.body.end_date,
       start_time: req.body.start_time,
-      end_time: req.body.end_time,
     };
 
 
@@ -192,22 +280,6 @@ router.put(
     let willWeUpdate = 0; // 1 = yes , 0 = no;
 
 
-    // title
-    if (existingDataById[0].title !== reqData.title) {
-      let existingDataByName = await taskModel.getByTitle(reqData.title,user_id,existingDataById[0].task_categories_id);
-      if (existingDataByName.length) {
-        return res.status(400).send({
-          success: false,
-          status: 400,
-          message: "This title already exists in category.",
-        });
-      }
-
-      willWeUpdate = 1;
-      updateData.title = reqData.title;
-    }
-
-
     //description
     if (existingDataById[0].description !== reqData.description) {
 
@@ -215,6 +287,50 @@ router.put(
       updateData.description = reqData.description;
     }
 
+
+    const sub_list_arr = [];
+    // Get category-wise data
+    let existingDataByCategoryId = await taskSubCategoryModel.getByCategoryId(existingDataById[0].task_categories_id);
+    for (let index = 0; index < existingDataByCategoryId.length; index++) {
+      const element = existingDataByCategoryId[index].id;
+      sub_list_arr.push(element);
+    }
+    
+
+    // Process selected sub list and get title
+    const sub_list = reqData.sub_list_selected || [];
+    let sub_list_details = [];
+    
+    // Loop through sub_list_arr to ensure all subcategories are included
+    for (let index = 0; index < sub_list_arr.length; index++) {
+      const subCategoryId = sub_list_arr[index];
+    
+      let existingDataById = await taskSubCategoryModel.getById(subCategoryId);
+    
+      if (isEmpty(existingDataById)) {
+        return res.status(404).send({
+          success: false,
+          status: 404,
+          message: "Sub list data not found",
+        });
+      }
+    
+      // Determine if the current sub-category is in the selected list
+      const isChecked = sub_list.includes(subCategoryId) ? 1 : 0;
+    
+      existingDataById.forEach((item) => {
+        sub_list_details.push({
+          id: item.id,
+          title: item.title,
+          is_checked: isChecked, 
+        });
+      });
+    }
+
+    // Convert to string format for database storage
+    updateData.sub_list_details = JSON.stringify(sub_list_details);
+
+   
     //start_date
     if (existingDataById[0].start_date !== reqData.start_date) {
 
@@ -222,25 +338,11 @@ router.put(
       updateData.start_date = reqData.start_date;
     }
 
-    //start_date
-    if (existingDataById[0].end_date !== reqData.end_date) {
-
-      willWeUpdate = 1;
-      updateData.end_date = reqData.end_date;
-    }
-    
     //start_time
     if (existingDataById[0].start_time !== reqData.start_time) {
 
       willWeUpdate = 1;
       updateData.start_time = reqData.start_time;
-    }
-    
-    //end_time
-    if (existingDataById[0].end_time !== reqData.end_time) {
-
-      willWeUpdate = 1;
-      updateData.end_time = reqData.end_time;
     }
     
     
@@ -429,6 +531,7 @@ router.put(
     });
   }
 );
+
 
 // selected starred
 router.put('/starred/:id', [verifyToken, routeAccessChecker("starredTaskChange"),validateRequest(taskStarredUpdateSchema,'body')], async (req, res) => {

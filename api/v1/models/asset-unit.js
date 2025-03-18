@@ -12,6 +12,17 @@ let getList = async (status) => {
 }
 
 
+let unitWiseAdminList = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.unitWiseAdminList(),[id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+
 
 let getOnlyDataList = async () => {
     return new Promise((resolve, reject) => {
@@ -151,6 +162,7 @@ module.exports = {
     updateById,
     getDetailsByIdAndWhereIn,
     getByTitle,
-    getOnlyDataList
+    getOnlyDataList,
+    unitWiseAdminList
 }
 

@@ -276,7 +276,8 @@ let adminPermission = [
   "taskEnd",
   "taskUpdate",
   "taskAssignList",
-  "assetUnitWiseAdminList"
+  "assetUnitWiseAdminList",
+  "taskCategoriesList"
 ];
 
 let employeePermission = [

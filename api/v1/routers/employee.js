@@ -1325,6 +1325,7 @@ router.get(
       let totalAssetPrice = 0;
       let totalLicensesPrice = 0;
 
+      
       try {
         // Attempt to parse the licenses string
         let validData = JSON.parse(licenses);

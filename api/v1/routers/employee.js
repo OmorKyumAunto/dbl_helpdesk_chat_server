@@ -1325,7 +1325,7 @@ router.get(
       let totalAssetPrice = 0;
       let totalLicensesPrice = 0;
 
-      
+
       try {
         // Attempt to parse the licenses string
         let validData = JSON.parse(licenses);
@@ -1357,13 +1357,13 @@ router.get(
         );
         let assetDetails = [];
 
-        // Loop through each assigned asset ID, fetch details, and push to assetDetails
+      
         for (let assetAssignment of getAssignAssetId) {
           let assetId = assetAssignment.asset_id;
           let assetPriceData = await assetModel.getById(assetId);
 
           if (assetPriceData && assetPriceData.length > 0) {
-            let asset = assetPriceData[0]; // Access the first RowDataPacket
+            let asset = assetPriceData[0]; 
             assetDetails.push({
               id: asset.id,
               name: asset.name,
@@ -1372,12 +1372,11 @@ router.get(
               category: asset.category,
             });
 
-            // Sum up the asset prices for total asset price calculation
+         
             totalAssetPrice += asset.price;
           }
         }
 
-        // Add the asset details and total asset price to the employee object
         result[index].assets = assetDetails;
         result[index].total_asset_price = totalAssetPrice;
         result[index].monthly_asset_cost = Number(
@@ -1393,15 +1392,15 @@ router.get(
           result[index].total_ctc_per_month * 12
         ).toFixed(2);
       } catch (error) {
-        // Handle any parsing or data fetching errors
+        
         console.error(
           `Error processing employee at index ${index}:`,
           error.message
         );
         result[index].licenses = [];
         result[index].assets = [];
-        result[index].total_asset_price = 0; // Set total asset price to 0 if there's an error
-        result[index].montly_licenses_price = 0; // Set total license price to 0 if there's an error
+        result[index].total_asset_price = 0; 
+        result[index].montly_licenses_price = 0; 
         result[index].total_ctc_per_month = 0;
       }
     }

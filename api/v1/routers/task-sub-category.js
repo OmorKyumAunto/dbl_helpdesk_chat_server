@@ -190,7 +190,7 @@ router.put('/update/:categories_id', [
         message: "Internal Server Error"
       });
     }
-  });
+});
   
 
 

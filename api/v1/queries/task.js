@@ -3,7 +3,7 @@ let table_name = "dbl_tasks";
 let task_view_table = "task_info_view";
 
 let getList = (offset, limit, key, category,id) => {
-  let searchCondition = "1=1";  // Ensures WHERE clause is always valid
+  let searchCondition = "1=1 AND is_assign = 0";
   
   if (id) {
     searchCondition += ` AND user_id = '${id}' `;

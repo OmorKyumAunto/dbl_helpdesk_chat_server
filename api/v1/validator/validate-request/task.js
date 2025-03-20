@@ -41,6 +41,14 @@ const taskCreateSchema = z
       assign_from_others: z.string().optional().refine(value => value === undefined || value > 0, {
         message: 'Assign from others must be a positive number.',
       }),
+      starred :z.string().optional().refine(value => value === undefined || value > 0, {
+        message: 'starred must be a positive number.',
+      }),
+      start_date : dateSchema().optional(),
+      end_date : dateSchema().optional(),
+      user_id : z.string().optional().refine(value => value === undefined || value > 0, {
+        message: 'User id must be a positive number.',
+      }),
     });
   
   

@@ -5,15 +5,23 @@ const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const moment = require("moment");
 const validateRequest = require("../validator/middleware");
-const { taskCategoriesCreateSchema ,taskCategoriesUpdateSchema,taskCategoriesStarredUpdateSchema} = require("../validator/validate-request/task-categories");
+const { taskCategoriesCreateSchema ,taskCategoriesUpdateSchema,taskCategoriesList} = require("../validator/validate-request/task-categories");
 require('dotenv').config();
 const { current_time } = require("../validation/task/task");
 const taskCategoriesModel = require("../models/task-categories");
 const taskModel = require("../models/task");
 
-router.get('/list', [verifyToken, routeAccessChecker("taskCategoriesList")], async (req, res) => {
-
-    const result = await taskCategoriesModel.getList();
+router.get('/list', [verifyToken, routeAccessChecker("taskCategoriesList"),validateRequest(taskCategoriesList,'query')], async (req, res) => {
+   
+    let reqData = {
+        limit: parseInt(req.query.limit) || 20,
+        offset: parseInt(req.query.offset) || 0,
+        key: req.query.key,
+      };
+  
+    let { offset, limit, key } = reqData;
+    const result = await taskCategoriesModel.getList(offset, limit, key );
+    const totalCount = await taskCategoriesModel.getListTotalCount( key);
 
     //convert json
      result.forEach(row => {
@@ -28,7 +36,7 @@ router.get('/list', [verifyToken, routeAccessChecker("taskCategoriesList")], asy
         "success": true,
         "status": 200,
         "message": "Task category List.",
-        "count": result.length,
+        "count": totalCount.length,
         "data": result
     });
 });

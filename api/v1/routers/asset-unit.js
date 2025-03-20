@@ -304,7 +304,6 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeAssetUni
 });
 
 
-
 router.post('/search-access/:id', [verifyToken, routeAccessChecker("searchAccess")], async (req, res) => {
 
     const id = req.params.id

@@ -2,9 +2,18 @@ const { connectionDblystem } = require('../connections/connection');
 const queries = require('../queries/task-categories');
 
 // Promises Method
-let getList = async () => {
+let getList = async (offset, limit, key ) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getList(), (error, result, fields) => {
+        connectionDblystem.query(queries.getList(offset, limit, key), (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+let getListTotalCount = async (key='') => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getListTotalCount(key), (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -151,6 +160,7 @@ module.exports = {
     updateById,
     getDetailsByIdAndWhereIn,
     getByTitle,
-    getOnlyDataList
+    getOnlyDataList,
+    getListTotalCount
 }
 

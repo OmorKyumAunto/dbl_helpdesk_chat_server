@@ -26,18 +26,31 @@ router.get(
       offset: parseInt(req.query.offset) || 0,
       key: req.query.key,
       category: req.query.category,
+      starred : req.query.starred,
+      start_date : req.query.start_date,
+      end_date : req.query.end_date,
+      user_id : req.query.user_id
     };
 
-    let { offset, limit, key, category } = reqData;
-    let id = req.decoded.userInfo.id
-
-    let result = await taskModel.getList(offset, limit, key, category ,id);
+    
+    let { offset, limit, key, category,starred,start_date,end_date,user_id} = reqData;
+    let {id,role_id} = req.decoded.userInfo
+    let result
+    let totalCount
+    if(role_id === 1){
+      result = await taskModel.getSuperAdminList(offset, limit, key, category,start_date,end_date,user_id);
+      totalCount = await taskModel.getSuperAdminTotalCount(key, category,start_date,end_date,user_id);
+    }else{
+      result = await taskModel.getList(offset, limit, key, category ,starred,start_date,end_date,id);
+      totalCount = await taskModel.getListTotalCount(key, category ,starred,start_date,end_date,id);
+    }
+    
 
     return res.status(200).send({
       success: true,
       status: 200,
       message: "Task List.",
-      count: result.length,
+      count: totalCount.length,
       data: result,
     });
   }
@@ -49,26 +62,30 @@ router.get(
   "/assign-task",
   [verifyToken, routeAccessChecker("taskAssignList"), validateRequest(taskListSchema, 'query')],
   async (req, res) => {
-  
+
     let reqData = {
       limit: parseInt(req.query.limit) || 20,
       offset: parseInt(req.query.offset) || 0,
       key: req.query.key,
       category: req.query.category,
+      starred : req.query.starred,
+      start_date : req.query.start_date,
+      end_date : req.query.end_date,
       assign_to :  req.query.assign_to,
       assign_from_others: req.query.assign_from_others
     };
 
-    let { offset, limit, key, category ,assign_to, assign_from_others} = reqData;
+    let { offset, limit, key, category ,starred,start_date,end_date,assign_to, assign_from_others} = reqData;
     let id = req.decoded.userInfo.id
 
-    let result = await taskModel.assignToMeList(offset, limit, key, category ,assign_to,assign_from_others,id);
+    let result = await taskModel.assignToMeList(offset, limit, key, category ,starred,start_date,end_date,assign_to, assign_from_others,id);
+    let totalCount = await taskModel.assignToMeListTotalCount(key, category ,starred,start_date,end_date,assign_to, assign_from_others,id);
 
     return res.status(200).send({
       success: true,
       status: 200,
       message: "Task List.",
-      count: result.length,
+      count: totalCount.length,
       data: result,
     });
   }

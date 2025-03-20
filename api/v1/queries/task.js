@@ -2,7 +2,7 @@ const isEmpty = require("is-empty");
 let table_name = "dbl_tasks";
 let task_view_table = "task_info_view";
 
-let getList = (offset, limit, key, category,id) => {
+let getList = (offset, limit, key, category ,starred,start_date,end_date,id) => {
   let searchCondition = "1=1 AND is_assign = 0";
   
   if (id) {
@@ -11,8 +11,15 @@ let getList = (offset, limit, key, category,id) => {
   if (category) {
     searchCondition += ` AND task_categories_id = '${category}' `;
   }
+  if (start_date && end_date) {
+    searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59' `;
+  }
+  if (starred) {
+    searchCondition += ` AND starred = '${starred}' `;
+  }
+
   if (key) {
-    searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%')`;
+    searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%')`;
   }
 
 
@@ -21,7 +28,79 @@ let getList = (offset, limit, key, category,id) => {
 };
 
 
-let assignToMeList = (offset, limit, key, category,assign_to,assign_from_others,id) => {
+let getListTotalCount = (key, category ,starred,start_date,end_date,id) => {
+  let searchCondition = "1=1 AND is_assign = 0";
+  
+  if (id) {
+    searchCondition += ` AND user_id = '${id}' `;
+  }
+  if (category) {
+    searchCondition += ` AND task_categories_id = '${category}' `;
+  }
+  if (start_date && end_date) {
+    searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59' `;
+  }
+  if (starred) {
+    searchCondition += ` AND starred = '${starred}' `;
+  }
+
+  if (key) {
+    searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%')`;
+  }
+
+
+  return `SELECT id,category_title,description,start_date,start_time,task_code,task_status,starred FROM ${task_view_table} WHERE ${searchCondition}`;
+};
+
+
+let getSuperAdminList = (offset, limit, key, category, start_date, end_date,user_id ) => {
+  let searchCondition = "1=1";
+
+  if (category) {
+    searchCondition += ` AND task_categories_id = '${category}' `;
+  }
+  if (user_id) {
+    searchCondition += ` AND user_id = '${user_id}' `;
+  }
+
+  if (start_date && end_date) {
+    searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59' `;
+  }
+  if (key) {
+    searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%' OR LOWER(user_name) LIKE LOWER('%${key}%') OR user_employee_id LIKE '%${key}%')`;
+  }
+
+  return `SELECT id, category_title, description, start_date, start_time, task_code, task_status, starred 
+          FROM ${task_view_table} 
+          WHERE ${searchCondition} 
+          LIMIT ${limit} OFFSET ${offset};`;
+};
+
+
+let getSuperAdminTotalCount = (key, category, start_date, end_date,user_id ) => {
+  let searchCondition = "1=1";
+
+  if (category) {
+    searchCondition += ` AND task_categories_id = '${category}' `;
+  }
+  if (user_id) {
+    searchCondition += ` AND user_id = '${user_id}' `;
+  }
+
+  if (start_date && end_date) {
+    searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59' `;
+  }
+  if (key) {
+    searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%' OR LOWER(user_name) LIKE LOWER('%${key}%') OR user_employee_id LIKE '%${key}%')`;
+  }
+
+  return `SELECT id, category_title, description, start_date, start_time, task_code, task_status, starred 
+          FROM ${task_view_table} 
+          WHERE ${searchCondition}`;
+};
+
+
+let assignToMeList = (offset, limit, key, category ,starred,start_date,end_date,assign_to, assign_from_others,id) => {
   let searchCondition = "1=1";  
   
   if (assign_to) {
@@ -33,14 +112,48 @@ let assignToMeList = (offset, limit, key, category,assign_to,assign_from_others,
   if (category) {
     searchCondition += ` AND task_categories_id = '${category}' `;
   }
-  if (key) {
-    searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%')`;
+  if (starred) {
+    searchCondition += ` AND starred = '${starred}' `;
   }
+  if (start_date && end_date) {
+    searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59' `;
+  }
+  if (key) {
+    searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE '%${key}%' OR task_code = '%${key}%'`;
+  }
+
 
 
   return `SELECT id,category_title,description,start_date,start_time,task_code,task_status,starred FROM ${task_view_table} WHERE ${searchCondition} 
          LIMIT ${limit} OFFSET ${offset};`;
 };
+
+
+let assignToMeListTotalCount = (key, category ,starred,start_date,end_date,assign_to, assign_from_others,id) => {
+  let searchCondition = "1=1";  
+  
+  if (assign_to) {
+    searchCondition += ` AND is_assign =  1 AND assign_from_id = '${id}' `;
+  }
+  if (assign_from_others) {
+    searchCondition += ` AND is_assign =  1 AND user_id = '${id}' `;
+  }
+  if (category) {
+    searchCondition += ` AND task_categories_id = '${category}' `;
+  }
+  if (starred) {
+    searchCondition += ` AND starred = '${starred}' `;
+  }
+  if (start_date && end_date) {
+    searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59' `;
+  }
+  if (key) {
+    searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE '%${key}%' OR task_code = '%${key}%'`;
+  }
+
+  return `SELECT id,category_title,description,start_date,start_time,task_code,task_status,starred FROM ${task_view_table} WHERE ${searchCondition}`;
+};
+
 
 
 let getOnlyDataList = () => {
@@ -243,5 +356,9 @@ module.exports = {
   getDetailsByIdAndWhereIn,
   getOnlyDataList,
   getByCategoryId,
-  assignToMeList
+  assignToMeList,
+  getSuperAdminList,
+  getSuperAdminTotalCount,
+  getListTotalCount,
+  assignToMeListTotalCount
 };

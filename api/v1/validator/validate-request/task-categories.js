@@ -1,4 +1,3 @@
-const { ENUM } = require("mysql/lib/protocol/constants/types");
 const { z } = require("zod");
 
 
@@ -37,8 +36,15 @@ const taskCategoriesUpdateSchema = z.object({
   path: ["set_time"],
 });
 
+const taskCategoriesList = z.object({
+  offset: z.string().optional(),
+  limit: z.string().optional(),
+  key: z.string().optional(),
+
+})
 
 module.exports = { 
   taskCategoriesCreateSchema,
-  taskCategoriesUpdateSchema
+  taskCategoriesUpdateSchema,
+  taskCategoriesList
 };

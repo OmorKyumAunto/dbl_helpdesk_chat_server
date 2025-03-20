@@ -2,10 +2,10 @@ const { connectionDblystem } = require("../connections/connection");
 const queries = require("../queries/task");
 
 // Promises Method
-let getList = async (offset, limit, key, category ,id) => {
+let getList = async (offset, limit, key = '', category ,starred,start_date,end_date,id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getList(offset, limit, key, category,id),
+      queries.getList(offset, limit, key, category,starred,start_date,end_date,id),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -14,10 +14,61 @@ let getList = async (offset, limit, key, category ,id) => {
   });
 };
 
-let assignToMeList = async (offset, limit, key, category ,assign_to,assign_from_others,id) => {
+let getListTotalCount = async (key = '', category ,starred,start_date,end_date,id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.assignToMeList(offset, limit, key, category,assign_to,assign_from_others,id),
+      queries.getListTotalCount(key, category,starred,start_date,end_date,id),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+let getSuperAdminList = async (offset, limit, key = '', category,start_date,end_date,user_id) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getSuperAdminList(offset, limit, key, category,start_date,end_date,user_id),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+let getSuperAdminTotalCount = async (key = '', category,start_date,end_date,user_id) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getSuperAdminTotalCount(key, category,start_date,end_date,user_id),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+let assignToMeList = async (offset, limit, key = '', category ,starred,start_date,end_date,assign_to, assign_from_others,id) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.assignToMeList(offset, limit, key, category ,starred,start_date,end_date,assign_to, assign_from_others,id),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+let assignToMeListTotalCount = async (key = '', category ,starred,start_date,end_date,assign_to, assign_from_others,id) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.assignToMeListTotalCount(key, category ,starred,start_date,end_date,assign_to, assign_from_others,id),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -230,5 +281,9 @@ module.exports = {
   getByTitle,
   getOnlyDataList,
   getByCategoryId,
-  assignToMeList
+  assignToMeList,
+  getSuperAdminList,
+  getSuperAdminTotalCount,
+  getListTotalCount,
+  assignToMeListTotalCount
 };

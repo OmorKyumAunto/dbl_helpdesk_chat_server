@@ -1,7 +1,13 @@
 const isEmpty = require("is-empty");
 let table_name = "dbl_task_categories";
 
-let getList = () => {
+let getList = (offset, limit, key) => {
+    let searchCondition = "tc.status = 1";
+
+    if (key) {
+        searchCondition += ` AND LOWER(tc.title) LIKE LOWER('%${key}%')`;
+    }
+
     return `
       SELECT 
         tc.id,
@@ -25,47 +31,50 @@ let getList = () => {
       FROM dbl_task_categories AS tc
       LEFT JOIN dbl_task_sub_categories AS tsc
         ON tsc.categories_id = tc.id AND tsc.status = 1
-      WHERE tc.status = 1
+      WHERE ${searchCondition}
       GROUP BY tc.id
       ORDER BY tc.id DESC
+      LIMIT ${limit} OFFSET ${offset};
     `;
-  }
+};
+
+ 
   
-  
+let getListTotalCount = (key) => {
+    let searchCondition = "tc.status = 1";
 
-// return `
-// SELECT 
-//     ca.id,
-//     ca.title AS category_title,
-//     ca.description AS category_description,
-//     ca.status AS category_status,
-//     ca.created_by AS category_created_by,
-//     ca.created_at AS category_created_at,
-//     IFNULL(
-//         CONCAT('[', GROUP_CONCAT(
-//             JSON_OBJECT(
-//                 'id', ts.id,
-//                 'title', ts.title,
-//                 'description', ts.description,
-//                 'start_date', ts.start_date,
-//                 'end_date', ts.end_date,
-//                 'start_time', ts.start_time,
-//                 'end_time', ts.end_time,
-//                 'task_status', ts.task_status
-//             )
-//         ), ']'),
-//         '[]'
-//     ) AS tasks
-// FROM dbl_database.dbl_task_categories AS ca
-// LEFT JOIN dbl_tasks AS ts ON ca.id = ts.task_categories_id
-// WHERE ca.status = 1 
-// AND ca.created_by = ?
-// GROUP BY ca.id, ca.title, ca.description, ca.status, ca.created_by, ca.created_at
-// ORDER BY ca.id DESC;
+    if (key) {
+        searchCondition += ` AND LOWER(tc.title) LIKE LOWER('%${key}%')`;
+    }
 
-
-
-//  `;
+    return `
+      SELECT 
+        tc.id,
+        tc.title,
+        tc.set_time,
+        tc.format,
+        tc.status,
+        IFNULL(
+          CONCAT(
+            '[',
+            GROUP_CONCAT(
+              CASE 
+                WHEN tsc.id IS NOT NULL 
+                THEN JSON_OBJECT('id', tsc.id, 'title', tsc.title) 
+              END
+            ),
+            ']'
+          ),
+          '[]'
+        ) AS tsc
+      FROM dbl_task_categories AS tc
+      LEFT JOIN dbl_task_sub_categories AS tsc
+        ON tsc.categories_id = tc.id AND tsc.status = 1
+      WHERE ${searchCondition}
+      GROUP BY tc.id
+      ORDER BY tc.id DESC;
+    `;
+};
 
 let getOnlyDataList = () => {
     return `SELECT id,title FROM ${table_name}  where status IN ('active', 'inactive')`;
@@ -235,6 +244,7 @@ module.exports = {
     updateById,
     getDataByWhereCondition,
     getDetailsByIdAndWhereIn,
-    getOnlyDataList
+    getOnlyDataList,
+    getListTotalCount
 
 }

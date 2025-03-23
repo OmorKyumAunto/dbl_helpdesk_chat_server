@@ -23,6 +23,7 @@ const slaConfigurationRouter = require("./routers/sla-configuration");
 const taskRouter = require("./routers/task");
 const taskCategoriesRouter = require("./routers/task-categories");
 const taskSubCategoryRouter = require("./routers/task-sub-category");
+const taskDashboardRouter = require("./routers/task-dashboard");
 
 
 
@@ -44,5 +45,6 @@ router.use("/sla-configuration", slaConfigurationRouter);
 router.use("/task", taskRouter);
 router.use("/task-category", taskCategoriesRouter);
 router.use("/task-sub-category", taskSubCategoryRouter);
+router.use("/task-dashboard", taskDashboardRouter);
 
 module.exports = router;

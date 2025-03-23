@@ -350,6 +350,40 @@ let getDetailsByIdAndWhereIn = () => {
   return `SELECT id,name,status FROM ${table_name} where  id IN (?) and status = 1`;
 };
 
+let taskDashboardCountData = () => {
+  return `SELECT 
+    (SELECT COUNT(id) FROM ${table_name} WHERE status = 1) AS total_task_count,
+    (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'incomplete' AND status = 1) AS total_task_incomplete,
+    (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'complete' AND status = 1) AS total_task_complete,
+    (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'inprogress' AND status = 1) AS total_task_inprogress,
+    (SELECT 
+        AVG(TIMESTAMPDIFF(SECOND, 
+            STR_TO_DATE(CONCAT(task_start_date, ' ', task_start_time), '%Y-%m-%d %H:%i:%s'), 
+            task_end_time
+        )) 
+     FROM ${table_name} 
+     WHERE task_status = 'complete' AND status = 1
+    ) AS avg_task_completion_time_seconds;`;
+};
+
+
+let taskDashboardCountDataById = (user_id) => {
+  return `
+    SELECT 
+      COUNT(id) AS total_task_count,
+      SUM(CASE WHEN task_status = 'incomplete' THEN 1 ELSE 0 END) AS total_task_incomplete,
+      SUM(CASE WHEN task_status = 'complete' THEN 1 ELSE 0 END) AS total_task_complete,
+      SUM(CASE WHEN task_status = 'inprogress' THEN 1 ELSE 0 END) AS total_task_inprogress,
+      AVG(TIMESTAMPDIFF(SECOND, 
+            STR_TO_DATE(CONCAT(task_start_date, ' ', task_start_time), '%Y-%m-%d %H:%i:%s'), 
+            task_end_time
+        )) AS avg_task_completion_time_seconds
+    FROM ${table_name} 
+    WHERE user_id = ? AND status = 1;
+  `;
+};
+
+
 module.exports = {
   getList,
   getActiveList,
@@ -365,5 +399,7 @@ module.exports = {
   getSuperAdminList,
   getSuperAdminTotalCount,
   getListTotalCount,
-  assignToMeListTotalCount
+  assignToMeListTotalCount,
+  taskDashboardCountData,
+  taskDashboardCountDataById
 };

@@ -270,6 +270,31 @@ let getDetailsByIdAndWhereIn = async (expertTypeId = []) => {
   });
 };
 
+
+let taskDashboardCountData = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.taskDashboardCountData(),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+let taskDashboardCountDataById = async (user_id = 0) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.taskDashboardCountDataById(),[user_id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
 module.exports = {
   getList,
   getActiveList,
@@ -285,5 +310,7 @@ module.exports = {
   getSuperAdminList,
   getSuperAdminTotalCount,
   getListTotalCount,
-  assignToMeListTotalCount
+  assignToMeListTotalCount,
+  taskDashboardCountData,
+  taskDashboardCountDataById
 };

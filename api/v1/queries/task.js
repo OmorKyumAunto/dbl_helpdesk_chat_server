@@ -8,8 +8,8 @@ let getList = (offset, limit, key, category ,starred,start_date,end_date,id) => 
   if (id) {
     searchCondition += ` AND user_id = '${id}' `;
   }
-  if (category) {
-    searchCondition += ` AND task_categories_id = '${category}' `;
+  if (category.length > 0) {
+    searchCondition += ` AND task_categories_id IN (${category.map(id => `'${id}'`).join(",")}) `;
   }
   if (start_date && end_date) {
     searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59' `;
@@ -34,8 +34,8 @@ let getListTotalCount = (key, category ,starred,start_date,end_date,id) => {
   if (id) {
     searchCondition += ` AND user_id = '${id}' `;
   }
-  if (category) {
-    searchCondition += ` AND task_categories_id = '${category}' `;
+    if (category.length > 0) {
+    searchCondition += ` AND task_categories_id IN (${category.map(id => `'${id}'`).join(",")}) `;
   }
   if (start_date && end_date) {
     searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59' `;
@@ -53,11 +53,10 @@ let getListTotalCount = (key, category ,starred,start_date,end_date,id) => {
 };
 
 
-let getSuperAdminList = (offset, limit, key, category, start_date, end_date,user_id ) => {
+let getSuperAdminList = (offset, limit, key, category,starred, start_date, end_date,user_id ) => {
   let searchCondition = "1=1";
-
-  if (category) {
-    searchCondition += ` AND task_categories_id = '${category}' `;
+  if (category.length > 0) {
+    searchCondition += ` AND task_categories_id IN (${category.map(id => `'${id}'`).join(",")}) `;
   }
   if (user_id) {
     searchCondition += ` AND user_id = '${user_id}' `;
@@ -65,6 +64,9 @@ let getSuperAdminList = (offset, limit, key, category, start_date, end_date,user
 
   if (start_date && end_date) {
     searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59' `;
+  }
+  if (starred) {
+    searchCondition += ` AND starred = '${starred}' `;
   }
   if (key) {
     searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%' OR LOWER(user_name) LIKE LOWER('%${key}%') OR user_employee_id LIKE '%${key}%')`;
@@ -77,11 +79,11 @@ let getSuperAdminList = (offset, limit, key, category, start_date, end_date,user
 };
 
 
-let getSuperAdminTotalCount = (key, category, start_date, end_date,user_id ) => {
+let getSuperAdminTotalCount = (key, category,starred, start_date, end_date,user_id ) => {
   let searchCondition = "1=1";
 
-  if (category) {
-    searchCondition += ` AND task_categories_id = '${category}' `;
+  if (category.length > 0) {
+    searchCondition += ` AND task_categories_id IN (${category.map(id => `'${id}'`).join(",")}) `;
   }
   if (user_id) {
     searchCondition += ` AND user_id = '${user_id}' `;
@@ -89,6 +91,9 @@ let getSuperAdminTotalCount = (key, category, start_date, end_date,user_id ) => 
 
   if (start_date && end_date) {
     searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59' `;
+  }
+  if (starred) {
+    searchCondition += ` AND starred = '${starred}' `;
   }
   if (key) {
     searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%' OR LOWER(user_name) LIKE LOWER('%${key}%') OR user_employee_id LIKE '%${key}%')`;
@@ -345,6 +350,64 @@ let getDetailsByIdAndWhereIn = () => {
   return `SELECT id,name,status FROM ${table_name} where  id IN (?) and status = 1`;
 };
 
+let taskDashboardCountData = () => {
+  return `SELECT 
+    (SELECT COUNT(id) FROM ${table_name} WHERE status = 1) AS total_task_count,
+    (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'incomplete' AND status = 1) AS total_task_incomplete,
+    (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'complete' AND status = 1) AS total_task_complete,
+    (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'inprogress' AND status = 1) AS total_task_inprogress,
+    (SELECT 
+        AVG(TIMESTAMPDIFF(SECOND, 
+            STR_TO_DATE(CONCAT(task_start_date, ' ', task_start_time), '%Y-%m-%d %H:%i:%s'), 
+            task_end_time
+        )) 
+     FROM ${table_name} 
+     WHERE task_status = 'complete' AND status = 1
+    ) AS avg_task_completion_time_seconds;`;
+};
+
+
+let taskDashboardCountDataById = () => {
+  return `
+    SELECT 
+      COUNT(id) AS total_task_count,
+      SUM(CASE WHEN task_status = 'incomplete' THEN 1 ELSE 0 END) AS total_task_incomplete,
+      SUM(CASE WHEN task_status = 'complete' THEN 1 ELSE 0 END) AS total_task_complete,
+      SUM(CASE WHEN task_status = 'inprogress' THEN 1 ELSE 0 END) AS total_task_inprogress,
+      AVG(TIMESTAMPDIFF(SECOND, 
+            STR_TO_DATE(CONCAT(task_start_date, ' ', task_start_time), '%Y-%m-%d %H:%i:%s'), 
+            task_end_time
+        )) AS avg_task_completion_time_seconds
+    FROM ${table_name} 
+    WHERE user_id = ? AND status = 1;
+  `;
+};
+
+let taskSuperAdminDashboardPercentageData = () => {
+  return `
+    SELECT 
+      COUNT(id) AS total_task_count,
+      SUM(task_status = 'complete') AS total_task_complete,
+      SUM(task_status != 'complete') AS total_task_incomplete
+    FROM ${table_name} 
+    WHERE  status = 1
+  `;
+};
+
+let taskAdminDashboardPercentageData = () => {
+  return `
+    SELECT 
+      COUNT(id) AS total_task_count,
+      SUM(task_status = 'complete') AS total_task_complete,
+      SUM(task_status != 'complete') AS total_task_incomplete
+    FROM ${table_name} 
+    WHERE user_id = ? AND status = 1
+  `;
+};
+
+
+
+
 module.exports = {
   getList,
   getActiveList,
@@ -360,5 +423,9 @@ module.exports = {
   getSuperAdminList,
   getSuperAdminTotalCount,
   getListTotalCount,
-  assignToMeListTotalCount
+  assignToMeListTotalCount,
+  taskDashboardCountData,
+  taskDashboardCountDataById,
+  taskSuperAdminDashboardPercentageData,
+  taskAdminDashboardPercentageData
 };

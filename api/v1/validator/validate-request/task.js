@@ -32,9 +32,18 @@ const taskCreateSchema = z
       offset: z.string().optional().refine(value => value === undefined || value >= 0, {
         message: 'Offset must be a non-negative number.',
       }),
-      category: z.string().optional().refine(value => value === undefined || value > 0, {
-        message: 'Category ID must be a positive number.',
-      }),
+      category: z
+      .union([
+        z.string().optional(), // Allow optional string input (comma-separated values)
+        z.array(z.coerce.number().positive()).optional() // Allow an array of positive numbers
+      ])
+     .transform(value => {
+     if (typeof value === "string") {
+      return value.split(",").map(num => Number(num.trim())); // Convert comma-separated string to an array of numbers
+     }
+    return value || []; // Ensure it's always an array
+  }),
+
       assign_to: z.string().optional().refine(value => value === undefined || value > 0, {
         message: 'Assign to must be a positive number.',
       }),

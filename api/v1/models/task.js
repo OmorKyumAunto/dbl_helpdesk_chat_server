@@ -27,10 +27,10 @@ let getListTotalCount = async (key = '', category ,starred,start_date,end_date,i
 };
 
 
-let getSuperAdminList = async (offset, limit, key = '', category,start_date,end_date,user_id) => {
+let getSuperAdminList = async (offset, limit, key = '', category,starred,start_date,end_date,user_id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getSuperAdminList(offset, limit, key, category,start_date,end_date,user_id),
+      queries.getSuperAdminList(offset, limit, key, category,starred,start_date,end_date,user_id),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -40,10 +40,10 @@ let getSuperAdminList = async (offset, limit, key = '', category,start_date,end_
 };
 
 
-let getSuperAdminTotalCount = async (key = '', category,start_date,end_date,user_id) => {
+let getSuperAdminTotalCount = async (key = '', category,starred,start_date,end_date,user_id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getSuperAdminTotalCount(key, category,start_date,end_date,user_id),
+      queries.getSuperAdminTotalCount(key, category,starred,start_date,end_date,user_id),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -270,6 +270,63 @@ let getDetailsByIdAndWhereIn = async (expertTypeId = []) => {
   });
 };
 
+
+// super admin dashboard count data
+let taskDashboardCountData = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.taskDashboardCountData(),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+//admin dashboard count data
+let taskDashboardCountDataById = async (user_id = 0) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.taskDashboardCountDataById(),[user_id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+// task percentage data super admin
+let taskSuperAdminDashboardPercentageData = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.taskSuperAdminDashboardPercentageData(),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+// task percentage data  admin
+let taskAdminDashboardPercentageData = async (user_id = 0) => {
+  console.log("first",user_id)
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.taskAdminDashboardPercentageData(),[user_id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
 module.exports = {
   getList,
   getActiveList,
@@ -285,5 +342,9 @@ module.exports = {
   getSuperAdminList,
   getSuperAdminTotalCount,
   getListTotalCount,
-  assignToMeListTotalCount
+  assignToMeListTotalCount,
+  taskDashboardCountData,
+  taskDashboardCountDataById,
+  taskSuperAdminDashboardPercentageData,
+  taskAdminDashboardPercentageData
 };

@@ -23,7 +23,7 @@ let getList = (offset, limit, key, category ,starred,start_date,end_date,id) => 
   }
 
 
-  return `SELECT id,task_categories_id,category_title,description,start_date,start_time,task_code,task_status,starred FROM ${task_view_table} WHERE ${searchCondition} 
+  return `SELECT id,task_categories_id,category_title,description,start_date,start_time,task_code,task_status,starred,task_start_date,task_end_date,task_start_time,task_end_time,created_at,updated_at FROM ${task_view_table} WHERE ${searchCondition} 
          LIMIT ${limit} OFFSET ${offset};`;
 };
 
@@ -72,7 +72,7 @@ let getSuperAdminList = (offset, limit, key, category,starred, start_date, end_d
     searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%' OR LOWER(user_name) LIKE LOWER('%${key}%') OR user_employee_id LIKE '%${key}%')`;
   }
 
-  return `SELECT id, task_categories_id, category_title, description, start_date, start_time, task_code, task_status, starred 
+  return `SELECT id, task_categories_id, category_title, description, start_date, start_time, task_code, task_status, starred ,task_start_date,task_end_date,task_start_time,task_end_time,created_at,updated_at
           FROM ${task_view_table} 
           WHERE ${searchCondition} 
           LIMIT ${limit} OFFSET ${offset};`;

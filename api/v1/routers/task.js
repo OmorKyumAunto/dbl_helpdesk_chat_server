@@ -25,21 +25,25 @@ router.get(
       limit: parseInt(req.query.limit) || 20,
       offset: parseInt(req.query.offset) || 0,
       key: req.query.key,
-      category: req.query.category,
-      starred : req.query.starred,
-      start_date : req.query.start_date,
-      end_date : req.query.end_date,
-      user_id : req.query.user_id
+      category: Array.isArray(req.query.category) 
+        ? req.query.category.map(Number) 
+         : req.query.category 
+          ? req.query.category.split(',').map(Number)  
+           : [],
+      starred: req.query.starred,
+      start_date: req.query.start_date,
+      end_date: req.query.end_date,
+      user_id: req.query.user_id
     };
-
     
+ 
     let { offset, limit, key, category,starred,start_date,end_date,user_id} = reqData;
     let {id,role_id} = req.decoded.userInfo
     let result
     let totalCount
     if(role_id === 1){
-      result = await taskModel.getSuperAdminList(offset, limit, key, category,start_date,end_date,user_id);
-      totalCount = await taskModel.getSuperAdminTotalCount(key, category,start_date,end_date,user_id);
+      result = await taskModel.getSuperAdminList(offset, limit, key, category,starred,start_date,end_date,user_id);
+      totalCount = await taskModel.getSuperAdminTotalCount(key, category,starred,start_date,end_date,user_id);
     }else{
       result = await taskModel.getList(offset, limit, key, category ,starred,start_date,end_date,id);
       totalCount = await taskModel.getListTotalCount(key, category ,starred,start_date,end_date,id);

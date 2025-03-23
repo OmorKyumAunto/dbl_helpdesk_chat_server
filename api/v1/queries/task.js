@@ -8,8 +8,8 @@ let getList = (offset, limit, key, category ,starred,start_date,end_date,id) => 
   if (id) {
     searchCondition += ` AND user_id = '${id}' `;
   }
-  if (category) {
-    searchCondition += ` AND task_categories_id = '${category}' `;
+  if (category.length > 0) {
+    searchCondition += ` AND task_categories_id IN (${category.map(id => `'${id}'`).join(",")}) `;
   }
   if (start_date && end_date) {
     searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59' `;
@@ -34,8 +34,8 @@ let getListTotalCount = (key, category ,starred,start_date,end_date,id) => {
   if (id) {
     searchCondition += ` AND user_id = '${id}' `;
   }
-  if (category) {
-    searchCondition += ` AND task_categories_id = '${category}' `;
+    if (category.length > 0) {
+    searchCondition += ` AND task_categories_id IN (${category.map(id => `'${id}'`).join(",")}) `;
   }
   if (start_date && end_date) {
     searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59' `;
@@ -53,11 +53,10 @@ let getListTotalCount = (key, category ,starred,start_date,end_date,id) => {
 };
 
 
-let getSuperAdminList = (offset, limit, key, category, start_date, end_date,user_id ) => {
+let getSuperAdminList = (offset, limit, key, category,starred, start_date, end_date,user_id ) => {
   let searchCondition = "1=1";
-
-  if (category) {
-    searchCondition += ` AND task_categories_id = '${category}' `;
+  if (category.length > 0) {
+    searchCondition += ` AND task_categories_id IN (${category.map(id => `'${id}'`).join(",")}) `;
   }
   if (user_id) {
     searchCondition += ` AND user_id = '${user_id}' `;
@@ -65,6 +64,9 @@ let getSuperAdminList = (offset, limit, key, category, start_date, end_date,user
 
   if (start_date && end_date) {
     searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59' `;
+  }
+  if (starred) {
+    searchCondition += ` AND starred = '${starred}' `;
   }
   if (key) {
     searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%' OR LOWER(user_name) LIKE LOWER('%${key}%') OR user_employee_id LIKE '%${key}%')`;
@@ -77,11 +79,11 @@ let getSuperAdminList = (offset, limit, key, category, start_date, end_date,user
 };
 
 
-let getSuperAdminTotalCount = (key, category, start_date, end_date,user_id ) => {
+let getSuperAdminTotalCount = (key, category,starred, start_date, end_date,user_id ) => {
   let searchCondition = "1=1";
 
-  if (category) {
-    searchCondition += ` AND task_categories_id = '${category}' `;
+  if (category.length > 0) {
+    searchCondition += ` AND task_categories_id IN (${category.map(id => `'${id}'`).join(",")}) `;
   }
   if (user_id) {
     searchCondition += ` AND user_id = '${user_id}' `;
@@ -89,6 +91,9 @@ let getSuperAdminTotalCount = (key, category, start_date, end_date,user_id ) => 
 
   if (start_date && end_date) {
     searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59' `;
+  }
+  if (starred) {
+    searchCondition += ` AND starred = '${starred}' `;
   }
   if (key) {
     searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%' OR LOWER(user_name) LIKE LOWER('%${key}%') OR user_employee_id LIKE '%${key}%')`;

@@ -27,10 +27,10 @@ let getListTotalCount = async (key = '', category ,starred,start_date,end_date,i
 };
 
 
-let getSuperAdminList = async (offset, limit, key = '', category,start_date,end_date,user_id) => {
+let getSuperAdminList = async (offset, limit, key = '', category,starred,start_date,end_date,user_id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getSuperAdminList(offset, limit, key, category,start_date,end_date,user_id),
+      queries.getSuperAdminList(offset, limit, key, category,starred,start_date,end_date,user_id),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -40,10 +40,10 @@ let getSuperAdminList = async (offset, limit, key = '', category,start_date,end_
 };
 
 
-let getSuperAdminTotalCount = async (key = '', category,start_date,end_date,user_id) => {
+let getSuperAdminTotalCount = async (key = '', category,starred,start_date,end_date,user_id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getSuperAdminTotalCount(key, category,start_date,end_date,user_id),
+      queries.getSuperAdminTotalCount(key, category,starred,start_date,end_date,user_id),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);

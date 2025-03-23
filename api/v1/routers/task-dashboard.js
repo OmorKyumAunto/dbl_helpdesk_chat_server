@@ -35,26 +35,14 @@ router.get(
     return res.status(200).send({
       success: true,
       status: 200,
-      message: "Ticket data retrieved successfully.",
+      message: "Task dashboard count data retrieved successfully.",
       data: countingData,
     });
   }
 );
 
-router.get(
-  "/top-solve-ticket",
-  [verifyToken, routeAccessChecker("topSolvedTicketData")],
-  async (req, res) => {
-    let data = await raiseTicketModel.getTopSolvedTicketList();
-    return res.status(200).send({
-      success: true,
-      status: 200,
-      message: "Top ticket solve list.",
-      data: data,
-    });
-  }
-);
 
+// list wise data
 router.get(
   "/category-base-ticket",
   [verifyToken, routeAccessChecker("priorityBaseTicket")],
@@ -112,43 +100,54 @@ router.get(
 );
 
 router.get(
-  "/raise-solve-ticket",
-  [verifyToken, routeAccessChecker("raiseSolveTicketMOnthlyCount")],
+  "/task-percentage",
+  [verifyToken, routeAccessChecker("taskPercentageData")],
   async (req, res) => {
-    const { id, role_id } = req.decoded.userInfo;
-    let data;
-    if (role_id === 1) {
-      data = await raiseTicketModel.monthWiseTicketCount();
-    } else {
-      data = await raiseTicketModel.monthWiseTicketCountAdmin(id);
+    try {
+      const { id, role_id } = req.decoded.userInfo;
+      let data;
+
+      if (role_id === 1) {
+        data = await taskModel.taskSuperAdminDashboardPercentageData();
+      } else {
+        data = await taskModel.taskAdminDashboardPercentageData(id);
+      }
+
+      // Extract counts
+      let totalTask = data[0]?.total_task_count || 0;
+      let totalTaskComplete = data[0]?.total_task_complete || 0;
+      let totalTaskIncomplete = data[0]?.total_task_incomplete || 0;
+
+      // Calculate percentages
+      let totalAssetPercent = 100;
+      let totalSolvedPercent = totalTask > 0 ? Math.round((totalTaskComplete / totalTask) * 100) : 0;
+      let totalUnSolvedPercent = totalAssetPercent - totalSolvedPercent;
+
+      return res.status(200).json({
+        success: true,
+        status: 200,
+        message: "Task create and complete percentage data retrieved successfully.",
+        data: {
+          total_task: totalTask,
+          total_task_percent: totalAssetPercent,
+          total_complete: totalTaskComplete,
+          total_complete_percent: totalSolvedPercent,
+          total_incomplete: totalTaskIncomplete, 
+          total_incomplete_percent: totalUnSolvedPercent,
+        },
+      });
+    } catch (error) {
+      console.error("Error in /task-percentage:", error);
+      return res.status(500).json({
+        success: false,
+        status: 500,
+        message: "Internal Server Error",
+        error: error.message,
+      });
     }
-
-    // Extract counts
-    let totalTicket = data[0]?.total_ticket || 0;
-    let totalSolved = data[0]?.total_solved || 0;
-    let totalUnSolved = data[0]?.total_unsolved || 0;
-
-    // Calculate percentages
-    let totalAssetPercent = 100;
-    let totalSolvedPercent = (totalSolved / totalTicket) * 100 || 0;
-    totalSolvedPercent = Math.round(totalSolvedPercent);
-    let totalUnSolvedPercent = totalAssetPercent - totalSolvedPercent;
-
-    return res.status(200).send({
-      success: true,
-      status: 200,
-      message: "Monthly wise raise and solve ticket.",
-      data: {
-        total_ticket: totalTicket,
-        total_ticket_percent: totalAssetPercent,
-        total_solved: totalSolved,
-        total_solved_percent: totalSolvedPercent,
-        total_unsolved: totalUnSolved,
-        total_unsolved_percent: totalUnSolvedPercent,
-      },
-    });
   }
 );
+
 
 router.get(
   "/ticket-dashboard-data",

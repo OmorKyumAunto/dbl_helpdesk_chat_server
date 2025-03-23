@@ -367,7 +367,7 @@ let taskDashboardCountData = () => {
 };
 
 
-let taskDashboardCountDataById = (user_id) => {
+let taskDashboardCountDataById = () => {
   return `
     SELECT 
       COUNT(id) AS total_task_count,
@@ -382,6 +382,30 @@ let taskDashboardCountDataById = (user_id) => {
     WHERE user_id = ? AND status = 1;
   `;
 };
+
+let taskSuperAdminDashboardPercentageData = () => {
+  return `
+    SELECT 
+      COUNT(id) AS total_task_count,
+      SUM(task_status = 'complete') AS total_task_complete,
+      SUM(task_status != 'complete') AS total_task_incomplete
+    FROM ${table_name} 
+    WHERE  status = 1
+  `;
+};
+
+let taskAdminDashboardPercentageData = () => {
+  return `
+    SELECT 
+      COUNT(id) AS total_task_count,
+      SUM(task_status = 'complete') AS total_task_complete,
+      SUM(task_status != 'complete') AS total_task_incomplete
+    FROM ${table_name} 
+    WHERE user_id = ? AND status = 1
+  `;
+};
+
+
 
 
 module.exports = {
@@ -401,5 +425,7 @@ module.exports = {
   getListTotalCount,
   assignToMeListTotalCount,
   taskDashboardCountData,
-  taskDashboardCountDataById
+  taskDashboardCountDataById,
+  taskSuperAdminDashboardPercentageData,
+  taskAdminDashboardPercentageData
 };

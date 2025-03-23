@@ -271,6 +271,7 @@ let getDetailsByIdAndWhereIn = async (expertTypeId = []) => {
 };
 
 
+// super admin dashboard count data
 let taskDashboardCountData = async () => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
@@ -283,6 +284,8 @@ let taskDashboardCountData = async () => {
   });
 };
 
+
+//admin dashboard count data
 let taskDashboardCountDataById = async (user_id = 0) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
@@ -294,6 +297,35 @@ let taskDashboardCountDataById = async (user_id = 0) => {
     );
   });
 };
+
+
+// task percentage data super admin
+let taskSuperAdminDashboardPercentageData = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.taskSuperAdminDashboardPercentageData(),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+// task percentage data  admin
+let taskAdminDashboardPercentageData = async (user_id = 0) => {
+  console.log("first",user_id)
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.taskAdminDashboardPercentageData(),[user_id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
 
 module.exports = {
   getList,
@@ -312,5 +344,7 @@ module.exports = {
   getListTotalCount,
   assignToMeListTotalCount,
   taskDashboardCountData,
-  taskDashboardCountDataById
+  taskDashboardCountDataById,
+  taskSuperAdminDashboardPercentageData,
+  taskAdminDashboardPercentageData
 };

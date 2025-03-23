@@ -127,6 +127,22 @@ let getById = async (id = 0,user_id = 0) => {
   });
 };
 
+
+let getByIdAllData = async (id = 0) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getByIdAllData(),
+      [id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+
 let getByCategoryId = async (id = 0) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
@@ -346,5 +362,6 @@ module.exports = {
   taskDashboardCountData,
   taskDashboardCountDataById,
   taskSuperAdminDashboardPercentageData,
-  taskAdminDashboardPercentageData
+  taskAdminDashboardPercentageData,
+  getByIdAllData
 };

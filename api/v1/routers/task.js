@@ -112,6 +112,7 @@ router.get(
       });
     }
 
+
     let result = await taskModel.getById(id,user_id);
     // Parse sub_list_details if it's a string
     if (result[0].sub_list_details) {
@@ -131,6 +132,44 @@ router.get(
     });
   }
 );
+
+
+router.get(
+  "/details/:id",
+  [verifyToken, routeAccessChecker("taskDetails")],
+  async (req, res) => {
+    let id = req.params.id
+    let user_id =  req.decoded.userInfo.id
+
+    let existingDataById = await taskModel.getByIdAllData(id);
+    if (isEmpty(existingDataById)) {
+      return res.status(404).send({
+        success: false,
+        status: 404,
+        message: "No data found",
+      });
+    }
+
+    let result = await taskModel.getByIdAllData(id,user_id);
+    // Parse sub_list_details if it's a string
+    if (result[0].sub_list_details) {
+      try {
+        result[0].sub_list_details = JSON.parse(result[0].sub_list_details);
+      } catch (error) {
+       
+        result[0].sub_list_details = []; 
+      }
+    }
+
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Task details.",
+      data: result[0],
+    });
+  }
+);
+
 
 // task create
 router.post(

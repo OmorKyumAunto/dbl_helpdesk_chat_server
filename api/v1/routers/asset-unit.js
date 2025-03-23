@@ -395,7 +395,7 @@ router.get('/unit-wise-admin/:id', [verifyToken, routeAccessChecker("assetUnitWi
         "status": 200,
         "message": "Asset Unit List.",
         "count": result.length,
-        "data": result
+        "data": result[0]
     });
 });
 

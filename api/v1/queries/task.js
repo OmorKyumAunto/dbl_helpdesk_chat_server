@@ -444,6 +444,8 @@ let taskDashboardGraphData = () => {
 };
 
 
+
+
 let taskDashboardCountGraphById = () => {
   return `
 SELECT 
@@ -461,6 +463,30 @@ ORDER BY month;
   `;
 };
 
+
+let superAdminCategoryWiseTaskCount = () => {
+  return `
+  SELECT 
+    tc.id,tc.title AS category_title, 
+    COUNT(t.id) AS task_count
+  FROM dbl_task_categories AS tc
+  JOIN dbl_tasks AS t ON t.task_categories_id = tc.id
+  WHERE tc.status = 1 AND t.status = 1 
+  GROUP BY tc.id, tc.title
+`;
+};
+
+let adminCategoryWiseTaskCount = () => {
+  return `
+    SELECT 
+      tc.id,tc.title AS category_title, 
+      COUNT(t.id) AS task_count
+    FROM dbl_task_categories AS tc
+    JOIN dbl_tasks AS t ON t.task_categories_id = tc.id
+    WHERE tc.status = 1 AND t.status = 1 AND t.user_id = ?
+    GROUP BY tc.id, tc.title
+  `;
+};
 
 
 module.exports = {
@@ -487,5 +513,7 @@ module.exports = {
   getTodaySuperAdminList,
   getTodayList,
   taskDashboardGraphData,
-  taskDashboardCountGraphById
+  taskDashboardCountGraphById,
+  superAdminCategoryWiseTaskCount,
+  adminCategoryWiseTaskCount
 };

@@ -78,23 +78,31 @@ router.get(
 );
 
 router.get(
-  "/priority-base-ticket",
-  [verifyToken, routeAccessChecker("categoryWisePriorityCount")],
+  "/category-wise-ticket",
+  [verifyToken, routeAccessChecker("categoryWiseTicketCount")],
   async (req, res) => {
     const { id, role_id } = req.decoded.userInfo;
     let data;
 
     if (role_id === 1) {
-      data = await raiseTicketModel.categoryBaseTicketList();
+      data = await taskModel.superAdminCategoryWiseTaskCount();
     } else {
-      data = await raiseTicketModel.categoryBaseTicketListAdmin(id);
+      data = await taskModel.adminCategoryWiseTaskCount(id);
     }
 
+    const totalTasks = data.reduce((sum, item) => sum + item.task_count, 0);
+
+    const updatedData = data.map((item) => ({
+      ...item,
+      percentage: totalTasks > 0 ? Math.round((item.task_count / totalTasks) * 100) : 0,
+    }));
+
+    console.log("data == >", updatedData);
     return res.status(200).send({
       success: true,
       status: 200,
-      message: "Priority base ticket data count.",
-      data: data[0],
+      message: "Category wise Task percentage.",
+      data: updatedData,
     });
   }
 );

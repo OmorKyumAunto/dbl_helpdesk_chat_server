@@ -23,4 +23,19 @@ let today_date = moment(current_date)
   .tz("Asia/Dhaka")
   .format("YYYY-MM-DD");
 
-module.exports = { current_time, today_date };
+
+const currentTime = ()=>{
+  return moment(current_date)
+  .tz("Asia/Dhaka")
+  .format("YYYY-MM-DD HH:mm:ss");
+}
+
+const currentDate = ()=>{
+  return moment(current_date)
+  .tz("Asia/Dhaka")
+  .format("YYYY-MM-DD");
+}
+
+module.exports = { current_time, today_date,currentTime,currentDate };
+
+

@@ -378,18 +378,20 @@ router.post('/search-access/:id', [verifyToken, routeAccessChecker("searchAccess
 
 
 router.get('/unit-wise-admin/:id', [verifyToken, routeAccessChecker("assetUnitWiseAdminList")], async (req, res) => {
-
-    const id = parseInt(req.params.id)
+    const id = parseInt(req.params.id);
 
     let result = await assetUnitModel.unitWiseAdminList(id);
-    //convert json
+
+    // Convert JSON and filter out objects where user_id is null
     result.forEach(row => {
         try {
-            row.user_list = JSON.parse(row.user_list);
+            let userList = JSON.parse(row.user_list);
+            row.user_list = userList.filter(user => user.user_id !== null); // Remove null user_id
         } catch (error) {
             row.user_list = []; 
         }
-    })
+    });
+
     return res.status(200).send({
         "success": true,
         "status": 200,
@@ -398,6 +400,7 @@ router.get('/unit-wise-admin/:id', [verifyToken, routeAccessChecker("assetUnitWi
         "data": result[0]
     });
 });
+
 
 
 module.exports = router;

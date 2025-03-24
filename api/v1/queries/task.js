@@ -114,8 +114,8 @@ let assignToMeList = (offset, limit, key, category ,starred,start_date,end_date,
   if (assign_from_others) {
     searchCondition += ` AND is_assign =  1 AND user_id = '${id}' `;
   }
-  if (category) {
-    searchCondition += ` AND task_categories_id = '${category}' `;
+  if (category.length > 0) {
+    searchCondition += ` AND task_categories_id IN (${category.map(id => `'${id}'`).join(",")}) `;
   }
   if (starred) {
     searchCondition += ` AND starred = '${starred}' `;
@@ -124,8 +124,8 @@ let assignToMeList = (offset, limit, key, category ,starred,start_date,end_date,
     searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59' `;
   }
   if (key) {
-    searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE '%${key}%' OR task_code = '%${key}%'`;
-  }
+    searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%') `;
+}
 
 
 
@@ -143,8 +143,8 @@ let assignToMeListTotalCount = (key, category ,starred,start_date,end_date,assig
   if (assign_from_others) {
     searchCondition += ` AND is_assign =  1 AND user_id = '${id}' `;
   }
-  if (category) {
-    searchCondition += ` AND task_categories_id = '${category}' `;
+  if (category.length > 0) {
+    searchCondition += ` AND task_categories_id IN (${category.map(id => `'${id}'`).join(",")}) `;
   }
   if (starred) {
     searchCondition += ` AND starred = '${starred}' `;
@@ -153,8 +153,8 @@ let assignToMeListTotalCount = (key, category ,starred,start_date,end_date,assig
     searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59' `;
   }
   if (key) {
-    searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE '%${key}%' OR task_code = '%${key}%'`;
-  }
+    searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%') `;
+}
 
   return `SELECT id,category_title,description,start_date,start_time,task_code,task_status,starred FROM ${task_view_table} WHERE ${searchCondition}`;
 };
@@ -410,6 +410,57 @@ let taskAdminDashboardPercentageData = () => {
 };
 
 
+let getTodaySuperAdminList = () => {
+  return `SELECT id, category_title, description, start_time 
+          FROM ${task_view_table} 
+          WHERE DATE(start_date) = CURDATE() 
+          LIMIT 10;`;
+};
+
+
+let getTodayList = () => {
+  return `SELECT id, category_title, description, start_time 
+          FROM ${task_view_table} 
+          WHERE user_id = ? AND DATE(start_date) = CURDATE() 
+          LIMIT 10;`;
+};
+
+
+let taskDashboardGraphData = () => {
+  return `
+ SELECT 
+    MONTH(task_start_date) AS month,
+    COUNT(id) AS total_task_count,
+    SUM(CASE WHEN task_status = 'incomplete' THEN 1 ELSE 0 END) AS total_task_incomplete,
+    SUM(CASE WHEN task_status = 'complete' THEN 1 ELSE 0 END) AS total_task_complete,
+    SUM(CASE WHEN task_status = 'inprogress' THEN 1 ELSE 0 END) AS total_task_inprogress
+  FROM ${table_name}
+  WHERE status = 1
+  AND task_start_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+  GROUP BY month
+  ORDER BY month;
+
+  `;
+};
+
+
+let taskDashboardCountGraphById = () => {
+  return `
+SELECT 
+    MONTH(task_start_date) AS month,
+    COUNT(id) AS total_task_count,
+    SUM(CASE WHEN task_status = 'incomplete' THEN 1 ELSE 0 END) AS total_task_incomplete,
+    SUM(CASE WHEN task_status = 'complete' THEN 1 ELSE 0 END) AS total_task_complete,
+    SUM(CASE WHEN task_status = 'inprogress' THEN 1 ELSE 0 END) AS total_task_inprogress
+FROM ${table_name}
+WHERE user_id = ? AND status = 1
+AND task_start_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+GROUP BY month
+ORDER BY month;
+
+  `;
+};
+
 
 
 module.exports = {
@@ -432,5 +483,9 @@ module.exports = {
   taskDashboardCountDataById,
   taskSuperAdminDashboardPercentageData,
   taskAdminDashboardPercentageData,
-  getByIdAllData
+  getByIdAllData,
+  getTodaySuperAdminList,
+  getTodayList,
+  taskDashboardGraphData,
+  taskDashboardCountGraphById
 };

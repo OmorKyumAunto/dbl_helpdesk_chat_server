@@ -149,43 +149,37 @@ router.get(
 );
 
 
+
 router.get(
-  "/ticket-dashboard-data",
-  [verifyToken, routeAccessChecker("ticketDashboardGraphData")],
+  "/task-dashboard-data",
+  [verifyToken, routeAccessChecker("taskDashboardGraphData")],
   async (req, res) => {
     try {
       const { id, role_id } = req.decoded.userInfo;
 
-      let resultAssign;
-      let resultTotal;
-      let resultTotalUnsolved;
-      if (role_id === 1) {
-        resultAssign = await raiseTicketModel.graphTicketTotalData();
-        resultTotal = await raiseTicketModel.graphTicketTotalSolveData();
-        resultTotalUnsolved =
-          await raiseTicketModel.graphTicketTotalUnSolveData();
-      } else {
-        resultAssign = await raiseTicketModel.graphTicketTotalDataAdmin(id);
+      let result;
+      let resultComplete = 0;
+      let resultTotal = 0;
+      let resultTotalIncomplete = 0;
 
-        resultTotal = await raiseTicketModel.graphTicketTotalSolveDataAdmin(id);
-        resultTotalUnsolved =
-          await raiseTicketModel.graphTicketTotalUnSolveDataAdmin(id);
+      if (role_id === 1) {
+        console.log("super");
+        result = await taskModel.taskDashboardGraphData();
+      } else {
+        console.log("admin");
+        result = await taskModel.taskDashboardCountGraphById(id);
+      }
+
+      if (Array.isArray(result) && result.length > 0) {
+        resultComplete = result[0]?.total_task_complete || 0;
+        resultTotal = result[0]?.total_task_count || 0;
+        resultTotalIncomplete = result[0]?.total_task_incomplete || 0;
       }
 
       // Month names mapping
       const monthNames = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
       ];
 
       // Initialize an array with all months set to 0
@@ -195,46 +189,34 @@ router.get(
         const month = (currentMonth - i + 12) % 12 || 12;
         data.push({
           month: month.toString(),
-          name: monthNames[month - 1], // Add month name
-          raiseTickets: 0,
-          solvedTickets: 0,
-          unsolvedTickets: 0,
+          name: monthNames[month - 1], 
+          totalTask: 0,
+          completeTask: 0,
+          incompleteTask: 0,
         });
       }
 
-      // Populate the array with total_assign_asset data
-      resultAssign.forEach((item) => {
-        const monthIndex = data.findIndex(
-          (d) => d.month === item.month.toString()
-        );
-        if (monthIndex !== -1) {
-          data[monthIndex].raiseTickets = item.raiseTickets;
-        }
-      });
 
-      // Populate the array with total_asset data
-      resultTotal.forEach((item) => {
-        const monthIndex = data.findIndex(
-          (d) => d.month === item.month.toString()
-        );
-        if (monthIndex !== -1) {
-          data[monthIndex].solvedTickets = item.solvedTickets;
-        }
-      });
-
-      resultTotalUnsolved.forEach((item) => {
-        const monthIndex = data.findIndex(
-          (d) => d.month === item.month.toString()
-        );
-        if (monthIndex !== -1) {
-          data[monthIndex].unsolvedTickets = item.unsolvedTickets;
-        }
-      });
+      // Ensure result is an array and contains valid month data
+      if (Array.isArray(result)) {
+        result.forEach((item) => {
+          if (item.month !== undefined) { // Check if month exists
+            const monthIndex = data.findIndex((d) => d.month === item.month.toString());
+            if (monthIndex !== -1) {
+              data[monthIndex].totalTask = item.total_task_count || 0;
+              data[monthIndex].completeTask = item.total_task_complete || 0;
+              data[monthIndex].incompleteTask = item.total_task_incomplete || 0;
+            }
+          } else {
+            console.warn("Missing month in result item:", item);
+          }
+        });
+      }
 
       return res.status(200).send({
         success: true,
         status: 200,
-        message: "Ticket dashboard data.",
+        message: "Task dashboard data.",
         data: data.reverse(),
       });
     } catch (error) {
@@ -247,5 +229,33 @@ router.get(
     }
   }
 );
+
+
+
+// today task list
+router.get(
+  "/today-task",
+  [verifyToken, routeAccessChecker("todayTaskList")],
+  async (req, res) => {
+  
+    let {id,role_id} = req.decoded.userInfo
+    let result
+    if(role_id === 1){
+      result = await taskModel.getTodaySuperAdminList();
+    }else{
+      result = await taskModel.getTodayList(id);
+    }
+    
+
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Task List.",
+      count: result.length,
+      data: result,
+    });
+  }
+);
+
 
 module.exports = router;

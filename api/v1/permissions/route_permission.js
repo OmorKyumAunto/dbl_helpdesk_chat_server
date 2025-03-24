@@ -147,7 +147,8 @@ let superAdminPermission = [
   "taskDashboardCountData",
   "taskPercentageData",
   "todayTaskList",
-  "taskDashboardGraphData"
+  "taskDashboardGraphData",
+  "categoryWiseTicketCount"
 
 ];
 
@@ -285,7 +286,8 @@ let adminPermission = [
   "taskDashboardCountData",
   "taskPercentageData",
   "todayTaskList",
-  "taskDashboardGraphData"
+  "taskDashboardGraphData",
+  "categoryWiseTicketCount"
 ];
 
 let employeePermission = [

@@ -399,6 +399,32 @@ let taskDashboardCountGraphById = async (user_id = 0) => {
   });
 };
 
+// super admin category wise task count
+let superAdminCategoryWiseTaskCount = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.superAdminCategoryWiseTaskCount(),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+// admin category wise task count
+let adminCategoryWiseTaskCount = async (user_id = 0) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.adminCategoryWiseTaskCount(),[user_id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
 
 module.exports = {
   getList,
@@ -424,5 +450,7 @@ module.exports = {
   getTodaySuperAdminList,
   getTodayList,
   taskDashboardGraphData,
-  taskDashboardCountGraphById
+  taskDashboardCountGraphById,
+  superAdminCategoryWiseTaskCount,
+  adminCategoryWiseTaskCount
 };

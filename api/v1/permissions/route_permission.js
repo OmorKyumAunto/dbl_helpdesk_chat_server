@@ -145,7 +145,9 @@ let superAdminPermission = [
   "taskAssignList",
   "assetUnitWiseAdminList",
   "taskDashboardCountData",
-  "taskPercentageData"
+  "taskPercentageData",
+  "todayTaskList",
+  "taskDashboardGraphData"
 
 ];
 
@@ -281,7 +283,9 @@ let adminPermission = [
   "assetUnitWiseAdminList",
   "taskCategoriesList",
   "taskDashboardCountData",
-  "taskPercentageData"
+  "taskPercentageData",
+  "todayTaskList",
+  "taskDashboardGraphData"
 ];
 
 let employeePermission = [

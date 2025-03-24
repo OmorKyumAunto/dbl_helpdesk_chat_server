@@ -343,6 +343,63 @@ let taskAdminDashboardPercentageData = async (user_id = 0) => {
 };
 
 
+// get today list
+let getTodaySuperAdminList = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getTodaySuperAdminList(),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+// get today list admin
+let getTodayList = async (user_id = 0) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getTodayList(),[user_id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+
+// super admin dashboard graph data
+let taskDashboardGraphData = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.taskDashboardGraphData(),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+//admin dashboard graph data
+let taskDashboardCountGraphById = async (user_id = 0) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.taskDashboardCountGraphById(),[user_id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
 module.exports = {
   getList,
   getActiveList,
@@ -363,5 +420,9 @@ module.exports = {
   taskDashboardCountDataById,
   taskSuperAdminDashboardPercentageData,
   taskAdminDashboardPercentageData,
-  getByIdAllData
+  getByIdAllData,
+  getTodaySuperAdminList,
+  getTodayList,
+  taskDashboardGraphData,
+  taskDashboardCountGraphById
 };

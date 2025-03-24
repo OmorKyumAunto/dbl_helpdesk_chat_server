@@ -5,7 +5,7 @@ const verifyToken = require("../middlewares/verifyToken");
 const { routeAccessChecker } = require("../middlewares/routeAccess");
 const moment = require("moment");
 const taskModel = require("../models/task");
-const { current_time , today_date} = require("../validation/task/task");
+const { current_time , today_date,currentTime,currentDate} = require("../validation/task/task");
 const { taskCreateSchema,taskListSchema,taskStarredUpdateSchema,taskUpdateSchema } = require("../validator/validate-request/task");
 const common = require("../common/common");
 const validateRequest = require("../validator/middleware");
@@ -71,7 +71,11 @@ router.get(
       limit: parseInt(req.query.limit) || 20,
       offset: parseInt(req.query.offset) || 0,
       key: req.query.key,
-      category: req.query.category,
+      category: Array.isArray(req.query.category) 
+      ? req.query.category.map(Number) 
+       : req.query.category 
+        ? req.query.category.split(',').map(Number)  
+         : [],
       starred : req.query.starred,
       start_date : req.query.start_date,
       end_date : req.query.end_date,
@@ -513,10 +517,13 @@ router.put(
       });
     }
 
+  // Get current time dynamically
+  let today_date = moment().tz("Asia/Dhaka").format("YYYY-MM-DD");
+  let current_times = moment().tz("Asia/Dhaka").format("YYYY-MM-DD HH:mm:ss");
 
     let data = {
       task_start_date: today_date,
-      task_start_time: current_time,
+      task_start_time: current_times,
       task_status : 'inprogress',
       updated_by : user_id
     };
@@ -566,10 +573,13 @@ router.put(
       });
     }
 
+    // Get current time dynamically
+    let today_date = moment().tz("Asia/Dhaka").format("YYYY-MM-DD");
+    let current_times = moment().tz("Asia/Dhaka").format("YYYY-MM-DD HH:mm:ss");
 
     let data = {
       task_end_date: today_date,
-      task_end_time: current_time,
+      task_end_time: current_times,
       task_status : 'complete',
       updated_by : user_id
     };

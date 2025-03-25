@@ -2,7 +2,7 @@ const isEmpty = require("is-empty");
 let table_name = "dbl_tasks";
 let task_view_table = "task_info_view";
 
-let getList = (offset, limit, key, category ,starred,start_date,end_date,id) => {
+let getList = (offset, limit, key, category ,starred,start_date,end_date,task_status,id) => {
   let searchCondition = "1=1 AND is_assign = 0";
   
   if (id) {
@@ -17,18 +17,20 @@ let getList = (offset, limit, key, category ,starred,start_date,end_date,id) => 
   if (starred) {
     searchCondition += ` AND starred = '${starred}' `;
   }
+  if (task_status) {
+    searchCondition += ` AND task_status = '${task_status}' `;
+  }
 
   if (key) {
     searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%')`;
   }
-
 
   return `SELECT id,task_categories_id,category_title,set_time,format,description,start_date,start_time,task_code,task_status,starred,task_start_date,task_end_date,task_start_time,task_end_time,created_at,updated_at FROM ${task_view_table} WHERE ${searchCondition} 
          LIMIT ${limit} OFFSET ${offset};`;
 };
 
 
-let getListTotalCount = (key, category ,starred,start_date,end_date,id) => {
+let getListTotalCount = (key, category ,starred,start_date,end_date,task_status,id) => {
   let searchCondition = "1=1 AND is_assign = 0";
   
   if (id) {
@@ -43,6 +45,9 @@ let getListTotalCount = (key, category ,starred,start_date,end_date,id) => {
   if (starred) {
     searchCondition += ` AND starred = '${starred}' `;
   }
+  if (task_status) {
+    searchCondition += ` AND task_status = '${task_status}' `;
+  }
 
   if (key) {
     searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%')`;
@@ -53,10 +58,13 @@ let getListTotalCount = (key, category ,starred,start_date,end_date,id) => {
 };
 
 
-let getSuperAdminList = (offset, limit, key, category,starred, start_date, end_date,user_id ) => {
+let getSuperAdminList = (offset, limit, key, category,starred, start_date, end_date,task_status,unit_id,user_id ) => {
   let searchCondition = "1=1";
   if (category.length > 0) {
     searchCondition += ` AND task_categories_id IN (${category.map(id => `'${id}'`).join(",")}) `;
+  }
+  if (unit_id) {
+    searchCondition += ` AND asset_unit_ids LIKE '%${unit_id}%'`;
   }
   if (user_id) {
     searchCondition += ` AND user_id = '${user_id}' `;
@@ -67,6 +75,9 @@ let getSuperAdminList = (offset, limit, key, category,starred, start_date, end_d
   }
   if (starred) {
     searchCondition += ` AND starred = '${starred}' `;
+  }
+  if (task_status) {
+    searchCondition += ` AND task_status = '${task_status}' `;
   }
   if (key) {
     searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%' OR LOWER(user_name) LIKE LOWER('%${key}%') OR user_employee_id LIKE '%${key}%')`;
@@ -79,11 +90,14 @@ let getSuperAdminList = (offset, limit, key, category,starred, start_date, end_d
 };
 
 
-let getSuperAdminTotalCount = (key, category,starred, start_date, end_date,user_id ) => {
+let getSuperAdminTotalCount = (key, category,starred, start_date, end_date,task_status,unit_id,user_id ) => {
   let searchCondition = "1=1";
 
   if (category.length > 0) {
     searchCondition += ` AND task_categories_id IN (${category.map(id => `'${id}'`).join(",")}) `;
+  }
+  if (unit_id) {
+    searchCondition += ` AND asset_unit_ids LIKE '%${unit_id}%'`;
   }
   if (user_id) {
     searchCondition += ` AND user_id = '${user_id}' `;
@@ -94,6 +108,9 @@ let getSuperAdminTotalCount = (key, category,starred, start_date, end_date,user_
   }
   if (starred) {
     searchCondition += ` AND starred = '${starred}' `;
+  }
+  if (task_status) {
+    searchCondition += ` AND task_status = '${task_status}' `;
   }
   if (key) {
     searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%' OR LOWER(user_name) LIKE LOWER('%${key}%') OR user_employee_id LIKE '%${key}%')`;

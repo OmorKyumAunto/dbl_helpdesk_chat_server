@@ -2,10 +2,10 @@ const { connectionDblystem } = require("../connections/connection");
 const queries = require("../queries/task");
 
 // Promises Method
-let getList = async (offset, limit, key = '', category ,starred,start_date,end_date,id) => {
+let getList = async (offset, limit, key = '', category ,starred,start_date,end_date,task_status,id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getList(offset, limit, key, category,starred,start_date,end_date,id),
+      queries.getList(offset, limit, key, category,starred,start_date,end_date,task_status,id),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -14,23 +14,10 @@ let getList = async (offset, limit, key = '', category ,starred,start_date,end_d
   });
 };
 
-let getListTotalCount = async (key = '', category ,starred,start_date,end_date,id) => {
+let getListTotalCount = async (key = '', category ,starred,start_date,end_date,task_status,id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getListTotalCount(key, category,starred,start_date,end_date,id),
-      (error, result, fields) => {
-        if (error) reject(error);
-        else resolve(result);
-      }
-    );
-  });
-};
-
-
-let getSuperAdminList = async (offset, limit, key = '', category,starred,start_date,end_date,user_id) => {
-  return new Promise((resolve, reject) => {
-    connectionDblystem.query(
-      queries.getSuperAdminList(offset, limit, key, category,starred,start_date,end_date,user_id),
+      queries.getListTotalCount(key, category,starred,start_date,end_date,task_status,id),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -40,10 +27,23 @@ let getSuperAdminList = async (offset, limit, key = '', category,starred,start_d
 };
 
 
-let getSuperAdminTotalCount = async (key = '', category,starred,start_date,end_date,user_id) => {
+let getSuperAdminList = async (offset, limit, key = '', category,starred,start_date,end_date,task_status,unit_id,user_id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getSuperAdminTotalCount(key, category,starred,start_date,end_date,user_id),
+      queries.getSuperAdminList(offset, limit, key, category,starred,start_date,end_date,task_status,unit_id,user_id),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+let getSuperAdminTotalCount = async (key = '', category,starred,start_date,end_date,task_status,unit_id,user_id) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getSuperAdminTotalCount(key, category,starred,start_date,end_date,task_status,unit_id,user_id),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);

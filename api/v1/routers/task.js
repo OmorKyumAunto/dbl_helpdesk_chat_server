@@ -33,20 +33,22 @@ router.get(
       starred: req.query.starred,
       start_date: req.query.start_date,
       end_date: req.query.end_date,
-      user_id: req.query.user_id
+      user_id: req.query.user_id,
+      task_status : req.query.task_status,
+      unit_id : req.query.unit_id,
     };
     
  
-    let { offset, limit, key, category,starred,start_date,end_date,user_id} = reqData;
+    let { offset, limit, key, category,starred,start_date,end_date,task_status,unit_id,user_id} = reqData;
     let {id,role_id} = req.decoded.userInfo
     let result
     let totalCount
     if(role_id === 1){
-      result = await taskModel.getSuperAdminList(offset, limit, key, category,starred,start_date,end_date,user_id);
-      totalCount = await taskModel.getSuperAdminTotalCount(key, category,starred,start_date,end_date,user_id);
+      result = await taskModel.getSuperAdminList(offset, limit, key, category,starred,start_date,end_date,task_status,unit_id,user_id);
+      totalCount = await taskModel.getSuperAdminTotalCount(key, category,starred,start_date,end_date,task_status,unit_id,user_id);
     }else{
-      result = await taskModel.getList(offset, limit, key, category ,starred,start_date,end_date,id);
-      totalCount = await taskModel.getListTotalCount(key, category ,starred,start_date,end_date,id);
+      result = await taskModel.getList(offset, limit, key, category ,starred,start_date,end_date,task_status,id);
+      totalCount = await taskModel.getListTotalCount(key, category ,starred,start_date,end_date,task_status,id);
     }
     
 

@@ -58,6 +58,10 @@ const taskCreateSchema = z
       user_id : z.string().optional().refine(value => value === undefined || value > 0, {
         message: 'User id must be a positive number.',
       }),
+      task_status : z.enum(['incomplete', 'complete', 'inprogress']).optional(),
+      unit_id : z.string().optional().refine(value => value === undefined || value > 0, {
+        message: 'Unit id must be a positive number.',
+      }),
     });
   
   

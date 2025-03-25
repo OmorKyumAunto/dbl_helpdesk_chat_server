@@ -30,7 +30,7 @@ let unitWiseAdminList = () => {
 FROM dbl_database.dbl_asset_unit AS u
 LEFT JOIN admin_search_access AS sa ON sa.unit_id = u.id
 LEFT JOIN dbl_users AS ua ON sa.user_id = ua.id
-WHERE u.id = ? AND u.status = 1 AND u.status = 'active'
+WHERE u.id = ? AND ua.status = 1 AND u.status = 'active'
 GROUP BY u.id, u.title;
 `;
 }

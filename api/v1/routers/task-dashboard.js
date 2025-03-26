@@ -19,16 +19,18 @@ router.get(
 
     if (role_id === 1) {
       data = await taskModel.taskDashboardCountData();
+      console.log("first===>>",data[0])
     } else {
       data = await taskModel.taskDashboardCountDataById(id);
     }
-
+    
     const countingData = {
       total_task: data[0]?.total_task_count || 0,
       total_task_incomplete: data[0]?.total_task_incomplete || 0,
       total_task_complete: data[0]?.total_task_complete || 0,
       total_task_inprogress: data[0]?.total_task_inprogress || 0,
       avg_task_completion_time_seconds : data[0]?.avg_task_completion_time_seconds || 0,
+      total_overdue_tasks : data[0]?.total_overdue_tasks || 0,
       
     };
 

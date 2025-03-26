@@ -19,7 +19,6 @@ router.get(
 
     if (role_id === 1) {
       data = await taskModel.taskDashboardCountData();
-      console.log("first===>>",data[0])
     } else {
       data = await taskModel.taskDashboardCountDataById(id);
     }

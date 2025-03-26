@@ -525,7 +525,7 @@ let taskAdminDashboardPercentageData = () => {
 
 
 let getTodaySuperAdminList = () => {
-  return `SELECT id, category_title, description, start_time,task_status 
+  return `SELECT id, category_title, description, start_time,task_status,user_name,user_employee_id,task_code,sub_list_details 
           FROM ${task_view_table} 
           WHERE DATE(start_date) = CURDATE() 
           LIMIT 10;`;
@@ -533,7 +533,7 @@ let getTodaySuperAdminList = () => {
 
 
 let getTodayList = () => {
-  return `SELECT id, category_title, description, start_time,task_status 
+  return `SELECT id, category_title, description, start_time,task_status,task_code,sub_list_details  
           FROM ${task_view_table} 
           WHERE user_id = ? AND DATE(start_date) = CURDATE() 
           LIMIT 10;`;

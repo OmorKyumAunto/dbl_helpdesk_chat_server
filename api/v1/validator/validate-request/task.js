@@ -1,8 +1,19 @@
 const { z } = require("zod");
 
-// Common function for date validation (YYYY-MM-DD)
+const getTodayDate = () => {
+  const today = new Date();
+  return today.toISOString().split("T")[0]; // Extract YYYY-MM-DD
+};
+
+// Date validation schema (must be today or a future date)
 const dateSchema = () =>
-  z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)");
+  z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)")
+    .refine(
+      (date) => date >= getTodayDate(),
+      "Start date must be today or a future date"
+    );
 
 // Common function for time validation (HH:MM - 24-hour format)
 const timeSchema = () =>

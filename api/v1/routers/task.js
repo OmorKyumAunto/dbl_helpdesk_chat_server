@@ -48,6 +48,15 @@ router.get(
       totalCount = await taskModel.getSuperAdminTotalCount(key, category,starred,start_date,end_date,task_status,unit_id,user_id);
     }else{
       result = await taskModel.getList(offset, limit, key, category ,starred,start_date,end_date,task_status,id);
+    //convert json
+     result.forEach(row => {
+      try {
+          row.sub_list_details = JSON.parse(row.sub_list_details);
+      } catch (error) {
+          row.sub_list_details = []; 
+      }
+     });
+
       totalCount = await taskModel.getListTotalCount(key, category ,starred,start_date,end_date,task_status,id);
     }
     

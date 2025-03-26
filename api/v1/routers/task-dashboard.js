@@ -251,8 +251,24 @@ router.get(
     let result
     if(role_id === 1){
       result = await taskModel.getTodaySuperAdminList();
+          //convert json
+     result.forEach(row => {
+      try {
+          row.sub_list_details = JSON.parse(row.sub_list_details);
+      } catch (error) {
+          row.sub_list_details = []; 
+      }
+     });
     }else{
       result = await taskModel.getTodayList(id);
+          //convert json
+     result.forEach(row => {
+      try {
+          row.sub_list_details = JSON.parse(row.sub_list_details);
+      } catch (error) {
+          row.sub_list_details = []; 
+      }
+     });
     }
     
 

@@ -15,6 +15,12 @@ const dateSchema = () =>
       "Start date must be today or a future date"
     );
 
+const dateFormat = () =>
+      z.string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)")
+       
+    
+
 // Common function for time validation (HH:MM - 24-hour format)
 const timeSchema = () =>
   z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:MM)");
@@ -64,8 +70,8 @@ const taskCreateSchema = z
       starred :z.string().optional().refine(value => value === undefined || value > 0, {
         message: 'starred must be a positive number.',
       }),
-      start_date : dateSchema().optional(),
-      end_date : dateSchema().optional(),
+      start_date : dateFormat().optional(),
+      end_date : dateFormat().optional(),
       user_id : z.string().optional().refine(value => value === undefined || value > 0, {
         message: 'User id must be a positive number.',
       }),

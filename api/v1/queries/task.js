@@ -371,88 +371,123 @@ let getDetailsByIdAndWhereIn = () => {
   return `SELECT id,name,status FROM ${table_name} where  id IN (?) and status = 1`;
 };
 
+
 // let taskDashboardCountData = () => {
-//   return `SELECT 
-//     (SELECT COUNT(id) FROM ${table_name} WHERE status = 1) AS total_task_count,
-//     (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'incomplete' AND status = 1) AS total_task_incomplete,
-//     (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'complete' AND status = 1) AS total_task_complete,
-//     (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'inprogress' AND status = 1) AS total_task_inprogress,
-//     (SELECT 
-//         AVG(TIMESTAMPDIFF(SECOND, 
-//             STR_TO_DATE(CONCAT(task_start_date, ' ', task_start_time), '%Y-%m-%d %H:%i:%s'), 
-//             task_end_time
-//         )) 
-//      FROM ${table_name} 
-//      WHERE task_status = 'complete' AND status = 1
-//     ) AS avg_task_completion_time_seconds;
-
-//      (SELECT COUNT(id) FROM ${table_name} as t 
-//      join dbl_task_categories as tc on tc.id = t.task_categories_id
-
-
+//   return `
 //     SELECT 
-//    count(t.id),
-//     CASE 
-//         WHEN 
-//             (tc.format = 'hours' AND TIMESTAMPDIFF(HOUR, t.start_time, NOW()) > tc.set_time) OR
-//             (tc.format = 'days' AND TIMESTAMPDIFF(DAY, t.start_time, NOW()) > tc.set_time) OR
-//             (tc.format = 'minutes' AND TIMESTAMPDIFF(MINUTE, t.start_time, NOW()) > tc.set_time)
-//         THEN 1
-//         ELSE 0
-//     END AS over_due
-// FROM tasks t
-// JOIN task_config tc ON t.task_categories_id = tc.task_categories_id
-// WHERE t.task_status = 'inprogress' 
-// AND t.status = 1 AND tc.status = 1;
-//     `;
+//       (SELECT COUNT(id) FROM ${table_name} WHERE status = 1) AS total_task_count,
+//       (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'incomplete' AND status = 1) AS total_task_incomplete,
+//       (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'complete' AND status = 1) AS total_task_complete,
+//       (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'inprogress' AND status = 1) AS total_task_inprogress,
+//       (SELECT 
+//           AVG(TIMESTAMPDIFF(SECOND, 
+//               STR_TO_DATE(CONCAT(task_start_date, ' ', task_start_time), '%Y-%m-%d %H:%i:%s'), 
+//               task_end_time
+//           )) 
+//        FROM ${table_name} 
+//        WHERE task_status = 'complete' AND status = 1
+//       ) AS avg_task_completion_time_seconds,
 
-   
+//       (SELECT COUNT(t.id)
+//        FROM ${table_name} AS t
+//       JOIN dbl_task_categories AS tc ON tc.id = t.task_categories_id
+//        WHERE t.task_status = 'complete' 
+//          AND t.status = 1 
+//          AND tc.status = 1 
+// AND (
+//     (tc.format = 'hours' 
+//         AND TIMESTAMPDIFF(HOUR, 
+//             STR_TO_DATE(CONCAT(t.task_start_date, ' ', t.task_start_time), '%Y-%m-%d %H:%i:%s'), 
+//             STR_TO_DATE(CONCAT(t.task_end_date, ' ', t.task_end_time), '%Y-%m-%d %H:%i:%s')
+//         ) > tc.set_time
+//     ) 
+//     OR 
+//     (tc.format = 'day' 
+//         AND TIMESTAMPDIFF(DAY, t.task_start_date, t.task_end_date) > tc.set_time
+//     ) 
+//     OR 
+//     (tc.format = 'minutes' 
+//         AND TIMESTAMPDIFF(MINUTE, 
+//             STR_TO_DATE(CONCAT(t.task_start_date, ' ', t.task_start_time), '%Y-%m-%d %H:%i:%s'), 
+//             STR_TO_DATE(CONCAT(t.task_end_date, ' ', t.task_end_time), '%Y-%m-%d %H:%i:%s')
+//         ) > tc.set_time
+//     )
+//  )
+//       ) AS total_overdue_tasks;
+
+      
+//   `;
 // };
+
 let taskDashboardCountData = () => {
   return `
     SELECT 
+      -- Total task count
       (SELECT COUNT(id) FROM ${table_name} WHERE status = 1) AS total_task_count,
+
+      -- Incomplete tasks
       (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'incomplete' AND status = 1) AS total_task_incomplete,
+
+      -- Completed tasks
       (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'complete' AND status = 1) AS total_task_complete,
+
+      -- In-progress tasks
       (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'inprogress' AND status = 1) AS total_task_inprogress,
-      (SELECT 
-          AVG(TIMESTAMPDIFF(SECOND, 
-              STR_TO_DATE(CONCAT(task_start_date, ' ', task_start_time), '%Y-%m-%d %H:%i:%s'), 
-              task_end_time
-          )) 
-       FROM ${table_name} 
-       WHERE task_status = 'complete' AND status = 1
+
+      -- Average duration in seconds
+      (
+        SELECT AVG(TIMESTAMPDIFF(SECOND, 
+            STR_TO_DATE(CONCAT(task_start_date, ' ', task_start_time), '%Y-%m-%d %H:%i:%s'), 
+            STR_TO_DATE(CONCAT(task_end_date, ' ', task_end_time), '%Y-%m-%d %H:%i:%s')
+        ))
+        FROM ${table_name}
+        WHERE task_status = 'complete' AND status = 1
       ) AS avg_task_completion_time_seconds,
 
-      (SELECT COUNT(t.id)
-       FROM ${table_name} AS t
-       JOIN dbl_task_categories AS tc ON tc.id = t.task_categories_id
-       WHERE t.task_status = 'complete' 
-         AND t.status = 1 
-         AND tc.status = 1 
-AND (
-    (tc.format = 'hours' 
-        AND TIMESTAMPDIFF(HOUR, 
-            STR_TO_DATE(CONCAT(t.task_start_date, ' ', t.task_start_time), '%Y-%m-%d %H:%i:%s'), 
-            STR_TO_DATE(CONCAT(t.task_end_date, ' ', t.task_end_time), '%Y-%m-%d %H:%i:%s')
-        ) > tc.set_time
-    ) 
-    OR 
-    (tc.format = 'day' 
-        AND TIMESTAMPDIFF(DAY, t.task_start_date, t.task_end_date) > tc.set_time
-    ) 
-    OR 
-    (tc.format = 'minutes' 
-        AND TIMESTAMPDIFF(MINUTE, 
-            STR_TO_DATE(CONCAT(t.task_start_date, ' ', t.task_start_time), '%Y-%m-%d %H:%i:%s'), 
-            STR_TO_DATE(CONCAT(t.task_end_date, ' ', t.task_end_time), '%Y-%m-%d %H:%i:%s')
-        ) > tc.set_time
-    )
- )
-      ) AS total_overdue_tasks;
+      -- Total completed tasks (again for frequency calculation)
+      (
+        SELECT COUNT(id)
+        FROM ${table_name}
+        WHERE task_status = 'complete' AND status = 1
+      ) AS total_completed_tasks,
+
+      -- Total overdue tasks based on dynamic format
+      (
+        SELECT COUNT(t2.id)
+        FROM ${table_name} AS t2
+        JOIN dbl_task_categories AS tc ON tc.id = t2.task_categories_id
+        WHERE t2.task_status = 'complete' 
+          AND t2.status = 1 
+          AND tc.status = 1 
+          AND (
+              (tc.format = 'hours' AND TIMESTAMPDIFF(HOUR, 
+                  STR_TO_DATE(CONCAT(t2.task_start_date, ' ', t2.task_start_time), '%Y-%m-%d %H:%i:%s'), 
+                  STR_TO_DATE(CONCAT(t2.task_end_date, ' ', t2.task_end_time), '%Y-%m-%d %H:%i:%s')
+              ) > tc.set_time)
+              OR 
+              (tc.format = 'day' AND TIMESTAMPDIFF(DAY, 
+                  t2.task_start_date, t2.task_end_date
+              ) > tc.set_time)
+              OR 
+              (tc.format = 'minutes' AND TIMESTAMPDIFF(MINUTE, 
+                  STR_TO_DATE(CONCAT(t2.task_start_date, ' ', t2.task_start_time), '%Y-%m-%d %H:%i:%s'), 
+                  STR_TO_DATE(CONCAT(t2.task_end_date, ' ', t2.task_end_time), '%Y-%m-%d %H:%i:%s')
+              ) > tc.set_time)
+          )
+      ) AS total_overdue_tasks,
+
+      -- Tasks per second
+      (
+        SELECT COUNT(id) / 
+        AVG(TIMESTAMPDIFF(SECOND, 
+            STR_TO_DATE(CONCAT(task_start_date, ' ', task_start_time), '%Y-%m-%d %H:%i:%s'), 
+            STR_TO_DATE(CONCAT(task_end_date, ' ', task_end_time), '%Y-%m-%d %H:%i:%s')
+        ))
+        FROM ${table_name}
+        WHERE task_status = 'complete' AND status = 1
+      ) AS tasks_per_second;
   `;
 };
-
 
 let taskDashboardCountDataById = () => {
   return `

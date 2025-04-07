@@ -25,7 +25,7 @@ let getList = (offset, limit, key, category ,starred,start_date,end_date,task_st
     searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%')`;
   }
 
-  return `SELECT id,task_categories_id,category_title,set_time,format,description,start_date,start_time,task_code,task_status,starred,quantity,task_start_date,task_end_date,task_start_time,task_end_time,sub_list_details,created_at,updated_at FROM ${task_view_table} WHERE ${searchCondition} 
+  return `SELECT id,task_categories_id,category_title,set_time,total_set_time,format,description,start_date,start_time,task_code,task_status,starred,quantity,task_start_date,task_end_date,task_start_time,task_end_time,sub_list_details,created_at,updated_at FROM ${task_view_table} WHERE ${searchCondition} 
          LIMIT ${limit} OFFSET ${offset};`;
 };
 

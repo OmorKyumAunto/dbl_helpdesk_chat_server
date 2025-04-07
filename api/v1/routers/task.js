@@ -98,6 +98,16 @@ router.get(
     let id = req.decoded.userInfo.id
 
     let result = await taskModel.assignToMeList(offset, limit, key, category ,starred,start_date,end_date,assign_to, assign_from_others,id);
+
+    //convert json
+    result.forEach(row => {
+      try {
+          row.sub_list_details = JSON.parse(row.sub_list_details);
+      } catch (error) {
+          row.sub_list_details = []; 
+      }
+     });
+
     let totalCount = await taskModel.assignToMeListTotalCount(key, category ,starred,start_date,end_date,assign_to, assign_from_others,id);
 
     return res.status(200).send({
@@ -203,6 +213,7 @@ router.post(
       is_assign: req.body.is_assign || 0,
       user_id: req.body.user_id || null,
       task_categories_id: req.body.task_categories_id || null,
+      quantity: req.body.quantity ,
     };
 
     const user_id = req.decoded.userInfo.id;
@@ -294,6 +305,11 @@ router.post(
     reqData.sub_list_details = JSON.stringify(sub_list_details);
 
     delete reqData.sub_list_selected
+
+    if(!reqData.quantity){
+      reqData.quantity = 1
+    }
+
     let result = await taskModel.addNew(reqData);
 
     if (!result.affectedRows || result.affectedRows < 1) {
@@ -324,6 +340,7 @@ router.put(
       sub_list_selected: req.body.sub_list_selected || [],
       start_date: req.body.start_date,
       start_time: req.body.start_time,
+      quantity : req.body.quantity
     };
 
 
@@ -419,7 +436,14 @@ router.put(
       willWeUpdate = 1;
       updateData.start_time = reqData.start_time;
     }
-    
+
+     //quantity
+     if (existingDataById[0].quantity !== reqData.quantity) {
+
+      willWeUpdate = 1;
+      updateData.quantity = reqData.quantity;
+    }
+   
     
     if (isError == 1) {
       return res.status(400).send({

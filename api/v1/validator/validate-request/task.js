@@ -1,4 +1,4 @@
-const { z } = require("zod");
+const { z, number } = require("zod");
 
 const getTodayDate = () => {
   const today = new Date();
@@ -33,6 +33,7 @@ const taskCreateSchema = z
     start_time: timeSchema(),
     is_assign: z.number().optional(),
     user_id: z.number().optional(),
+    quantity : number().positive().optional(),
     task_categories_id: z.number().optional(),
   });
 
@@ -93,6 +94,7 @@ const taskUpdateSchema = z
     sub_list_selected: z.array(z.number()).optional(), 
     start_date: dateSchema().optional(),
     start_time: timeSchema().optional(),
+    quantity : number().positive().optional()
   })
   
 

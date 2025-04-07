@@ -25,7 +25,7 @@ let getList = (offset, limit, key, category ,starred,start_date,end_date,task_st
     searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%')`;
   }
 
-  return `SELECT id,task_categories_id,category_title,set_time,format,description,start_date,start_time,task_code,task_status,starred,task_start_date,task_end_date,task_start_time,task_end_time,sub_list_details,created_at,updated_at FROM ${task_view_table} WHERE ${searchCondition} 
+  return `SELECT id,task_categories_id,category_title,set_time,format,description,start_date,start_time,task_code,task_status,starred,quantity,task_start_date,task_end_date,task_start_time,task_end_time,sub_list_details,created_at,updated_at FROM ${task_view_table} WHERE ${searchCondition} 
          LIMIT ${limit} OFFSET ${offset};`;
 };
 
@@ -83,7 +83,7 @@ let getSuperAdminList = (offset, limit, key, category,starred, start_date, end_d
     searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%' OR LOWER(user_name) LIKE LOWER('%${key}%') OR user_employee_id LIKE '%${key}%')`;
   }
 
-  return `SELECT id, task_categories_id, category_title,set_time,format, description, start_date, start_time, task_code, task_status, starred ,task_start_date,task_end_date,task_start_time,task_end_time,user_name,user_employee_id,created_at,updated_at
+  return `SELECT id, task_categories_id, category_title,set_time,total_set_time,format, description, start_date, start_time, task_code, task_status, starred ,task_start_date,task_end_date,task_start_time,task_end_time, quantity,user_name,user_employee_id,created_at,updated_at
           FROM ${task_view_table} 
           WHERE ${searchCondition} 
           LIMIT ${limit} OFFSET ${offset};`;
@@ -145,8 +145,23 @@ let assignToMeList = (offset, limit, key, category ,starred,start_date,end_date,
 }
 
 
+  return `SELECT 
+  id,
+  category_title,
+  description,
+  start_date,
+  start_time,
+  task_code,
+  task_status,
+  quantity,
+  starred,
+  assign_from_name,
+  assign_from_employee_id,
+  assign_from_unit_name,
+  sub_list_details
 
-  return `SELECT id,category_title,description,start_date,start_time,task_code,task_status,starred FROM ${task_view_table} WHERE ${searchCondition} 
+  FROM ${task_view_table}
+   WHERE ${searchCondition} 
          LIMIT ${limit} OFFSET ${offset};`;
 };
 

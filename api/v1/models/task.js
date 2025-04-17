@@ -77,6 +77,20 @@ let assignToMeListTotalCount = async (key = '', category ,starred,start_date,end
   });
 };
 
+
+let taskScheduleList = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.taskScheduleList(),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
 let getOnlyDataList = async () => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
@@ -452,5 +466,6 @@ module.exports = {
   taskDashboardGraphData,
   taskDashboardCountGraphById,
   superAdminCategoryWiseTaskCount,
-  adminCategoryWiseTaskCount
+  adminCategoryWiseTaskCount,
+  taskScheduleList
 };

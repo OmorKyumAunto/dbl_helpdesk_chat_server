@@ -5,6 +5,7 @@ const otpGenerator = require('otp-generator')
 const {ticketEmail,ticketCcEmail,ticketSolvedEmailTemplate} = require('../email-template/ticketEmail')
 const {commentEmployeeToAdmin,commentAdminToEmployee} = require('../email-template/ticket-comment')
 const {forgetPasswordSendOtpTemplate,resetPasswordComplete} = require('../email-template/forget-password')
+const { taskForwardEmailTemplate,remainingTaskEmailTemplate} = require('../email-template/task-email')
 
 
 let decodingUsingCrypto = async (text = "") => {
@@ -374,6 +375,84 @@ let ticketSolvedEmail = async (receiverEmailAddress, subject, data) => {
 }
 
 
+let taskForwardEmail = async (receiverEmailAddress, subject,data,cc) => {
+    // set transport
+        var transporter = nodemailer.createTransport({
+            service:process.env.send_email_service,
+            host:process.env.send_email_host,
+            port: process.env.send_email_port,
+            secure: false,
+            auth: {
+                user: process.env.send_email_address,
+                pass: process.env.send_email_password
+            }
+        });
+
+        var mailOptions = {
+            from: process.env.send_email_address,
+            to: receiverEmailAddress,
+            subject: subject,
+            html: await taskForwardEmailTemplate(data)
+        };
+    
+  
+      // send email 
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                return {
+                    success: false,
+                    message: "Email send fail"
+                }
+            } else {
+                return {
+                    success: true,
+                    message: "Email send successfully done"
+                }
+            }
+        });
+
+    
+  }
+// task remaining email
+let taskRemainingEmail = async (receiverEmailAddress, subject,data,cc) => {
+    // set transport
+        var transporter = nodemailer.createTransport({
+            service:process.env.send_email_service,
+            host:process.env.send_email_host,
+            port: process.env.send_email_port,
+            secure: false,
+            auth: {
+                user: process.env.send_email_address,
+                pass: process.env.send_email_password
+            }
+        });
+
+        var mailOptions = {
+            from: process.env.send_email_address,
+            to: receiverEmailAddress,
+            subject: subject,
+            html: await remainingTaskEmailTemplate(data)
+        };
+    
+  
+      // send email 
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                return {
+                    success: false,
+                    message: "Email send fail"
+                }
+            } else {
+                return {
+                    success: true,
+                    message: "Email send successfully done"
+                }
+            }
+     });
+
+    
+}
+
 
 
 let getHTMLBody = async (name = "", asset_name = "", type = "", asset_serial_number = "",assign_date = "",assign_by = "",unit_name="") => {
@@ -476,6 +555,38 @@ const rendomGenerator = () => {
 };
 
 
+
+const convertTimeStringTo12Hour = (timeStr) => {
+    const [hour, minute] = timeStr.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hour, minute);
+    return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+  };
+  
+const convertDateFormat = (dateStr) => {
+    const date = new Date(dateStr);
+    // Add 6 hours (6 * 60 * 60 * 1000 milliseconds)
+    date.setHours(date.getHours() + 6);
+  
+    const day = date.getDate();
+    const month = date.toLocaleString('default', { month: 'long' });
+    const year = date.getFullYear();
+  
+    // Function to add 'st', 'nd', 'rd', 'th'
+    const getOrdinal = (n) => {
+      if (n > 3 && n < 21) return 'th';
+      switch (n % 10) {
+        case 1: return 'st';
+        case 2: return 'nd';
+        case 3: return 'rd';
+        default: return 'th';
+      }
+    };
+  
+    return `${day}${getOrdinal(day)} ${month} ${year}`;
+  };
+  
+
 module.exports = {
     decodingUsingCrypto,
     hashingUsingCrypto,
@@ -487,5 +598,9 @@ module.exports = {
     passwordResetSuccessful,
     ticketCommentEmployeeToAdmin,
     ticketCommentAdminToEmployee,
-    ticketSolvedEmail
+    ticketSolvedEmail,
+    taskForwardEmail,
+    convertTimeStringTo12Hour,
+    convertDateFormat,
+    taskRemainingEmail
 }

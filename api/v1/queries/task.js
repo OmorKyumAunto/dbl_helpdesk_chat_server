@@ -652,7 +652,9 @@ let adminCategoryWiseTaskCount = () => {
   `;
 };
 
-
+let taskScheduleList = () => {
+  return `SELECT id,category_title,start_time,start_date,description,task_code,task_status,quantity,user_name,user_employee_id,user_email FROM ${task_view_table}`;
+};
 module.exports = {
   getList,
   getActiveList,
@@ -679,5 +681,6 @@ module.exports = {
   taskDashboardGraphData,
   taskDashboardCountGraphById,
   superAdminCategoryWiseTaskCount,
-  adminCategoryWiseTaskCount
+  adminCategoryWiseTaskCount,
+  taskScheduleList
 };

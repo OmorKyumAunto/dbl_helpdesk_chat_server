@@ -71,7 +71,6 @@ router.get(
   }
 );
 
-
 // task assign list
 router.get(
   "/assign-task",
@@ -318,6 +317,28 @@ router.post(
         status: 500,
         message: "Something went wrong in the system database.",
       });
+    }
+
+    if(reqData.is_assign === 1){
+      let user_info = await userModel.getById(reqData.user_id);
+      let forward_info = await userModel.getById(reqData.created_by);
+      let existingDataById = await taskCategoriesModel.getById(
+        reqData.task_categories_id
+      );
+      const email_data = {
+        user_name : user_info[0]?.name ||'',
+        task_code : reqData.task_code || '',
+        category : existingDataById[0]?.title || '',
+        quantity : reqData.quantity || 0,
+        start_date : reqData.start_date || 0,
+        start_time : await common.convertTimeStringTo12Hour(reqData.start_time)
+        || '12:00 AM',
+        forward_by : forward_info[0]?.name || '',
+        forward_by_id : forward_info[0]?.employee_id || '',
+        forward_by_unit : forward_info[0]?.unit_name || '',
+      }
+
+      await common.taskForwardEmail(user_info[0].email,'Your Forwarded Task',email_data)
     }
 
     return res.status(201).send({
@@ -714,6 +735,7 @@ router.put('/starred/:id', [verifyToken, routeAccessChecker("starredTaskChange")
   }
 
 });
+
 
 
 

@@ -1,6 +1,7 @@
 
 const express = require("express");
 const cors = require("cors");
+const { nodeCorn } = require('../dbl-project/api/v1/common/corn-job');
 const app = express();
 // middleware
 app.use(express.json());
@@ -29,6 +30,4 @@ app.listen(port, async () => {
 
 
 
-
-
-
+nodeCorn()

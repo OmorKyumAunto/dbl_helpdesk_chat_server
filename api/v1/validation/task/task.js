@@ -24,6 +24,22 @@ const currentDate = ()=>{
   .format("YYYY-MM-DD");
 }
 
-module.exports = { current_time, today_date,currentTime,currentDate };
+const currentDateZingHrFormat = ()=>{
+  return moment(current_date)
+  .tz("Asia/Dhaka")
+  .format("DD-MM-YYYY");
+}
+
+const convertDateFormat= (inputDate) => {
+  const formattedDate = moment(inputDate, 'DD MMM YYYY').format('YYYY-MM-DD');
+  return formattedDate;
+}
+
+const  addSixHoursAndFormat = (dateString)=> {
+  const newDate = moment(dateString).add(6, 'hours').format('YYYY-MM-DD');
+  return newDate;
+}
+
+module.exports = { current_time, today_date,currentTime,currentDate,convertDateFormat,addSixHoursAndFormat ,currentDateZingHrFormat};
 
 

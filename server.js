@@ -1,7 +1,8 @@
 
 const express = require("express");
 const cors = require("cors");
-const { nodeCorn } = require('../dbl-project/api/v1/common/corn-job');
+const { nodeCorn,nodeCornForZingHrSync } = require('../dbl-project/api/v1/common/corn-job');
+const helmet = require('helmet');
 const app = express();
 // middleware
 app.use(express.json());
@@ -19,6 +20,8 @@ const api_redirect_path = require("./api/api");
 const port = 3003;
 const api_version = 1.0;
 
+app.use(helmet());
+
 app.use("/api", api_redirect_path);
 
 app.use('/uploads', express.static('./ticket'));
@@ -31,3 +34,4 @@ app.listen(port, async () => {
 
 
 nodeCorn()
+nodeCornForZingHrSync()

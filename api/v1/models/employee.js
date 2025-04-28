@@ -343,8 +343,6 @@ let getUserByEmployeeIdNo = async (email = "") => {
   }
 
 
-
-
 module.exports = {
    addNew,
    getByExistsEmployee,

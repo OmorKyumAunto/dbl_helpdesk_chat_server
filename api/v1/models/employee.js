@@ -69,7 +69,14 @@ let getById = async (id = 0) => {
     });
 }
 
-
+let getByEmployeeId = async (employee_id = '') => {
+  return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getByEmployeeId(), [employee_id], (error, result, fields) => {
+          if (error) reject(error)
+          else resolve(result)
+      });
+  });
+}
 
 let getByIdForDeleted = async (id = 0) => {
     return new Promise((resolve, reject) => {
@@ -360,7 +367,8 @@ module.exports = {
    a_negative,
    b_negative,
    ab_negative,
-   o_negative
+   o_negative,
+   getByEmployeeId
    
   
 }

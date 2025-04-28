@@ -101,9 +101,9 @@ let updateByEmployeeUser = async (id = 0, data = {}) => {
 }
 
 
-let updateById = async (id = 0, data = {}) => {
+let updateById = async (data = {},id = 0) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.updateById(), [data, id], (error, result, fields) => {
+        connectionDblystem.query(queries.updateById(), [data,id], (error, result, fields) => {
             if (error) reject(error);
             else resolve(result);
         });

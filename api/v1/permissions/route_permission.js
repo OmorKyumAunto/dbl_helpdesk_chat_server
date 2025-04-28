@@ -148,8 +148,8 @@ let superAdminPermission = [
   "taskPercentageData",
   "todayTaskList",
   "taskDashboardGraphData",
-  "categoryWiseTicketCount"
-
+  "categoryWiseTicketCount",
+  "zingHrSync"
 ];
 
 let adminPermission = [

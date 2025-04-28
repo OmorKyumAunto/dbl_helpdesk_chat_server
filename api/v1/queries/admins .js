@@ -49,6 +49,10 @@ let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ? and status = 1 `;
 }
 
+let getByEmployeeId = () => {
+    return `SELECT * FROM ${table_name} where  employee_id = ? and status = 1 `;
+}
+
 let getByProfileId = () => {
     return `SELECT * FROM ${table_name} where  id = ? and status = 1 `;
 }
@@ -68,7 +72,6 @@ module.exports = {
     updateById,
     getList,
     getByIdForDeleted,
-    getByProfileId
-    
-    
+    getByProfileId,
+    getByEmployeeId
 }

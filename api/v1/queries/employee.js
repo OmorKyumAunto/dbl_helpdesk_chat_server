@@ -48,6 +48,11 @@ let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ? and status = 1 `;
 }
 
+let getByEmployeeId = () => {
+    return `SELECT * FROM ${table_name} where  employee_id = ? and status = 1 `;
+}
+
+
 let getByIdForDeleted = () => {
     return `delete FROM ${table_name} where  id = ? and status = 1 `;
 }
@@ -152,6 +157,7 @@ module.exports = {
     a_negative,
     b_negative,
     ab_negative,
-    o_negative
+    o_negative,
+    getByEmployeeId
 
 }

@@ -41,6 +41,16 @@ let getById = async (id = 0) => {
     });
 }
 
+let getByEmployeeId = async (employee_id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByEmployeeId(), [employee_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
 let getByProfileId = async (id = 0) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getByProfileId(), [id], (error, result, fields) => {
@@ -99,5 +109,6 @@ module.exports = {
     getList,
     getByIdForDeleted,
     getById,
-    getByProfileId
+    getByProfileId,
+    getByEmployeeId
 }

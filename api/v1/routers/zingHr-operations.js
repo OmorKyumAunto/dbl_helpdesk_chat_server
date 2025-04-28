@@ -18,7 +18,7 @@ router.get(
       status: req.query.status,
       operation_method: req.query.operation_method,
     };
-console.log("first",reqData)
+
     let { offset, limit, status, operation_method, from_date, to_date } = reqData;
     // Fetch employee list and total employee count
     let result = await zingHrOperationModel.zingHrOperationHistory(offset, limit, status, operation_method, from_date, to_date);

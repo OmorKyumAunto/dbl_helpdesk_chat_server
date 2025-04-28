@@ -17,6 +17,8 @@ router.get(
       offset: req.query.offset || 0,
       status: req.query.status,
       operation_method: req.query.operation_method,
+      from_date : req.query.from_date,
+      to_date : req.query.to_date,
     };
 
     let { offset, limit, status, operation_method, from_date, to_date } = reqData;

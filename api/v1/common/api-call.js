@@ -121,7 +121,6 @@ const ZingHrImplement = async (req,res) => {
                        line_manager_name : data.ReportingManagerName,
                        line_manager_id : data.ReportingManagerCode
                    }
-                   console.log("Zing Hr data : ",employee)
                    const helpDeskData = await userModel.getByEmployeeId(data.EmployeeCode)
                   
                    let is_update = 0
@@ -152,7 +151,6 @@ const ZingHrImplement = async (req,res) => {
                            line_manager_name : employeeData[0]?.line_manager_name || '',
                            line_manager_id : employeeData[0]?.line_manager_id || '',
                        }
-                       console.log("help desk employeeData  ==>",helpDeskEmployeeData)
               
                        // check and update help desk employee data and zing hr data
                        if(helpDeskEmployeeData.name !== employee.name){
@@ -233,8 +231,6 @@ const ZingHrImplement = async (req,res) => {
                        
                     }
                     if(helpDeskData[0].role_id === 2){
-                       console.log("admin data ==>>")
-   
                        const adminData = await adminModel.getByEmployeeId(data.EmployeeCode)
                        const helpDeskEmployeeData = {
                            name : adminData[0]?.name || '',
@@ -253,9 +249,7 @@ const ZingHrImplement = async (req,res) => {
                            line_manager_name : adminData[0]?.line_manager_name || '',
                            line_manager_id : adminData[0]?.line_manager_id || '',
                        }
-                       console.log("help desk admin data  ==>",helpDeskEmployeeData)
-              
-   
+                     
                        // check and update help desk employee data and zing hr data
                        if(helpDeskEmployeeData.name !== employee.name){
                          is_update = 1
@@ -282,7 +276,6 @@ const ZingHrImplement = async (req,res) => {
                           
                        }
                        
-                   
                         if(helpDeskEmployeeData.joining_date !== employee.joining_date){
                            is_update = 1
                            updateData.joining_date  = employee.joining_date
@@ -391,7 +384,7 @@ const ZingHrImplement = async (req,res) => {
     await zingHrOperationsModel.addNew(operations)
     console.log("Zing HR Sync to Help Desk process end =>>")
     } else {
-            console.log("There has no employee data.")
+      console.log("There has no employee data.")
     }
 
     } catch (error) {

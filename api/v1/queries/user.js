@@ -50,7 +50,7 @@ const updateById = () => {
 
 
 let getByEmployeeId = () => {
-    return `SELECT  id,role_id,profile_id,employee_id,name,email,status FROM ${table_name} where  employee_id = ?  and status = 1 `;
+    return `SELECT  id,role_id,profile_id,employee_id,name,email,status FROM ${table_name} where  employee_id = ? `;
 }
 
 

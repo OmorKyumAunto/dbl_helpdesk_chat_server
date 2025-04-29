@@ -967,7 +967,7 @@ router.put(
       updated_at: current_time,
     };
 
-    let result = await userModel.updateById(id, data);
+    let result = await userModel.updateById(data,id);
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
       return res.status(500).send({

@@ -9,7 +9,6 @@ const adminModel = require("../models/admins ");
 const zingHrOperationsModel = require("../models/zingHr-operations");
 const {today_date,convertDateFormat,addSixHoursAndFormat,currentDateZingHrFormat} = require('../validation/task/task')
 const bcrypt = require("bcrypt");
-const { promise } = require('zod');
 require('dotenv').config();
 // 15 min remaining send email  
 const taskRemainingSchedule = async () => {
@@ -196,7 +195,7 @@ const ZingHrImplement = async (req,res) => {
                            is_update = 1
                            updateData.grade  = employee.grade
                        }
-                       if(helpDeskEmployeeData.grade !== employee.grade){
+                        if(helpDeskEmployeeData.grade !== employee.grade){
                         is_update = 1
                         updateData.grade  = employee.grade
                        }

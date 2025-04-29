@@ -1090,6 +1090,10 @@ router.post(
       line_of_business: employeeData[0].line_of_business,
       grade: employeeData[0].grade,
       licenses: employeeData[0].licenses,
+      location : getData[0].location,
+      date_of_birth : getData[0].date_of_birth,
+      line_manager_name : getData[0].line_manager_name,
+      line_manager_id : getData[0].line_manager_id,
     };
 
     let result = await adminModel.addNew(data);
@@ -1158,6 +1162,10 @@ router.post(
       business_type: getData[0].business_type,
       line_of_business: getData[0].line_of_business,
       grade: getData[0].grade,
+      location : getData[0].location,
+      date_of_birth : getData[0].date_of_birth,
+      line_manager_name : getData[0].line_manager_name,
+      line_manager_id : getData[0].line_manager_id,
     };
 
     let result = await employeeModel.addNew(data);

@@ -1,7 +1,7 @@
 
 const express = require("express");
 const cors = require("cors");
-const { nodeCorn,nodeCornForZingHrSync } = require('../dbl-project/api/v1/common/corn-job');
+const { nodeCorn,nodeCornForZingHrSync } = require('./api/v1/common/corn-job');
 const helmet = require('helmet');
 const app = express();
 // middleware

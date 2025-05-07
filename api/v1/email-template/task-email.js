@@ -54,7 +54,7 @@ const taskForwardEmailTemplate = async (data) => {
         </div>
 
         <p style="margin-top: 30px; font-size: 16px;">
-            Please log in to the <a href="https://your-task-manager-link.com/" style="color: #006666; text-decoration: underline;">Task Management System</a> to begin working on this task.
+            Please log in to the <a href="https://helpdesk.dbl-group.com/" style="color: #006666; text-decoration: underline;">DBL IT Connect</a> to begin working on this task.
         </p>
 
         <!-- Closing -->
@@ -136,12 +136,12 @@ const remainingTaskEmailTemplate = async (data) => {
       </div>
 
       <p style="margin-top: 30px; font-size: 16px;">
-        You can view and manage this task in the <a href="https://your-task-manager-link.com/" style="color: #003366; text-decoration: underline;">Task Management System</a>.
+        You can view and manage this task in the <a href="https://helpdesk.dbl-group.com/" style="color: #003366; text-decoration: underline;">Task Management System</a>.
       </p>
 
       <!-- Closing -->
       <p style="margin-top: 40px; font-size: 16px; font-weight: bold;">Best regards,</p>
-      <p style="font-size: 16px; font-weight: bold; color: #003366;">Task Scheduler Bot</p>
+      <p style="font-size: 16px; font-weight: bold; color: #003366;">DBL IT Connect</p>
     </td>
   </tr>
 

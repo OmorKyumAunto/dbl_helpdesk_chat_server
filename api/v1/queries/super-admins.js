@@ -17,6 +17,10 @@ let getUserInfo = () => {
 let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ? and status = 1 `;
 }
+
+let getByEmployeeId = () => {
+    return `SELECT * FROM ${table_name} where  employee_id = ? and status = 1 `;
+}
 const updateById = () => {
     return `UPDATE ${table_name} SET ? WHERE id = ?`;
 }
@@ -26,5 +30,6 @@ module.exports = {
     addNew,
     getUserInfo,
     getById,
-    updateById
+    updateById,
+    getByEmployeeId
 }

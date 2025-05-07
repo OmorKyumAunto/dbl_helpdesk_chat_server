@@ -6,6 +6,7 @@ const common = require("../common/common");
 const userModel = require("../models/user");
 const employeeModel = require("../models/employee");
 const adminModel = require("../models/admins ");
+const superAdminModel = require("../models/super-admins");
 const zingHrOperationsModel = require("../models/zingHr-operations");
 const {today_date,convertDateFormat,addSixHoursAndFormat,currentDateZingHrFormat} = require('../validation/task/task')
 const bcrypt = require("bcrypt");
@@ -44,7 +45,7 @@ const taskRemainingSchedule = async () => {
                
               }
     
-               await common.taskRemainingEmail(data.user_email,'Your task starts in the remaining 15 minutes',email_data)
+               await common.taskRemainingEmail(data.user_email,'Task Reminder',email_data)
             }
           }
         }
@@ -329,16 +330,120 @@ const ZingHrImplement = async (req,res) => {
                            console.log("Nothing to update")
                        }
                        
-                    }else{
-                       console.log("Nothing has this role id")
                     }
+                    if(helpDeskData[0].role_id === 1){
+      
+                        const superAdminData = await superAdminModel.getByEmployeeId(data.EmployeeCode)
+                        const helpDeskEmployeeData = {
+                            name : superAdminData[0]?.name || '',
+                            employee_id : superAdminData[0]?.employee_id || '',
+                            department: superAdminData[0]?.department || '',
+                            designation: superAdminData[0]?.designation || '',
+                            email: superAdminData[0]?.email || '',
+                            contact_no: superAdminData[0]?.contact_no || '',
+                            joining_date: addSixHoursAndFormat(superAdminData[0]?.joining_date) || '',
+                            unit_name: superAdminData[0]?.unit_name || '',
+                            business_type: superAdminData[0]?.business_type || '',
+                            line_of_business: superAdminData[0]?.line_of_business || '',
+                            grade : superAdminData[0]?.grade || '',
+                            location : superAdminData[0]?.location || '',
+                            date_of_birth : addSixHoursAndFormat(superAdminData[0]?.date_of_birth) || '',
+                            line_manager_name : superAdminData[0]?.line_manager_name || '',
+                            line_manager_id : superAdminData[0]?.line_manager_id || '',
+                        }
+           
+      
+                        // check and update help desk employee data and zing hr data
+                        if(helpDeskEmployeeData.name !== employee.name){
+                          is_update = 1
+                          updateData.name  = employee.name
+                          userUpdateData.name = employee.name
+                        }
+                         if(helpDeskEmployeeData.department !== employee.department){
+                            is_update = 1
+                          updateData.department  = employee.department
+                        }
+                         if(helpDeskEmployeeData.designation !== employee.designation){
+                            is_update = 1
+                            updateData.designation  = employee.designation
+                        }
+                         if((helpDeskEmployeeData.email || '') !== employee.email){
+                            is_update = 1
+                            updateData.email  = employee.email
+                            userUpdateData.email = employee.email
+                           
+                        }
+                         if(helpDeskEmployeeData.contact_no !== employee.contact_no){
+                            is_update = 1
+                            updateData.contact_no  = employee.contact_no
+                           
+                        }
+                        
+                    
+                         if(helpDeskEmployeeData.joining_date !== employee.joining_date){
+                            is_update = 1
+                            updateData.joining_date  = employee.joining_date
+                            
+                        }
+                         if(helpDeskEmployeeData.unit_name !== employee.unit_name){
+                            is_update = 1
+                            updateData.unit_name  = employee.unit_name
+                           
+                        }
+                         if(helpDeskEmployeeData.business_type !== employee.business_type){
+                            is_update = 1
+                            updateData.business_type  = employee.business_type
+                           
+                        }
+                         if(helpDeskEmployeeData.line_of_business !== employee.line_of_business){
+                            is_update = 1
+                            updateData.line_of_business  = employee.line_of_business
+                           
+                        }
+                         if(helpDeskEmployeeData.grade !== employee.grade){
+                            is_update = 1
+                            updateData.grade  = employee.grade
+                           
+                        }
+                         if(helpDeskEmployeeData.date_of_birth !== employee.date_of_birth){
+                             is_update = 1
+                             updateData.date_of_birth  = employee.date_of_birth
+                         }
+                         if(helpDeskEmployeeData.location !== employee.location){
+                             is_update = 1
+                             updateData.location  = employee.location
+                         }
+                         if(helpDeskEmployeeData.line_manager_name !== employee.line_manager_name){
+                             is_update = 1
+                             updateData.line_manager_name  = employee.line_manager_name
+                         }
+                         if(helpDeskEmployeeData.line_manager_id !== employee.line_manager_id){
+                             is_update = 1
+                             updateData.line_manager_id  = employee.line_manager_id
+                         }
+      
+                        if(is_update === 1){
+                         total_update++
+                            await Promise.all([
+                                superAdminModel.updateById(helpDeskData[0].profile_id, updateData),
+                                userModel.updateById(userUpdateData,helpDeskData[0].id),
+                                
+                            ]);
+                     
+                        }else{
+                            console.log("Nothing to update")
+                        }
+                        
+                     }             
+                    else{
+                        console.log("Nothing has this role id")
+                     }
                     
                    }else{
-                       console.log("add new +++>>")
                        await Promise.all([
                            (async () => {
+                            employee.licenses = '[10]'
                              const createdEmployee = await employeeModel.addNew(employee);
-                             console.log("createdEmployee",createdEmployee)
                              const userData = {
                                name: employee.name,
                                employee_id: employee.employee_id,
@@ -389,7 +494,7 @@ const ZingHrImplement = async (req,res) => {
     } catch (error) {
         const operations ={
             status :'failed',
-            operation_method :'manual',
+            operation_method :'auto',
             operation_date : today_date,
     }
        await zingHrOperationsModel.addNew(operations)

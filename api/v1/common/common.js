@@ -585,6 +585,10 @@ const convertDateFormat = (dateStr) => {
   
     return `${day}${getOrdinal(day)} ${month} ${year}`;
   };
+
+const  checkEmailFormat = (email) => {
+    return email.endsWith('@gmail.com') || email.endsWith('@yahoo.com');
+}
   
 
 module.exports = {
@@ -602,5 +606,6 @@ module.exports = {
     taskForwardEmail,
     convertTimeStringTo12Hour,
     convertDateFormat,
-    taskRemainingEmail
+    taskRemainingEmail,
+    checkEmailFormat
 }

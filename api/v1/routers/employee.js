@@ -23,6 +23,8 @@ const { off } = require("process");
 const { profile } = require("console");
 const bcrypt = require("bcrypt");
 const zingHrOperationsModel = require("../models/zingHr-operations");
+const { commentAdminToEmployee } = require("../email-template/ticket-comment");
+const commonObject = require("../common/common");
 require('dotenv').config();
 
 // Configure Multer for file upload
@@ -1824,7 +1826,14 @@ for (let index = 0; index < employees.length; index++) {
                }else{
                    await Promise.all([
                        (async () => {
-                        employee.licenses = '[10]'
+                        //checkEmailFormat
+                        const checkFormat = await commonObject.checkEmailFormat(employee.email)
+                        if(checkFormat === false){
+                          employee.licenses = '[10]' 
+                        }else{
+                          employee.licenses = '' 
+                        }
+   
                          const createdEmployee = await employeeModel.addNew(employee);
                          const userData = {
                            name: employee.name,

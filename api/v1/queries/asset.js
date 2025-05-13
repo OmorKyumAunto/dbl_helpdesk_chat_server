@@ -103,6 +103,67 @@ let getTotalList = (key, unit, type,location,status) => {
   return `SELECT * FROM ${table_name} WHERE  ${searchCondition} ORDER BY id desc `;
 }
 
+// let assetReport = (key, unit, type,location,status) => {
+//   let searchCondition = 'status != 0 ';
+
+//   if (key) {
+//     searchCondition += `AND (LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) LIKE LOWER('%${key}%') OR UPPER(serial_number) LIKE UPPER('%${key}%') OR UPPER(po_number) LIKE UPPER('%${key}%')) `;
+//   }
+//   if (unit) {
+//     searchCondition += `AND unit_id = '${unit}' `;
+//   }
+//   if (location) {
+//     searchCondition += `AND location LIKE '%${location}%' `;
+//   }
+
+//   if (type) {
+//     searchCondition += `AND lower(remarks) LIKE lower('%${type}%') `;
+//   }
+//   if (status) {
+//     searchCondition += `AND status = '${status}' `;
+//   }
+
+//   return `SELECT a.id,a.name,a.category,a.purchase_date, a.serial_number,
+//   a.po_number,a.price,a.unit_id,au.title as unit_name,a.model,a.specification,a.asset_no,a.location as location_id,l.title as location_name
+//    FROM ${table_name} as a
+//   left join dbl_asset_unit as au on au.id = a.unit_id
+//   left join location as l l.id = a.location
+//   WHERE  ${searchCondition} ORDER BY id desc `;
+// }
+let assetReport = (unit,start_date,end_date,category,remarks) => {
+  let searchCondition = 'a.status != 0';
+
+  if (start_date && end_date) {
+    searchCondition += ` AND DATE(a.created_at) BETWEEN '${start_date}' AND '${end_date}'`;
+  }
+
+  if (unit) {
+    searchCondition += ` AND a.unit_id = '${unit}'`;
+  }
+  
+  if (category) {
+    searchCondition += ` AND a.category = '${category}'`;
+  }
+
+  if (remarks) {
+    searchCondition += ` AND a.remarks = '${remarks}'`;
+  }
+
+
+  return `
+    SELECT a.id, a.name, a.category, a.purchase_date, a.serial_number,
+           a.po_number, a.price, a.unit_id, au.title as unit_name, a.model,
+           a.specification, a.asset_no, a.location as location_id,
+           l.location as location_name
+    FROM ${table_name} AS a
+    LEFT JOIN dbl_asset_unit AS au ON au.id = a.unit_id
+    LEFT JOIN location AS l ON l.id = a.location
+    WHERE ${searchCondition}
+    ORDER BY a.id DESC
+  `;
+};
+
+
 
 let distributedAssetList = (offset, limit, key, unit, type, employee_type, location) => {
   let searchCondition = [];
@@ -539,5 +600,6 @@ module.exports = {
     adminWiseAccessoriesData,
     getListOfDashboardGraphAdmin,
     getListOfDashboardGraph2Admin,
-    getByIdActiveData
+    getByIdActiveData,
+    assetReport
 }

@@ -25,6 +25,7 @@ const taskCategoriesRouter = require("./routers/task-categories");
 const taskSubCategoryRouter = require("./routers/task-sub-category");
 const taskDashboardRouter = require("./routers/task-dashboard");
 const zingHrOperationRouter = require("./routers/zingHr-operations");
+const reportRouter = require("./routers/report");
 
 
 
@@ -48,5 +49,6 @@ router.use("/task-category", taskCategoriesRouter);
 router.use("/task-sub-category", taskSubCategoryRouter);
 router.use("/task-dashboard", taskDashboardRouter);
 router.use("/zingHr-operations", zingHrOperationRouter);
+router.use("/report", reportRouter);
 
 module.exports = router;

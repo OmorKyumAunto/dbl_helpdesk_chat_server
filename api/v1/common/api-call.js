@@ -442,7 +442,14 @@ const ZingHrImplement = async (req,res) => {
                    }else{
                        await Promise.all([
                            (async () => {
-                            employee.licenses = '[10]'
+                       //checkEmailFormat
+                        const checkFormat = await commonObject.checkEmailFormat(employee.email)
+                        if(checkFormat === false){
+                          employee.licenses = '[10]' 
+                        }else{
+                          employee.licenses = '' 
+                        }
+
                              const createdEmployee = await employeeModel.addNew(employee);
                              const userData = {
                                name: employee.name,

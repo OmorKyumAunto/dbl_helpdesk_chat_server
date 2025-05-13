@@ -126,7 +126,14 @@ let getTotalList = async (key, unit, type,location,status) => {
   });
 }
   
-
+let assetReport = async (unit,start_date,end_date,category,remarks) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(queries.assetReport(unit,start_date,end_date,category,remarks), (error, result, fields) => {
+      if (error) reject(error)
+      else resolve(result);
+    });
+});
+}
 
   let distributedAssetList = async (offset, limit, key, unit ,type,employee_type,location) => {
     return new Promise((resolve, reject) => {
@@ -561,6 +568,7 @@ module.exports = {
    adminWiseAccessoriesData,
    getListOfDashboardGraphAdmin,
    getListOfDashboardGraph2Admin,
-   getByIdActiveData
+   getByIdActiveData,
+   assetReport
    
 }

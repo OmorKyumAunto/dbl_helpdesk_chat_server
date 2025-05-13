@@ -150,7 +150,8 @@ let superAdminPermission = [
   "taskDashboardGraphData",
   "categoryWiseTicketCount",
   "zingHrSync",
-  "ZingHrSyncHistoryGet"
+  "ZingHrSyncHistoryGet",
+  "assetReportList"
 ];
 
 let adminPermission = [

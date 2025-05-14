@@ -151,7 +151,8 @@ let superAdminPermission = [
   "categoryWiseTicketCount",
   "zingHrSync",
   "ZingHrSyncHistoryGet",
-  "assetReportList"
+  "assetReportList",
+  "disbursementsReportList"
 ];
 
 let adminPermission = [

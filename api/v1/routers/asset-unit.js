@@ -209,7 +209,6 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("assetUnitDelete")
 
     let existingDataById = await assetUnitModel.getById(id);
     if (isEmpty(existingDataById)) {
-
         return res.status(404).send({
             "success": false,
             "status": 404,

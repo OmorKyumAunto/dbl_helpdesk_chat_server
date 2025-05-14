@@ -153,7 +153,7 @@ let assetReport = (unit,start_date,end_date,category,remarks) => {
   return `
     SELECT a.id, a.name, a.category, a.purchase_date, a.serial_number,
            a.po_number, a.price, a.unit_id, au.title as unit_name, a.model,
-           a.specification, a.asset_no, a.location as location_id,
+           a.specification, a.asset_no, a.remarks, a.location as location_id,
            l.location as location_name
     FROM ${table_name} AS a
     LEFT JOIN dbl_asset_unit AS au ON au.id = a.unit_id
@@ -202,6 +202,41 @@ let distributedAssetList = (offset, limit, key, unit, type, employee_type, locat
   return `SELECT * FROM ${table_view} ${whereClause} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
 };
 
+
+let distributedAssetReport = (unit, start_date, end_date, category, employee_type) => {
+  let searchCondition = [];
+
+  if (start_date && end_date) {
+    searchCondition.push(`DATE(asset_create_date) BETWEEN '${start_date}' AND '${end_date}'`);
+  }
+
+  if (unit) {
+    searchCondition.push(`asset_unit_id = '${unit}'`);
+  }
+
+  if (category) {
+    searchCondition.push(`category = '${category}'`);
+  }
+
+  if (employee_type) {
+    if (employee_type === "management") {
+      searchCondition.push(`user_id_no LIKE '151%'`);
+    } else if (employee_type === "non-management") {
+      searchCondition.push(`user_id_no NOT LIKE '151%'`);
+    }
+  }
+
+  let whereClause = searchCondition.length ? `WHERE ${searchCondition.join(' AND ')}` : '';
+
+  return `
+    SELECT id, asset_name, category, purchase_date, serial_number,
+           po_number, asset_no, model, specification, device_remarks,
+           asset_unit_name, assign_date, location_name, user_name,
+           user_id_no, designation, department
+    FROM ${table_view}
+    ${whereClause}
+  `;
+};
 
 
 let adminDistributedAssetList = (offset, limit, key, unit, type, employee_type,location,user_id) => {
@@ -601,5 +636,6 @@ module.exports = {
     getListOfDashboardGraphAdmin,
     getListOfDashboardGraph2Admin,
     getByIdActiveData,
-    assetReport
+    assetReport,
+    distributedAssetReport
 }

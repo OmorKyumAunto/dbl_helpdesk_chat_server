@@ -143,6 +143,17 @@ let assetReport = async (unit,start_date,end_date,category,remarks) => {
       });
     });
   }
+
+
+  let distributedAssetReport = async (unit,start_date,end_date,category,employee_type) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.distributedAssetReport(unit,start_date,end_date,category,employee_type), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+  
   
 
   let adminDistributedAssetList = async (offset, limit, key, unit ,type,employee_type,location,user_id) => {
@@ -569,6 +580,7 @@ module.exports = {
    getListOfDashboardGraphAdmin,
    getListOfDashboardGraph2Admin,
    getByIdActiveData,
-   assetReport
+   assetReport,
+   distributedAssetReport
    
 }

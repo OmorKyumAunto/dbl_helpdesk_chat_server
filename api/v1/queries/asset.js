@@ -142,7 +142,7 @@ let assetReport = (unit,start_date,end_date,category,remarks) => {
   }
   
   if (category) {
-    searchCondition += ` AND a.category = '${category}'`;
+    searchCondition += ` AND LOWER(a.category) LIKE LOWER('%${category}%')`;
   }
 
   if (remarks) {
@@ -215,7 +215,7 @@ let distributedAssetReport = (unit, start_date, end_date, category, employee_typ
   }
 
   if (category) {
-    searchCondition.push(`category = '${category}'`);
+    searchCondition += ` AND LOWER(a.category) LIKE LOWER('%${category}%')`;
   }
 
   if (employee_type) {

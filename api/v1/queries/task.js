@@ -90,6 +90,34 @@ let getSuperAdminList = (offset, limit, key, category,starred, start_date, end_d
 };
 
 
+let getTaskReport = (key, category, start_date, end_date,task_status,unit_id,user_id ) => {
+  let searchCondition = "1=1";
+  if (category.length > 0) {
+    searchCondition += ` AND task_categories_id IN (${category.map(id => `'${id}'`).join(",")}) `;
+  }
+  if (unit_id) {
+    searchCondition += ` AND asset_unit_ids LIKE '%${unit_id}%'`;
+  }
+  if (user_id) {
+    searchCondition += ` AND user_id = '${user_id}' `;
+  }
+
+  if (start_date && end_date) {
+    searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59' `;
+  }
+  if (task_status) {
+    searchCondition += ` AND task_status = '${task_status}' `;
+  }
+  if (key) {
+    searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%' OR LOWER(user_name) LIKE LOWER('%${key}%') OR user_employee_id LIKE '%${key}%')`;
+  }
+
+  return `SELECT id, task_categories_id, category_title,set_time,total_set_time,format, description, start_date, start_time, task_code, task_status, starred ,task_start_date,task_end_date,task_start_time,task_end_time, quantity,user_id,user_name,user_employee_id,created_at
+          FROM ${task_view_table} 
+          WHERE ${searchCondition} ;`;
+};
+
+
 let getSuperAdminTotalCount = (key, category,starred, start_date, end_date,task_status,unit_id,user_id ) => {
   let searchCondition = "1=1";
 
@@ -682,5 +710,6 @@ module.exports = {
   taskDashboardCountGraphById,
   superAdminCategoryWiseTaskCount,
   adminCategoryWiseTaskCount,
-  taskScheduleList
+  taskScheduleList,
+  getTaskReport
 };

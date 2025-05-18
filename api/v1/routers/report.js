@@ -5,9 +5,10 @@ const assetUnitModel = require('../models/asset-unit');
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const assetModel = require("../models/asset");
-const { assetReport, disbursementsReport } = require('../validator/validate-request/report')
+const { assetReport, disbursementsReport,taskReport } = require('../validator/validate-request/report')
 const validateRequest = require("../validator/middleware");
 const unitModel = require('../models/asset-unit');
+const taskModel = require("../models/task");
 require('dotenv').config();
 
 
@@ -115,7 +116,44 @@ router.get(
         query_data : query_data
       });
     }
-  );
+);
+
+
+
+// task report 
+router.get(
+  "/task-report",
+  [verifyToken, routeAccessChecker("taskReport"),validateRequest(taskReport,'query')],
+  async (req, res) => {
+  
+    let reqData = {
+      key: req.query.key,
+      category: Array.isArray(req.query.category) 
+        ? req.query.category.map(Number) 
+         : req.query.category 
+          ? req.query.category.split(',').map(Number)  
+           : [],
+      start_date: req.query.start_date,
+      end_date: req.query.end_date,
+      user_id: req.query.user_id,
+      task_status : req.query.task_status,
+      unit_id : req.query.unit_id,
+    };
+    
+ 
+    let { key, category,start_date,end_date,task_status,unit_id,user_id } = reqData;
+
+    let  result = await taskModel.getTaskReport(key, category,start_date,end_date,task_status,unit_id,user_id);
+   
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Task List.",
+      count: result.length,
+      data: result,
+    });
+  }
+);
 
 
 module.exports = router;

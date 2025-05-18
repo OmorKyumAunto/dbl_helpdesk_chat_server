@@ -152,7 +152,8 @@ let superAdminPermission = [
   "zingHrSync",
   "ZingHrSyncHistoryGet",
   "assetReportList",
-  "disbursementsReportList"
+  "disbursementsReportList",
+  "taskReport"
 ];
 
 let adminPermission = [

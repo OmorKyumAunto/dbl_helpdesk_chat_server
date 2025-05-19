@@ -130,7 +130,7 @@ let getTotalList = (key, unit, type,location,status) => {
 //   left join location as l l.id = a.location
 //   WHERE  ${searchCondition} ORDER BY id desc `;
 // }
-let assetReport = (unit,start_date,end_date,category,remarks) => {
+let assetReport = (unit,start_date,end_date,category,remarks,key) => {
   let searchCondition = 'a.status != 0';
 
   if (start_date && end_date) {
@@ -147,6 +147,10 @@ let assetReport = (unit,start_date,end_date,category,remarks) => {
 
   if (remarks) {
     searchCondition += ` AND a.remarks = '${remarks}'`;
+  }
+  
+  if(key){
+    searchCondition += ` AND (LOWER(a.name) LIKE LOWER('%${key}%') OR LOWER(a.category) LIKE LOWER('%${key}%') OR a.serial_number LIKE '%${key}%' OR a.po_number LIKE '%${key}%' OR LOWER(a.model) LIKE LOWER('%${key}%'))`; 
   }
 
 
@@ -203,7 +207,7 @@ let distributedAssetList = (offset, limit, key, unit, type, employee_type, locat
 };
 
 
-let distributedAssetReport = (unit, start_date, end_date, category, employee_type) => {
+let distributedAssetReport = (unit, start_date, end_date, category, employee_type,key) => {
   let searchCondition = [];
 
   if (start_date && end_date) {
@@ -218,6 +222,19 @@ let distributedAssetReport = (unit, start_date, end_date, category, employee_typ
     searchCondition += ` AND LOWER(a.category) LIKE LOWER('%${category}%')`;
   }
 
+  if (key) {
+    searchCondition.push(`(
+      LOWER(asset_name) LIKE LOWER('%${key}%') OR 
+      serial_number LIKE '%${key}%' OR 
+      po_number LIKE '%${key}%' OR 
+      LOWER(model) LIKE LOWER('%${key}%') OR 
+      LOWER(user_name) LIKE LOWER('%${key}%') OR 
+      user_id_no LIKE '%${key}%'
+    )`);
+  }
+  
+  let whereClause = searchCondition.length ? `WHERE ${searchCondition.join(' AND ')}` : '';
+
   if (employee_type) {
     if (employee_type === "management") {
       searchCondition.push(`user_id_no LIKE '151%'`);
@@ -226,7 +243,6 @@ let distributedAssetReport = (unit, start_date, end_date, category, employee_typ
     }
   }
 
-  let whereClause = searchCondition.length ? `WHERE ${searchCondition.join(' AND ')}` : '';
 
   return `
     SELECT id, asset_name, category, purchase_date, serial_number,

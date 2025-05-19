@@ -40,10 +40,10 @@ let getSuperAdminList = async (offset, limit, key = '', category,starred,start_d
 };
 
 
-let getTaskReport = async (key = '', category,start_date,end_date,task_status,unit_id,user_id) => {
+let getTaskReport = async (key = '', category,start_date,end_date,task_status,unit_id,user_id,overdue) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getTaskReport(key, category,start_date,end_date,task_status,unit_id,user_id),
+      queries.getTaskReport(key, category,start_date,end_date,task_status,unit_id,user_id,overdue),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);

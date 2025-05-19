@@ -126,9 +126,9 @@ let getTotalList = async (key, unit, type,location,status) => {
   });
 }
   
-let assetReport = async (unit,start_date,end_date,category,remarks) => {
+let assetReport = async (unit,start_date,end_date,category,remarks,key) => {
   return new Promise((resolve, reject) => {
-    connectionDblystem.query(queries.assetReport(unit,start_date,end_date,category,remarks), (error, result, fields) => {
+    connectionDblystem.query(queries.assetReport(unit,start_date,end_date,category,remarks,key), (error, result, fields) => {
       if (error) reject(error)
       else resolve(result);
     });
@@ -145,9 +145,9 @@ let assetReport = async (unit,start_date,end_date,category,remarks) => {
   }
 
 
-  let distributedAssetReport = async (unit,start_date,end_date,category,employee_type) => {
+  let distributedAssetReport = async (unit,start_date,end_date,category,employee_type,key) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.distributedAssetReport(unit,start_date,end_date,category,employee_type), (error, result, fields) => {
+      connectionDblystem.query(queries.distributedAssetReport(unit,start_date,end_date,category,employee_type,key), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });

@@ -17,6 +17,7 @@ const assetReport = z
       errorMap: () => ({ message: "Remarks must be either 'assigned' or 'in_stock'" })
     })
     .optional(),
+    key : z.string().optional(),
   });
 
 
@@ -32,6 +33,7 @@ const assetReport = z
       errorMap: () => ({ message: "Employee Type must be either 'management' or 'non-management'" })
     })
     .optional(),
+    key : z.string().optional(),
   });
 
 
@@ -63,6 +65,7 @@ const assetReport = z
       unit_id : z.string().optional().refine(value => value === undefined || value > 0, {
         message: 'Unit id must be a positive number.',
       }),
+      overdue : z.string().optional(),
     });
 
 

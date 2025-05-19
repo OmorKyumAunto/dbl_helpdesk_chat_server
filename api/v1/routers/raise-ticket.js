@@ -1002,7 +1002,7 @@ router.get(
   }
 );
 
-//super admin and admincan  change priority status
+//super admin and admin can  change priority status
 router.put(
   "/changePriority/:id",
   [verifyToken, routeAccessChecker("changePriority")],

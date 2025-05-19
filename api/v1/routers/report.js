@@ -18,6 +18,7 @@ router.get(
     [verifyToken, routeAccessChecker("assetReportList"),validateRequest(assetReport,'query')],
     async (req, res) => {
 
+    let id = req.decoded.userInfo.id
     const reqData = {
         unit : parseInt(req.query.unit),
         start_date : req.query.start_date,
@@ -52,6 +53,23 @@ router.get(
 
     }
 
+     // report generate user info
+     if(id){
+      let existingDataById = await userModel.getById(id);
+      if (!existingDataById.length) {
+          return res.status(404).send({
+              "success": false,
+              "status": 404,
+              "message": "User not found",
+  
+          });
+      }
+      query_data.report_generate_employee_name = existingDataById[0].name
+      query_data.report_generate_employee_id = existingDataById[0].employee_id
+      query_data.report_generate_department = existingDataById[0].department
+      query_data.report_generate_designation = existingDataById[0].designation
+     }
+
       let result = await assetModel.assetReport(unit,start_date,end_date,category,remarks,key);
  
       query_data.total_count = result.length || 0
@@ -76,6 +94,8 @@ router.get(
     [verifyToken, routeAccessChecker("disbursementsReportList"),validateRequest(disbursementsReport,'query')],
     async (req, res) => {
 
+    let id = req.decoded.userInfo.id
+    
     const reqData = {
         unit : parseInt(req.query.unit),
         start_date : req.query.start_date,
@@ -108,6 +128,23 @@ router.get(
     query_data.unit_name = existingDataByUnitId[0].title
    }
 
+     // report generate user info
+     if(id){
+      let existingDataById = await userModel.getById(id);
+      if (!existingDataById.length) {
+          return res.status(404).send({
+              "success": false,
+              "status": 404,
+              "message": "User not found",
+  
+          });
+      }
+      query_data.report_generate_employee_name = existingDataById[0].name
+      query_data.report_generate_employee_id = existingDataById[0].employee_id
+      query_data.report_generate_department = existingDataById[0].department
+      query_data.report_generate_designation = existingDataById[0].designation
+     }   
+
       let result = await assetModel.distributedAssetReport(unit,start_date,end_date,category,employee_type,key);
  
       query_data.total_count = result.length || 0
@@ -130,7 +167,8 @@ router.get(
   "/task-report",
   [verifyToken, routeAccessChecker("taskReport"),validateRequest(taskReport,'query')],
   async (req, res) => {
-  
+    let id = req.decoded.userInfo.id;
+
     let reqData = {
       key: req.query.key,
       category: Array.isArray(req.query.category) 
@@ -172,7 +210,7 @@ router.get(
       query_data.unit_name = existingDataByUnitId[0].title
      }
 
-     
+
      let category_name = []
      if(category){
        for (let index = 0; index < category.length; index++) {
@@ -204,6 +242,23 @@ router.get(
       }
       query_data.employee_name = existingDataByUserId[0].name
       query_data.employee_id = existingDataByUserId[0].employee_id
+     }
+
+     // report generate user info
+     if(id){
+      let existingDataById = await userModel.getById(id);
+      if (!existingDataById.length) {
+          return res.status(404).send({
+              "success": false,
+              "status": 404,
+              "message": "User not found",
+  
+          });
+      }
+      query_data.report_generate_employee_name = existingDataById[0].name
+      query_data.report_generate_employee_id = existingDataById[0].employee_id
+      query_data.report_generate_department = existingDataById[0].department
+      query_data.report_generate_designation = existingDataById[0].designation
      }
 
 

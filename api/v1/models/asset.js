@@ -79,9 +79,9 @@ let getByExistsEmployee = async(employee_id = "") => {
 
 
 
-let getList = async (offset, limit, key,unit,type, location,status) => {
+let getList = async (offset, limit, key,unit,type, location,status,from_date,to_date ) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getList(offset, limit, key,unit,type,location,status), (error, result, fields) => {
+      connectionDblystem.query(queries.getList(offset, limit, key,unit,type,location,status,from_date,to_date ), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -117,9 +117,9 @@ let employeeWiseAssigntotalAssetCount = async (user_id) => {
   }
 
 
-let getTotalList = async (key, unit, type,location,status) => {
+let getTotalList = async (key, unit, type,location,status,from_date,to_date) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getTotalList(key, unit, type,location,status), (error, result, fields) => {
+      connectionDblystem.query(queries.getTotalList(key, unit, type,location,status,from_date,to_date), (error, result, fields) => {
         if (error) reject(error)
         else resolve(result);
       });
@@ -135,9 +135,9 @@ let assetReport = async (unit,start_date,end_date,category,remarks,key) => {
 });
 }
 
-  let distributedAssetList = async (offset, limit, key, unit ,type,employee_type,location) => {
+  let distributedAssetList = async (offset, limit, key, unit ,type,employee_type,location,from_date,to_date) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.distributedAssetList(offset, limit, key, unit,type,employee_type,location), (error, result, fields) => {
+      connectionDblystem.query(queries.distributedAssetList(offset, limit, key, unit,type,employee_type,location,from_date,to_date), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -165,9 +165,9 @@ let assetReport = async (unit,start_date,end_date,category,remarks,key) => {
     });
   }
   
-  let distributedAssetTotalList = async (key, unit,type,employee_type,location) => {
+  let distributedAssetTotalList = async (key, unit,type,employee_type,location,from_date,to_date) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.distributedTotalAssetList(key, unit,type,employee_type,location), (error, result, fields) => {
+      connectionDblystem.query(queries.distributedTotalAssetList(key, unit,type,employee_type,location,from_date,to_date), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });

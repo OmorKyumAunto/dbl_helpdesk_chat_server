@@ -9,6 +9,7 @@ const { assetReport, disbursementsReport,taskReport } = require('../validator/va
 const validateRequest = require("../validator/middleware");
 const taskModel = require("../models/task");
 const taskCategoryModel = require("../models/task-categories");
+const raiseTicketModel = require("../models/raise-ticket");
 require('dotenv').config();
 
 
@@ -278,4 +279,97 @@ router.get(
 );
 
 
+
+// ticket report
+router.get(
+  "/ticket-report",
+  [verifyToken, routeAccessChecker("ticketReport")],
+  async (req, res) => {
+   
+    let id = req.decoded.userInfo.id;
+
+    const reqData = {
+      key : req.query.key,
+      start_date : req.query.start_date,
+      end_date : req.query.end_date,
+      category : req.query.category,
+      priority : req.query.priority,
+      unit : req.query.unit,
+      status : req.query.status,
+      user_id : req.query.user_id,
+      overdue : req.query.overdue
+      
+  }
+
+  const {key,start_date,end_date,category,priority,unit,status,user_id,overdue} = reqData
+    
+  const query_data = {
+    key : key || null,
+    start_date: start_date || null,
+    end_date: end_date || null,
+    category : category || null,
+    priority : priority || null,
+    unit : unit || null,
+    status : status || null,
+    user_id : user_id || null,
+    overdue : overdue || null,
+  }
+
+  if(unit){
+    let existingDataByUnitId = await assetUnitModel.getById(unit);
+    if (!existingDataByUnitId.length) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "Unit not found",
+
+        });
+    }
+    query_data.unit_name = existingDataByUnitId[0].title
+   }
+
+  if(user_id){
+    let existingDataByUserId = await userModel.getById(user_id);
+    if (!existingDataByUserId.length) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "User not found",
+
+        });
+    }
+    query_data.employee_name = existingDataByUserId[0].name
+    query_data.employee_id = existingDataByUserId[0].employee_id
+   }
+
+   // report generate user info
+   if(id){
+    let existingDataById = await userModel.getById(id);
+    if (!existingDataById.length) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "User not found",
+
+        });
+    }
+    query_data.report_generate_employee_name = existingDataById[0].name
+    query_data.report_generate_employee_id = existingDataById[0].employee_id
+    query_data.report_generate_department = existingDataById[0].department
+    query_data.report_generate_designation = existingDataById[0].designation
+   }
+
+  let result = await raiseTicketModel.ticketReport(key,start_date,end_date,category,priority,unit,status,user_id,overdue);
+
+  query_data.total_count = result.length || 0
+  return res.status(200).send({
+    success: true,
+    status: 200,
+    message: "Ticket report.",
+    total: result.length,
+    data: result,
+    query_data : query_data
+  });
+  }
+);
 module.exports = router;

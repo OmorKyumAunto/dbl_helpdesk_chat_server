@@ -509,9 +509,11 @@ router.get(
       location: req.query.location,
       type: req.query.type,
       status: parseInt(req.query.status),
+      from_date : req.query.from_date,
+      to_date : req.query.to_date,
     };
 
-    let { offset, limit, key, unit, type, location, status } = reqData;
+    let { offset, limit, key, unit, type, location, status,from_date,to_date } = reqData;
 
     let result = await assetModel.getList(
       offset,
@@ -520,7 +522,9 @@ router.get(
       unit,
       type,
       location,
-      status
+      status,
+      from_date,
+      to_date 
     );
 
     for (let index = 0; index < result.length; index++) {
@@ -558,7 +562,9 @@ router.get(
       unit,
       type,
       location,
-      status
+      status,
+      from_date,
+      to_date 
     );
 
     return res.status(200).send({
@@ -1324,8 +1330,11 @@ router.get(
       location: req.query.location,
       type: req.query.type,
       employee_type: req.query.employee_type,
+      from_date : req.query.from_date,
+      to_date : req.query.to_date,
+
     };
-    let { offset, limit, key, unit, type, employee_type, location } = reqData;
+    let { offset, limit, key, unit, type, employee_type, location, from_date,to_date } = reqData;
 
     let result = await assetModel.distributedAssetList(
       offset,
@@ -1334,14 +1343,18 @@ router.get(
       unit,
       type,
       employee_type,
-      location
+      location,
+      from_date,
+      to_date
     );
     let totalResult = await assetModel.distributedAssetTotalList(
       key,
       unit,
       type,
       employee_type,
-      location
+      location,
+      from_date,
+      to_date
     );
 
     return res.status(200).send({

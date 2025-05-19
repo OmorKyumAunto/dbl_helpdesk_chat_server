@@ -15,8 +15,14 @@ let getByEmployee = () => {
 }
 
 
-let getList = (offset, limit, key, unit, type, location, status) => {
+let getList = (offset, limit, key, unit, type, location, status,from_date,to_date ) => {
   let searchCondition = 'status != 0 ';
+
+  
+  if (from_date && to_date) {
+    searchCondition += ` AND DATE(created_at) BETWEEN '${from_date}' AND '${to_date}'`;
+  }
+
   if (key) {
       searchCondition += `AND (LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) LIKE LOWER('%${key}%') OR UPPER(serial_number) LIKE UPPER('%${key}%') OR UPPER(po_number) LIKE UPPER('%${key}%')) `;
   }
@@ -80,9 +86,12 @@ let employeeWiseAssigntotalAssetCount = () => {
 
 
 
-let getTotalList = (key, unit, type,location,status) => {
+let getTotalList = (key, unit, type,location,status,from_date,to_date) => {
   let searchCondition = 'status != 0 ';
-
+  
+  if (from_date && to_date) {
+    searchCondition += ` AND DATE(created_at) BETWEEN '${from_date}' AND '${to_date}'`;
+  }
   if (key) {
     searchCondition += `AND (LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) LIKE LOWER('%${key}%') OR UPPER(serial_number) LIKE UPPER('%${key}%') OR UPPER(po_number) LIKE UPPER('%${key}%')) `;
   }
@@ -169,8 +178,14 @@ let assetReport = (unit,start_date,end_date,category,remarks,key) => {
 
 
 
-let distributedAssetList = (offset, limit, key, unit, type, employee_type, location) => {
+let distributedAssetList = (offset, limit, key, unit, type, employee_type, location,from_date,to_date) => {
   let searchCondition = [];
+
+  if (from_date && to_date) {
+    searchCondition.push(
+      `asset_create_date BETWEEN '${from_date}' AND '${to_date}'`
+    );
+  }
 
   if (unit) {
     searchCondition.push(`asset_unit_id = '${unit}'`);
@@ -299,8 +314,15 @@ let adminDistributedAssetList = (offset, limit, key, unit, type, employee_type,l
 
 
 
-let distributedTotalAssetList = (key, unit,type,employee_type,location) => {
+let distributedTotalAssetList = (key, unit,type,employee_type,location,from_date,to_date) => {
   let searchCondition = [];
+
+  if (from_date && to_date) {
+    searchCondition.push(
+      `asset_create_date BETWEEN '${from_date}' AND '${to_date}'`
+    );
+  }
+
   if (key) {
     searchCondition.push(`(LOWER(user_id_no) LIKE LOWER('%${key}%') OR LOWER(user_name) LIKE LOWER('%${key}%') OR LOWER(serial_number) LIKE LOWER('%${key}%'))`);
   }

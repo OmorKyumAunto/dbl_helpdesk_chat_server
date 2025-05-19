@@ -696,6 +696,22 @@ let getSuperAdminTicketReport = async (
   });
 };
 
+let ticketReport = async (
+  key,start_date,end_date,category,priority,unit,status,user_id,overdue
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.ticketReport(
+        key,start_date,end_date,category,priority,unit,status,user_id,overdue
+      ),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
 let getSuperAdminTicketReportTotalCount = async (
   key,
   priority,
@@ -779,4 +795,5 @@ module.exports = {
   adminWiseUnitAndCategory,
   getTicketTotalAvgTime,
   getTicketAdminTotalAvgTime,
+  ticketReport
 };

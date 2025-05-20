@@ -286,7 +286,7 @@ router.get(
 // ticket report
 router.get(
   "/ticket-report",
-  [verifyToken, routeAccessChecker("ticketReport"),validateRequest(ticketReport,'query')],
+  [verifyToken, routeAccessChecker("ticketReport")],
   async (req, res) => {
    
     let id = req.decoded.userInfo.id;
@@ -297,11 +297,12 @@ router.get(
       end_date : req.query.end_date,
       category : req.query.category,
       priority : req.query.priority,
-      unit : req.query.unit,
+      unit : parseInt(req.query.unit),
       status : req.query.status,
       user_id : req.query.user_id,
       overdue : req.query.overdue   
   }
+
 
   const {key,start_date,end_date,category,priority,unit,status,user_id,overdue} = reqData
     

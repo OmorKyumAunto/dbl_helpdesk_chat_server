@@ -71,7 +71,7 @@ const assetReport = z
     });
 
 
-// task report
+// ticket report
 const ticketReport = z
 .object({
   key: z.string().optional().refine(value => value === undefined || value.length > 0, {
@@ -92,13 +92,9 @@ return value || [];
 
   start_date : dateFormat().optional(),
   end_date : dateFormat().optional(),
-  user_id : z.string().optional().refine(value => value === undefined || value > 0, {
-    message: 'User id must be a positive number.',
-  }),
+  user_id : z.string().optional(),
   priority : z.enum(['low', 'high', 'medium','urgent']).optional(),
-  unit : z.string().optional().refine(value => value === undefined || value > 0, {
-    message: 'Unit id must be a positive number.',
-  }),
+  unit : z.string().optional(),
   status : z.enum(['solved', 'unsolved', 'forward','inprogress']).optional(),
   overdue : z.string().optional(),
 });

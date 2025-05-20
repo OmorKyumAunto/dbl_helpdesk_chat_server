@@ -90,7 +90,7 @@ let getSuperAdminList = (offset, limit, key, category,starred, start_date, end_d
 };
 
 
-let getTaskReport = (key, category, start_date, end_date,task_status,unit_id,user_id,overdue ) => {
+let getTaskReport = (key, category, start_date, end_date,task_status,unit_id,user_id,overdue) => {
   let searchCondition = "1=1";
   if (category.length > 0) {
     searchCondition += ` AND task_categories_id IN (${category.map(id => `'${id}'`).join(",")}) `;
@@ -108,13 +108,16 @@ let getTaskReport = (key, category, start_date, end_date,task_status,unit_id,use
   if (task_status) {
     searchCondition += ` AND task_status = '${task_status}' `;
   }
-  if (overdue) {
-    searchCondition += ` AND overdue = '${overdue}' `;
-  }
 
   if (key) {
     searchCondition += ` AND (LOWER(description) LIKE LOWER('%${key}%') OR LOWER(category_title) LIKE LOWER('%${key}%') OR task_code LIKE '%${key}%' OR LOWER(user_name) LIKE LOWER('%${key}%') OR user_employee_id LIKE '%${key}%')`;
   }
+  if(overdue || overdue === 0){
+    if (overdue !== undefined && overdue !== null) {
+      searchCondition += ` AND overdue = '${overdue}' `;
+    }
+  }
+
 
   return `SELECT id, task_categories_id, category_title,set_time,total_set_time,format, description, start_date, start_time, task_code, task_status, starred ,task_start_date,task_end_date,task_start_time,task_end_time, quantity,user_id,user_name,user_employee_id,created_at,overdue
           FROM ${task_view_table} 

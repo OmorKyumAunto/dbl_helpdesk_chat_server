@@ -188,7 +188,6 @@ router.get(
       unit_id : req.query.unit_id,
       overdue : parseInt(req.query.overdue)
     };
-    
  
     let { key, category,start_date,end_date,task_status,unit_id,user_id,overdue } = reqData;
 

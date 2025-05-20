@@ -5,7 +5,7 @@ const assetUnitModel = require('../models/asset-unit');
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const assetModel = require("../models/asset");
-const { assetReport, disbursementsReport,taskReport } = require('../validator/validate-request/report')
+const { assetReport, disbursementsReport,taskReport,ticketReport } = require('../validator/validate-request/report')
 const validateRequest = require("../validator/middleware");
 const taskModel = require("../models/task");
 const taskCategoryModel = require("../models/task-categories");
@@ -286,7 +286,7 @@ router.get(
 // ticket report
 router.get(
   "/ticket-report",
-  [verifyToken, routeAccessChecker("ticketReport")],
+  [verifyToken, routeAccessChecker("ticketReport"),validateRequest(ticketReport,'query')],
   async (req, res) => {
    
     let id = req.decoded.userInfo.id;

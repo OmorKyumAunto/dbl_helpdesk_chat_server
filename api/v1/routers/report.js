@@ -26,14 +26,18 @@ router.get(
         end_date : req.query.end_date,
         category : req.query.category,
         remarks : req.query.remarks,
-        key : req.query.key
+        key : req.query.key,
+        start_purchase_date : req.query.start_purchase_date,
+        end_purchase_date : req.query.end_purchase_date,
     }
-    const {unit,start_date,end_date,category,remarks,key} = reqData
+    const {unit,start_date,end_date,category,remarks,key,start_purchase_date,end_purchase_date} = reqData
    
     const query_data = {
         unit:unit || null,
         start_date: start_date || null,
         end_date: end_date || null,
+        start_purchase_date : start_purchase_date || null,
+        end_purchase_date : end_purchase_date || null,
         category: category || null,
         remarks: remarks || null,
         key: key || null,
@@ -71,7 +75,7 @@ router.get(
       query_data.report_generate_designation = existingDataById[0].designation
      }
 
-      let result = await assetModel.assetReport(unit,start_date,end_date,category,remarks,key);
+      let result = await assetModel.assetReport(unit,start_date,end_date,category,remarks,key,start_purchase_date,end_purchase_date);
  
       query_data.total_count = result.length || 0
 
@@ -297,8 +301,7 @@ router.get(
       unit : req.query.unit,
       status : req.query.status,
       user_id : req.query.user_id,
-      overdue : req.query.overdue
-      
+      overdue : req.query.overdue   
   }
 
   const {key,start_date,end_date,category,priority,unit,status,user_id,overdue} = reqData

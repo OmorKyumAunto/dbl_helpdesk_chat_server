@@ -194,6 +194,7 @@ router.post(
         specification: reqData.specification,
         device_remarks: reqData.device_remarks,
         price: reqData.price,
+        created_by: req.decoded.userInfo.id,
       };
 
       let result = await assetModel.addNew2(data);
@@ -203,6 +204,7 @@ router.post(
         asset_id: getAssetId[0].id,
         user_id: reqData.user_id,
         assign_date: reqData.assign_date,
+        created_by: req.decoded.userInfo.id,
       };
       let result2 = await assetAssignModel.addNew(assignData);
 
@@ -426,6 +428,7 @@ router.post(
           asset_id: getAssetId[0].id,
           user_id: employeeId[0].id,
           assign_date: reqData.assign_date,
+          created_by: req.decoded.userInfo.id,
         };
 
         let res = await assetAssignModel.addNew(assignData);
@@ -472,6 +475,7 @@ router.post(
           asset_id: asset[0].id,
           user_id: userLastData[0].id,
           assign_date: reqData.assign_date,
+          created_by: req.decoded.userInfo.id,
         };
 
         let result2 = await assetAssignModel.addNew(assignEmployeeData);
@@ -1219,6 +1223,7 @@ router.put(
       user_id: reqData.user_id,
       assign_date: reqData.assign_date,
       created_at: current_time,
+      created_by: req.decoded.userInfo.id,
     };
 
     let updateRemarks = await assetModel.updateById(id, {
@@ -1264,7 +1269,7 @@ router.put(
     let employeeData = await employeeModel.getById(userData[0].profile_id);
 
     // get assign time
-    let getAssinDate = await assetAssignModel.getById(id);
+    let getAssignDate = await assetAssignModel.getById(id);
 
     // get assign name
     let getAssignName = await userModel.getById(user_id);
@@ -1273,7 +1278,7 @@ router.put(
 
     try {
       if (employeeData) {
-        let assignDate = new Date(getAssinDate[0].assign_date).toDateString(); // Convert to readable date format
+        let assignDate = new Date(getAssignDate[0].assign_date).toDateString(); // Convert to readable date format
 
         let sendEmail = await commonObject.sentEmailByHtmlFormate(
           userData[0].email,

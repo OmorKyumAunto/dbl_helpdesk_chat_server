@@ -139,11 +139,15 @@ let getTotalList = (key, unit, type,location,status,from_date,to_date) => {
 //   left join location as l l.id = a.location
 //   WHERE  ${searchCondition} ORDER BY id desc `;
 // }
-let assetReport = (unit,start_date,end_date,category,remarks,key) => {
+let assetReport = (unit,start_date,end_date,category,remarks,key,start_purchase_date,end_purchase_date) => {
   let searchCondition = 'a.status != 0';
 
   if (start_date && end_date) {
     searchCondition += ` AND DATE(a.created_at) BETWEEN '${start_date}' AND '${end_date}'`;
+  }
+  
+  if (start_purchase_date && end_purchase_date) {
+    searchCondition += ` AND DATE(a.purchase_date) BETWEEN '${start_purchase_date}' AND '${end_purchase_date}'`;
   }
 
   if (unit) {
@@ -167,10 +171,15 @@ let assetReport = (unit,start_date,end_date,category,remarks,key) => {
     SELECT a.id, a.name, a.category, a.purchase_date, a.serial_number,
            a.po_number, a.price, a.unit_id, au.title as unit_name, a.model,
            a.specification, a.asset_no, a.remarks, a.location as location_id,
-           l.location as location_name
+           l.location as location_name, u.name as asset_created_name, 
+           u.employee_id as asset_created_employee_id, 
+           u.department as asset_created_department,
+           u.designation as asset_created_designation,
+           u.contact_no as asset_created_contact_no
     FROM ${table_name} AS a
     LEFT JOIN dbl_asset_unit AS au ON au.id = a.unit_id
     LEFT JOIN location AS l ON l.id = a.location
+    LEFT JOIN users_view AS u ON u.id = a.created_by
     WHERE ${searchCondition}
     ORDER BY a.id DESC
   `;
@@ -263,7 +272,7 @@ let distributedAssetReport = (unit, start_date, end_date, category, employee_typ
     SELECT id, asset_name, category, purchase_date, serial_number,
            po_number, asset_no, model, specification, device_remarks,
            asset_unit_name, assign_date, location_name, user_name,
-           user_id_no, designation, department
+           user_id_no, designation, department,assign_by_name,assign_by_employee_id,assign_by_department,assign_by_designation,assign_by_contact_no
     FROM ${table_view}
     ${whereClause}
   `;

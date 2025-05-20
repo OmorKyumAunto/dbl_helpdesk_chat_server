@@ -256,16 +256,16 @@ let distributedAssetReport = (unit, start_date, end_date, category, employee_typ
       user_id_no LIKE '%${key}%'
     )`);
   }
-  
-  let whereClause = searchCondition.length ? `WHERE ${searchCondition.join(' AND ')}` : '';
-
   if (employee_type) {
     if (employee_type === "management") {
-      searchCondition.push(`user_id_no LIKE '151%'`);
+      searchCondition.push(`(user_id_no) LIKE '1510%'`);
     } else if (employee_type === "non-management") {
-      searchCondition.push(`user_id_no NOT LIKE '151%'`);
+      searchCondition.push(`(user_id_no) NOT LIKE '1510%'`);
     }
   }
+  let whereClause = searchCondition.length ? `WHERE ${searchCondition.join(' AND ')}` : '';
+
+
 
 
   return `

@@ -71,4 +71,37 @@ const assetReport = z
     });
 
 
-module.exports = { assetReport,disbursementsReport,taskReport };
+// task report
+const ticketReport = z
+.object({
+  key: z.string().optional().refine(value => value === undefined || value.length > 0, {
+    message: 'The search key must be a non-empty string.',
+  }),
+ 
+  category: z
+  .union([
+    z.string().optional(),
+    z.array(z.coerce.number().positive()).optional()
+  ])
+ .transform(value => {
+ if (typeof value === "string") {
+  return value.split(",").map(num => Number(num.trim())); 
+ }
+return value || []; 
+}),
+
+  start_date : dateFormat().optional(),
+  end_date : dateFormat().optional(),
+  user_id : z.string().optional().refine(value => value === undefined || value > 0, {
+    message: 'User id must be a positive number.',
+  }),
+  priority : z.enum(['low', 'high', 'medium','urgent']).optional(),
+  unit : z.string().optional().refine(value => value === undefined || value > 0, {
+    message: 'Unit id must be a positive number.',
+  }),
+  status : z.enum(['solved', 'unsolved', 'forward','inprogress']).optional(),
+  overdue : z.string().optional(),
+});
+
+
+module.exports = { assetReport,disbursementsReport,taskReport, ticketReport};

@@ -11,6 +11,8 @@ const assetReport = z
     unit: z.string().optional(),
     start_date: dateFormat().optional(),
     end_date: dateFormat().optional(),
+    start_purchase_date : dateFormat().optional(),
+    end_purchase_date : dateFormat().optional(),
     category : z.string().optional(),
     remarks: z
     .enum(['assigned', 'in_stock'], {

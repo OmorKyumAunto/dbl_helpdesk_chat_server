@@ -126,9 +126,9 @@ let getTotalList = async (key, unit, type,location,status,from_date,to_date) => 
   });
 }
   
-let assetReport = async (unit,start_date,end_date,category,remarks,key) => {
+let assetReport = async (unit,start_date,end_date,category,remarks,key,start_purchase_date,end_purchase_date) => {
   return new Promise((resolve, reject) => {
-    connectionDblystem.query(queries.assetReport(unit,start_date,end_date,category,remarks,key), (error, result, fields) => {
+    connectionDblystem.query(queries.assetReport(unit,start_date,end_date,category,remarks,key,start_purchase_date,end_purchase_date), (error, result, fields) => {
       if (error) reject(error)
       else resolve(result);
     });

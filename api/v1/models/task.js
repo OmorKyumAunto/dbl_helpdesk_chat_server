@@ -456,10 +456,10 @@ let adminCategoryWiseTaskCount = async (user_id = 0) => {
 };
 
 // combine report
-let combineReport = async (start_date,end_date,unit,user_id) => {
+let combineReport = async (start_date,end_date,user_id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.combineReport(start_date,end_date,unit,user_id),
+      queries.combineReport(start_date,end_date,user_id),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);

@@ -453,7 +453,7 @@ router.get(
     query_data.report_generate_designation = existingDataById[0].designation
    }
 
-  let result = await taskModel.combineReport(start_date,end_date,unit,user_id);
+  let result = await taskModel.combineReport(start_date,end_date,user_id);
 
   query_data.total_count = result.length || 0
   return res.status(200).send({

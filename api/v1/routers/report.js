@@ -10,6 +10,7 @@ const validateRequest = require("../validator/middleware");
 const taskModel = require("../models/task");
 const taskCategoryModel = require("../models/task-categories");
 const raiseTicketModel = require("../models/raise-ticket");
+const adminModel = require("../models/admins ");
 require('dotenv').config();
 
 
@@ -429,7 +430,10 @@ router.get(
     query_data.employee_id = existingDataByUserId[0].employee_id
     query_data.designation = existingDataByUserId[0].designation
     query_data.department = existingDataByUserId[0].department
-    query_data.admin_unit_name = existingUnitDataByUserId[0]?.asset_unit_titles || ""
+    query_data.admin_assign_unit_name = existingUnitDataByUserId[0]?.asset_unit_titles || ""
+
+    let existingPayrollUnitDataByUserId = await adminModel.getByEmployeeId(existingDataByUserId[0].employee_id);
+    query_data.admin_unit_name = existingPayrollUnitDataByUserId[0]?.unit_name || ""
    }
 
    // report generate user info

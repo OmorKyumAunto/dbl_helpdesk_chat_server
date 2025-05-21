@@ -451,7 +451,7 @@ router.get(
     status: 200,
     message: "Ticket report.",
     total: result.length,
-    data: result,
+    data: result[0],
     query_data : query_data
   });
   }

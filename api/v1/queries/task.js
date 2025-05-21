@@ -730,7 +730,14 @@ let combineReport = (start_date, end_date, unit, user_id) => {
     SELECT 
       TIME_FORMAT(SEC_TO_TIME(AVG(CASE WHEN source = 'ticket' THEN TIMESTAMPDIFF(SECOND, created_at, updated_at) END)), '%H:%i:%s') AS total_avg_ticket,
       TIME_FORMAT(SEC_TO_TIME(AVG(CASE WHEN source = 'task' THEN TIMESTAMPDIFF(SECOND, created_at, updated_at) END)), '%H:%i:%s') AS total_avg_task,
-      TIME_FORMAT(SEC_TO_TIME(AVG(TIMESTAMPDIFF(SECOND, created_at, updated_at))), '%H:%i:%s') AS total_avg_ticket_task
+      TIME_FORMAT(SEC_TO_TIME(AVG(TIMESTAMPDIFF(SECOND, created_at, updated_at))), '%H:%i:%s') AS total_avg_ticket_task,
+
+      
+  -- Total counts
+  COUNT(CASE WHEN source = 'ticket' THEN 1 END) AS total_ticket,
+  COUNT(CASE WHEN source = 'task' THEN 1 END) AS total_task,
+  COUNT(*) AS total_ticket_task
+  
     FROM ${combine_report_view_table}
     WHERE ${searchCondition}
   `;

@@ -718,9 +718,6 @@ let combineReport = (start_date, end_date, unit, user_id) => {
     searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59'`;
   }
 
-  if (unit) {
-    searchCondition += ` AND unit_id = '${unit}'`;
-  }
 
   if (user_id) {
     searchCondition += ` AND user_id = '${user_id}'`;

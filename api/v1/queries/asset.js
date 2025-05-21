@@ -525,17 +525,17 @@ let getListOfDashboardGraph = () => {
   let getListOfDashboardGraph2 = () => {
     return `
       SELECT 
-        MONTH(purchase_date) as month,
+        MONTH(created_at) as month,
         COUNT(id) as total_asset 
       FROM 
         dbl_asset 
       WHERE 
         status = 1 
-        AND purchase_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+        AND created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
       GROUP BY 
-        MONTH(purchase_date)
+        MONTH(created_at)
       ORDER BY 
-        MONTH(purchase_date) DESC
+        MONTH(created_at) DESC
     `;
   };
 
@@ -543,7 +543,7 @@ let getListOfDashboardGraph = () => {
   let getListOfDashboardGraph2Admin = () => {
       return `
   SELECT 
-      MONTH(aav.purchase_date) AS month,
+      MONTH(aav.created_at) AS month,
       COUNT(aav.id) AS total_asset
   FROM 
       dbl_users AS u
@@ -558,11 +558,11 @@ let getListOfDashboardGraph = () => {
   WHERE 
       u.role_id = 2 
       AND u.id = ?  -- Replace ? with the actual value in your code
-      AND aav.purchase_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+      AND aav.created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
   GROUP BY 
-      MONTH(aav.purchase_date)
+      MONTH(aav.created_at)
   ORDER BY 
-      MONTH(aav.purchase_date) DESC;
+      MONTH(aav.created_at) DESC;
 
           `
     };

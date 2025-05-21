@@ -53,6 +53,8 @@ let getTaskReport = async (key = '', category,start_date,end_date,task_status,un
 };
 
 
+
+
 let getSuperAdminTotalCount = async (key = '', category,starred,start_date,end_date,task_status,unit_id,user_id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
@@ -453,6 +455,19 @@ let adminCategoryWiseTaskCount = async (user_id = 0) => {
   });
 };
 
+// combine report
+let combineReport = async (start_date,end_date,unit,user_id) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.combineReport(start_date,end_date,unit,user_id),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
 module.exports = {
   getList,
   getActiveList,
@@ -481,5 +496,6 @@ module.exports = {
   superAdminCategoryWiseTaskCount,
   adminCategoryWiseTaskCount,
   taskScheduleList,
-  getTaskReport
+  getTaskReport,
+  combineReport
 };

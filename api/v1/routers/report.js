@@ -422,8 +422,14 @@ router.get(
 
         });
     }
+
+    let existingUnitDataByUserId = await userModel.getUnitByUserId(user_id);
+
     query_data.employee_name = existingDataByUserId[0].name
     query_data.employee_id = existingDataByUserId[0].employee_id
+    query_data.designation = existingDataByUserId[0].designation
+    query_data.department = existingDataByUserId[0].department
+    query_data.admin_unit_name = existingUnitDataByUserId[0]?.asset_unit_titles || ""
    }
 
    // report generate user info

@@ -60,6 +60,16 @@ let getById = async (id = 0) => {
     });
 }
 
+let getUnitByUserId = async (id = 0) => {
+  return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getUnitByUserId(), [id], (error, result, fields) => {
+          if (error) reject(error)
+          else resolve(result)
+      });
+  });
+}
+
+
 let getDataById = async (id = 0) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getDataById(), [id], (error, result, fields) => {
@@ -211,5 +221,6 @@ module.exports = {
     getTotalEmployeeAdminList,
     getDataByAssetId,
     getOnlyEmployeeList,
-    getOnlyTotalEmployeeList
+    getOnlyTotalEmployeeList,
+    getUnitByUserId
 }

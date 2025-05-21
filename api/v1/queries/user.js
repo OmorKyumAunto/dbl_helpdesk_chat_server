@@ -4,6 +4,8 @@ let table_view = "users_view"
 
 let asset_table_view = "asset_assign_user_view"
 
+let user_unit_category_view = "user_unit_category";
+
 
 let getUserByEmail = () => {
     return `SELECT * FROM ${table_name} where  email = ? `;
@@ -24,6 +26,10 @@ let getUserById = () => {
 
 let getById = () => {
     return `SELECT  * FROM ${table_view} where  id = ?  and status != 0 `;
+}
+
+let getUnitByUserId = () => {
+    return `SELECT  asset_unit_titles FROM ${user_unit_category_view} where user_id = ?`;
 }
 
 let getDataByAssetId = () => {
@@ -224,6 +230,6 @@ module.exports = {
     getDataByAssetId,
     getDataByAssetId,
     getOnlyEmployeeList,
-    getOnlyTotalEmployeeList
-
+    getOnlyTotalEmployeeList,
+    getUnitByUserId
 }

@@ -1,6 +1,7 @@
 const isEmpty = require("is-empty");
 let table_name = "dbl_tasks";
 let task_view_table = "task_info_view";
+let combine_report_view_table = "combine_report_view"
 
 let getList = (offset, limit, key, category ,starred,start_date,end_date,task_status,id) => {
   let searchCondition = "1=1 AND is_assign = 0";
@@ -690,6 +691,54 @@ let adminCategoryWiseTaskCount = () => {
 let taskScheduleList = () => {
   return `SELECT id,category_title,start_time,start_date,description,task_code,task_status,quantity,user_name,user_employee_id,user_email FROM ${task_view_table}`;
 };
+
+
+
+// let combineReport = (start_date, end_date, unit, user_id) => {
+//   let searchCondition = "1 = 1"; 
+
+//   if (start_date && end_date) {
+//     searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59'`;
+//   }
+
+//   if (unit) {
+//     searchCondition += ` AND unit_id = '${unit}'`;
+//   }
+
+//   if (user_id) {
+//     searchCondition += ` AND user_id = '${user_id}'`;
+//   }
+
+//   return `SELECT * FROM ${combine_report_view_table} WHERE ${searchCondition}`;
+// };
+let combineReport = (start_date, end_date, unit, user_id) => {
+  let searchCondition = "1 = 1";
+
+  if (start_date && end_date) {
+    searchCondition += ` AND created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59'`;
+  }
+
+  if (unit) {
+    searchCondition += ` AND unit_id = '${unit}'`;
+  }
+
+  if (user_id) {
+    searchCondition += ` AND user_id = '${user_id}'`;
+  }
+
+  return `
+    SELECT 
+      TIME_FORMAT(SEC_TO_TIME(AVG(CASE WHEN source = 'ticket' THEN TIMESTAMPDIFF(SECOND, created_at, updated_at) END)), '%H:%i:%s') AS total_avg_ticket,
+      TIME_FORMAT(SEC_TO_TIME(AVG(CASE WHEN source = 'task' THEN TIMESTAMPDIFF(SECOND, created_at, updated_at) END)), '%H:%i:%s') AS total_avg_task,
+      TIME_FORMAT(SEC_TO_TIME(AVG(TIMESTAMPDIFF(SECOND, created_at, updated_at))), '%H:%i:%s') AS total_avg_ticket_task
+    FROM ${combine_report_view_table}
+    WHERE ${searchCondition}
+  `;
+};
+
+
+
+
 module.exports = {
   getList,
   getActiveList,
@@ -718,5 +767,6 @@ module.exports = {
   superAdminCategoryWiseTaskCount,
   adminCategoryWiseTaskCount,
   taskScheduleList,
-  getTaskReport
+  getTaskReport,
+  combineReport
 };

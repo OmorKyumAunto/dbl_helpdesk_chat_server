@@ -154,7 +154,8 @@ let superAdminPermission = [
   "assetReportList",
   "disbursementsReportList",
   "taskReport",
-  "ticketReport"
+  "ticketReport",
+  "combineReport"
 ];
 
 let adminPermission = [

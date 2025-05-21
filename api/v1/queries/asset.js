@@ -235,7 +235,7 @@ let distributedAssetReport = (unit, start_date, end_date, category, employee_typ
   let searchCondition = [];
 
   if (start_date && end_date) {
-    searchCondition.push(`DATE(asset_create_date) BETWEEN '${start_date}' AND '${end_date}'`);
+    searchCondition.push(`DATE(assign_date) BETWEEN '${start_date}' AND '${end_date}'`);
   }
 
   if (unit) {

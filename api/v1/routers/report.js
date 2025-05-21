@@ -449,7 +449,7 @@ router.get(
   return res.status(200).send({
     success: true,
     status: 200,
-    message: "Ticket report.",
+    message: "Combine  report.",
     total: result.length,
     data: result[0],
     query_data : query_data

@@ -711,7 +711,7 @@ let taskScheduleList = () => {
 
 //   return `SELECT * FROM ${combine_report_view_table} WHERE ${searchCondition}`;
 // };
-let combineReport = (start_date, end_date, unit, user_id) => {
+let combineReport = (start_date, end_date,user_id) => {
   let searchCondition = "1 = 1";
 
   if (start_date && end_date) {

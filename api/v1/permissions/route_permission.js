@@ -293,7 +293,12 @@ let adminPermission = [
   "taskPercentageData",
   "todayTaskList",
   "taskDashboardGraphData",
-  "categoryWiseTicketCount"
+  "categoryWiseTicketCount",
+  "assetReportList",
+  "disbursementsReportList",
+  "taskReport",
+  "ticketReport",
+  "combineReport"
 ];
 
 let employeePermission = [

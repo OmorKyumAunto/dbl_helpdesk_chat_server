@@ -78,7 +78,14 @@ router.post('/verify-otp', async (req, res) => {
     }
 
     let getRecentOtp = await forgetPasswordModel.getRecentOtp(existingEmail[0].id)
+    if (!getRecentOtp.length) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "This email not register.",
 
+        });
+    }
     if(getRecentOtp[0].is_matched === 1){
         return res.status(400).send({
             "success": false,
@@ -175,7 +182,7 @@ router.post('/reset-password',[resetPassTokenVerify], async (req, res) => {
     }
 
    let password = bcrypt.hashSync(reqData.newPassword.toString(), 10);
-   let result = await userModel.updateById(id,{password : password});
+   let result = await userModel.updateById({password : password},id);
 
     await common.passwordResetSuccessful(existingEmail[0].email, 'Password Reset Completed', existingEmail[0].name );
 

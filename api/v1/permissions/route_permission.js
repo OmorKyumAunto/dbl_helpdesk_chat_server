@@ -298,7 +298,11 @@ let adminPermission = [
   "disbursementsReportList",
   "taskReport",
   "ticketReport",
-  "combineReport"
+  "combineReport",
+  "ticketCategoryActiveList",
+  "ticketCategoryList",
+  "taskCategoriesList",
+  "taskCategoriesList"
 ];
 
 let employeePermission = [

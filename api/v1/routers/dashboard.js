@@ -42,9 +42,6 @@ router.get(
     try {
       const { id, role_id } = req.decoded.userInfo;
 
-      // let resultAssign = await assetModel.getListOfDashboardGraph();
-      // let resultTotal = await assetModel.getListOfDashboardGraph2();
-
       let resultAssign;
       let resultTotal;
 

@@ -699,7 +699,7 @@ router.delete(
       updated_by: req.decoded.userInfo.id,
     };
 
-    let userDataUpdate = await userModel.updateById(id, userData);
+    let userDataUpdate = await userModel.updateById(userData,id);
 
     if (
       userDataUpdate.affectedRows == undefined ||
@@ -1112,7 +1112,7 @@ router.post(
       profile_id: getPresentData[0].id,
     };
 
-    let user = await userModel.updateById(id, userData);
+    let user = await userModel.updateById(userData,id);
 
     if (user.affectedRows == undefined || user.affectedRows < 1) {
       return res.status(500).send({
@@ -1185,7 +1185,7 @@ router.post(
       profile_id: getPresentData[0].id,
     };
 
-    let user = await userModel.updateById(id, userData);
+    let user = await userModel.updateById(userData,id);
 
     if (user.affectedRows == undefined || user.affectedRows < 1) {
       return res.status(500).send({
@@ -1289,9 +1289,9 @@ router.post(
 
     if (bcrypt.compareSync(old_password, userData[0].password)) {
       new_password = bcrypt.hashSync(new_password, 10);
-      let result = await userModel.updateById(req.decoded.userInfo.id, {
+      let result = await userModel.updateById({
         password: new_password,
-      });
+      },req.decoded.userInfo.id,);
 
       if (!isEmpty(result) && result.affectedRows == 0) {
         return res.status(500).send({

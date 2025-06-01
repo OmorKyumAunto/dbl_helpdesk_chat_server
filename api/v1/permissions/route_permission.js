@@ -302,7 +302,9 @@ let adminPermission = [
   "ticketCategoryActiveList",
   "ticketCategoryList",
   "taskCategoriesList",
-  "taskCategoriesList"
+  "taskCategoriesList",
+  "onBehaveTicket",
+  "selfAssetList"
 ];
 
 let employeePermission = [

@@ -303,7 +303,7 @@ let adminPermission = [
   "ticketCategoryList",
   "taskCategoriesList",
   "taskCategoriesList",
-  "onBehaveTicket",
+  "onBehalfTicket",
   "selfAssetList"
 ];
 
@@ -421,8 +421,7 @@ let employeePermission = [
   "createTask",
   "taskDelete",
   "taskStart",
-  "taskEnd",
-
+  "taskEnd"
 ];
 
 let getRouterPermissionList = async (id = 0) => {

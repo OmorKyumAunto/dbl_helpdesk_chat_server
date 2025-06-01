@@ -233,6 +233,20 @@ let getById = async (id = 0) => {
   });
 };
 
+
+let superAdminData = async (id = 0) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.superAdminData(),
+      [id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
 let adminWiseUnitAndCategory = async (
   asset_unit_id = 0,
   ticket_category_id = 0
@@ -313,6 +327,21 @@ let addNew = async (info) => {
     );
   });
 };
+
+let addNewTrackingData = async (info) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.addNew(),
+      [info],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
 let updateById = async (id = 0, data = {}) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
@@ -795,5 +824,7 @@ module.exports = {
   adminWiseUnitAndCategory,
   getTicketTotalAvgTime,
   getTicketAdminTotalAvgTime,
-  ticketReport
+  ticketReport,
+  addNewTrackingData,
+  superAdminData
 };

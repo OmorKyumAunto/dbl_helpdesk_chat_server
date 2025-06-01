@@ -1203,7 +1203,7 @@ router.post(
   }
 );
 
-// api complete baki ache
+// user wise asset
 router.get(
   "/employee-asset-assign-list",
   [verifyToken, routeAccessChecker("employeeAssignList")],
@@ -1228,6 +1228,37 @@ router.get(
       success: true,
       status: 200,
       message: "Employee Wise asset List.",
+      count: result.length,
+      data: result,
+    });
+  }
+);
+
+// self asset
+router.get(
+  "/self-asset-list/:id",
+  [verifyToken, routeAccessChecker("selfAssetList")],
+  async (req, res) => {
+    let id = req.params.id
+    let userProfileId = await userModel.getById(id);
+    if (isEmpty(userProfileId)) {
+      return res.status(404).send({
+        success: false,
+        status: 404,
+        message: "Not found.",
+      });
+    }
+
+    let result = await userModel.getDataByAssetId(id);
+
+    // for (let index = 0; index < array.length; index++) {
+    //   const element = array[index];
+
+    // }
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Self asset List.",
       count: result.length,
       data: result,
     });

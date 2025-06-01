@@ -1221,8 +1221,8 @@ router.post(
         reqData.cc = null;
       }
       delete reqData.user_id
-      reqData.is_on_behave = 1,
-      reqData.on_behave_created_by = my_id
+      reqData.is_on_behalf = 1,
+      reqData.on_behalf_created_by = my_id
       reqData.created_by = user[0].id
 
       let result = await raiseTicketModel.addNew(reqData);

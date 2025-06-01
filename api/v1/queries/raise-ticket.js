@@ -2,6 +2,7 @@ const isEmpty = require("is-empty");
 let table_name = "dbl_raise_ticket";
 let admin_wise_ticket_view = "admin_wise_ticket";
 let super_admin_ticket_view = "super_admin_ticket_view";
+let re_raise_table_name = "dbl_ticket_re_raise_tracking"
 
 let getList = () => {
   return `SELECT id,location, unit_id FROM ${table_name} WHERE status = 1 ORDER BY id DESC `;
@@ -320,6 +321,11 @@ let getById = () => {
   return `SELECT * FROM ${table_name} where  id = ?  and status = 1 `; // added status = 1
 };
 
+let superAdminData = () => {
+  return `SELECT * FROM ${super_admin_ticket_view} where  ticket_table_id = ? `; 
+};
+
+
 let adminWiseUnitAndCategory = () => {
   return `SELECT * FROM admin_wise_ticket where  asset_unit_id = ?  and ticket_category_id = ? `;
 };
@@ -335,6 +341,11 @@ let adminWiseTicketDetails = () => {
 let addNew = () => {
   return `INSERT INTO ${table_name} SET ?`;
 };
+
+let addNewTrackingData = () => {
+  return `INSERT INTO ${re_raise_table_name} SET ?`;
+};
+
 
 const updateById = () => {
   return `UPDATE ${table_name} SET ? WHERE id = ?`;
@@ -867,5 +878,7 @@ module.exports = {
   adminWiseUnitAndCategory,
   getTicketTotalAvgTime,
   getTicketAdminTotalAvgTime,
-  ticketReport
+  ticketReport,
+  addNewTrackingData,
+  superAdminData
 };

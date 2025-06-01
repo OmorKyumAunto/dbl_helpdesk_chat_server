@@ -1250,11 +1250,7 @@ router.get(
     }
 
     let result = await userModel.getDataByAssetId(id);
-
-    // for (let index = 0; index < array.length; index++) {
-    //   const element = array[index];
-
-    // }
+    
     return res.status(200).send({
       success: true,
       status: 200,

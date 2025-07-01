@@ -1078,7 +1078,7 @@ router.post(
         message: "Employee data not found.",
       });
     }
-
+    let getData = await employeeModel.getById(employeeData[0].profile_id);
     let data = {
       employee_id: employeeData[0].employee_id,
       name: employeeData[0].name,
@@ -1093,10 +1093,10 @@ router.post(
       line_of_business: employeeData[0].line_of_business,
       grade: employeeData[0].grade,
       licenses: employeeData[0].licenses,
-      location : getData[0].location,
-      date_of_birth : getData[0].date_of_birth,
-      line_manager_name : getData[0].line_manager_name,
-      line_manager_id : getData[0].line_manager_id,
+      location : getData[0].location || '',
+      date_of_birth : getData[0].date_of_birth || '',
+      line_manager_name : getData[0].line_manager_name || '',
+      line_manager_id : getData[0].line_manager_id || '',
     };
 
     let result = await adminModel.addNew(data);

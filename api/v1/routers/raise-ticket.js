@@ -1055,207 +1055,207 @@ router.put(
 );
 
 
-// router.post(
-//   "/on-behalf-ticket",
-//   [verifyToken, routeAccessChecker("onBehalfTicket"), upload.single("attachment")],
-//   async (req, res, next) => {
-//     try {
-//       if (req.file) {
-//         req.body.attachment = path.basename(req.file.path);
-//       } else {
-//         req.body.attachment = null;
-//       }
+router.post(
+  "/on-behalf-ticket",
+  [verifyToken, routeAccessChecker("onBehalfTicket"), upload.single("attachment")],
+  async (req, res, next) => {
+    try {
+      if (req.file) {
+        req.body.attachment = path.basename(req.file.path);
+      } else {
+        req.body.attachment = null;
+      }
 
-//       let reqData = {
-//         unit_id: parseInt(req.body.unit_id),
-//         category_id: parseInt(req.body.category_id),
-//         priority: req.body.priority,
-//         subject: req.body.subject,
-//         cc: parseInt(req.body.cc),
-//         description: req.body.description,
-//         attachment: req.body.attachment,
-//         user_id : req.body.user_id
-//       };
-//       if (req.body.asset_id) {
-//         reqData.asset_id = parseInt(req.body.asset_id);
-//       }
+      let reqData = {
+        unit_id: parseInt(req.body.unit_id),
+        category_id: parseInt(req.body.category_id),
+        priority: req.body.priority,
+        subject: req.body.subject,
+        cc: parseInt(req.body.cc),
+        description: req.body.description,
+        attachment: req.body.attachment,
+        user_id : req.body.user_id
+      };
+      if (req.body.asset_id) {
+        reqData.asset_id = parseInt(req.body.asset_id);
+      }
 
-//       const my_id = req.decoded.userInfo.id;
+      const my_id = req.decoded.userInfo.id;
 
-//       let checkEmployee = await userModel.getDataById(my_id);
-//       if (checkEmployee[0].role_id !== 2) {
-//         return res.status(400).send({
-//           success: false,
-//           status: 400,
-//           message: "Your are not admin.",
-//         });
-//       }
+      let checkEmployee = await userModel.getDataById(my_id);
+      if (checkEmployee[0].role_id !== 2) {
+        return res.status(400).send({
+          success: false,
+          status: 400,
+          message: "Your are not admin.",
+        });
+      }
 
-//       if (!reqData.unit_id) {
-//         return res.status(400).send({
-//           success: false,
-//           status: 400,
-//           message: "Unit should not be empty.",
-//         });
-//       }
+      if (!reqData.unit_id) {
+        return res.status(400).send({
+          success: false,
+          status: 400,
+          message: "Unit should not be empty.",
+        });
+      }
 
-//       let unit = await assetUnitModel.getById(reqData.unit_id);
-//       if (!unit.length) {
-//         return res.status(404).send({
-//           success: false,
-//           status: 404,
-//           message: "This unit not found",
-//         });
-//       }
+      let unit = await assetUnitModel.getById(reqData.unit_id);
+      if (!unit.length) {
+        return res.status(404).send({
+          success: false,
+          status: 404,
+          message: "This unit not found",
+        });
+      }
 
-//       if (!reqData.category_id) {
-//         return res.status(400).send({
-//           success: false,
-//           status: 400,
-//           message: "Category should not be empty.",
-//         });
-//       }
+      if (!reqData.category_id) {
+        return res.status(400).send({
+          success: false,
+          status: 400,
+          message: "Category should not be empty.",
+        });
+      }
 
-//       if (reqData.asset_id) {
-//         let asset = await assetAssignModel.getByIdUserWise(
-//           reqData.asset_id,
-//           my_id
-//         );
-//         if (!asset) {
-//           return res.status(404).send({
-//             success: false,
-//             status: 404,
-//             message: "You are not assign this asset.",
-//           });
-//         }
-//       }
+      if (reqData.asset_id) {
+        let asset = await assetAssignModel.getByIdUserWise(
+          reqData.asset_id,
+          my_id
+        );
+        if (!asset) {
+          return res.status(404).send({
+            success: false,
+            status: 404,
+            message: "You are not assign this asset.",
+          });
+        }
+      }
 
-//       let category = await ticketCategoryModel.getById(reqData.category_id);
-//       if (!category.length) {
-//         return res.status(404).send({
-//           success: false,
-//           status: 404,
-//           message: "This category not found",
-//         });
-//       }
+      let category = await ticketCategoryModel.getById(reqData.category_id);
+      if (!category.length) {
+        return res.status(404).send({
+          success: false,
+          status: 404,
+          message: "This category not found",
+        });
+      }
 
-//       if (!reqData.priority) {
-//         return res.status(400).send({
-//           success: false,
-//           status: 400,
-//           message: "Priority should not be empty.",
-//         });
-//       }
+      if (!reqData.priority) {
+        return res.status(400).send({
+          success: false,
+          status: 400,
+          message: "Priority should not be empty.",
+        });
+      }
 
-//       if (!reqData.subject) {
-//         return res.status(400).send({
-//           success: false,
-//           status: 400,
-//           message: "Subject should not be empty.",
-//         });
-//       }
-//       if (!reqData.description) {
-//         return res.status(400).send({
-//           success: false,
-//           status: 400,
-//           message: "Description should not be empty.",
-//         });
-//       }
+      if (!reqData.subject) {
+        return res.status(400).send({
+          success: false,
+          status: 400,
+          message: "Subject should not be empty.",
+        });
+      }
+      if (!reqData.description) {
+        return res.status(400).send({
+          success: false,
+          status: 400,
+          message: "Description should not be empty.",
+        });
+      }
 
-//       reqData.ticket_id = common.rendomGenerator();
-//       if (!reqData.user_id) {
-//         return res.status(400).send({
-//           success: false,
-//           status: 400,
-//           message: "Please select a user.",
-//         });
-//       }
+      reqData.ticket_id = common.rendomGenerator();
+      if (!reqData.user_id) {
+        return res.status(400).send({
+          success: false,
+          status: 400,
+          message: "Please select a user.",
+        });
+      }
 
-//       let user = await userModel.getById(reqData.user_id);
-//       let data = {
-//         ticket_id: reqData.ticket_id,
-//         subject: reqData.subject,
-//         priority:
-//           reqData.priority.charAt(0).toUpperCase() +
-//           reqData.priority.slice(1).toLowerCase(),
-//         unit_name: unit[0].title,
-//         created_by: user[0].name,
-//         created_employee_id: user[0].employee_id,
-//         ticket_message: reqData.description,
-//       };
+      let user = await userModel.getById(reqData.user_id);
+      let data = {
+        ticket_id: reqData.ticket_id,
+        subject: reqData.subject,
+        priority:
+          reqData.priority.charAt(0).toUpperCase() +
+          reqData.priority.slice(1).toLowerCase(),
+        unit_name: unit[0].title,
+        created_by: user[0].name,
+        created_employee_id: user[0].employee_id,
+        ticket_message: reqData.description,
+      };
 
-//       let getAdminEmail = await userModel.getById(my_id);
+      let getAdminEmail = await userModel.getById(my_id);
 
-//       let ccData = null;
+      let ccData = null;
 
-//       if (reqData.cc) {
-//         const ccId = parseInt(reqData.cc);
-//         if (!isNaN(ccId)) {
-//           const ccEmail = await userModel.getById(ccId);
-//           if (ccEmail.length) {
-//             ccData = {
-//               supervisor_name: ccEmail[0]?.name || "",
-//               supervisor_email: ccEmail[0]?.email || "",
-//               ticket_id: reqData.ticket_id,
-//               subject: reqData.subject,
-//               priority:
-//                 reqData.priority.charAt(0).toUpperCase() +
-//                 reqData.priority.slice(1).toLowerCase(),
-//               unit_name: unit[0].title,
-//               created_by: user[0].name,
-//               created_employee_id: user[0].employee_id,
-//               ticket_message: reqData.description,
-//             };
-//             reqData.cc = ccEmail[0].email;
-//           } else {
-//             reqData.cc = null;
-//           }
-//         } else {
-//           reqData.cc = null;
-//         }
-//       } else {
-//         reqData.cc = null;
-//       }
-//       delete reqData.user_id
-//       reqData.is_on_behalf = 1,
-//       reqData.on_behalf_created_by = my_id
-//       reqData.created_by = user[0].id
+      if (reqData.cc) {
+        const ccId = parseInt(reqData.cc);
+        if (!isNaN(ccId)) {
+          const ccEmail = await userModel.getById(ccId);
+          if (ccEmail.length) {
+            ccData = {
+              supervisor_name: ccEmail[0]?.name || "",
+              supervisor_email: ccEmail[0]?.email || "",
+              ticket_id: reqData.ticket_id,
+              subject: reqData.subject,
+              priority:
+                reqData.priority.charAt(0).toUpperCase() +
+                reqData.priority.slice(1).toLowerCase(),
+              unit_name: unit[0].title,
+              created_by: user[0].name,
+              created_employee_id: user[0].employee_id,
+              ticket_message: reqData.description,
+            };
+            reqData.cc = ccEmail[0].email;
+          } else {
+            reqData.cc = null;
+          }
+        } else {
+          reqData.cc = null;
+        }
+      } else {
+        reqData.cc = null;
+      }
+      delete reqData.user_id
+      reqData.is_on_behalf = 1,
+      reqData.on_behalf_created_by = my_id
+      reqData.created_by = user[0].id
 
-//       let result = await raiseTicketModel.addNew(reqData);
+      let result = await raiseTicketModel.addNew(reqData);
 
-//       // send ticket raise email
-//       await common.sentTicketEmail(
-//         getAdminEmail[0].email,
-//         "Ticket Notification",
-//         data
-//       );
+      // send ticket raise email
+      await common.sentTicketEmail(
+        getAdminEmail[0].email,
+        "Ticket Notification",
+        data
+      );
 
-//       if (reqData.cc) {
-//         await common.sentTicketCcEmail(
-//           ccData.supervisor_email,
-//           "Ticket Notification",
-//           ccData
-//         );
-//       }
+      if (reqData.cc) {
+        await common.sentTicketCcEmail(
+          ccData.supervisor_email,
+          "Ticket Notification",
+          ccData
+        );
+      }
 
-//       if (result.affectedRows == undefined || result.affectedRows < 1) {
-//         return res.status(500).send({
-//           success: false,
-//           status: 500,
-//           message: "Something Wrong in system database.",
-//         });
-//       }
+      if (result.affectedRows == undefined || result.affectedRows < 1) {
+        return res.status(500).send({
+          success: false,
+          status: 500,
+          message: "Something Wrong in system database.",
+        });
+      }
 
-//       return res.status(201).send({
-//         success: true,
-//         status: 201,
-//         message: "Raise ticket added Successfully.",
-//       });
-//     } catch (error) {
-//       next(error);
-//     }
-//   }
-// );
+      return res.status(201).send({
+        success: true,
+        status: 201,
+        message: "Raise ticket added Successfully.",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 
 // router.put(

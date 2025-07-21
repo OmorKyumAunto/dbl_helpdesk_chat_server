@@ -1363,7 +1363,6 @@ router.put(
             let ccData = null;
 
       if (re_create_data.cc) {
-        if (!isNaN(ccId)) {
           const ccEmail = await userModel.getById(re_create_data.cc);
           if (ccEmail.length) {
             ccData = {
@@ -1383,9 +1382,7 @@ router.put(
           } else {
             re_create_data.cc = null;
           }
-        } else {
-          re_create_data.cc = null;
-        }
+
       } else {
         re_create_data.cc = null;
       }

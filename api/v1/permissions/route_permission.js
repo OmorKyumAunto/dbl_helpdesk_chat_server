@@ -421,7 +421,8 @@ let employeePermission = [
   "createTask",
   "taskDelete",
   "taskStart",
-  "taskEnd"
+  "taskEnd",
+  "ticketReraise"
 ];
 
 let getRouterPermissionList = async (id = 0) => {

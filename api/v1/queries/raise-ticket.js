@@ -188,7 +188,10 @@ let getAllListUserWise = (
         slac.response_time_value AS response_time_value,
         slac.response_time_unit AS response_time_unit,
         slac.resolve_time_value AS resolve_time_value,
-        slac.resolve_time_unit AS resolve_time_unit
+        slac.resolve_time_unit AS resolve_time_unit,
+        onBu.name As on_behalf_created_name,
+        onBu.employee_id As on_behalf_created_employee_id
+        
 
     FROM 
         dbl_raise_ticket AS rt
@@ -205,6 +208,7 @@ let getAllListUserWise = (
     LEFT JOIN 
         dbl_ticket_forward AS tf ON tf.ticket_id = rt.id
     LEFT JOIN dbl_sla_configuration as slac ON slac.priority = rt.priority
+    LEFT JOIN users_view as onBu ON onBu.id = rt.on_behalf_created_by
 
 
     ${whereClause}

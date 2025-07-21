@@ -155,7 +155,8 @@ let superAdminPermission = [
   "disbursementsReportList",
   "taskReport",
   "ticketReport",
-  "combineReport"
+  "combineReport",
+  "employeeAssignAssetIdWise"
 ];
 
 let adminPermission = [
@@ -304,7 +305,8 @@ let adminPermission = [
   "taskCategoriesList",
   "taskCategoriesList",
   "onBehalfTicket",
-  "selfAssetList"
+  "selfAssetList",
+  "employeeAssignAssetIdWise"
 ];
 
 let employeePermission = [
@@ -422,7 +424,8 @@ let employeePermission = [
   "taskDelete",
   "taskStart",
   "taskEnd",
-  "ticketReraise"
+  "ticketReraise",
+  "employeeAssignAssetIdWise"
 ];
 
 let getRouterPermissionList = async (id = 0) => {

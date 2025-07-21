@@ -1234,6 +1234,34 @@ router.get(
   }
 );
 
+
+router.get(
+  "/employee-asset/:id",
+  [verifyToken, routeAccessChecker("employeeAssignAssetIdWise")],
+  async (req, res) => {
+    let id = parseInt(req.params.id);
+    let userProfileId = await userModel.getById(id);
+    if (isEmpty(userProfileId)) {
+      return res.status(404).send({
+        success: false,
+        status: 404,
+        message: "Not found.",
+      });
+    }
+
+    let result = await userModel.getDataByAssetId(id);
+
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Employee Wise asset List.",
+      count: result.length,
+      data: result,
+    });
+  }
+);
+
+
 // self asset
 router.get(
   "/self-asset-list/:id",

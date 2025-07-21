@@ -198,7 +198,7 @@ router.post(
         });
       }
 
-      reqData.ticket_id = common.rendomGenerator();
+      reqData.ticket_id = common.randomGenerator();
       let user = await userModel.getById(req.decoded.userInfo.id);
       let data = {
         ticket_id: reqData.ticket_id,
@@ -1162,7 +1162,7 @@ router.post(
         });
       }
 
-      reqData.ticket_id = common.rendomGenerator();
+      reqData.ticket_id = common.randomGenerator();
       if (!reqData.user_id) {
         return res.status(400).send({
           success: false,
@@ -1230,6 +1230,22 @@ router.post(
         data
       );
 
+      const ticketEmployeeData = {
+        employee_name : user[0].name,
+        ticket_id : reqData.ticket_id,
+        subject : reqData.subject,
+        priority : reqData.priority,
+        created_by : getAdminEmail[0].name,
+        employee_id : user[0].employee_id,
+        unit_name : unit[0].title,
+      }
+      // send email employee
+      await common.sentTicketOnBehalfEmail(
+        user[0].email,
+        "On Behalf Ticket Notification",
+        ticketEmployeeData
+      );
+
       if (reqData.cc) {
         await common.sentTicketCcEmail(
           ccData.supervisor_email,
@@ -1283,6 +1299,13 @@ router.put(
           message: "This ticket is not created you",
         });
       }
+     if (existingDataById[0].ticket_status !== 'solved') {
+        return res.status(400).send({
+          success: false,
+          status: 400,
+          message: "This ticket are not solved.",
+        });
+      }
   
       let user = await userModel.getById(self_id);
       let unit = await assetUnitModel.getById(existingDataById[0].unit_id);
@@ -1312,7 +1335,7 @@ router.put(
         cc : existingDataById[0]?.cc || '',
         description : existingDataById[0]?.description || '',
         attachment : existingDataById[0]?.attachment || '',
-        ticket_status : existingDataById[0]?.ticket_status || '',
+        ticket_status : 'unsolved',
         solved_by : existingDataById[0]?.solved_by || '',
         is_on_behalf : existingDataById[0]?.is_on_behalf || null,
         on_behalf_created_by : existingDataById[0]?.is_on_behalf_created_by || null,

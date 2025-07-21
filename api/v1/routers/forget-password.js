@@ -25,7 +25,7 @@ router.post('/send-otp', async (req, res) => {
         });
     }
 
-   let otp = await common.rendomGenerator()
+   let otp = await common.randomGenerator()
 
    let otpData = {
      user_id : existingEmail[0].id,

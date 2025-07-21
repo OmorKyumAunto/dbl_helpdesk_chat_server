@@ -256,8 +256,104 @@ const ticketSolvedEmailTemplate = async (data) => {
 }
 
 
+const ticketOnBehalf = async (data) => {
+  return `
+
+<div style="font-family: Arial, sans-serif; background-color: #f7f9fc; color: #444444; line-height: 1.6; width: 100%; padding: 20px 0;">
+
+  <!-- Main Container -->
+  <table align="center" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 15px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); overflow: hidden;">
+
+    <!-- Header -->
+    <tr>
+      <td style="background-color: #003366; padding: 40px; text-align: center; color: white; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+        <h1 style="font-size: 30px; margin: 0; font-weight: 700; letter-spacing: 1px;">Ticket Submitted On Your Behalf</h1>
+        <p style="font-size: 16px; margin-top: 10px;">Please review your ticket details</p>
+      </td>
+    </tr>
+
+    <!-- Main Content -->
+    <tr>
+      <td style="padding: 40px; color: #444444; font-size: 16px;">
+        <h2 style="font-size: 24px; color: #003366; margin-top: 0;">Dear ${data.employee_name},</h2>
+        <p style="margin-bottom: 20px;">A ticket has been created on your behalf. Below are the details:</p>
+
+        <!-- Ticket Details Box -->
+        <div style="background-color: #f4f8fc; border-radius: 10px; border: 1px solid #dde6f2; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); padding: 25px; font-size: 16px;">
+          <table style="width: 100%; font-size: 16px; border-spacing: 0; line-height: 1.8;">
+            <tr>
+              <td style="font-weight: bold; padding: 8px 0; width: 40%; color: #003366;">Ticket ID:</td>
+              <td style="padding: 8px 0;">${data.ticket_id}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 8px 0; color: #003366;">Subject:</td>
+              <td style="padding: 8px 0;">${data.subject}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 8px 0; color: #003366;">Priority:</td>
+              <td style="padding: 8px 0; color: ${data.priority === 'High' ? '#d9534f' : data.priority === 'Medium' ? '#f0ad4e' : '#5cb85c'};">
+                ${data.priority}
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 8px 0; color: #003366;">Created By:</td>
+              <td style="padding: 8px 0;">${data.created_by}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 8px 0; color: #003366;">Created For (You):</td>
+              <td style="padding: 8px 0;">${data.employee_name} (${data.employee_id})</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 8px 0; color: #003366;">Ticketing Unit:</td>
+              <td style="padding: 8px 0;">${data.unit_name}</td>
+            </tr>
+          </table>
+        </div>
+
+        <p style="margin-top: 30px;">
+          You can monitor this ticket and provide additional details by logging in to the
+          <a href="https://helpdesk.dbl-group.com/" style="color: #003366; text-decoration: underline;">IT Ticketing System</a>.
+        </p>
+
+        <!-- Closing -->
+        <p style="margin-top: 40px; font-weight: bold;">Best regards,</p>
+        <p style="font-weight: bold; color: #003366;">IT Support Team</p>
+      </td>
+    </tr>
+
+    <!-- Footer -->
+    <tr>
+      <td style="background-color: #003366; padding: 15px; text-align: center; color: white; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;">
+        <p style="font-size: 14px;">This is an automated email. Please do not reply.</p>
+      </td>
+    </tr>
+
+  </table>
+</div>
+
+<!-- Responsive Styling -->
+<style>
+@media (max-width: 600px) {
+  table {
+    width: 100% !important;
+  }
+  h1, h2, p {
+    font-size: 90%;
+  }
+  td {
+    font-size: 90%;
+  }
+}
+</style>
+
+
+
+  `
+}
+
 module.exports = {
   ticketEmail,
   ticketCcEmail,
-  ticketSolvedEmailTemplate
+  ticketSolvedEmailTemplate,
+  ticketOnBehalf
 }

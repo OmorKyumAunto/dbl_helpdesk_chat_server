@@ -2,7 +2,7 @@ const crypto = require("crypto");
 require('dotenv').config();
 const nodemailer = require('nodemailer');
 const otpGenerator = require('otp-generator')
-const {ticketEmail,ticketCcEmail,ticketSolvedEmailTemplate} = require('../email-template/ticketEmail')
+const {ticketEmail,ticketCcEmail,ticketSolvedEmailTemplate,ticketOnBehalf} = require('../email-template/ticketEmail')
 const {commentEmployeeToAdmin,commentAdminToEmployee} = require('../email-template/ticket-comment')
 const {forgetPasswordSendOtpTemplate,resetPasswordComplete} = require('../email-template/forget-password')
 const { taskForwardEmailTemplate,remainingTaskEmailTemplate} = require('../email-template/task-email')
@@ -42,7 +42,7 @@ let hashingUsingCrypto = async (text = "") => {
     const iv = Buffer.from("81dFxOpX7BPG1UpZQPcS6w==", "base64");
     const algorithm = "aes-256-cbc";
 
-    // Creating Cipheriv with its parameter
+    // Creating Cipher with its parameter
     let cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
 
     // Updating text
@@ -453,6 +453,44 @@ let taskRemainingEmail = async (receiverEmailAddress, subject,data,cc) => {
     
 }
 
+let sentTicketOnBehalfEmail = async (receiverEmailAddress, subject,data,cc) => {
+  // set transport
+      var transporter = nodemailer.createTransport({
+          service:process.env.send_email_service,
+          host:process.env.send_email_host,
+          port: process.env.send_email_port,
+          secure: false,
+          auth: {
+              user: process.env.send_email_address,
+              pass: process.env.send_email_password
+          }
+      });
+  
+      var mailOptions = {
+          from: process.env.send_email_address,
+          to: receiverEmailAddress,
+          subject: subject,
+          html: await ticketOnBehalf(data)
+      };
+  
+
+    // send email 
+      transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+              return {
+                  success: false,
+                  message: "Email send fail"
+              }
+          } else {
+              return {
+                  success: true,
+                  message: "Email send successfully done"
+              }
+          }
+      });
+
+      
+}
 
 
 let getHTMLBody = async (name = "", asset_name = "", type = "", asset_serial_number = "",assign_date = "",assign_by = "",unit_name="") => {
@@ -545,7 +583,7 @@ let getHTMLBody = async (name = "", asset_name = "", type = "", asset_serial_num
 `
 }
 
-const rendomGenerator = () => {
+const randomGenerator = () => {
   return otpGenerator.generate(6, { 
       digits: true, 
       upperCaseAlphabets: false, 
@@ -595,7 +633,7 @@ module.exports = {
     decodingUsingCrypto,
     hashingUsingCrypto,
     sentEmailByHtmlFormate,
-    rendomGenerator,
+    randomGenerator,
     sentTicketEmail,
     sentTicketCcEmail,
     forgetPasswordSendOtp,
@@ -607,5 +645,6 @@ module.exports = {
     convertTimeStringTo12Hour,
     convertDateFormat,
     taskRemainingEmail,
-    checkEmailFormat
+    checkEmailFormat,
+    sentTicketOnBehalfEmail
 }

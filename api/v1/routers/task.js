@@ -243,7 +243,7 @@ router.post(
         message: "You can not assign your id.",
       });
     }
-    reqData.task_code = common.rendomGenerator();
+    reqData.task_code = common.randomGenerator();
 
     if (reqData.task_categories_id) {
       let existingDataById = await taskCategoriesModel.getById(

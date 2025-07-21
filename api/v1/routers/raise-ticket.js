@@ -1338,12 +1338,11 @@ router.put(
         ticket_status : 'unsolved',
         solved_by : existingDataById[0]?.solved_by || '',
         is_on_behalf : existingDataById[0]?.is_on_behalf || null,
-        on_behalf_created_by : existingDataById[0]?.is_on_behalf_created_by || null,
+        on_behalf_created_by : existingDataById[0]?.on_behalf_created_by || null,
         is_re_raise : 1,
         re_raise_count :  existingDataById[0]?.re_raise_count + 1 || 0,
         created_by :  existingDataById[0]?.created_by,
         updated_by :  existingDataById[0]?.updated_by,
-
         solved_by :  existingDataById[0]?.solved_by,
       } 
 
@@ -1363,7 +1362,6 @@ router.put(
             let ccData = null;
 
       if (re_create_data.cc) {
-        if (!isNaN(ccId)) {
           const ccEmail = await userModel.getById(re_create_data.cc);
           if (ccEmail.length) {
             ccData = {
@@ -1383,9 +1381,7 @@ router.put(
           } else {
             re_create_data.cc = null;
           }
-        } else {
-          re_create_data.cc = null;
-        }
+
       } else {
         re_create_data.cc = null;
       }

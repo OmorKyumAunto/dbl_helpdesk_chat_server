@@ -81,6 +81,31 @@ let updateById = async (id = 0, updateData = {}, conn = undefined) => {
     });
 }
 
+
+let updateByTicketId = async (id = 0, updateData = {}, conn = undefined) => {
+
+    let connection = connectionDblystem;
+    if (conn !== undefined) connection = conn;
+    // get object, generate an array and push data value here
+
+    // for update data
+    let keysOfUpdateData = Object.keys(updateData);
+    let dataParameterUpdateData = [];
+
+    for (let index = 0; index < keysOfUpdateData.length; index++) {
+        dataParameterUpdateData.push(updateData[keysOfUpdateData[index]]);
+    }
+
+    return new Promise((resolve, reject) => {
+        connection.query(queries.updateByTicketId(updateData), [...dataParameterUpdateData, id], (error, result, fields) => {
+            if (error) reject(error);
+            else resolve(result);
+        });
+    });
+}
+
+
+
 let getDataByWhereCondition = async (where = {}, orderBy = {}, limit = 2000, offset = 0, columnList = []) => {
 
     let connection = connectionDblystem;
@@ -151,6 +176,7 @@ module.exports = {
     updateById,
     getDetailsByIdAndWhereIn,
     getByTitle,
-    getOnlyDataList
+    getOnlyDataList,
+    updateByTicketId
 }
 

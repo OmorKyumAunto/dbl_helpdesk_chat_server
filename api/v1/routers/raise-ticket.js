@@ -17,7 +17,8 @@ const path = require("path");
 const common = require("../common/common");
 const { upload, multerErrorHandler } = require("../common/upload-image");
 const { current_time } = require("../validation/task/task");
-
+const validateRequest = require("../validator/middleware");
+const { reRaiseTicketCommentSchema } = require("../validator/validate-request/raise-ticket");
 require("dotenv").config();
 
 router.get(
@@ -1276,7 +1277,7 @@ router.post(
 
 router.put(
   "/ticket-re-raise/:id",
-  [verifyToken, routeAccessChecker("ticketReraise")],
+  [verifyToken, routeAccessChecker("ticketReraise"),validateRequest(reRaiseTicketCommentSchema, 'body')],
   async (req, res, next) => {
     try {
 
@@ -1347,14 +1348,6 @@ router.put(
         solved_by :  existingDataById[0]?.solved_by,
       } 
      
-      // add with comment
-      if (!comment) {
-        return res.status(400).send({
-          success: false,
-          status: 400,
-          message: "Please complete your comment",
-        });
-      }
         let [_, result] = await Promise.all([
           raiseTicketModel.updateById(id, updateData),
           raiseTicketModel.addNew(re_create_data)

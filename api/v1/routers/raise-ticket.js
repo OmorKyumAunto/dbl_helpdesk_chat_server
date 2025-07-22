@@ -17,7 +17,8 @@ const path = require("path");
 const common = require("../common/common");
 const { upload, multerErrorHandler } = require("../common/upload-image");
 const { current_time } = require("../validation/task/task");
-
+const validateRequest = require("../validator/middleware");
+const { reRaiseTicketCommentSchema } = require("../validator/validate-request/raise-ticket");
 require("dotenv").config();
 
 router.get(
@@ -1276,12 +1277,13 @@ router.post(
 
 router.put(
   "/ticket-re-raise/:id",
-  [verifyToken, routeAccessChecker("ticketReraise")],
+  [verifyToken, routeAccessChecker("ticketReraise"),validateRequest(reRaiseTicketCommentSchema, 'body')],
   async (req, res, next) => {
     try {
 
       let id = parseInt(req.params.id);
       let self_id = req.decoded.userInfo.id
+      let comment = req.body.comment
   
       let existingDataById = await raiseTicketModel.getById(id);
       if (!existingDataById.length) {
@@ -1345,11 +1347,17 @@ router.put(
         updated_by :  existingDataById[0]?.updated_by,
         solved_by :  existingDataById[0]?.solved_by,
       } 
+     
+        let [_, result] = await Promise.all([
+          raiseTicketModel.updateById(id, updateData),
+          raiseTicketModel.addNew(re_create_data)
+        ]);
 
-      let [result] = await Promise.all([
-        raiseTicketModel.updateById(id, updateData),
-        raiseTicketModel.addNew(re_create_data)
-      ]);
+        await ticketCommentModel.addNew({
+          ticket_id: result.insertId,
+          employee_id: self_id,
+          comment_text: comment
+        });
 
 
      const solvedTicketEmail = await userModel.getById(re_create_data.solved_by);

@@ -1282,6 +1282,7 @@ router.put(
 
       let id = parseInt(req.params.id);
       let self_id = req.decoded.userInfo.id
+      let comment = req.body.comment
   
       let existingDataById = await raiseTicketModel.getById(id);
       if (!existingDataById.length) {
@@ -1345,11 +1346,25 @@ router.put(
         updated_by :  existingDataById[0]?.updated_by,
         solved_by :  existingDataById[0]?.solved_by,
       } 
+     
+      // add with comment
+      if (!comment) {
+        return res.status(400).send({
+          success: false,
+          status: 400,
+          message: "Please complete your comment",
+        });
+      }
+        let [_, result] = await Promise.all([
+          raiseTicketModel.updateById(id, updateData),
+          raiseTicketModel.addNew(re_create_data)
+        ]);
 
-      let [result] = await Promise.all([
-        raiseTicketModel.updateById(id, updateData),
-        raiseTicketModel.addNew(re_create_data)
-      ]);
+        await ticketCommentModel.addNew({
+          ticket_id: result.insertId,
+          employee_id: self_id,
+          comment_text: comment
+        });
 
 
      const solvedTicketEmail = await userModel.getById(re_create_data.solved_by);

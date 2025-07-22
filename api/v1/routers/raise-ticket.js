@@ -1353,6 +1353,14 @@ router.put(
           raiseTicketModel.addNew(re_create_data)
         ]);
 
+        const getCommentData = await ticketCommentModel.getById(id)
+
+        if(getCommentData.length){
+           await ticketCommentModel.updateByTicketId(id,{ticket_id:result.insertId})
+        }
+
+       
+
         await ticketCommentModel.addNew({
           ticket_id: result.insertId,
           employee_id: self_id,

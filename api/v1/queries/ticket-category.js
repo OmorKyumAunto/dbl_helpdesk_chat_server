@@ -52,6 +52,21 @@ let updateById = (data) => {
     return query;
 }
 
+let updateByTicketId = (data) => {
+    let keys = Object.keys(data);
+
+    let query = `update ${table_name} set ` + keys[0] + ` = ? `;
+
+    for (let i = 1; i < keys.length; i++) {
+        query += `, ` + keys[i] + ` = ? `;
+    }
+
+    query += ` where ticket_id = ? `;
+
+    return query;
+}
+
+
 let getDataByWhereCondition = (data = {}, orderBy = {}, limit, offset, columnList = []) => {
     let keys = Object.keys(data);
     let columns = " * ";
@@ -186,6 +201,7 @@ module.exports = {
     updateById,
     getDataByWhereCondition,
     getDetailsByIdAndWhereIn,
-    getOnlyDataList
+    getOnlyDataList,
+    updateByTicketId
 
 }

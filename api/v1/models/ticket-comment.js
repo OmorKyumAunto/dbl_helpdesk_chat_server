@@ -182,6 +182,14 @@ let updateById = async (id = 0, data = {}) => {
     });
 }
 
+let updateByTicketId = async (id = 0, data = {}) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.updateByTicketId(), [data,id], (error, result, fields) => {
+            if (error) reject(error);
+            else resolve(result);
+        });
+    });
+}
 
 
 let getAllTicketWiseAdmin = async (id = 0) => {
@@ -225,6 +233,7 @@ module.exports = {
     getUnitAndCategoryWiseEmail,
     getByTableId,
     getAllTicketWiseAdmin,
-    getAllTicketWiseAdminSingleData
+    getAllTicketWiseAdminSingleData,
+    updateByTicketId
 }
 

@@ -166,6 +166,10 @@ const updateById = () => {
     return `UPDATE ${table_name} SET ? WHERE id = ?`;
 }
 
+const updateByTicketId = () => {
+    return `UPDATE ${table_name} SET ? WHERE ticket_id = ?`;
+}
+
 
 let getUnitAndCategoryWiseEmail = () => {
     return `SELECT * FROM ${admin_wise_ticket_view} where  asset_unit_id = ? and ticket_category_id = ? `;
@@ -202,6 +206,7 @@ module.exports = {
     getUnitAndCategoryWiseEmail,
     getByTableId,
     getAllTicketWiseAdmin,
-    getAllTicketWiseAdminSingleData
+    getAllTicketWiseAdminSingleData,
+    updateByTicketId
 
 }

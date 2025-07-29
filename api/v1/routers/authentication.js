@@ -3,15 +3,12 @@ const router = express.Router();
 const isEmpty = require("is-empty");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const moment = require("moment");
-const { check, validationResult } = require("express-validator");
-const keyData = require("../jwt/config");
 const userModel = require("../models/user");
 const superAdminModel = require("../models/super-admins");
 const roleModel = require("../models/role");
 const adminModel = require("../models/admins ");
 const employeeModel = require("../models/employee");
-const verifyToken = require("../middlewares/verifyToken");
+const unitSuperAdminModel = require("../models/unit-super-admin");
 const { v4: uuidv4 } = require("uuid");
 const commonObject = require("../common/common");
 
@@ -100,6 +97,8 @@ router.post("/login", async (req, res) => {
       profileInfo = await adminModel.getById(userData[0].profile_id);
     } else if (userData[0].role_id == 3) {
       profileInfo = await employeeModel.getById(userData[0].profile_id);
+    }else if (userData[0].role_id == 4) {
+      profileInfo = await unitSuperAdminModel.getById(userData[0].profile_id);
     } else {
       return res.status(404).send({
         success: false,
@@ -152,28 +151,9 @@ router.post("/login", async (req, res) => {
 
     delete profileData.api_token;
     delete profileData.time_period;
-    delete profileData.identity_id; // device track id
+    delete profileData.identity_id;
     profileData.token = token;
 
-    // // Save user identity in login-tracker
-    // let dateTimeToday = await Date.now();
-    // let dateToday = await commonObject.getCustomDate(dateTimeToday);
-
-    // let loginTrackerData = {
-    //     user_id: userData[0].id,
-    //     jwt_token: token,
-    //     login_device_info: JSON.stringify(deviceInfo),
-    //     uuid: uuid,
-    //     created_at: dateTimeToday,
-    //     updated_at: dateTimeToday,
-    //     created_by: userData[0].id,
-    //     updated_by: userData[0].id,
-    // };
-
-    // profileData.id = userData[0].id; //  frontend requested, we send user id in response.
-    // profileData.imageFolderPath = imageFolderPath;
-
-    // loginTrackModel.addNewLoggingTracker(loginTrackerData);
 
     return res.status(200).send({
       success: true,

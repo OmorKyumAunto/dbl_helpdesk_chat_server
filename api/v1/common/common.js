@@ -6,7 +6,7 @@ const {ticketEmail,ticketCcEmail,ticketSolvedEmailTemplate,ticketOnBehalf} = req
 const {commentEmployeeToAdmin,commentAdminToEmployee} = require('../email-template/ticket-comment')
 const {forgetPasswordSendOtpTemplate,resetPasswordComplete} = require('../email-template/forget-password')
 const { taskForwardEmailTemplate,remainingTaskEmailTemplate} = require('../email-template/task-email')
-
+const moment = require("moment-timezone");
 
 let decodingUsingCrypto = async (text = "") => {
     const key = Buffer.from(
@@ -26,8 +26,6 @@ let decodingUsingCrypto = async (text = "") => {
 
     return decrypted.toString();
 };
-
-
 
 
 let hashingUsingCrypto = async (text = "") => {
@@ -627,7 +625,11 @@ const convertDateFormat = (dateStr) => {
 const  checkEmailFormat = (email) => {
     return email.endsWith('@gmail.com') || email.endsWith('@yahoo.com');
 }
-  
+
+const convertFormatDate = (inputDate) => {
+    const formattedDate = moment(inputDate, 'DD MMM YYYY').format('YYYY-MM-DD');
+    return formattedDate;
+}
 
 module.exports = {
     decodingUsingCrypto,
@@ -646,5 +648,6 @@ module.exports = {
     convertDateFormat,
     taskRemainingEmail,
     checkEmailFormat,
-    sentTicketOnBehalfEmail
+    sentTicketOnBehalfEmail,
+    convertFormatDate
 }

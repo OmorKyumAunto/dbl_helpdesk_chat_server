@@ -1,9 +1,8 @@
-const { z, number } = require("zod");
+const { z } = require("zod");
 
 const dateFormat = () =>
       z.string()
-        .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)")
-       
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)")   
     
 // asset Report
 const assetReport = z
@@ -42,10 +41,7 @@ const assetReport = z
 // task report
   const taskReport = z
     .object({
-      key: z.string().optional().refine(value => value === undefined || value.length > 0, {
-        message: 'The search key must be a non-empty string.',
-      }),
-     
+      key: z.string().optional(),
       category: z
       .union([
         z.string().optional(),
@@ -74,9 +70,7 @@ const assetReport = z
 // ticket report
 const ticketReport = z
 .object({
-  key: z.string().optional().refine(value => value === undefined || value.length > 0, {
-    message: 'The search key must be a non-empty string.',
-  }),
+  key: z.string().optional(),
   start_date : dateFormat().optional(),
   end_date : dateFormat().optional(),
   category: z.string().optional(),

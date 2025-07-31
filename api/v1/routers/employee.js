@@ -1109,7 +1109,7 @@ router.post(
 );
 
 
-// assign to admin
+// assign to unit wise admin
 router.post(
   "/promoted-unit-super-admin/:id",
   [verifyToken, routeAccessChecker("promotedUnitSuperAdmin")],
@@ -1161,8 +1161,6 @@ router.post(
       updated_by : self_id,
     };
 
-    console.log("super admin save data ",data);
-
     let result = await unitSuperAdminModel.addNew(data);
 
     let userData = {
@@ -1175,26 +1173,6 @@ router.post(
       userModel.updateById(userData, id)
     ]);
 
-    // let delete_employee_data = await adminModel.getByIdForDeleted(
-    //   employeeData[0].profile_id
-    // );
-
-    // let getPresentData = await adminModel.getUserByEmail(employeeData[0].email);
-
-    // let userData = {
-    //   role_id: 2,
-    //   profile_id: getPresentData[0].id,
-    // };
-
-    //let user = await userModel.updateById(userData,id);
-
-    // if (user.affectedRows == undefined || user.affectedRows < 1) {
-    //   return res.status(500).send({
-    //     success: true,
-    //     status: 500,
-    //     message: "Something Wrong in system database.",
-    //   });
-    // }
 
     return res.status(200).send({
       success: true,
@@ -1203,6 +1181,81 @@ router.post(
     });
   }
 );
+
+
+router.post(
+  "/demoted-unit-super-admin/:id",
+  [verifyToken, routeAccessChecker("demotedUnitSuperAdmin")],
+  async (req, res) => {
+    let id = req.params.id;
+    const self_id = req.decoded.userInfo.id
+    // get id wise data form db
+    let employeeData = await userModel.getById(id);
+
+    // check this id already existing in database or not
+    if (isEmpty(employeeData)) {
+      return res.status(404).send({
+        success: false,
+        status: 404,
+        message: "Unit wise Super admin data not found.",
+      });
+    }
+
+    console.log("data==>",employeeData[0]);
+    // check its unit wise super admin admin
+    if (employeeData[0].role_id !== 4) {
+      return res.status(400).send({
+        success: false,
+        status: 400,
+        message: "This user is not unit wise super admin.",
+      });
+    }
+
+    let getData = await unitSuperAdminModel.getById(employeeData[0].profile_id);
+
+    let data = {
+      employee_id: employeeData[0]?.employee_id || null,
+      name: employeeData[0]?.name || null,
+      department: employeeData[0]?.department || null,
+      designation: employeeData[0]?.designation || null,
+      email: employeeData[0]?.email || null,
+      contact_no: employeeData[0]?.contact_no || null,
+      joining_date: commonObject.convertFormatDate(employeeData[0]?.joining_date) || null,
+      unit_name: employeeData[0]?.unit_name || null,
+      blood_group: employeeData[0]?.blood_group || null,
+      business_type: employeeData[0]?.business_type || null,
+      line_of_business: employeeData[0]?.line_of_business || null,
+      grade: employeeData[0]?.grade || null,
+      licenses: employeeData[0]?.licenses || null,
+      location : getData[0]?.location || null,
+      date_of_birth : commonObject.convertFormatDate(getData[0]?.date_of_birth) || null,
+      line_manager_name : getData[0]?.line_manager_name || null,
+      line_manager_id : getData[0]?.line_manager_id || null,
+      created_by : self_id,
+      updated_by : self_id,
+    };
+
+
+    let result = await adminModel.addNew(data);
+
+    let userData = {
+      role_id: 2,
+      profile_id: result.insertId,
+    };
+
+    await Promise.all([
+      unitSuperAdminModel.getByIdForDeleted(employeeData[0].profile_id),
+      userModel.updateById(userData, id)
+    ]);
+
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Successfully demoted to Unit wise super admin to admin.",
+    });
+  }
+);
+
 
 
 

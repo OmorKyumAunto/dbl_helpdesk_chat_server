@@ -163,7 +163,8 @@ let superAdminPermission = [
   "groupUnitUpdate",
   "groupUnitDelete",
   "changeGroupUnitStatus",
-  "promotedUnitSuperAdmin"
+  "promotedUnitSuperAdmin",
+  "demotedUnitSuperAdmin"
 ];
 
 let adminPermission = [

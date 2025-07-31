@@ -1,39 +1,19 @@
 const { z, number } = require("zod");
 
-const getTodayDate = () => {
-  const today = new Date();
-  return today.toISOString().split("T")[0]; // Extract YYYY-MM-DD
-};
 
-// Date validation schema (must be today or a future date)
-const dateSchema = () =>
-  z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)")
-    .refine(
-      (date) => date >= getTodayDate(),
-      "Start date must be today or a future date"
-    );
-
-const dateFormat = () =>
-      z.string()
-        .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)")
-       
-    
-
-// Common function for time validation (HH:MM - 24-hour format)
-const timeSchema = () =>
-  z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:MM)");
-
+// Create schema
 const buildingCreateSchema = z
   .object({
-    unit_id : z.number(),
-    name: z.string(),
+    unit_id: z.number().refine((val) => val > 0, {
+      message: "Unit ID must be a positive number",
+    }),
+    name: z.string().min(1, { message: "Building name is required" }),
   });
 
+// Update schema
 const buildingUpdateSchema = z
   .object({
-    name: z.string(),
+    name: z.string().min(1, { message: "Building name is required" }),
   });
 
 

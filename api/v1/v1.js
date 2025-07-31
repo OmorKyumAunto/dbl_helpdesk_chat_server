@@ -27,7 +27,7 @@ const taskDashboardRouter = require("./routers/task-dashboard");
 const zingHrOperationRouter = require("./routers/zingHr-operations");
 const reportRouter = require("./routers/report");
 const buildingRouter = require("./routers/building");
-const groupLocationRouter = require("./routers/group-location");
+const seatingLocationRouter = require("./routers/seating-location");
 
 
 
@@ -53,6 +53,6 @@ router.use("/task-dashboard", taskDashboardRouter);
 router.use("/zingHr-operations", zingHrOperationRouter);
 router.use("/report", reportRouter);
 router.use("/building", buildingRouter);
-router.use("/group-location", groupLocationRouter);
+router.use("/seating-location", seatingLocationRouter);
 
 module.exports = router;

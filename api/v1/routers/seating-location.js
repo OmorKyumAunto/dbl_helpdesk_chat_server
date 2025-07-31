@@ -3,93 +3,84 @@ const isEmpty = require("is-empty");
 const router = express.Router();
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
-const groupUnitModel = require('../models/building');
-const groupLocationModel = require('../models/group-location');
-const { groupLocationCreateSchema} = require("../validator/validate-request/group-location");
+const buildingModel = require('../models/building');
+const unitModel = require('../models/asset-unit');
+const seatingLocationModel = require('../models/seating-location');
+const { seatingLocationCreateSchema,seatingLocationUpdateSchema} = require("../validator/validate-request/seating-location");
 const { idParamsSchema} = require("../validator/validate-request/common-validator");
 const common = require("../common/common");
 const validateRequest = require("../validator/middleware");
 require('dotenv').config();
 
 
-router.get('/list', [verifyToken, routeAccessChecker("groupUnitList")], async (req, res) => {
+router.get('/list', [verifyToken, routeAccessChecker("seatingLocationList")], async (req, res) => {
 
-    const status = req.query.status
+    const {limit = 50,offset = 0,unit_id,building_id,status,key} = req.query
 
-    let result = await groupUnitModel.getList(status);
-    // for (let index = 0; index < result.length; index++) {
-    //     const element = result[index].id;
-    //     let location = await locationModel.getAllLocationDataByUnitId(element);
-
-    //     result[index].location = location
-
-    // }
+    let result = await seatingLocationModel.getList(limit,offset,unit_id,building_id,status,key);
+    let countData = await seatingLocationModel.getListCount(unit_id,building_id,status,key);
 
     return res.status(200).send({
         "success": true,
         "status": 200,
-        "message": "Group Unit List.",
-        "count": result.length,
+        "message": "Seating Location List.",
+        "count": countData.length,
         "data": result
     });
 });
 
 
-router.get('/active-list', [verifyToken, routeAccessChecker("groupUnitActiveList")], async (req, res) => {
+router.get('/active-list', [verifyToken, routeAccessChecker("seatingLocationActiveList")], async (req, res) => {
 
-    let result = await groupUnitModel.getActiveList();
-    // for (let index = 0; index < result.length; index++) {
-    //     const element = result[index].id;
-    //     let location = await locationModel.getAllLocationDataByUnitId(element);
+ const {limit = 50,offset = 0,unit_id,building_id,key} = req.query
 
-    //     result[index].location = location
+    let result = await seatingLocationModel.getActiveList(limit,offset,unit_id,building_id,key);
+    let countData = await seatingLocationModel.getActiveListCount(unit_id,building_id,key);
 
-    // }
     return res.status(200).send({
         "success": true,
         "status": 200,
-        "message": "Group Unit List.",
-        "count": result.length,
+        "message": "Building List.",
+        "count": countData.length,
         "data": result
     });
 });
 
 
-
-router.post('/add', [verifyToken, routeAccessChecker("groupLocationAdd"),validateRequest(groupLocationCreateSchema,'body')], async (req, res) => {
+router.post('/add', [verifyToken, routeAccessChecker("seatingLocationAdd"),validateRequest(seatingLocationCreateSchema,'body')], async (req, res) => {
 
     let reqData = {
-        "group_unit_id":req.body.group_unit_id,
+        "building_id": req.body.building_id,
         "name": req.body.name
     }
 
-    const self_id = req.decoded.userInfo.id;
-    reqData.created_by = self_id
-    reqData.updated_by = self_id
+
+    reqData.created_by = req.decoded.userInfo.id;
+    reqData.updated_by = req.decoded.userInfo.id;
 
 
-    // check group unit id 
-    let existingByGroupUnitId = await groupUnitModel.getById(id);
-    if (isEmpty(existingByGroupUnitId)) {
-        return res.status(404).send({
+    // check unit id is existing
+    let existingBuilding = await buildingModel.getById(reqData.building_id);
+    if (isEmpty(existingBuilding)) {
+       return res.status(404).send({
             "success": false,
             "status": 404,
-            "message": "Group Unit data found",
+            "message": "Building not found."
         });
     }
 
-    // check location is already exists
-    let existingDataByName = await groupLocationModel.getByTitle(reqData.group_unit_id,reqData.name);
-    if (!isEmpty(existingDataByName)) {
+
+    let existingData = await seatingLocationModel.getByTitle(reqData.building_id,reqData.name);
+    if (!isEmpty(existingData)) {
         return res.status(409).send({
             "success": false,
             "status": 409,
-            "message": existingData[0].status == "active" ? "This Title Already Exists." : "This group unit Already Exists but Deactivate, You can activate it."
+            "message": existingData[0].status == "active" ? "This seating location Already Exists." : "This seating location Already Exists but Deactivate, You can activate it."
         });
 
     }
 
-    let result = await groupLocationModel.addNew(reqData);
+    let result = await seatingLocationModel.addNew(reqData);
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
         return res.status(500).send({
@@ -102,29 +93,29 @@ router.post('/add', [verifyToken, routeAccessChecker("groupLocationAdd"),validat
     return res.status(201).send({
         "success": true,
         "status": 201,
-        "message": "Group location added Successfully."
+        "message": "Seating Location added Successfully."
     });
 
 });
 
 
 
-router.put('/update/:id', [verifyToken, routeAccessChecker("groupUnitUpdate"),validateRequest(idParamsSchema,'params')], async (req, res) => {
+router.put('/update/:id', [verifyToken, routeAccessChecker("seatingLocationUpdate"),validateRequest(idParamsSchema,'params'),validateRequest(seatingLocationUpdateSchema,'body')], async (req, res) => {
 
     let id = req.params.id
     let reqData = {
-        "title": req.body.title
+        "name": req.body.name
     }
 
     reqData.updated_by = req.decoded.userInfo.id;
 
 
-    let existingDataById = await groupUnitModel.getById(id);
+    let existingDataById = await seatingLocationModel.getById(id);
     if (isEmpty(existingDataById)) {
         return res.status(404).send({
             "success": false,
             "status": 404,
-            "message": "No data found",
+            "message": "Seating location data found",
 
         });
     }
@@ -136,18 +127,18 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("groupUnitUpdate"),va
     let willWeUpdate = 0; // 1 = yes , 0 = no;
 
     // name
-    if (existingDataById[0].title !== reqData.title) {
+    if (existingDataById[0].name !== reqData.name) {
 
-            let existingDataByName = await groupUnitModel.getByTitle(reqData.title);
+            let existingDataByName = await seatingLocationModel.getByTitle(existingDataById[0].building_id,reqData.name);
 
             if (!isEmpty(existingDataByName) && existingDataByName[0].id != id) {
 
                 isError = 1;
-                errorMessage += existingDataByName[0].status == "active" ? "This title Already Exist." : "This title Already Exist but Deactivate, You can activate it."
+                errorMessage += existingDataByName[0].status == "active" ? "This Seating location Already Exist." : "This Seating location Already Exist but Deactivate, You can activate it."
             }
 
             willWeUpdate = 1;
-            updateData.title = reqData.title;
+            updateData.name = reqData.name;
 
         
 
@@ -166,7 +157,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("groupUnitUpdate"),va
 
         updateData.updated_by = req.decoded.userInfo.id;
 
-        let result = await groupUnitModel.updateById(id, updateData);
+        let result = await seatingLocationModel.updateById(id, updateData);
 
 
         if (result.affectedRows == undefined || result.affectedRows < 1) {
@@ -181,7 +172,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("groupUnitUpdate"),va
         return res.status(200).send({
             "success": true,
             "status": 200,
-            "message": "Group Unit successfully updated."
+            "message": "Seating location successfully updated."
         });
 
 
@@ -197,13 +188,13 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("groupUnitUpdate"),va
 
 
 
-router.delete('/delete/:id', [verifyToken, routeAccessChecker("groupUnitDelete"),validateRequest(idParamsSchema,'params')], async (req, res) => {
+router.delete('/delete/:id', [verifyToken, routeAccessChecker("seatingLocationDelete"),validateRequest(idParamsSchema,'params')], async (req, res) => {
 
     let id = req.params.id
     
     updated_by = req.decoded.userInfo.id;
 
-    let existingDataById = await groupUnitModel.getById(id);
+    let existingDataById = await seatingLocationModel.getById(id);
     if (isEmpty(existingDataById)) {
         return res.status(404).send({
             "success": false,
@@ -213,25 +204,13 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("groupUnitDelete")
         });
     }
 
-    // // check already assign this unit 
-    // let alreadyAssignThisUnit = await groupUnitModel.alreadyAssignUnit(id);
-    // if (alreadyAssignThisUnit.length) {
-    //     return res.status(400).send({
-    //         "success": false,
-    //         "status": 400,
-    //         "message": "This unit already assign in asset.",
-
-    //     });
-    // }
-
-
 
     let data = {
         status: 'delete',
         updated_by: updated_by,
     }
 
-    let result = await groupUnitModel.updateById(id, data);
+    let result = await seatingLocationModel.updateById(id, data);
 
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
@@ -246,19 +225,19 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("groupUnitDelete")
     return res.status(200).send({
         "success": true,
         "status": 200,
-        "message": "Group unit successfully deleted."
+        "message": "Seating Location successfully deleted."
     });
 
 });
 
 
-router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeGroupUnitStatus"),validateRequest(idParamsSchema,'params')], async (req, res) => {
+router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeSeatingLocationStatus"),validateRequest(idParamsSchema,'params')], async (req, res) => {
 
     let id = req.params.id
 
     updated_by = req.decoded.userInfo.id;
 
-    let existingDataById = await groupUnitModel.getById(id);
+    let existingDataById = await seatingLocationModel.getById(id);
     if (isEmpty(existingDataById)) {
         return res.status(404).send({
             "success": false,
@@ -272,7 +251,7 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeGroupUni
         updated_by: updated_by
     }
 
-    let result = await groupUnitModel.updateById(id, data);
+    let result = await seatingLocationModel.updateById(id, data);
 
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
@@ -287,7 +266,7 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeGroupUni
     return res.status(200).send({
         "success": true,
         "status": 200,
-        "message": "Group unit status has successfully changed."
+        "message": "Seating location status has successfully changed."
     });
 
 });

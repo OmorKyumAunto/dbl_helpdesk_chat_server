@@ -165,7 +165,13 @@ let superAdminPermission = [
   "changeBuildingStatus",
   "promotedUnitSuperAdmin",
   "demotedUnitSuperAdmin",
-  "groupLocationAdd"
+  "groupLocationAdd",
+  "seatingLocationAdd",
+  "seatingLocationList",
+  "seatingLocationActiveList",
+  "seatingLocationUpdate",
+  "seatingLocationDelete",
+  "changeSeatingLocationStatus"
 ];
 
 let adminPermission = [
@@ -593,7 +599,13 @@ let unitWiseSuperAdminPermission = [
   "changeBuildingStatus",
   "promotedUnitSuperAdmin",
   "demotedUnitSuperAdmin",
-  "groupLocationAdd"
+  "groupLocationAdd",
+  "seatingLocationAdd",
+  "seatingLocationList",
+  "seatingLocationActiveList",
+  "seatingLocationUpdate",
+  "seatingLocationDelete",
+  "changeSeatingLocationStatus"
 ];
 
 let getRouterPermissionList = async (id = 0) => {

@@ -3,8 +3,9 @@ const isEmpty = require("is-empty");
 const router = express.Router();
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
-const groupUnitModel = require('../models/group-unit');
-const { groupUnitCreateSchema} = require("../validator/validate-request/group-unit");
+const groupUnitModel = require('../models/building');
+const groupLocationModel = require('../models/group-location');
+const { groupLocationCreateSchema} = require("../validator/validate-request/group-location");
 const { idParamsSchema} = require("../validator/validate-request/common-validator");
 const common = require("../common/common");
 const validateRequest = require("../validator/middleware");
@@ -55,20 +56,31 @@ router.get('/active-list', [verifyToken, routeAccessChecker("groupUnitActiveList
 
 
 
-router.post('/add', [verifyToken, routeAccessChecker("groupUnitAdd"),validateRequest(groupUnitCreateSchema,'body')], async (req, res) => {
+router.post('/add', [verifyToken, routeAccessChecker("groupLocationAdd"),validateRequest(groupLocationCreateSchema,'body')], async (req, res) => {
 
     let reqData = {
-        "title": req.body.title
+        "group_unit_id":req.body.group_unit_id,
+        "name": req.body.name
     }
 
-
-    reqData.created_by = req.decoded.userInfo.id;
-    reqData.updated_by = req.decoded.userInfo.id;
-
-    let existingData = await groupUnitModel.getByTitle(reqData.title);
+    const self_id = req.decoded.userInfo.id;
+    reqData.created_by = self_id
+    reqData.updated_by = self_id
 
 
-    if (!isEmpty(existingData)) {
+    // check group unit id 
+    let existingByGroupUnitId = await groupUnitModel.getById(id);
+    if (isEmpty(existingByGroupUnitId)) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "Group Unit data found",
+        });
+    }
+
+    // check location is already exists
+    let existingDataByName = await groupLocationModel.getByTitle(reqData.group_unit_id,reqData.name);
+    if (!isEmpty(existingDataByName)) {
         return res.status(409).send({
             "success": false,
             "status": 409,
@@ -77,7 +89,7 @@ router.post('/add', [verifyToken, routeAccessChecker("groupUnitAdd"),validateReq
 
     }
 
-    let result = await groupUnitModel.addNew(reqData);
+    let result = await groupLocationModel.addNew(reqData);
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
         return res.status(500).send({
@@ -90,14 +102,14 @@ router.post('/add', [verifyToken, routeAccessChecker("groupUnitAdd"),validateReq
     return res.status(201).send({
         "success": true,
         "status": 201,
-        "message": "Group unit added Successfully."
+        "message": "Group location added Successfully."
     });
 
 });
 
 
 
-router.put('/update/:id', [verifyToken, routeAccessChecker("groupUnitUpdate"),validateRequest(idParamsSchema,'params'),validateRequest(groupUnitCreateSchema,'body')], async (req, res) => {
+router.put('/update/:id', [verifyToken, routeAccessChecker("groupUnitUpdate"),validateRequest(idParamsSchema,'params')], async (req, res) => {
 
     let id = req.params.id
     let reqData = {

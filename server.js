@@ -27,6 +27,17 @@ app.use("/api", api_redirect_path);
 app.use('/uploads', express.static('./ticket'));
 
 
+
+// Place this at the very end, after all other routes
+app.all('*', (req, res) => {
+    return res.status(404).send({
+        success: false,
+        status: 404,
+        message: `The requested path '${req.originalUrl}' was not found on this server.`
+    });
+});
+
+
 app.listen(port, async () => {
   console.log(`DBL backend running port ${port}`);
 });

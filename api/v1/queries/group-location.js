@@ -1,4 +1,4 @@
-let table_name = "dbl_group_unit";
+let table_name = "dbl_group_location";
 
 let getUserByEmail = () => {
     return `SELECT * FROM ${table_name} where  email = ? and status = 1 `;
@@ -9,7 +9,7 @@ let addNew = () => {
 }
 
 let getByTitle = () => {
-    return `SELECT * FROM ${table_name} where  title = ? and status = 'active'`;
+    return `SELECT * FROM ${table_name} where group_unit_id = ? name = ? and status = 'active'`;
 }
 
 

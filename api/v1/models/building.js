@@ -1,5 +1,5 @@
 const { connectionDblystem } = require('../connections/connection');
-const queries = require('../queries/group-unit');
+const queries = require('../queries/building');
 
 
 
@@ -31,9 +31,19 @@ let getUserInfo = async (email = "",password="") => {
     });
 }
 
-let getByTitle = async (title = "") => {
+let getByTitle = async (unit_id = 0,name = "") => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getByTitle(), [title], (error, result, fields) => {
+        connectionDblystem.query(queries.getByTitle(), [unit_id,name], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+let getByName = async (name = "") => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByName(), [name], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -50,9 +60,18 @@ let getById = async (id = 0) => {
     });
 }
 
-let getActiveList = async () => {
+let getActiveList = async (limit,offset,unit_id,key) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getActiveList(),(error, result, fields) => {
+        connectionDblystem.query(queries.getActiveList(limit,offset,unit_id,key),(error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+let getActiveListCount = async (unit_id,key) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getActiveListCount(unit_id,key),(error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -79,9 +98,19 @@ let getByProfileId = async (id = 0) => {
     });
 }
 
-let getList = async (status) => {
+let getList = async (limit,offset,unit_id,status,key) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getList(status), (error, result, fields) => {
+      connectionDblystem.query(queries.getList(limit,offset,unit_id,status,key), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+
+
+  let getListCount = async (unit_id,status,key) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getListCount(unit_id,status,key), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -131,5 +160,8 @@ module.exports = {
     getByProfileId,
     getByEmployeeId,
     getByTitle,
-    getActiveList
+    getActiveList,
+    getListCount,
+    getActiveListCount,
+    getByName
 }

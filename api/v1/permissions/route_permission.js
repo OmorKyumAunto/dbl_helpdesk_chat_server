@@ -157,14 +157,15 @@ let superAdminPermission = [
   "ticketReport",
   "combineReport",
   "employeeAssignAssetIdWise",
-  "groupUnitList",
-  "groupUnitActiveList",
-  "groupUnitAdd",
-  "groupUnitUpdate",
-  "groupUnitDelete",
-  "changeGroupUnitStatus",
+  "buildingList",
+  "buildingActiveList",
+  "buildingAdd",
+  "buildingUpdate",
+  "buildingDelete",
+  "changeBuildingStatus",
   "promotedUnitSuperAdmin",
-  "demotedUnitSuperAdmin"
+  "demotedUnitSuperAdmin",
+  "groupLocationAdd"
 ];
 
 let adminPermission = [
@@ -583,7 +584,16 @@ let unitWiseSuperAdminPermission = [
   "taskCategoriesList",
   "onBehalfTicket",
   "selfAssetList",
-  "employeeAssignAssetIdWise"
+  "employeeAssignAssetIdWise",
+  "buildingList",
+  "buildingActiveList",
+  "buildingAdd",
+  "buildingUpdate",
+  "buildingDelete",
+  "changeBuildingStatus",
+  "promotedUnitSuperAdmin",
+  "demotedUnitSuperAdmin",
+  "groupLocationAdd"
 ];
 
 let getRouterPermissionList = async (id = 0) => {

@@ -25,11 +25,12 @@ const dateFormat = () =>
 const timeSchema = () =>
   z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:MM)");
 
-const groupUnitCreateSchema = z
+const groupLocationCreateSchema = z
   .object({
-    title: z.string(),
+    group_unit_id : z.number(),
+    name: z.string(),
   });
 
 
 
-module.exports = { groupUnitCreateSchema };
+module.exports = { groupLocationCreateSchema };

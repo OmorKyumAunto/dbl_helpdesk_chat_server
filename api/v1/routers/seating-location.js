@@ -4,12 +4,13 @@ const router = express.Router();
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const buildingModel = require('../models/building');
-const unitModel = require('../models/asset-unit');
+const userModel = require('../models/user');
 const seatingLocationModel = require('../models/seating-location');
-const { seatingLocationCreateSchema,seatingLocationUpdateSchema} = require("../validator/validate-request/seating-location");
+const assignSeatingLocationModel = require('../models/assign-seating-location');
+const { seatingLocationCreateSchema,seatingLocationUpdateSchema,assignSeatingLocation} = require("../validator/validate-request/seating-location");
 const { idParamsSchema} = require("../validator/validate-request/common-validator");
-const common = require("../common/common");
 const validateRequest = require("../validator/middleware");
+const commonObject = require("../common/common");
 require('dotenv').config();
 
 
@@ -272,7 +273,151 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeSeatingL
 });
 
 
+// assign seating location to user
+router.post('/assign/:id', [verifyToken, routeAccessChecker("assignSeatingLocation"),validateRequest(assignSeatingLocation,'body')], async (req, res) => {
 
+   const user_id = parseInt(req.params.id)
+   const seating_location = req.body.seating_location
+
+   const self_id = req.decoded.userInfo.id;
+
+
+    // check user is existing
+    let existingDataByUserId = await userModel.getById(user_id);
+    if (isEmpty(existingDataByUserId)) {
+       return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "User not found."
+        });
+    }
+
+    // check assign user role is 2
+    if (existingDataByUserId[0].role_id !== 2) {
+       return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "This user is not admin."
+        });
+    }
+
+        // get all location by user id
+    const getLocationByUserId = await assignSeatingLocationModel.getLocationByUserId(user_id)
+
+    if(getLocationByUserId.length){
+    let getDataInDB = []
+    for (let index = 0; index < getLocationByUserId.length; index++) {
+       getDataInDB.push(getLocationByUserId[index].seating_location_id)
+    }
+
+    // compare db data and req data
+
+    const compareData = await commonObject.compareArrays(seating_location,getDataInDB)
+   
+    // delete previous not matched value
+    for (let index = 0; index < compareData.notMatchedValue.length; index++) {
+        const notMatchedIds = compareData.notMatchedValue[index];
+        const getId = await assignSeatingLocationModel.getIdByUserAndLocationId(user_id,notMatchedIds)
+
+        await assignSeatingLocationModel.updateById(getId[0].id , { status : 0, updated_by:self_id})
+        
+    }
+
+    // add new value 
+    for (let index = 0; index < compareData.newValue.length; index++) {
+        const newIds = compareData.newValue[index];
+        await assignSeatingLocationModel.addNew({user_id:user_id,seating_location_id:newIds,created_by : self_id,updated_by:self_id})
+    }
+
+    }else{
+
+    for (let index = 0; index < seating_location.length; index++) {
+        const location_id = seating_location[index];
+        // check location is exists or not
+        let existingDataByLocationId = await seatingLocationModel.getById(location_id);
+        if (isEmpty(existingDataByLocationId)) {
+            return res.status(404).send({
+                "success": false,
+                "status": 404,
+                "message": `This seating location: ${location_id} not found.`
+            });
+        }
+        // check already assign this location
+        let alreadyAssignLocation = await assignSeatingLocationModel.getById(user_id,location_id);
+        if (alreadyAssignLocation.length) {
+            return res.status(400).send({
+                "success": false,
+                "status": 400,
+                "message": `This seating location: ${location_id} already exists.`
+            });
+        }
+
+        const data = {
+            user_id : user_id,
+            seating_location_id : location_id,
+            created_by : self_id,
+            updated_by : self_id,
+        }
+
+      await assignSeatingLocationModel.addNew(data);
+
+    }
+
+    }
+
+    return res.status(201).send({
+        "success": true,
+        "status": 201,
+        "message": "Seating Location added Successfully."
+    });
+
+});
+
+
+// // assign seating location to user
+// router.put('/assign-update/:id', [verifyToken, routeAccessChecker("removeSeatingLocation"),validateRequest(assignSeatingLocation,'body')], async (req, res) => {
+
+//    const user_id = parseInt(req.params.id)
+//    const seating_location = req.body.seating_location
+
+//    const self_id = req.decoded.userInfo.id;
+
+
+//     // check user is existing
+//     let existingDataByUserId = await userModel.getById(user_id);
+//     if (isEmpty(existingDataByUserId)) {
+//        return res.status(404).send({
+//             "success": false,
+//             "status": 404,
+//             "message": "User not found."
+//         });
+//     }
+
+//     // check assign user role is 2
+//     if (existingDataByUserId[0].role_id !== 2) {
+//        return res.status(404).send({
+//             "success": false,
+//             "status": 404,
+//             "message": "This user is not admin."
+//         });
+//     }
+
+//     // get all location by user id
+//     const getLocationByUserId = await assignSeatingLocationModel.getLocationByUserId(user_id)
+
+//     let getDataInDB = []
+//     for (let index = 0; index < getLocationByUserId.length; index++) {
+//        getDataInDB.push(getLocationByUserId[index].seating_location_id)
+//     }
+
+
+//     return res.status(200).send({
+//         "success": true,
+//         "status": 200,
+//         "message": "Seating Location update Successfully."
+//     });
+
+// });
 
 
 

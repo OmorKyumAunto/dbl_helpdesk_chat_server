@@ -17,4 +17,14 @@ const seatingLocationUpdateSchema = z
   });
 
 
-module.exports = { seatingLocationCreateSchema,seatingLocationUpdateSchema };
+
+
+const assignSeatingLocation = z.object({
+  seating_location: z
+    .array(z.number().positive({ message: "Seating location ID must be a positive number" }))
+    .min(1, { message: "At least one seating location is required" }),
+});
+
+
+
+module.exports = { seatingLocationCreateSchema,seatingLocationUpdateSchema,assignSeatingLocation };

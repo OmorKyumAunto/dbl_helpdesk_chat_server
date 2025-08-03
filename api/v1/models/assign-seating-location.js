@@ -1,5 +1,5 @@
 const { connectionDblystem } = require('../connections/connection');
-const queries = require('../queries/seating-location');
+const queries = require('../queries/assign-seating-location');
 
 
 
@@ -51,9 +51,9 @@ let getByName = async (name = "") => {
 }
 
 
-let getById = async (id = 0) => {
+let getById = async (user_id = 0,location_id = 0) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getById(), [id], (error, result, fields) => {
+        connectionDblystem.query(queries.getById(), [user_id,location_id], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -61,14 +61,25 @@ let getById = async (id = 0) => {
 }
 
 
-let getLocationByUserId = async (id = 0) => {
+let getLocationByUserId = async (user_id = 0) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getLocationByUserId(), [id], (error, result, fields) => {
+        connectionDblystem.query(queries.getLocationByUserId(), [user_id], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
     });
 }
+
+let getIdByUserAndLocationId = async (user_id = 0,location_id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getIdByUserAndLocationId(), [user_id,location_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
 
 let getActiveList = async (limit,offset,unit_id,building_id,key) => {
     return new Promise((resolve, reject) => {
@@ -139,9 +150,6 @@ let getList = async (limit,offset,unit_id,building_id,status,key) => {
    
 
 let updateById = async (id = 0, data = {}) => {
-    console.log("SDDDDDDDDDDDDDD");
-    console.log("id",id);
-    console.log("data",data);
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.updateById(), [data, id], (error, result, fields) => {
             if (error) reject(error);
@@ -149,8 +157,6 @@ let updateById = async (id = 0, data = {}) => {
         });
     });
 }
-
-
 
 let getByIdForDeleted = async (id = 0) => {
     return new Promise((resolve, reject) => {
@@ -179,5 +185,6 @@ module.exports = {
     getListCount,
     getActiveListCount,
     getByName,
-    getLocationByUserId
+    getLocationByUserId,
+    getIdByUserAndLocationId
 }

@@ -52,6 +52,13 @@ let hashingUsingCrypto = async (text = "") => {
 };
 
 
+let compareArrays = async (givenValue, dbValue)=>{
+    const matchedValue = givenValue.filter(val => dbValue.includes(val));
+    const notMatchedValue = dbValue.filter(val => !givenValue.includes(val));
+    const newValue = givenValue.filter(val => !dbValue.includes(val));
+
+    return { matchedValue, notMatchedValue, newValue };
+}
 
 
 let sentEmailByHtmlFormate = async (receiverEmailAddress, subject,name = "", asset_name = "", type = "", asset_serial_number = "",assign_date = "",assign_by = "",unit_name="") => {
@@ -649,5 +656,6 @@ module.exports = {
     taskRemainingEmail,
     checkEmailFormat,
     sentTicketOnBehalfEmail,
-    convertFormatDate
+    convertFormatDate,
+    compareArrays
 }

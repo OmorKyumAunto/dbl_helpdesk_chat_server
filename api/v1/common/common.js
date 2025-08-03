@@ -6,7 +6,7 @@ const {ticketEmail,ticketCcEmail,ticketSolvedEmailTemplate,ticketOnBehalf} = req
 const {commentEmployeeToAdmin,commentAdminToEmployee} = require('../email-template/ticket-comment')
 const {forgetPasswordSendOtpTemplate,resetPasswordComplete} = require('../email-template/forget-password')
 const { taskForwardEmailTemplate,remainingTaskEmailTemplate} = require('../email-template/task-email')
-
+const moment = require("moment-timezone");
 
 let decodingUsingCrypto = async (text = "") => {
     const key = Buffer.from(
@@ -26,8 +26,6 @@ let decodingUsingCrypto = async (text = "") => {
 
     return decrypted.toString();
 };
-
-
 
 
 let hashingUsingCrypto = async (text = "") => {
@@ -54,6 +52,13 @@ let hashingUsingCrypto = async (text = "") => {
 };
 
 
+let compareArrays = async (givenValue, dbValue)=>{
+    const matchedValue = givenValue.filter(val => dbValue.includes(val));
+    const notMatchedValue = dbValue.filter(val => !givenValue.includes(val));
+    const newValue = givenValue.filter(val => !dbValue.includes(val));
+
+    return { matchedValue, notMatchedValue, newValue };
+}
 
 
 let sentEmailByHtmlFormate = async (receiverEmailAddress, subject,name = "", asset_name = "", type = "", asset_serial_number = "",assign_date = "",assign_by = "",unit_name="") => {
@@ -627,7 +632,11 @@ const convertDateFormat = (dateStr) => {
 const  checkEmailFormat = (email) => {
     return email.endsWith('@gmail.com') || email.endsWith('@yahoo.com');
 }
-  
+
+const convertFormatDate = (inputDate) => {
+    const formattedDate = moment(inputDate, 'DD MMM YYYY').format('YYYY-MM-DD');
+    return formattedDate;
+}
 
 module.exports = {
     decodingUsingCrypto,
@@ -646,5 +655,7 @@ module.exports = {
     convertDateFormat,
     taskRemainingEmail,
     checkEmailFormat,
-    sentTicketOnBehalfEmail
+    sentTicketOnBehalfEmail,
+    convertFormatDate,
+    compareArrays
 }

@@ -5,7 +5,6 @@ const router = express.Router();
 const verifyToken = require("../middlewares/verifyToken");
 const { check, validationResult } = require("express-validator");
 const moment = require("moment");
-const e = require("express");
 const employeeModel = require("../models/employee");
 const userModel = require("../models/user");
 const adminModel = require("../models/admins ");
@@ -19,13 +18,12 @@ const {today_date,convertDateFormat,addSixHoursAndFormat,currentDateZingHrFormat
 const multer = require("multer");
 const xlsx = require("xlsx");
 const path = require("path");
-const { off } = require("process");
-const { profile } = require("console");
 const bcrypt = require("bcrypt");
 const zingHrOperationsModel = require("../models/zingHr-operations");
-const { commentAdminToEmployee } = require("../email-template/ticket-comment");
 const commonObject = require("../common/common");
+const unitSuperAdminModel = require("../models/unit-super-admin");
 require('dotenv').config();
+
 
 // Configure Multer for file upload
 const storage = multer.diskStorage({
@@ -1040,26 +1038,6 @@ router.post(
   }
 );
 
-// check duplicate value common function
-let duplicateCheckInArray = async (arrayData = []) => {
-  let set = new Set();
-
-  for (let element of arrayData) {
-    if (set.has(element)) {
-      return {
-        result: true,
-        message: "Duplicate value found.",
-      };
-    }
-    set.add(element);
-  }
-
-  return {
-    result: false,
-    message: "Duplicate value not found.",
-  };
-};
-
 // assign to admin
 router.post(
   "/assign-admin/:id",
@@ -1094,7 +1072,7 @@ router.post(
       grade: employeeData[0].grade,
       licenses: employeeData[0].licenses,
       location : getData[0].location || '',
-      date_of_birth : getData[0].date_of_birth || '',
+      date_of_birth : getData[0]?.date_of_birth || null,
       line_manager_name : getData[0].line_manager_name || '',
       line_manager_id : getData[0].line_manager_id || '',
     };
@@ -1129,6 +1107,157 @@ router.post(
     });
   }
 );
+
+
+// assign to unit wise admin
+router.post(
+  "/promoted-unit-super-admin/:id",
+  [verifyToken, routeAccessChecker("promotedUnitSuperAdmin")],
+  async (req, res) => {
+    let id = req.params.id;
+    const self_id = req.decoded.userInfo.id
+    // get id wise data form db
+    let employeeData = await userModel.getById(id);
+
+    // check this id already existing in database or not
+    if (isEmpty(employeeData)) {
+      return res.status(404).send({
+        success: false,
+        status: 404,
+        message: "Admin data not found.",
+      });
+    }
+
+    // check its admin
+    if (employeeData[0].role_id !== 2) {
+      return res.status(400).send({
+        success: false,
+        status: 400,
+        message: "This user is not admin.",
+      });
+    }
+
+    let getData = await adminModel.getById(employeeData[0].profile_id);
+    console.log("get admin data ",getData[0]);
+    let data = {
+      employee_id: employeeData[0]?.employee_id || null,
+      name: employeeData[0]?.name || null,
+      department: employeeData[0]?.department || null,
+      designation: employeeData[0]?.designation || null,
+      email: employeeData[0]?.email || null,
+      contact_no: employeeData[0]?.contact_no || null,
+      joining_date: commonObject.convertFormatDate(employeeData[0]?.joining_date) || null,
+      unit_name: employeeData[0]?.unit_name || null,
+      blood_group: employeeData[0]?.blood_group || null,
+      business_type: employeeData[0]?.business_type || null,
+      line_of_business: employeeData[0]?.line_of_business || null,
+      grade: employeeData[0]?.grade || null,
+      licenses: employeeData[0]?.licenses || null,
+      location : getData[0]?.location || null,
+      date_of_birth : commonObject.convertFormatDate(getData[0]?.date_of_birth) || null,
+      line_manager_name : getData[0]?.line_manager_name || null,
+      line_manager_id : getData[0]?.line_manager_id || null,
+      created_by : self_id,
+      updated_by : self_id,
+    };
+
+    let result = await unitSuperAdminModel.addNew(data);
+
+    let userData = {
+      role_id: 4,
+      profile_id: result.insertId,
+    };
+
+    await Promise.all([
+      adminModel.getByIdForDeleted(employeeData[0].profile_id),
+      userModel.updateById(userData, id)
+    ]);
+
+
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Successfully promoted to Unit wise super admin.",
+    });
+  }
+);
+
+
+router.post(
+  "/demoted-unit-super-admin/:id",
+  [verifyToken, routeAccessChecker("demotedUnitSuperAdmin")],
+  async (req, res) => {
+    let id = req.params.id;
+    const self_id = req.decoded.userInfo.id
+    // get id wise data form db
+    let employeeData = await userModel.getById(id);
+
+    // check this id already existing in database or not
+    if (isEmpty(employeeData)) {
+      return res.status(404).send({
+        success: false,
+        status: 404,
+        message: "Unit wise Super admin data not found.",
+      });
+    }
+
+    console.log("data==>",employeeData[0]);
+    // check its unit wise super admin admin
+    if (employeeData[0].role_id !== 4) {
+      return res.status(400).send({
+        success: false,
+        status: 400,
+        message: "This user is not unit wise super admin.",
+      });
+    }
+
+    let getData = await unitSuperAdminModel.getById(employeeData[0].profile_id);
+
+    let data = {
+      employee_id: employeeData[0]?.employee_id || null,
+      name: employeeData[0]?.name || null,
+      department: employeeData[0]?.department || null,
+      designation: employeeData[0]?.designation || null,
+      email: employeeData[0]?.email || null,
+      contact_no: employeeData[0]?.contact_no || null,
+      joining_date: commonObject.convertFormatDate(employeeData[0]?.joining_date) || null,
+      unit_name: employeeData[0]?.unit_name || null,
+      blood_group: employeeData[0]?.blood_group || null,
+      business_type: employeeData[0]?.business_type || null,
+      line_of_business: employeeData[0]?.line_of_business || null,
+      grade: employeeData[0]?.grade || null,
+      licenses: employeeData[0]?.licenses || null,
+      location : getData[0]?.location || null,
+      date_of_birth : commonObject.convertFormatDate(getData[0]?.date_of_birth) || null,
+      line_manager_name : getData[0]?.line_manager_name || null,
+      line_manager_id : getData[0]?.line_manager_id || null,
+      created_by : self_id,
+      updated_by : self_id,
+    };
+
+
+    let result = await adminModel.addNew(data);
+
+    let userData = {
+      role_id: 2,
+      profile_id: result.insertId,
+    };
+
+    await Promise.all([
+      unitSuperAdminModel.getByIdForDeleted(employeeData[0].profile_id),
+      userModel.updateById(userData, id)
+    ]);
+
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Successfully demoted to Unit wise super admin to admin.",
+    });
+  }
+);
+
+
+
 
 // assign to employee demoted
 router.post(
@@ -1166,7 +1295,7 @@ router.post(
       line_of_business: getData[0].line_of_business,
       grade: getData[0].grade,
       location : getData[0].location,
-      date_of_birth : getData[0].date_of_birth,
+      date_of_birth : getData[0]?.date_of_birth || null ,
       line_manager_name : getData[0].line_manager_name,
       line_manager_id : getData[0].line_manager_id,
     };

@@ -7,8 +7,8 @@ const buildingModel = require('../models/building');
 const userModel = require('../models/user');
 const seatingLocationModel = require('../models/seating-location');
 const assignSeatingLocationModel = require('../models/assign-seating-location');
-const { seatingLocationCreateSchema,seatingLocationUpdateSchema,assignSeatingLocation} = require("../validator/validate-request/seating-location");
-const { idParamsSchema} = require("../validator/validate-request/common-validator");
+const { seatingLocationCreateSchema, seatingLocationUpdateSchema, assignSeatingLocation } = require("../validator/validate-request/seating-location");
+const { idParamsSchema } = require("../validator/validate-request/common-validator");
 const validateRequest = require("../validator/middleware");
 const commonObject = require("../common/common");
 require('dotenv').config();
@@ -16,10 +16,10 @@ require('dotenv').config();
 
 router.get('/list', [verifyToken, routeAccessChecker("seatingLocationList")], async (req, res) => {
 
-    const {limit = 50,offset = 0,unit_id,building_id,status,key} = req.query
+    const { limit = 50, offset = 0, unit_id, building_id, status, key } = req.query
 
-    let result = await seatingLocationModel.getList(limit,offset,unit_id,building_id,status,key);
-    let countData = await seatingLocationModel.getListCount(unit_id,building_id,status,key);
+    let result = await seatingLocationModel.getList(limit, offset, unit_id, building_id, status, key);
+    let countData = await seatingLocationModel.getListCount(unit_id, building_id, status, key);
 
     return res.status(200).send({
         "success": true,
@@ -33,10 +33,10 @@ router.get('/list', [verifyToken, routeAccessChecker("seatingLocationList")], as
 
 router.get('/active-list', [verifyToken, routeAccessChecker("seatingLocationActiveList")], async (req, res) => {
 
- const {limit = 50,offset = 0,unit_id,building_id,key} = req.query
+    const { limit = 50, offset = 0, unit_id, building_id, key } = req.query
 
-    let result = await seatingLocationModel.getActiveList(limit,offset,unit_id,building_id,key);
-    let countData = await seatingLocationModel.getActiveListCount(unit_id,building_id,key);
+    let result = await seatingLocationModel.getActiveList(limit, offset, unit_id, building_id, key);
+    let countData = await seatingLocationModel.getActiveListCount(unit_id, building_id, key);
 
     return res.status(200).send({
         "success": true,
@@ -48,7 +48,7 @@ router.get('/active-list', [verifyToken, routeAccessChecker("seatingLocationActi
 });
 
 
-router.post('/add', [verifyToken, routeAccessChecker("seatingLocationAdd"),validateRequest(seatingLocationCreateSchema,'body')], async (req, res) => {
+router.post('/add', [verifyToken, routeAccessChecker("seatingLocationAdd"), validateRequest(seatingLocationCreateSchema, 'body')], async (req, res) => {
 
     let reqData = {
         "building_id": req.body.building_id,
@@ -63,7 +63,7 @@ router.post('/add', [verifyToken, routeAccessChecker("seatingLocationAdd"),valid
     // check unit id is existing
     let existingBuilding = await buildingModel.getById(reqData.building_id);
     if (isEmpty(existingBuilding)) {
-       return res.status(404).send({
+        return res.status(404).send({
             "success": false,
             "status": 404,
             "message": "Building not found."
@@ -71,7 +71,7 @@ router.post('/add', [verifyToken, routeAccessChecker("seatingLocationAdd"),valid
     }
 
 
-    let existingData = await seatingLocationModel.getByTitle(reqData.building_id,reqData.name);
+    let existingData = await seatingLocationModel.getByTitle(reqData.building_id, reqData.name);
     if (!isEmpty(existingData)) {
         return res.status(409).send({
             "success": false,
@@ -101,7 +101,7 @@ router.post('/add', [verifyToken, routeAccessChecker("seatingLocationAdd"),valid
 
 
 
-router.put('/update/:id', [verifyToken, routeAccessChecker("seatingLocationUpdate"),validateRequest(idParamsSchema,'params'),validateRequest(seatingLocationUpdateSchema,'body')], async (req, res) => {
+router.put('/update/:id', [verifyToken, routeAccessChecker("seatingLocationUpdate"), validateRequest(idParamsSchema, 'params'), validateRequest(seatingLocationUpdateSchema, 'body')], async (req, res) => {
 
     let id = req.params.id
     let reqData = {
@@ -130,18 +130,18 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("seatingLocationUpdat
     // name
     if (existingDataById[0].name !== reqData.name) {
 
-            let existingDataByName = await seatingLocationModel.getByTitle(existingDataById[0].building_id,reqData.name);
+        let existingDataByName = await seatingLocationModel.getByTitle(existingDataById[0].building_id, reqData.name);
 
-            if (!isEmpty(existingDataByName) && existingDataByName[0].id != id) {
+        if (!isEmpty(existingDataByName) && existingDataByName[0].id != id) {
 
-                isError = 1;
-                errorMessage += existingDataByName[0].status == "active" ? "This Seating location Already Exist." : "This Seating location Already Exist but Deactivate, You can activate it."
-            }
+            isError = 1;
+            errorMessage += existingDataByName[0].status == "active" ? "This Seating location Already Exist." : "This Seating location Already Exist but Deactivate, You can activate it."
+        }
 
-            willWeUpdate = 1;
-            updateData.name = reqData.name;
+        willWeUpdate = 1;
+        updateData.name = reqData.name;
 
-        
+
 
     }
 
@@ -189,10 +189,10 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("seatingLocationUpdat
 
 
 
-router.delete('/delete/:id', [verifyToken, routeAccessChecker("seatingLocationDelete"),validateRequest(idParamsSchema,'params')], async (req, res) => {
+router.delete('/delete/:id', [verifyToken, routeAccessChecker("seatingLocationDelete"), validateRequest(idParamsSchema, 'params')], async (req, res) => {
 
     let id = req.params.id
-    
+
     updated_by = req.decoded.userInfo.id;
 
     let existingDataById = await seatingLocationModel.getById(id);
@@ -232,7 +232,7 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("seatingLocationDe
 });
 
 
-router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeSeatingLocationStatus"),validateRequest(idParamsSchema,'params')], async (req, res) => {
+router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeSeatingLocationStatus"), validateRequest(idParamsSchema, 'params')], async (req, res) => {
 
     let id = req.params.id
 
@@ -274,18 +274,18 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeSeatingL
 
 
 // assign seating location to user
-router.post('/assign/:id', [verifyToken, routeAccessChecker("assignSeatingLocation"),validateRequest(assignSeatingLocation,'body')], async (req, res) => {
+router.post('/assign/:id', [verifyToken, routeAccessChecker("assignSeatingLocation"), validateRequest(assignSeatingLocation, 'body')], async (req, res) => {
 
-   const user_id = parseInt(req.params.id)
-   const seating_location = req.body.seating_location
+    const user_id = parseInt(req.params.id)
+    const seating_location = req.body.seating_location
 
-   const self_id = req.decoded.userInfo.id;
+    const self_id = req.decoded.userInfo.id;
 
 
     // check user is existing
     let existingDataByUserId = await userModel.getById(user_id);
     if (isEmpty(existingDataByUserId)) {
-       return res.status(404).send({
+        return res.status(404).send({
             "success": false,
             "status": 404,
             "message": "User not found."
@@ -294,74 +294,74 @@ router.post('/assign/:id', [verifyToken, routeAccessChecker("assignSeatingLocati
 
     // check assign user role is 2
     if (existingDataByUserId[0].role_id !== 2) {
-       return res.status(404).send({
+        return res.status(404).send({
             "success": false,
             "status": 404,
             "message": "This user is not admin."
         });
     }
 
-        // get all location by user id
+    // get all location by user id
     const getLocationByUserId = await assignSeatingLocationModel.getLocationByUserId(user_id)
 
-    if(getLocationByUserId.length){
-    let getDataInDB = []
-    for (let index = 0; index < getLocationByUserId.length; index++) {
-       getDataInDB.push(getLocationByUserId[index].seating_location_id)
-    }
-
-    // compare db data and req data
-
-    const compareData = await commonObject.compareArrays(seating_location,getDataInDB)
-   
-    // delete previous not matched value
-    for (let index = 0; index < compareData.notMatchedValue.length; index++) {
-        const notMatchedIds = compareData.notMatchedValue[index];
-        const getId = await assignSeatingLocationModel.getIdByUserAndLocationId(user_id,notMatchedIds)
-
-        await assignSeatingLocationModel.updateById(getId[0].id , { status : 0, updated_by:self_id})
-        
-    }
-
-    // add new value 
-    for (let index = 0; index < compareData.newValue.length; index++) {
-        const newIds = compareData.newValue[index];
-        await assignSeatingLocationModel.addNew({user_id:user_id,seating_location_id:newIds,created_by : self_id,updated_by:self_id})
-    }
-
-    }else{
-
-    for (let index = 0; index < seating_location.length; index++) {
-        const location_id = seating_location[index];
-        // check location is exists or not
-        let existingDataByLocationId = await seatingLocationModel.getById(location_id);
-        if (isEmpty(existingDataByLocationId)) {
-            return res.status(404).send({
-                "success": false,
-                "status": 404,
-                "message": `This seating location: ${location_id} not found.`
-            });
-        }
-        // check already assign this location
-        let alreadyAssignLocation = await assignSeatingLocationModel.getById(user_id,location_id);
-        if (alreadyAssignLocation.length) {
-            return res.status(400).send({
-                "success": false,
-                "status": 400,
-                "message": `This seating location: ${location_id} already exists.`
-            });
+    if (getLocationByUserId.length) {
+        let getDataInDB = []
+        for (let index = 0; index < getLocationByUserId.length; index++) {
+            getDataInDB.push(getLocationByUserId[index].seating_location_id)
         }
 
-        const data = {
-            user_id : user_id,
-            seating_location_id : location_id,
-            created_by : self_id,
-            updated_by : self_id,
+        // compare db data and req data
+
+        const compareData = await commonObject.compareArrays(seating_location, getDataInDB)
+
+        // delete previous not matched value
+        for (let index = 0; index < compareData.notMatchedValue.length; index++) {
+            const notMatchedIds = compareData.notMatchedValue[index];
+            const getId = await assignSeatingLocationModel.getIdByUserAndLocationId(user_id, notMatchedIds)
+
+            await assignSeatingLocationModel.updateById(getId[0].id, { status: 0, updated_by: self_id })
+
         }
 
-      await assignSeatingLocationModel.addNew(data);
+        // add new value 
+        for (let index = 0; index < compareData.newValue.length; index++) {
+            const newIds = compareData.newValue[index];
+            await assignSeatingLocationModel.addNew({ user_id: user_id, seating_location_id: newIds, created_by: self_id, updated_by: self_id })
+        }
 
-    }
+    } else {
+
+        for (let index = 0; index < seating_location.length; index++) {
+            const location_id = seating_location[index];
+            // check location is exists or not
+            let existingDataByLocationId = await seatingLocationModel.getById(location_id);
+            if (isEmpty(existingDataByLocationId)) {
+                return res.status(404).send({
+                    "success": false,
+                    "status": 404,
+                    "message": `This seating location: ${location_id} not found.`
+                });
+            }
+            // check already assign this location
+            let alreadyAssignLocation = await assignSeatingLocationModel.getById(user_id, location_id);
+            if (alreadyAssignLocation.length) {
+                return res.status(400).send({
+                    "success": false,
+                    "status": 400,
+                    "message": `This seating location: ${location_id} already exists.`
+                });
+            }
+
+            const data = {
+                user_id: user_id,
+                seating_location_id: location_id,
+                created_by: self_id,
+                updated_by: self_id,
+            }
+
+            await assignSeatingLocationModel.addNew(data);
+
+        }
 
     }
 
@@ -374,51 +374,30 @@ router.post('/assign/:id', [verifyToken, routeAccessChecker("assignSeatingLocati
 });
 
 
-// // assign seating location to user
-// router.put('/assign-update/:id', [verifyToken, routeAccessChecker("removeSeatingLocation"),validateRequest(assignSeatingLocation,'body')], async (req, res) => {
+// user wise get location
+router.get('/user-location/:id', [verifyToken, routeAccessChecker("userSeatingLocationList"),validateRequest(idParamsSchema, 'params')], async (req, res) => {
 
-//    const user_id = parseInt(req.params.id)
-//    const seating_location = req.body.seating_location
+    const id = parseInt(req.params.id)
+    // check user is existing
+    let existingDataByUserId = await userModel.getById(id);
+    if (isEmpty(existingDataByUserId)) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "User not found."
+        });
+    }
 
-//    const self_id = req.decoded.userInfo.id;
+    let result = await assignSeatingLocationModel.userWiseLocation(id);
+    
 
-
-//     // check user is existing
-//     let existingDataByUserId = await userModel.getById(user_id);
-//     if (isEmpty(existingDataByUserId)) {
-//        return res.status(404).send({
-//             "success": false,
-//             "status": 404,
-//             "message": "User not found."
-//         });
-//     }
-
-//     // check assign user role is 2
-//     if (existingDataByUserId[0].role_id !== 2) {
-//        return res.status(404).send({
-//             "success": false,
-//             "status": 404,
-//             "message": "This user is not admin."
-//         });
-//     }
-
-//     // get all location by user id
-//     const getLocationByUserId = await assignSeatingLocationModel.getLocationByUserId(user_id)
-
-//     let getDataInDB = []
-//     for (let index = 0; index < getLocationByUserId.length; index++) {
-//        getDataInDB.push(getLocationByUserId[index].seating_location_id)
-//     }
-
-
-//     return res.status(200).send({
-//         "success": true,
-//         "status": 200,
-//         "message": "Seating Location update Successfully."
-//     });
-
-// });
-
-
+    return res.status(200).send({
+        "success": true,
+        "status": 200,
+        "message": "User seating Location List.",
+        "count": result.length,
+        "data": result
+    });
+});
 
 module.exports = router;

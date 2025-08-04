@@ -1138,7 +1138,6 @@ router.post(
     }
 
     let getData = await adminModel.getById(employeeData[0].profile_id);
-    console.log("get admin data ",getData[0]);
     let data = {
       employee_id: employeeData[0]?.employee_id || null,
       name: employeeData[0]?.name || null,
@@ -1201,7 +1200,6 @@ router.post(
       });
     }
 
-    console.log("data==>",employeeData[0]);
     // check its unit wise super admin admin
     if (employeeData[0].role_id !== 4) {
       return res.status(400).send({
@@ -1681,7 +1679,7 @@ for (let index = 0; index < employees.length; index++) {
                    line_manager_name : data.ReportingManagerName,
                    line_manager_id : data.ReportingManagerCode
                }
-               console.log("Zing Hr data : ",employee)
+
                const helpDeskData = await userModel.getByEmployeeId(data.EmployeeCode)
               
                let is_update = 0
@@ -1712,8 +1710,7 @@ for (let index = 0; index < employees.length; index++) {
                        line_manager_name : employeeData[0]?.line_manager_name || '',
                        line_manager_id : employeeData[0]?.line_manager_id || '',
                    }
-                   console.log("help desk employeeData  ==>",helpDeskEmployeeData)
-          
+     
                    // check and update help desk employee data and zing hr data
                    if(helpDeskEmployeeData.name !== employee.name){
                      is_update = 1
@@ -1813,8 +1810,6 @@ for (let index = 0; index < employees.length; index++) {
                        line_manager_name : adminData[0]?.line_manager_name || '',
                        line_manager_id : adminData[0]?.line_manager_id || '',
                    }
-                   console.log("help desk admin data  ==>",helpDeskEmployeeData)
-          
 
                    // check and update help desk employee data and zing hr data
                    if(helpDeskEmployeeData.name !== employee.name){
@@ -1919,8 +1914,6 @@ for (let index = 0; index < employees.length; index++) {
                       line_manager_name : superAdminData[0]?.line_manager_name || '',
                       line_manager_id : superAdminData[0]?.line_manager_id || '',
                   }
-                  console.log("help desk admin data  ==>",helpDeskEmployeeData)
-         
 
                   // check and update help desk employee data and zing hr data
                   if(helpDeskEmployeeData.name !== employee.name){

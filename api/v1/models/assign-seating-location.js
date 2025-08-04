@@ -79,6 +79,15 @@ let getIdByUserAndLocationId = async (user_id = 0,location_id = 0) => {
     });
 }
 
+let userWiseLocation = async (user_id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.userWiseLocation(), [user_id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 
 
 let getActiveList = async (limit,offset,unit_id,building_id,key) => {
@@ -186,5 +195,6 @@ module.exports = {
     getActiveListCount,
     getByName,
     getLocationByUserId,
-    getIdByUserAndLocationId
+    getIdByUserAndLocationId,
+    userWiseLocation
 }

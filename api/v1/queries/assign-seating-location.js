@@ -1,4 +1,5 @@
 let table_name = "dbl_assign_seating_location";
+let user_assign_location = "user_assign_location_view";
 
 let getUserByEmail = () => {
     return `SELECT * FROM ${table_name} where  email = ? and status = 1 `;
@@ -115,6 +116,9 @@ let getIdByUserAndLocationId = () => {
     return `SELECT * FROM ${table_name} WHERE user_id = ?  AND  seating_location_id = ? AND status = 1`;
 }
 
+let userWiseLocation = () => {
+    return `SELECT * FROM ${user_assign_location} where  user_id = ? ;`;
+}
 
 
 let getByEmployeeId = () => {
@@ -215,5 +219,6 @@ module.exports = {
     getActiveListCount,
     getByName,
     getLocationByUserId,
-    getIdByUserAndLocationId
+    getIdByUserAndLocationId,
+    userWiseLocation
 }

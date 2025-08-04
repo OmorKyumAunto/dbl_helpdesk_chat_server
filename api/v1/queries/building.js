@@ -165,6 +165,11 @@ const updateById = () => {
 let getByIdForDeleted = () => {
     return `delete FROM ${table_name} where  id = ? and status = 1 `;
 }
+
+let getDataByUnitId = () => {
+    return `select * FROM ${table_name} where  unit_id IN (?) and status = 'active' `;
+}
+
 module.exports = {
     getUserByEmail,
     addNew,
@@ -179,5 +184,6 @@ module.exports = {
     getActiveList,
     getListCount,
     getActiveListCount,
-    getByName
+    getByName,
+    getDataByUnitId
 }

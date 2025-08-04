@@ -5,6 +5,8 @@ const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const buildingModel = require('../models/building');
 const unitModel = require('../models/asset-unit');
+const userModel = require('../models/user');
+const unitAccessModel = require('../models/unit-access');
 const { buildingCreateSchema,buildingUpdateSchema} = require("../validator/validate-request/building");
 const { idParamsSchema} = require("../validator/validate-request/common-validator");
 const common = require("../common/common");
@@ -274,7 +276,34 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeBuilding
 
 
 
+// user unit wise building list
+router.get('/user-unit-building/:id', [verifyToken, routeAccessChecker("userUnitBuildingList"),validateRequest(idParamsSchema,'params')], async (req, res) => {
 
+    const id = parseInt(req.params.id)
 
+    const existingUser = await userModel.getById(id)
+    if(isEmpty(existingUser)){
+        return res.status(404).send({
+        "success": true,
+        "status": 404,
+        "message": "User not found.",
+
+    }); 
+    }
+
+    const getUnit = await unitAccessModel.getById(id)
+
+    const unitIds = getUnit.map(u => u.unit_id); 
+
+    const getBuilding = await buildingModel.getDataByUnitId(unitIds);
+
+    return res.status(200).send({
+        "success": true,
+        "status": 200,
+        "message": "User Unit wise building List.",
+        "count": getBuilding.length,
+        "data": getBuilding
+    });
+});
 
 module.exports = router;

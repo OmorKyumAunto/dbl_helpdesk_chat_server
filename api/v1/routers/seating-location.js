@@ -421,7 +421,7 @@ router.get('/user-location/:id', [verifyToken, routeAccessChecker("userSeatingLo
 
 
 // multiple building wise seating location list
-router.get('/building-wise-location', [verifyToken, routeAccessChecker("buildingSeatingLocationList"),validateRequest(buildingIdSchema, 'body')], async (req, res) => {
+router.post('/building-wise-location', [verifyToken, routeAccessChecker("buildingSeatingLocationList"),validateRequest(buildingIdSchema, 'body')], async (req, res) => {
 
     const building_id = req.body.building_id
 

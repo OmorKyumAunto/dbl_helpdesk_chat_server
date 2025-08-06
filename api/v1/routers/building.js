@@ -277,7 +277,7 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeBuilding
 
 
 // user unit wise building list
-router.post('/user-unit-building/:id', [verifyToken, routeAccessChecker("userUnitBuildingList"),validateRequest(idParamsSchema,'params')], async (req, res) => {
+router.get('/user-unit-building/:id', [verifyToken, routeAccessChecker("userUnitBuildingList"),validateRequest(idParamsSchema,'params')], async (req, res) => {
 
     const id = parseInt(req.params.id)
 

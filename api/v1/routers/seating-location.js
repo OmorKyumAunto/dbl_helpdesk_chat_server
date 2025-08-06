@@ -304,7 +304,7 @@ router.post('/assign/:id', [verifyToken, routeAccessChecker("assignSeatingLocati
 
     // check this admin already assign or not
     let existsAlreadyChooseAdmin = await chooseAdminModel.getByAdminId(user_id);
-    if (existsAlreadyChooseAdmin.length) {
+    if (existsAlreadyChooseAdmin[0].created_by !== self_id) {
         return res.status(400).send({
             "success": false,
             "status": 400,

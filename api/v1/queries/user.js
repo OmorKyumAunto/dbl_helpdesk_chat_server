@@ -209,6 +209,31 @@ const getActiveList = () => {
     return `select * from ${table_view} where status = 1 order by id desc`;
 }
 
+
+
+const getAdminList = () => {
+    return `
+    SELECT 
+        u.*, 
+        ANY_VALUE(b.name) AS building_name,
+        GROUP_CONCAT(CONCAT(sl.id, ':', sl.name) SEPARATOR ',') AS seating_locations
+    FROM ${table_view} AS u 
+    JOIN dbl_choose_admin AS ca 
+        ON ca.admin_id = u.id 
+    AND ca.status = 1
+    JOIN dbl_assign_seating_location AS asl 
+        ON asl.user_id = ca.admin_id
+    JOIN dbl_seating_location AS sl 
+        ON asl.seating_location_id = sl.id
+    JOIN dbl_building AS b 
+        ON sl.building_id = b.id
+    WHERE u.status = 1 
+    GROUP BY u.id
+    ORDER BY u.id DESC;
+    `;
+};
+
+
 module.exports = {
     
     getUserByEmail,
@@ -231,5 +256,6 @@ module.exports = {
     getDataByAssetId,
     getOnlyEmployeeList,
     getOnlyTotalEmployeeList,
-    getUnitByUserId
+    getUnitByUserId,
+    getAdminList
 }

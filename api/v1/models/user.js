@@ -201,6 +201,29 @@ let getList = async () => {
     });
   }
   
+let getAdminList = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(queries.getAdminList(), (error, result) => {
+      if (error) return reject(error);
+
+      // Parse seating_locations string into array of {id, name}
+      const formatted = result.map(row => ({
+        ...row,
+        seating_locations: row.seating_locations
+          ? row.seating_locations.split(",").map(loc => {
+              const [id, name] = loc.split(":");
+              return { id: Number(id), name: name.trim() };
+            })
+          : []
+      }));
+
+      resolve(formatted);
+    });
+  });
+};
+
+
+
 
 module.exports = {
     getUserByEmail,
@@ -222,5 +245,6 @@ module.exports = {
     getDataByAssetId,
     getOnlyEmployeeList,
     getOnlyTotalEmployeeList,
-    getUnitByUserId
+    getUnitByUserId,
+    getAdminList
 }

@@ -72,8 +72,4 @@ router.get('/list',[verifyToken, routeAccessChecker("adminList")],async (req, re
 });
 
 
-
-  
-
-
 module.exports = router;

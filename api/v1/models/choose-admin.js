@@ -1,5 +1,5 @@
 const { connectionDblystem } = require('../connections/connection');
-const queries = require('../queries/seating-location');
+const queries = require('../queries/choose-admin');
 
 
 
@@ -31,9 +31,9 @@ let getUserInfo = async (email = "",password="") => {
     });
 }
 
-let getByTitle = async (building_id = 0,name = "") => {
+let getByTitle = async (unit_id = 0,name = "") => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getByTitle(), [building_id,name], (error, result, fields) => {
+        connectionDblystem.query(queries.getByTitle(), [unit_id,name], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -60,28 +60,18 @@ let getById = async (id = 0) => {
     });
 }
 
-
-let getLocationByUserId = async (id = 0) => {
+let getActiveList = async (limit,offset,unit_id,key) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getLocationByUserId(), [id], (error, result, fields) => {
+        connectionDblystem.query(queries.getActiveList(limit,offset,unit_id,key),(error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
     });
 }
 
-let getActiveList = async (limit,offset,unit_id,building_id,key) => {
+let getActiveListCount = async (unit_id,key) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getActiveList(limit,offset,unit_id,building_id,key),(error, result, fields) => {
-            if (error) reject(error)
-            else resolve(result)
-        });
-    });
-}
-
-let getActiveListCount = async (unit_id,building_id,key) => {
-    return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getActiveListCount(unit_id,building_id,key),(error, result, fields) => {
+        connectionDblystem.query(queries.getActiveListCount(unit_id,key),(error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -89,9 +79,9 @@ let getActiveListCount = async (unit_id,building_id,key) => {
 }
 
 
-let getByEmployeeId = async (employee_id = 0) => {
+let getByAdminId = async (id = 0) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getByEmployeeId(), [employee_id], (error, result, fields) => {
+        connectionDblystem.query(queries.getByAdminId(), [id], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -108,9 +98,9 @@ let getByProfileId = async (id = 0) => {
     });
 }
 
-let getList = async (limit,offset,unit_id,building_id,status,key) => {
+let getList = async (limit,offset,unit_id,status,key) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getList(limit,offset,unit_id,building_id,status,key), (error, result, fields) => {
+      connectionDblystem.query(queries.getList(limit,offset,unit_id,status,key), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -118,9 +108,9 @@ let getList = async (limit,offset,unit_id,building_id,status,key) => {
   }
 
 
-  let getListCount = async (unit_id,building_id,status,key) => {
+  let getListCount = async (unit_id,status,key) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getListCount(unit_id,building_id,status,key), (error, result, fields) => {
+      connectionDblystem.query(queries.getListCount(unit_id,status,key), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -139,9 +129,6 @@ let getList = async (limit,offset,unit_id,building_id,status,key) => {
    
 
 let updateById = async (id = 0, data = {}) => {
-    console.log("SDDDDDDDDDDDDDD");
-    console.log("id",id);
-    console.log("data",data);
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.updateById(), [data, id], (error, result, fields) => {
             if (error) reject(error);
@@ -149,8 +136,6 @@ let updateById = async (id = 0, data = {}) => {
         });
     });
 }
-
-
 
 let getByIdForDeleted = async (id = 0) => {
     return new Promise((resolve, reject) => {
@@ -161,10 +146,9 @@ let getByIdForDeleted = async (id = 0) => {
     });
 }
 
-
-let getDataByBuildingId = async (id = []) => {
+let getDataByUnitId = async (unit_ids = []) => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getDataByBuildingId(), [id], (error, result, fields) => {
+        connectionDblystem.query(queries.getDataByUnitId(), [unit_ids], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });
@@ -182,12 +166,11 @@ module.exports = {
     getByIdForDeleted,
     getById,
     getByProfileId,
-    getByEmployeeId,
     getByTitle,
     getActiveList,
     getListCount,
     getActiveListCount,
     getByName,
-    getLocationByUserId,
-    getDataByBuildingId
+    getDataByUnitId,
+    getByAdminId
 }

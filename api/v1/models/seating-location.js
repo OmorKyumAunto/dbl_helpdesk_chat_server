@@ -162,6 +162,15 @@ let getByIdForDeleted = async (id = 0) => {
 }
 
 
+let getDataByBuildingId = async (id = []) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getDataByBuildingId(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 
 module.exports = {
     getUserByEmail,
@@ -179,5 +188,6 @@ module.exports = {
     getListCount,
     getActiveListCount,
     getByName,
-    getLocationByUserId
+    getLocationByUserId,
+    getDataByBuildingId
 }

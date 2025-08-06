@@ -8,7 +8,7 @@ const userModel = require('../models/user');
 const seatingLocationModel = require('../models/seating-location');
 const assignSeatingLocationModel = require('../models/assign-seating-location');
 const { seatingLocationCreateSchema, seatingLocationUpdateSchema, assignSeatingLocation } = require("../validator/validate-request/seating-location");
-const { idParamsSchema } = require("../validator/validate-request/common-validator");
+const { idParamsSchema,buildingIdSchema } = require("../validator/validate-request/common-validator");
 const validateRequest = require("../validator/middleware");
 const commonObject = require("../common/common");
 require('dotenv').config();
@@ -399,5 +399,40 @@ router.get('/user-location/:id', [verifyToken, routeAccessChecker("userSeatingLo
         "data": result
     });
 });
+
+
+
+// multiple building wise seating location list
+router.get('/building-wise-location', [verifyToken, routeAccessChecker("buildingSeatingLocationList"),validateRequest(buildingIdSchema, 'body')], async (req, res) => {
+
+    const building_id = req.body.building_id
+
+    const id = []
+    // check this building id already exists in db
+    for (let index = 0; index < building_id.length; index++) {
+        const buildingId = building_id[index];
+
+        const existBuildingId = await buildingModel.getById(buildingId)
+        if(isEmpty(existBuildingId)){
+            return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "Building not found .",
+       });
+        }
+        id.push(buildingId)
+    }
+    let result = await seatingLocationModel.getDataByBuildingId(id);
+    
+
+    return res.status(200).send({
+        "success": true,
+        "status": 200,
+        "message": "Building wise seating location list.",
+        "count": result.length,
+        "data": result
+    });
+});
+
 
 module.exports = router;

@@ -30,7 +30,12 @@ const idParamsSchema = z.object({
   id: z.string().regex(/^\d+$/, "ID must be a number"),  
 });
 
+const buildingIdSchema = z.object({
+  building_id: z.array(
+    z.number().int().positive("Each ID must be a positive number")
+  ).nonempty("At least one building ID is required"),
+});
 
 
 
-module.exports = { idParamsSchema };
+module.exports = { idParamsSchema ,buildingIdSchema};

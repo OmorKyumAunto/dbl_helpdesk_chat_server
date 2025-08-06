@@ -175,7 +175,8 @@ let superAdminPermission = [
   "assignSeatingLocation",
   "removeSeatingLocation",
   "userSeatingLocationList",
-  "userUnitBuildingList"
+  "userUnitBuildingList",
+  "buildingSeatingLocationList"
 ];
 
 let adminPermission = [
@@ -613,7 +614,8 @@ let unitWiseSuperAdminPermission = [
   "assignSeatingLocation",
   "removeSeatingLocation",
   "userSeatingLocationList",
-  "userUnitBuildingList"
+  "userUnitBuildingList",
+  "buildingSeatingLocationList"
 ];
 
 let getRouterPermissionList = async (id = 0) => {

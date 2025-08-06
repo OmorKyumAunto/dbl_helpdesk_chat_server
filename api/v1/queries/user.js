@@ -96,6 +96,41 @@ let getEmployeeList = (offset, limit, key, unit_name,status,blood_group,employee
 }
 
 
+//get unit super admin list
+let getUnitSuperAdminList = (offset, limit, key, unit_name,status,blood_group,employee_type) => {
+   
+    let searchCondition = '';
+    if (unit_name) {
+        searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit_name}%') `;
+    }
+    if (status) {
+        searchCondition += `AND (status) LIKE ('%${status}%') `;
+    }
+    if (blood_group) {
+        searchCondition += `AND UPPER(blood_group) LIKE UPPER('%${blood_group}%') `;
+    }
+    if (employee_type) {
+        if (employee_type === "management") {
+            // Management employees (start with 1510)
+            searchCondition += `AND (employee_id) LIKE '1510%' `;
+        } else if (employee_type === "non-management") {
+            // Non-management employees (any user_id_no)
+            searchCondition += `AND (employee_id) NOT LIKE '1510%' `;
+        }
+    }
+    
+    if (key) {
+        searchCondition += ` AND (
+          LOWER(employee_id) LIKE LOWER('%${key}%') 
+          OR LOWER(name) LIKE LOWER('%${key}%') 
+          OR email LIKE '%${key}%' 
+          OR LOWER(department) LIKE LOWER('%${key}%') 
+        )`;
+      }
+      
+    return `SELECT * FROM ${table_view} WHERE role_id = 4 AND status != 0 ${searchCondition} ORDER BY id desc LIMIT ${limit} OFFSET ${offset}`;
+}
+
 
 
 let getTotalEmployeeList = (key, unit_name,status,blood_group,employee_type) => {
@@ -127,6 +162,35 @@ let getTotalEmployeeList = (key, unit_name,status,blood_group,employee_type) => 
     return `SELECT * FROM ${table_view} WHERE  status = 1 ${searchCondition} ORDER BY id desc`;
 }
 
+
+let getTotalUnitSuperAdminList = (key, unit_name,status,blood_group,employee_type) => {
+    let searchCondition = '';
+    if (unit_name) {
+        searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit_name}%') `;
+    }
+    if (status) {
+        searchCondition += `AND (status) LIKE ('%${status}%') `;
+    }
+    if (blood_group) {
+        searchCondition += `AND UPPER(blood_group) LIKE UPPER('%${blood_group}%') `;
+    }
+    if (employee_type) {
+        if (employee_type === "management") {
+            // Management employees (start with 1510)
+            searchCondition += `AND (employee_id) LIKE '1510%' `;
+        } else if (employee_type === "non-management") {
+            // Non-management employees (any user_id_no)
+            searchCondition += `AND (employee_id) NOT LIKE '1510%' `;
+        }
+    }
+   
+    if (key) {
+        searchCondition += ` AND (LOWER(employee_id) LIKE LOWER('%${key}%') OR LOWER(name) LIKE LOWER('%${key}%'))`;
+    }
+
+
+    return `SELECT * FROM ${table_view} WHERE  role_id = 4 AND status = 1 ${searchCondition} ORDER BY id desc`;
+}
 
 
 
@@ -257,5 +321,7 @@ module.exports = {
     getOnlyEmployeeList,
     getOnlyTotalEmployeeList,
     getUnitByUserId,
-    getAdminList
+    getAdminList,
+    getUnitSuperAdminList,
+    getTotalUnitSuperAdminList
 }

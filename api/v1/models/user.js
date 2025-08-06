@@ -130,6 +130,17 @@ let getEmployeeList = async (offset, limit, key,unit_name,status,blood_group,emp
     });
   }
 
+
+let getUnitSuperAdminList = async (offset, limit, key,unit_name,status,blood_group,employee_type) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getUnitSuperAdminList(offset, limit, key,unit_name,status,blood_group,employee_type), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+
+
   let getTotalEmployeeList = async (key, unit,status,blood_group,employee_type) => {
     return new Promise((resolve, reject) => {
       connectionDblystem.query(queries.getTotalEmployeeList(key, unit,status,blood_group,employee_type), (error, result, fields) => {
@@ -139,6 +150,14 @@ let getEmployeeList = async (offset, limit, key,unit_name,status,blood_group,emp
     });
   }
 
+  let getTotalUnitSuperAdminList = async (key, unit,status,blood_group,employee_type) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getTotalUnitSuperAdminList(key, unit,status,blood_group,employee_type), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
 
 let getOnlyEmployeeList = async (offset, limit, key,unit_name,blood_group) => {
   return new Promise((resolve, reject) => {
@@ -246,5 +265,7 @@ module.exports = {
     getOnlyEmployeeList,
     getOnlyTotalEmployeeList,
     getUnitByUserId,
-    getAdminList
+    getAdminList,
+    getUnitSuperAdminList,
+    getTotalUnitSuperAdminList
 }

@@ -7,6 +7,7 @@ const buildingModel = require('../models/building');
 const userModel = require('../models/user');
 const seatingLocationModel = require('../models/seating-location');
 const assignSeatingLocationModel = require('../models/assign-seating-location');
+const chooseAdminModel = require('../models/choose-admin');
 const { seatingLocationCreateSchema, seatingLocationUpdateSchema, assignSeatingLocation } = require("../validator/validate-request/seating-location");
 const { idParamsSchema,buildingIdSchema } = require("../validator/validate-request/common-validator");
 const validateRequest = require("../validator/middleware");
@@ -301,6 +302,16 @@ router.post('/assign/:id', [verifyToken, routeAccessChecker("assignSeatingLocati
         });
     }
 
+    // check this admin already assign or not
+    let existsAlreadyChooseAdmin = await chooseAdminModel.getByAdminId(user_id);
+    if (existsAlreadyChooseAdmin.length) {
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "This admin already selected by another super admin."
+        });
+    }
+
     // get all location by user id
     const getLocationByUserId = await assignSeatingLocationModel.getLocationByUserId(user_id)
 
@@ -359,11 +370,18 @@ router.post('/assign/:id', [verifyToken, routeAccessChecker("assignSeatingLocati
                 updated_by: self_id,
             }
 
-            await assignSeatingLocationModel.addNew(data);
+         await assignSeatingLocationModel.addNew(data)
 
         }
 
     }
+
+    const chooseAdmin = {
+        unit_wise_super_admin : self_id,
+        admin_id : user_id,
+        created_by: self_id
+    }
+    await chooseAdminModel.addNew(chooseAdmin)
 
     return res.status(201).send({
         "success": true,

@@ -1276,6 +1276,16 @@ router.post(
       });
     }
 
+    // check this is only admin role id is 2 
+    if (employeeData[0].role_id !== 2) {
+      return res.status(400).send({
+        success: false,
+        status: 400,
+        message: "This user is not admin.",
+      });
+    }
+
+
     let getData = await adminModel.getByProfileId(employeeData[0].profile_id);
 
     let data = {

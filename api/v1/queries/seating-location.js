@@ -1,4 +1,5 @@
 let table_name = "dbl_seating_location";
+let user_assign_location = "user_assign_location_view";
 
 let getUserByEmail = () => {
     return `SELECT * FROM ${table_name} where  email = ? and status = 1 `;
@@ -195,6 +196,10 @@ let getDataByBuildingId = () => {
     return `select id,name FROM ${table_name} where building_id IN (?)  and status = 'active' `;
 }
 
+let getByIdView = () => {
+    return `select * FROM ${user_assign_location} where user_id = ? `;
+}
+
 
 module.exports = {
     getUserByEmail,
@@ -211,5 +216,6 @@ module.exports = {
     getListCount,
     getActiveListCount,
     getByName,
-    getDataByBuildingId
+    getDataByBuildingId,
+    getByIdView
 }

@@ -171,6 +171,14 @@ let getDataByBuildingId = async (id = []) => {
     });
 }
 
+let getByIdView = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByIdView(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
 
 module.exports = {
     getUserByEmail,
@@ -189,5 +197,6 @@ module.exports = {
     getActiveListCount,
     getByName,
     getLocationByUserId,
-    getDataByBuildingId
+    getDataByBuildingId,
+    getByIdView
 }

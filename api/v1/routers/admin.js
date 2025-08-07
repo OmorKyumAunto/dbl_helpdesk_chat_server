@@ -8,6 +8,7 @@ const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const moment = require("moment");
 const unitAccessModel = require('../models/unit-access');
+const seatingLocationModel = require('../models/seating-location');
 
 require('dotenv').config();
 
@@ -60,6 +61,12 @@ router.get('/list',[verifyToken, routeAccessChecker("adminList")],async (req, re
         }
     }
     
+    for (let index = 0; index < result.length; index++) {
+        const id = result[index].id;
+        const getSeatingData = await seatingLocationModel.getByIdView(id)
+        result[index].seating_location = getSeatingData
+        
+    }
     
       return res.status(200).send({
         success: true,

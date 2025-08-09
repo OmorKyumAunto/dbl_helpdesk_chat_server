@@ -244,19 +244,7 @@ let getEmployeeAdminList = (offset, limit, key, unit) => {
 
 
     return `SELECT * FROM ${table_view} WHERE role_id = 2 and status != 0 ${searchCondition} ORDER BY id desc LIMIT ${limit} OFFSET ${offset}`;
-
-
-// return `
-//   SELECT u.*, us.seating_location_name 
-//   FROM ${table_view} AS u 
-//   JOIN user_assign_location_view AS us ON us.user_id = u.id
-//   WHERE u.role_id = 2 AND u.status != 0 
-//   ${searchCondition}
-//   ORDER BY u.id DESC 
-//   LIMIT ${limit} OFFSET ${offset};
-// `;
-
-    
+   
 }
 
 

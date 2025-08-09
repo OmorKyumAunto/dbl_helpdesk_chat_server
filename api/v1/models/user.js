@@ -220,9 +220,9 @@ let getList = async () => {
     });
   }
   
-let getAdminList = async () => {
+let getAdminList = async (id=0) => {
   return new Promise((resolve, reject) => {
-    connectionDblystem.query(queries.getAdminList(), (error, result) => {
+    connectionDblystem.query(queries.getAdminList(),[id], (error, result) => {
       if (error) return reject(error);
 
       // Parse seating_locations string into array of {id, name}

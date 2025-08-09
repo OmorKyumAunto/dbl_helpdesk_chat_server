@@ -376,12 +376,19 @@ router.post('/assign/:id', [verifyToken, routeAccessChecker("assignSeatingLocati
 
     }
 
+
+    // check choose admin
+    const getChooseAdmin = await chooseAdminModel.superAndAdminWiseData(self_id,user_id)
+
+    if(!getChooseAdmin.length){
     const chooseAdmin = {
         unit_wise_super_admin : self_id,
         admin_id : user_id,
         created_by: self_id
     }
     await chooseAdminModel.addNew(chooseAdmin)
+    }
+
 
     return res.status(201).send({
         "success": true,

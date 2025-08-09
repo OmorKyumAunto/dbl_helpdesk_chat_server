@@ -19,7 +19,7 @@ router.get(
   async (req, res) => {
   
     const id = req.decoded.userInfo.id
-    let result = await userModel.getAdminList();
+    let result = await userModel.getAdminList(id);
 
     // Iterate over the employee list
     for (let employee of result) {

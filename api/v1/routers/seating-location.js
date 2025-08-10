@@ -5,10 +5,11 @@ const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const buildingModel = require('../models/building');
 const userModel = require('../models/user');
+const employeeModel = require('../models/employee');
 const seatingLocationModel = require('../models/seating-location');
 const assignSeatingLocationModel = require('../models/assign-seating-location');
 const chooseAdminModel = require('../models/choose-admin');
-const { seatingLocationCreateSchema, seatingLocationUpdateSchema, assignSeatingLocation } = require("../validator/validate-request/seating-location");
+const { seatingLocationCreateSchema, seatingLocationUpdateSchema, assignSeatingLocation,employeeSeatingLocationUpdateSchema } = require("../validator/validate-request/seating-location");
 const { idParamsSchema,buildingIdSchema } = require("../validator/validate-request/common-validator");
 const validateRequest = require("../validator/middleware");
 const commonObject = require("../common/common");
@@ -105,11 +106,12 @@ router.post('/add', [verifyToken, routeAccessChecker("seatingLocationAdd"), vali
 router.put('/update/:id', [verifyToken, routeAccessChecker("seatingLocationUpdate"), validateRequest(idParamsSchema, 'params'), validateRequest(seatingLocationUpdateSchema, 'body')], async (req, res) => {
 
     let id = req.params.id
+    const self_id = req.decoded.userInfo.id
     let reqData = {
         "name": req.body.name
     }
 
-    reqData.updated_by = req.decoded.userInfo.id;
+    reqData.updated_by = self_id;
 
 
     let existingDataById = await seatingLocationModel.getById(id);
@@ -128,6 +130,15 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("seatingLocationUpdat
     let isError = 0; // 1 = yes, 0 = no
     let willWeUpdate = 0; // 1 = yes , 0 = no;
 
+
+    if (existingDataById[0].created_by !== self_id) {
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "You do not have permission to perform any action in this location.",
+
+        });
+    }
     // name
     if (existingDataById[0].name !== reqData.name) {
 
@@ -157,7 +168,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("seatingLocationUpdat
 
     if (willWeUpdate == 1) {
 
-        updateData.updated_by = req.decoded.userInfo.id;
+        updateData.updated_by = self_id;
 
         let result = await seatingLocationModel.updateById(id, updateData);
 
@@ -193,8 +204,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("seatingLocationUpdat
 router.delete('/delete/:id', [verifyToken, routeAccessChecker("seatingLocationDelete"), validateRequest(idParamsSchema, 'params')], async (req, res) => {
 
     let id = req.params.id
-
-    updated_by = req.decoded.userInfo.id;
+    const self_id = req.decoded.userInfo.id
 
     let existingDataById = await seatingLocationModel.getById(id);
     if (isEmpty(existingDataById)) {
@@ -206,10 +216,17 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("seatingLocationDe
         });
     }
 
+    if (existingDataById[0].created_by !== self_id) {
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "You do not have permission to perform any action in this location.",
 
+        });
+    }
     let data = {
         status: 'delete',
-        updated_by: updated_by,
+        updated_by: self_id,
     }
 
     let result = await seatingLocationModel.updateById(id, data);
@@ -236,8 +253,8 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("seatingLocationDe
 router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeSeatingLocationStatus"), validateRequest(idParamsSchema, 'params')], async (req, res) => {
 
     let id = req.params.id
+    const self_id = req.decoded.userInfo.id
 
-    updated_by = req.decoded.userInfo.id;
 
     let existingDataById = await seatingLocationModel.getById(id);
     if (isEmpty(existingDataById)) {
@@ -248,9 +265,18 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeSeatingL
         });
     }
 
+    if (existingDataById[0].created_by !== self_id) {
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "You do not have permission to perform any action in this location.",
+
+        });
+    }    
+
     let data = {
         status: existingDataById[0].status == 'active' ? 'inactive' : 'active',
-        updated_by: updated_by
+        updated_by: self_id
     }
 
     let result = await seatingLocationModel.updateById(id, data);
@@ -460,4 +486,54 @@ router.post('/building-wise-location', [verifyToken, routeAccessChecker("buildin
 });
 
 
+// update employee seating location
+router.put('/employee-seating-location/:id', [verifyToken, routeAccessChecker("employeeSeatingLocationUpdate"), validateRequest(idParamsSchema, 'params'), validateRequest(employeeSeatingLocationUpdateSchema, 'body')], async (req, res) => {
+
+    let id = req.params.id
+    const self_id = req.decoded.userInfo.id
+
+    let reqData = {
+        "seating_location": req.body.seating_location
+    }
+
+    reqData.updated_by = self_id;
+
+    const existingByUserId = await userModel.getById(id)
+    if(isEmpty(existingByUserId)){
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "User not found.",
+
+        });
+    }
+
+    let existingDataById = await seatingLocationModel.getById(reqData.seating_location);
+    if (isEmpty(existingDataById)) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "Seating location data found.",
+
+        });
+    }
+
+    const employeeData = {
+        seating_location : reqData.seating_location,
+        updated_by : self_id
+    }
+
+    await Promise.all([
+        userModel.updateById({updated_by:self_id},id),
+        await employeeModel.updateById(existingByUserId[0].profile_id,employeeData)
+    ])
+
+
+    return res.status(200).send({
+        "success": true,
+        "status": 200,
+        "message": "Employee seating location successfully updated."
+    });
+
+});
 module.exports = router;

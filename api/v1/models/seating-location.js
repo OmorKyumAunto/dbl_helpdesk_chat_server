@@ -60,6 +60,15 @@ let getById = async (id = 0) => {
     });
 }
 
+let getByIdViewData = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByIdViewData(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 
 let getLocationByUserId = async (id = 0) => {
     return new Promise((resolve, reject) => {
@@ -198,5 +207,6 @@ module.exports = {
     getByName,
     getLocationByUserId,
     getDataByBuildingId,
-    getByIdView
+    getByIdView,
+    getByIdViewData
 }

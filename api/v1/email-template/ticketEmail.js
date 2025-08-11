@@ -49,6 +49,14 @@ const ticketEmail = async (data) => {
             <td style="font-weight: bold; padding: 8px 0; color: #003366;">Ticketing Unit:</td>
             <td style="padding: 8px 0;">${data.unit_name}</td>
           </tr>
+          <tr>
+            <td style="font-weight: bold; padding: 8px 0; color: #003366;">Ticketing Complex:</td>
+            <td style="padding: 8px 0;">${data.building_name}</td>
+          </tr>
+            <tr>
+            <td style="font-weight: bold; padding: 8px 0; color: #003366;">Seating location:</td>
+            <td style="padding: 8px 0;">${data.seating_location_name}</td>
+          </tr>
         </table>
       </div>
 
@@ -144,6 +152,14 @@ const ticketCcEmail = async (data) => {
           <tr>
             <td style="font-weight: bold; padding: 5px 0;">Ticketing Unit:</td>
             <td style="padding: 5px 0;">${data.unit_name}</td>
+          </tr>
+          <tr>
+            <td style="font-weight: bold; padding: 8px 0; color: #003366;">Ticketing Complex:</td>
+            <td style="padding: 8px 0;">${data.building_name}</td>
+          </tr>
+            <tr>
+            <td style="font-weight: bold; padding: 8px 0; color: #003366;">Seating location:</td>
+            <td style="padding: 8px 0;">${data.seating_location_name}</td>
           </tr>
           <tr>
             <td style="font-weight: bold; padding: 5px 0;">Ticket Message:</td>

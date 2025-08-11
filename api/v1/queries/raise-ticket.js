@@ -356,7 +356,7 @@ const updateById = () => {
 };
 
 let getUnitAndCategoryWiseEmail = () => {
-  return `SELECT * FROM ${admin_wise_ticket_view} where  asset_unit_id = ? and ticket_category_id = ? `;
+  return `SELECT * FROM ${admin_wise_ticket_view} where  seating_location_id = ? and ticket_category_id = ? `;
 };
 
 let getAdminWiseTicketById = () => {

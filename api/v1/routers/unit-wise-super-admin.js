@@ -54,12 +54,20 @@ router.get(
         }
       }
     }
+
+    // convert it json
+    const formatted = result.map(row => ({
+      ...row,
+      units: JSON.parse(row.units) ,
+      admin_categories: JSON.parse(row.admin_categories) ,
+    }));
+
     return res.status(200).send({
       success: true,
       status: 200,
       message: "Selected Admin List.",
       total: result.length,
-      data: result,
+      data: formatted,
     });
   }
 );

@@ -18,7 +18,15 @@ const dateSchema = () =>
 const dateFormat = () =>
       z.string()
         .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)")
-       
+
+
+  const numericString = (fieldName) =>
+  z.string({
+    required_error: `${fieldName} is required`,
+    invalid_type_error: `${fieldName} must be a number`
+  })
+  .regex(/^\d+$/, { message: `${fieldName} must be a number` })
+  .transform((val) => Number(val));    
     
 
 // Common function for time validation (HH:MM - 24-hour format)
@@ -36,5 +44,56 @@ const reRaiseTicketCommentSchema = z.object({
 });
 
 
+const onBehalfTicketSchema = z.object({
+  category_id: numericString("Category ID"),
 
-module.exports = { reRaiseTicketCommentSchema };
+  priority: z.enum(["high", "low", "medium", "urgent"], {
+    required_error: "Priority is required",
+    invalid_type_error: "Priority must be one of: high, low, medium, urgent"
+  }),
+
+  subject: z.string({
+    required_error: "Subject is required",
+    invalid_type_error: "Subject must be a string"
+  }).min(1, { message: "Subject cannot be empty" }),
+
+  description: z.string({
+    required_error: "Description is required",
+    invalid_type_error: "Description must be a string"
+  }).min(1, { message: "Description cannot be empty" }),
+
+  asset_id: numericString("Asset ID").optional(),
+
+  user_id: numericString("User ID"),
+
+  cc: numericString("CC").optional(),
+});
+
+
+
+
+const raiseTicketSchema = z.object({
+  category_id: numericString("Category ID"),
+
+  priority: z.enum(["high", "low", "medium", "urgent"], {
+    required_error: "Priority is required",
+    invalid_type_error: "Priority must be one of: high, low, medium, urgent"
+  }),
+
+  subject: z.string({
+    required_error: "Subject is required",
+    invalid_type_error: "Subject must be a string"
+  }).min(1, { message: "Subject cannot be empty" }),
+
+  description: z.string({
+    required_error: "Description is required",
+    invalid_type_error: "Description must be a string"
+  }).min(1, { message: "Description cannot be empty" }),
+
+  asset_id: numericString("Asset ID").optional(),
+
+  cc: numericString("CC").optional()
+});
+
+
+module.exports = { reRaiseTicketCommentSchema,onBehalfTicketSchema,raiseTicketSchema };

@@ -319,9 +319,18 @@ const ticketOnBehalf = async (data) => {
               <td style="font-weight: bold; padding: 8px 0; color: #003366;">Created For (You):</td>
               <td style="padding: 8px 0;">${data.employee_name} (${data.employee_id})</td>
             </tr>
+            
             <tr>
               <td style="font-weight: bold; padding: 8px 0; color: #003366;">Ticketing Unit:</td>
               <td style="padding: 8px 0;">${data.unit_name}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 8px 0; color: #003366;">Ticketing complex:</td>
+              <td style="padding: 8px 0;">${data.building_name}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; padding: 8px 0; color: #003366;">Seating location:</td>
+              <td style="padding: 8px 0;">${data.seating_location_name}</td>
             </tr>
           </table>
         </div>

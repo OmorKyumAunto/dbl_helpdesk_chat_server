@@ -288,7 +288,6 @@ let adminPermission = [
   "ticketCategoryActiveList",
   "beforeAssignList",
   "afterAssignList",
-  "adminWiseTicketList",
   "ticketDetails",
   "ticketComment",
   "ticketCommentEdit",
@@ -449,7 +448,8 @@ let employeePermission = [
   "taskEnd",
   "ticketReraise",
   "employeeAssignAssetIdWise",
-  "employeeSeatingLocationUpdate"
+  "employeeSeatingLocationUpdate",
+ 
 ];
 
 let unitWiseSuperAdminPermission = [
@@ -495,7 +495,6 @@ let unitWiseSuperAdminPermission = [
   "locationActiveList",
   "locationList",
   "adminDistributedAsset",
-  "adminWiseTicketList",
   "adminUpdateStatus",
 
   "employeeList",
@@ -559,7 +558,6 @@ let unitWiseSuperAdminPermission = [
   "ticketCategoryActiveList",
   "beforeAssignList",
   "afterAssignList",
-  "adminWiseTicketList",
   "ticketDetails",
   "ticketComment",
   "ticketCommentEdit",
@@ -623,7 +621,8 @@ let unitWiseSuperAdminPermission = [
   "unitWiseSuperAdminChooseAdmin",
   "unitSuperAdminAssignAdminList",
   "unitSuperAdminList",
-  "employeeSeatingLocationUpdate"
+  "employeeSeatingLocationUpdate",
+  "unitSuperAdminWiseTicketList"
 ];
 
 let getRouterPermissionList = async (id = 0) => {

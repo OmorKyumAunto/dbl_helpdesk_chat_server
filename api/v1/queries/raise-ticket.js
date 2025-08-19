@@ -1,6 +1,7 @@
 const isEmpty = require("is-empty");
 let table_name = "dbl_raise_ticket";
 let admin_wise_ticket_view = "admin_wise_ticket";
+let up_coming_ticket = "up_coming_ticket_view";
 let super_admin_ticket_view = "super_admin_ticket_view";
 let re_raise_table_name = "dbl_ticket_re_raise_tracking"
 
@@ -14,6 +15,76 @@ let getAllList = () => {
 let getAllLocationDataByUnitId = () => {
   return `SELECT id,location,unit_id,status FROM ${table_name} WHERE unit_id = ? and status = 1 ORDER BY id DESC `;
 };
+
+let getUnitSuperAdminTicket = (key, priority, status, unitIds, offset, limit) => {
+  let conditions = [];
+
+  // Filter by unitIds
+  if (unitIds && unitIds.length > 0) {
+    const unitIdList = unitIds.join(","); // e.g. "4,21,20,19,22"
+    conditions.push(`seating_unit_id IN (${unitIdList})`);
+  }
+
+  if (priority) {
+    conditions.push(`priority = '${priority}'`);
+  }
+  if (status) {
+    conditions.push(`ticket_status = '${status}'`);
+  }
+  if (key) {
+    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
+
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  // Pagination clause
+  const paginationClause = `LIMIT ${limit} OFFSET ${offset}`;
+
+  let query = `
+        SELECT 
+            * 
+        FROM 
+            ${admin_wise_ticket_view} 
+        ${whereClause}
+        ${paginationClause}
+    `;
+
+  return query;
+};
+
+
+let getUnitSuperAdminTicketCount = (key, priority, status,unitIds) => {
+  let conditions = [];
+
+  // Add conditions dynamically based on parameters
+  if (priority) {
+    conditions.push(`priority = '${priority}'`);
+  }
+  if (status) {
+    conditions.push(`ticket_status = '${status}'`);
+  }
+  if (key) {
+    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
+
+  // Base condition for user_id
+  // conditions.push(`user_id = ?`);
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  // Build query parts conditionally
+  let query = `
+        SELECT 
+            * 
+        FROM 
+            ${admin_wise_ticket_view} 
+        ${whereClause}
+    `;
+
+  return query;
+};
+
 
 let getAdminWiseTicket = (key, priority, status, offset, limit) => {
   let conditions = [];
@@ -30,7 +101,7 @@ let getAdminWiseTicket = (key, priority, status, offset, limit) => {
   }
 
   // Base condition for user_id
-  conditions.push(`user_id = ?`);
+  conditions.push(`user_id = ? AND ticket_solved_employee_user_id = ?`);
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
@@ -51,6 +122,7 @@ let getAdminWiseTicket = (key, priority, status, offset, limit) => {
   return query;
 };
 
+
 let getAdminWiseTicketTotalCount = (key, priority, status) => {
   let conditions = [];
 
@@ -66,7 +138,7 @@ let getAdminWiseTicketTotalCount = (key, priority, status) => {
   }
 
   // Base condition for user_id
-  conditions.push(`user_id = ?`);
+  conditions.push(`user_id = ? AND ticket_solved_employee_user_id = ?`);
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
@@ -81,6 +153,77 @@ let getAdminWiseTicketTotalCount = (key, priority, status) => {
 
   return query;
 };
+
+
+let getAdminWiseUpComingTicket = (key, priority, status, offset, limit) => {
+  let conditions = [];
+
+  // Add conditions dynamically based on parameters
+  if (priority) {
+    conditions.push(`priority = '${priority}'`);
+  }
+  if (status) {
+    conditions.push(`ticket_status = '${status}'`);
+  }
+  if (key) {
+    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
+
+  // Base condition for user_id
+  conditions.push(`user_id = ? AND ticket_solved_employee_user_id IS NULL `);
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  // Pagination clause
+  const paginationClause = `LIMIT ${limit} OFFSET ${offset}`;
+
+  // Build query parts conditionally
+  let query = `
+        SELECT 
+            * 
+        FROM 
+            ${up_coming_ticket} 
+        ${whereClause}
+    `;
+
+  query += ` ${paginationClause}`;
+
+  return query;
+};
+
+
+let getAdminWiseTicketUpComingTotalCount = (key, priority, status) => {
+  let conditions = [];
+
+  // Add conditions dynamically based on parameters
+  if (priority) {
+    conditions.push(`priority = '${priority}'`);
+  }
+  if (status) {
+    conditions.push(`ticket_status = '${status}'`);
+  }
+  if (key) {
+    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
+
+  // Base condition for user_id
+  conditions.push(`user_id = ? AND ticket_solved_employee_user_id IS NULL`);
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  // Build query parts conditionally
+  let query = `
+        SELECT 
+            * 
+        FROM 
+            ${up_coming_ticket} 
+        ${whereClause}
+    `;
+
+  return query;
+};
+
+
 
 let getSuperAdminTicket = (key, priority, status, offset, limit) => {
   let baseQuery = `
@@ -884,5 +1027,9 @@ module.exports = {
   getTicketAdminTotalAvgTime,
   ticketReport,
   addNewTrackingData,
-  superAdminData
+  superAdminData,
+  getUnitSuperAdminTicket,
+  getUnitSuperAdminTicketCount,
+  getAdminWiseTicketUpComingTotalCount,
+  getAdminWiseUpComingTicket
 };

@@ -69,7 +69,10 @@ let getAllListTotalCountUserWise = async (id = 0, key, priority, status) => {
   });
 };
 
+
+
 let getAdminWiseTicket = async (
+  id = 0,
   user_id = 0,
   key,
   priority,
@@ -80,7 +83,7 @@ let getAdminWiseTicket = async (
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
       queries.getAdminWiseTicket(key, priority, status, offset, limit),
-      [user_id],
+      [id,user_id],
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -90,6 +93,7 @@ let getAdminWiseTicket = async (
 };
 
 let getAdminWiseTicketTotalCount = async (
+  id = 0,
   user_id = 0,
   key,
   priority,
@@ -98,7 +102,84 @@ let getAdminWiseTicketTotalCount = async (
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
       queries.getAdminWiseTicketTotalCount(key, priority, status),
-      [user_id],
+      [id,user_id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+let getAdminWiseUpComingTicket = async (
+  id = 0,
+  key,
+  priority,
+  status,
+  offset,
+  limit
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getAdminWiseUpComingTicket(key, priority, status, offset, limit),
+      [id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+let getAdminWiseTicketUpComingTotalCount = async (
+  id = 0,
+  key,
+  priority,
+  status
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getAdminWiseTicketUpComingTotalCount(key, priority, status),
+      [id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+
+let getUnitSuperAdminTicket = async (
+  key,
+  priority,
+  status,
+  unitIds = [],
+  offset,
+  limit
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getUnitSuperAdminTicket(key, priority, status,unitIds, offset, limit),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+let getUnitSuperAdminTicketCount = async (
+  key,
+  priority,
+  status,
+  unitIds = [],
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getUnitSuperAdminTicketCount(key, priority, status,unitIds),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -826,5 +907,9 @@ module.exports = {
   getTicketAdminTotalAvgTime,
   ticketReport,
   addNewTrackingData,
-  superAdminData
+  superAdminData,
+  getUnitSuperAdminTicket,
+  getUnitSuperAdminTicketCount,
+  getAdminWiseTicketUpComingTotalCount,
+  getAdminWiseUpComingTicket
 };

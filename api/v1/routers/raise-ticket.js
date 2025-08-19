@@ -4,6 +4,7 @@ const router = express.Router();
 const assetUnitModel = require("../models/asset-unit");
 const raiseTicketModel = require("../models/raise-ticket");
 const assetAssignModel = require("../models/asset-assign");
+const unitAccessModel = require("../models/unit-access");
 const ticketCategoryModel = require("../models/ticket-category");
 const userModel = require("../models/user");
 const ticketCommentModel = require("../models/ticket-comment");
@@ -17,7 +18,6 @@ const path = require("path");
 const commonObject = require("../common/common");
 const common = require("../common/common");
 const { upload, multerErrorHandler } = require("../common/upload-image");
-const { current_time } = require("../validation/task/task");
 const validateRequest = require("../validator/middleware");
 const { reRaiseTicketCommentSchema ,onBehalfTicketSchema,raiseTicketSchema} = require("../validator/validate-request/raise-ticket");
 require("dotenv").config();
@@ -288,10 +288,32 @@ router.get(
       key = "",
       priority = "",
       status = "",
+      search,
       offset = 0,
       limit = 10,
     } = req.query;
-    let result = await raiseTicketModel.getAdminWiseTicket(
+let totalCountResult
+let result
+if(search === 'solved'){
+    result = await raiseTicketModel.getAdminWiseTicket(
+      id,
+      user_id = id,
+      key,
+      priority,
+      status,
+      offset,
+      limit
+    );
+
+     totalCountResult = await raiseTicketModel.getAdminWiseTicketTotalCount(
+      id,
+      user_id = id,
+      key,
+      priority,
+      status
+    );
+}else{
+      result = await raiseTicketModel.getAdminWiseUpComingTicket(
       id,
       key,
       priority,
@@ -299,12 +321,14 @@ router.get(
       offset,
       limit
     );
-    let totalCountResult = await raiseTicketModel.getAdminWiseTicketTotalCount(
+
+    totalCountResult = await raiseTicketModel.getAdminWiseTicketUpComingTotalCount(
       id,
       key,
       priority,
       status
     );
+}
     return res.status(200).send({
       success: true,
       status: 200,
@@ -314,6 +338,56 @@ router.get(
     });
   }
 );
+
+
+// unit super admin ticket 
+router.get(
+  "/unit-super-admin-ticket",
+  [verifyToken, routeAccessChecker("unitSuperAdminWiseTicketList")],
+  async (req, res) => {
+    let id = req.decoded.userInfo.id;
+    let {
+      key = "",
+      priority = "",
+      status = "",
+      offset = 0,
+      limit = 10,
+    } = req.query;
+
+    const unitAccessId = await unitAccessModel.getById(id)
+    const unitIds = []
+    for (let index = 0; index < unitAccessId.length; index++) {
+        unitIds.push(unitAccessId[index].unit_id);
+      
+    }
+    console.log("unitAccessId",unitIds); 
+
+    let result = await raiseTicketModel.getUnitSuperAdminTicket(
+      key,
+      priority,
+      status,
+      unitIds,
+      offset,
+      limit
+    );
+    let totalCountResult = await raiseTicketModel.getUnitSuperAdminTicketCount(
+      key,
+      priority,
+      status,
+      unitIds
+    );
+
+    
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Unit super admin ticket List.",
+      total: totalCountResult.length,
+      data: result,
+    });
+  }
+);
+
 
 router.put(
   "/admin-update-status/:id",

@@ -363,7 +363,6 @@ router.get(
 
 let result
 let totalCountResult
-
 if(search === 'solved'){
      result = await raiseTicketModel.getUnitSuperAdminTicket(
       key,

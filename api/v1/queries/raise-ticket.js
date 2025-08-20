@@ -4,7 +4,7 @@ let admin_wise_ticket_view = "admin_wise_ticket";
 let up_coming_ticket = "up_coming_ticket_view";
 let super_admin_ticket_view = "super_admin_ticket_view";
 let re_raise_table_name = "dbl_ticket_re_raise_tracking"
-let unit_super_admin_ticket = "unit_super_admin_ticket"
+
 
 let getList = () => {
   return `SELECT id,location, unit_id FROM ${table_name} WHERE status = 1 ORDER BY id DESC `;
@@ -49,7 +49,7 @@ let getUnitSuperAdminTicket = (key, priority, status, unitIds, offset, limit) =>
         SELECT 
             *
         FROM 
-            ${unit_super_admin_ticket} 
+            ${super_admin_ticket_view} 
         ${whereClause}
         ${paginationClause}
     `;
@@ -89,7 +89,7 @@ let getUnitSuperAdminTicketCount = (key, priority, status,unitIds) => {
         SELECT 
             * 
         FROM 
-            ${unit_super_admin_ticket} 
+            ${super_admin_ticket_view} 
         ${whereClause}
     `;
 
@@ -130,7 +130,7 @@ let getUnitSuperAdminPendingTicket = (key, priority, status, unitIds, offset, li
         SELECT 
             *
         FROM 
-            ${unit_super_admin_ticket} 
+            ${super_admin_ticket_view} 
         ${whereClause}
         ${paginationClause}
     `;
@@ -170,7 +170,7 @@ let getUnitSuperAdminPendingTicketCount = (key, priority, status,unitIds) => {
         SELECT 
             * 
         FROM 
-            ${unit_super_admin_ticket} 
+            ${super_admin_ticket_view} 
         ${whereClause}
     `;
 

@@ -350,6 +350,7 @@ router.get(
       key = "",
       priority = "",
       status = "",
+      search,
       offset = 0,
       limit = 10,
     } = req.query;
@@ -357,12 +358,14 @@ router.get(
     const unitAccessId = await unitAccessModel.getById(id)
     const unitIds = []
     for (let index = 0; index < unitAccessId.length; index++) {
-        unitIds.push(unitAccessId[index].unit_id);
-      
+        unitIds.push(unitAccessId[index].unit_id);  
     }
-    console.log("unitAccessId",unitIds); 
 
-    let result = await raiseTicketModel.getUnitSuperAdminTicket(
+let result
+let totalCountResult
+
+if(search === 'solved'){
+     result = await raiseTicketModel.getUnitSuperAdminTicket(
       key,
       priority,
       status,
@@ -370,14 +373,31 @@ router.get(
       offset,
       limit
     );
-    let totalCountResult = await raiseTicketModel.getUnitSuperAdminTicketCount(
+     totalCountResult = await raiseTicketModel.getUnitSuperAdminTicketCount(
       key,
       priority,
       status,
       unitIds
     );
 
-    
+}else{
+
+     result = await raiseTicketModel.getUnitSuperAdminPendingTicket(
+      key,
+      priority,
+      status,
+      unitIds,
+      offset,
+      limit
+    );
+     totalCountResult = await raiseTicketModel.getUnitSuperAdminPendingTicketCount(
+      key,
+      priority,
+      status,
+      unitIds
+    );
+}
+
     return res.status(200).send({
       success: true,
       status: 200,

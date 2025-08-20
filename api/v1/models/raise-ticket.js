@@ -188,6 +188,44 @@ let getUnitSuperAdminTicketCount = async (
   });
 };
 
+
+let getUnitSuperAdminPendingTicket = async (
+  key,
+  priority,
+  status,
+  unitIds = [],
+  offset,
+  limit
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getUnitSuperAdminPendingTicket(key, priority, status,unitIds, offset, limit),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+let getUnitSuperAdminPendingTicketCount = async (
+  key,
+  priority,
+  status,
+  unitIds = [],
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getUnitSuperAdminPendingTicketCount(key, priority, status,unitIds),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
 let getAdminWiseTicketById = async (user_id = 0, ticket_id = 0) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
@@ -911,5 +949,7 @@ module.exports = {
   getUnitSuperAdminTicket,
   getUnitSuperAdminTicketCount,
   getAdminWiseTicketUpComingTotalCount,
-  getAdminWiseUpComingTicket
+  getAdminWiseUpComingTicket,
+  getUnitSuperAdminPendingTicketCount,
+  getUnitSuperAdminPendingTicket
 };

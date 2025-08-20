@@ -4,6 +4,7 @@ let admin_wise_ticket_view = "admin_wise_ticket";
 let up_coming_ticket = "up_coming_ticket_view";
 let super_admin_ticket_view = "super_admin_ticket_view";
 let re_raise_table_name = "dbl_ticket_re_raise_tracking"
+let unit_super_admin_ticket = "unit_super_admin_ticket"
 
 let getList = () => {
   return `SELECT id,location, unit_id FROM ${table_name} WHERE status = 1 ORDER BY id DESC `;
@@ -22,7 +23,7 @@ let getUnitSuperAdminTicket = (key, priority, status, unitIds, offset, limit) =>
   // Filter by unitIds
   if (unitIds && unitIds.length > 0) {
     const unitIdList = unitIds.join(","); // e.g. "4,21,20,19,22"
-    conditions.push(`seating_unit_id IN (${unitIdList})`);
+    conditions.push(`asset_unit_id IN (${unitIdList})`);
   }
 
   if (priority) {
@@ -35,6 +36,9 @@ let getUnitSuperAdminTicket = (key, priority, status, unitIds, offset, limit) =>
     conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
   }
 
+  // ✅ Add your new condition
+  conditions.push(`ticket_solved_employee_user_id IS NOT NULL`);
+
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
@@ -43,9 +47,9 @@ let getUnitSuperAdminTicket = (key, priority, status, unitIds, offset, limit) =>
 
   let query = `
         SELECT 
-            * 
+            *
         FROM 
-            ${admin_wise_ticket_view} 
+            ${unit_super_admin_ticket} 
         ${whereClause}
         ${paginationClause}
     `;
@@ -56,6 +60,12 @@ let getUnitSuperAdminTicket = (key, priority, status, unitIds, offset, limit) =>
 
 let getUnitSuperAdminTicketCount = (key, priority, status,unitIds) => {
   let conditions = [];
+
+  // Filter by unitIds
+  if (unitIds && unitIds.length > 0) {
+    const unitIdList = unitIds.join(","); // e.g. "4,21,20,19,22"
+    conditions.push(`asset_unit_id IN (${unitIdList})`);
+  }
 
   // Add conditions dynamically based on parameters
   if (priority) {
@@ -68,7 +78,8 @@ let getUnitSuperAdminTicketCount = (key, priority, status,unitIds) => {
     conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
   }
 
-  // Base condition for user_id
+  // ✅ Add your new condition
+  conditions.push(`ticket_solved_employee_user_id IS NOT NULL`);
   // conditions.push(`user_id = ?`);
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
@@ -78,12 +89,96 @@ let getUnitSuperAdminTicketCount = (key, priority, status,unitIds) => {
         SELECT 
             * 
         FROM 
-            ${admin_wise_ticket_view} 
+            ${unit_super_admin_ticket} 
         ${whereClause}
     `;
 
   return query;
 };
+
+
+
+let getUnitSuperAdminPendingTicket = (key, priority, status, unitIds, offset, limit) => {
+  let conditions = [];
+
+  // Filter by unitIds
+  if (unitIds && unitIds.length > 0) {
+    const unitIdList = unitIds.join(","); // e.g. "4,21,20,19,22"
+    conditions.push(`asset_unit_id IN (${unitIdList})`);
+  }
+
+  if (priority) {
+    conditions.push(`priority = '${priority}'`);
+  }
+  if (status) {
+    conditions.push(`ticket_status = '${status}'`);
+  }
+  if (key) {
+    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
+
+  // ✅ Add your new condition
+  conditions.push(`ticket_solved_employee_user_id IS NULL`);
+
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  // Pagination clause
+  const paginationClause = `LIMIT ${limit} OFFSET ${offset}`;
+
+  let query = `
+        SELECT 
+            *
+        FROM 
+            ${unit_super_admin_ticket} 
+        ${whereClause}
+        ${paginationClause}
+    `;
+
+  return query;
+};
+
+
+let getUnitSuperAdminPendingTicketCount = (key, priority, status,unitIds) => {
+  let conditions = [];
+
+  // Filter by unitIds
+  if (unitIds && unitIds.length > 0) {
+    const unitIdList = unitIds.join(","); // e.g. "4,21,20,19,22"
+    conditions.push(`asset_unit_id IN (${unitIdList})`);
+  }
+
+  // Add conditions dynamically based on parameters
+  if (priority) {
+    conditions.push(`priority = '${priority}'`);
+  }
+  if (status) {
+    conditions.push(`ticket_status = '${status}'`);
+  }
+  if (key) {
+    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
+
+  // ✅ Add your new condition
+  conditions.push(`ticket_solved_employee_user_id IS NULL`);
+  // conditions.push(`user_id = ?`);
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  // Build query parts conditionally
+  let query = `
+        SELECT 
+            * 
+        FROM 
+            ${unit_super_admin_ticket} 
+        ${whereClause}
+    `;
+
+  return query;
+};
+
+
+
 
 
 let getAdminWiseTicket = (key, priority, status, offset, limit) => {
@@ -1031,5 +1126,7 @@ module.exports = {
   getUnitSuperAdminTicket,
   getUnitSuperAdminTicketCount,
   getAdminWiseTicketUpComingTotalCount,
-  getAdminWiseUpComingTicket
+  getAdminWiseUpComingTicket,
+  getUnitSuperAdminPendingTicketCount,
+  getUnitSuperAdminPendingTicket
 };

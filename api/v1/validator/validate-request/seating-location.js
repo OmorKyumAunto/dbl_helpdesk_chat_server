@@ -1,4 +1,5 @@
 const { z, number } = require("zod");
+const { search } = require("../../middlewares/verifyToken");
 
 
 // Create schema
@@ -14,7 +15,7 @@ const seatingLocationCreateSchema = z
 const seatingLocationUpdateSchema = z
   .object({
     name: z.string().min(1, { message: "Seating location is required" }),
-  });
+});
 
 
 
@@ -26,5 +27,10 @@ const assignSeatingLocation = z.object({
 });
 
 
+const employeeSeatingLocationUpdateSchema = z.object({
+  seating_location: z
+    .number({ invalid_type_error: "Seating location must be a number", required_error: "Seating location is required" })
+});
 
-module.exports = { seatingLocationCreateSchema,seatingLocationUpdateSchema,assignSeatingLocation };
+
+module.exports = { seatingLocationCreateSchema,seatingLocationUpdateSchema,assignSeatingLocation,employeeSeatingLocationUpdateSchema };

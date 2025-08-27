@@ -275,28 +275,67 @@ const getActiveList = () => {
 }
 
 
+// const getAdminList = () => {
+//     return `
+//     SELECT 
+//         u.*, 
+//         MIN(b.name) AS building_name,
+//         GROUP_CONCAT(CONCAT(sl.id, ':', sl.name) SEPARATOR ',') AS seating_locations
+//     FROM ${table_view} AS u 
+//     JOIN dbl_choose_admin AS ca 
+//         ON ca.admin_id = u.id 
+//         AND ca.status = 1 AND ca.unit_wise_super_admin = ?
+//     JOIN dbl_assign_seating_location AS asl 
+//         ON asl.user_id = ca.admin_id
+//     JOIN dbl_seating_location AS sl 
+//         ON asl.seating_location_id = sl.id
+//     JOIN dbl_building AS b 
+//         ON sl.building_id = b.id
+//     JOIN admin_search_access AS ua 
+//         ON ua.user_id = u.id
+//     JOIN dbl_asset_unit AS ut 
+//         ON ua.unit_id = ut.id
+//     WHERE u.status = 1 
+//     GROUP BY u.id
+//     ORDER BY u.id DESC;
+//     `;
+// };
+
 const getAdminList = () => {
     return `
-    SELECT 
-        u.*, 
-        MIN(b.name) AS building_name,
-        GROUP_CONCAT(CONCAT(sl.id, ':', sl.name) SEPARATOR ',') AS seating_locations
-    FROM ${table_view} AS u 
-    JOIN dbl_choose_admin AS ca 
-        ON ca.admin_id = u.id 
-        AND ca.status = 1 AND ca.unit_wise_super_admin = ?
-    JOIN dbl_assign_seating_location AS asl 
-        ON asl.user_id = ca.admin_id
-    JOIN dbl_seating_location AS sl 
-        ON asl.seating_location_id = sl.id
-    JOIN dbl_building AS b 
-        ON sl.building_id = b.id
-    WHERE u.status = 1 
-    GROUP BY u.id
-    ORDER BY u.id DESC;
+SELECT 
+    u.*,
+    MIN(b.name) AS building_name,
+    GROUP_CONCAT(CONCAT(sl.id, ':', sl.name) SEPARATOR ',') AS seating_locations,
+    (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', ut.id, 'title', ut.title))
+     FROM admin_search_access AS ua2
+     JOIN dbl_asset_unit AS ut ON ua2.unit_id = ut.id
+     WHERE ua2.user_id = u.id
+    ) AS units,
+    (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tc.id, 'title', tc.title))
+     FROM dbl_user_category_access AS ca
+     JOIN dbl_ticket_category AS tc ON tc.id = ca.category_id
+     WHERE ca.user_id = u.id
+    ) AS admin_categories
+FROM ${table_view} AS u
+JOIN dbl_choose_admin AS ca 
+    ON ca.admin_id = u.id 
+    AND ca.status = 1 
+    AND ca.unit_wise_super_admin = ?
+JOIN dbl_assign_seating_location AS asl 
+    ON asl.user_id = ca.admin_id
+JOIN dbl_seating_location AS sl 
+    ON asl.seating_location_id = sl.id
+JOIN dbl_building AS b 
+    ON sl.building_id = b.id
+WHERE u.status = 1
+GROUP BY u.id
+ORDER BY u.id DESC;
+
+
+    ;
     `;
 };
-
 
 module.exports = {
     

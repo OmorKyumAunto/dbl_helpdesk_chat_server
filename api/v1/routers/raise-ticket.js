@@ -4,22 +4,24 @@ const router = express.Router();
 const assetUnitModel = require("../models/asset-unit");
 const raiseTicketModel = require("../models/raise-ticket");
 const assetAssignModel = require("../models/asset-assign");
+const unitAccessModel = require("../models/unit-access");
 const ticketCategoryModel = require("../models/ticket-category");
 const userModel = require("../models/user");
 const ticketCommentModel = require("../models/ticket-comment");
 const ticketForwordModel = require("../models/ticket-forword");
+const seatingLocationModel = require("../models/seating-location");
+const employeeModel = require("../models/employee");
 const verifyToken = require("../middlewares/verifyToken");
 const { routeAccessChecker } = require("../middlewares/routeAccess");
 const moment = require("moment");
 const path = require("path");
-//const multer = require('multer');
-//const upload = multer();
+const commonObject = require("../common/common");
 const common = require("../common/common");
 const { upload, multerErrorHandler } = require("../common/upload-image");
-const { current_time } = require("../validation/task/task");
 const validateRequest = require("../validator/middleware");
-const { reRaiseTicketCommentSchema } = require("../validator/validate-request/raise-ticket");
+const { reRaiseTicketCommentSchema ,onBehalfTicketSchema,raiseTicketSchema} = require("../validator/validate-request/raise-ticket");
 require("dotenv").config();
+
 
 router.get(
   "/active-list",
@@ -94,7 +96,7 @@ router.get(
 
 router.post(
   "/",
-  [verifyToken, routeAccessChecker("raiseTicket"), upload.single("attachment")],
+  [verifyToken, routeAccessChecker("raiseTicket"), upload.single("attachment"),validateRequest(raiseTicketSchema,"body")],
   async (req, res, next) => {
     try {
       if (req.file) {
@@ -104,7 +106,6 @@ router.post(
       }
 
       let reqData = {
-        unit_id: parseInt(req.body.unit_id),
         category_id: parseInt(req.body.category_id),
         priority: req.body.priority,
         subject: req.body.subject,
@@ -112,6 +113,7 @@ router.post(
         description: req.body.description,
         attachment: req.body.attachment,
       };
+
       if (req.body.asset_id) {
         reqData.asset_id = parseInt(req.body.asset_id);
       }
@@ -119,39 +121,32 @@ router.post(
       const my_id = req.decoded.userInfo.id;
       reqData.created_by = my_id;
 
+
       let checkEmployee = await userModel.getDataById(my_id);
       if (checkEmployee[0].role_id !== 3) {
+       await commonObject.deleteUploadedFile(req.file?.path);
         return res.status(400).send({
           success: false,
           status: 400,
           message: "Your are not employee.",
         });
       }
+      // checked this user has seating location or not
+      const employeeData = await employeeModel.getById(checkEmployee[0].profile_id)
 
-      if (!reqData.unit_id) {
-        return res.status(400).send({
+      if(isEmpty(employeeData[0].seating_location)){
+        await commonObject.deleteUploadedFile(req.file?.path);
+       return res.status(400).send({
           success: false,
           status: 400,
-          message: "Unit should not be empty.",
+          message: "Your seating location has not been updated. Please update your current seating location.",
         });
       }
+     
 
-      let unit = await assetUnitModel.getById(reqData.unit_id);
-      if (!unit.length) {
-        return res.status(404).send({
-          success: false,
-          status: 404,
-          message: "This unit not found",
-        });
-      }
+    // get unit building location data 
+    const getLocationInfo = await seatingLocationModel.getByIdViewData(employeeData[0].seating_location)
 
-      if (!reqData.category_id) {
-        return res.status(400).send({
-          success: false,
-          status: 400,
-          message: "Category should not be empty.",
-        });
-      }
 
       if (reqData.asset_id) {
         let asset = await assetAssignModel.getByIdUserWise(
@@ -159,6 +154,7 @@ router.post(
           my_id
         );
         if (!asset) {
+          await commonObject.deleteUploadedFile(req.file?.path);
           return res.status(404).send({
             success: false,
             status: 404,
@@ -169,33 +165,11 @@ router.post(
 
       let category = await ticketCategoryModel.getById(reqData.category_id);
       if (!category.length) {
+        await commonObject.deleteUploadedFile(req.file?.path);
         return res.status(404).send({
           success: false,
           status: 404,
           message: "This category not found",
-        });
-      }
-
-      if (!reqData.priority) {
-        return res.status(400).send({
-          success: false,
-          status: 400,
-          message: "Priority should not be empty.",
-        });
-      }
-
-      if (!reqData.subject) {
-        return res.status(400).send({
-          success: false,
-          status: 400,
-          message: "Subject should not be empty.",
-        });
-      }
-      if (!reqData.description) {
-        return res.status(400).send({
-          success: false,
-          status: 400,
-          message: "Description should not be empty.",
         });
       }
 
@@ -207,7 +181,9 @@ router.post(
         priority:
           reqData.priority.charAt(0).toUpperCase() +
           reqData.priority.slice(1).toLowerCase(),
-        unit_name: unit[0].title,
+        unit_name: getLocationInfo[0]?.unit_name || '',
+        building_name: getLocationInfo[0]?.building_name || '',
+        seating_location_name: getLocationInfo[0]?.seating_location_name || '',
         created_by: user[0].name,
         created_employee_id: user[0].employee_id,
         ticket_message: reqData.description,
@@ -215,7 +191,7 @@ router.post(
 
       let getUnitAndCategoryMatchEmail =
         await raiseTicketModel.getUnitAndCategoryWiseEmail(
-          reqData.unit_id,
+          getLocationInfo[0].seating_location_id,
           reqData.category_id
         );
 
@@ -234,7 +210,9 @@ router.post(
               priority:
                 reqData.priority.charAt(0).toUpperCase() +
                 reqData.priority.slice(1).toLowerCase(),
-              unit_name: unit[0].title,
+              unit_name: getLocationInfo[0]?.unit_name || '',
+              building_name: getLocationInfo[0]?.building_name || '',
+              seating_location_name: getLocationInfo[0]?.seating_location_name || '',
               created_by: user[0].name,
               created_employee_id: user[0].employee_id,
               ticket_message: reqData.description,
@@ -249,6 +227,8 @@ router.post(
       } else {
         reqData.cc = null;
       }
+      reqData.seating_location = employeeData[0].seating_location
+      reqData.unit_id = getLocationInfo[0]?.unit_id
 
       let result = await raiseTicketModel.addNew(reqData);
 
@@ -291,6 +271,7 @@ router.post(
         message: "Raise ticket added Successfully.",
       });
     } catch (error) {
+      await commonObject.deleteUploadedFile(req.file?.path);
       next(error);
     }
   },
@@ -307,10 +288,32 @@ router.get(
       key = "",
       priority = "",
       status = "",
+      search,
       offset = 0,
       limit = 10,
     } = req.query;
-    let result = await raiseTicketModel.getAdminWiseTicket(
+let totalCountResult
+let result
+if(search === 'solved'){
+    result = await raiseTicketModel.getAdminWiseTicket(
+      id,
+      user_id = id,
+      key,
+      priority,
+      status,
+      offset,
+      limit
+    );
+
+     totalCountResult = await raiseTicketModel.getAdminWiseTicketTotalCount(
+      id,
+      user_id = id,
+      key,
+      priority,
+      status
+    );
+}else{
+      result = await raiseTicketModel.getAdminWiseUpComingTicket(
       id,
       key,
       priority,
@@ -318,12 +321,14 @@ router.get(
       offset,
       limit
     );
-    let totalCountResult = await raiseTicketModel.getAdminWiseTicketTotalCount(
+
+    totalCountResult = await raiseTicketModel.getAdminWiseTicketUpComingTotalCount(
       id,
       key,
       priority,
       status
     );
+}
     return res.status(200).send({
       success: true,
       status: 200,
@@ -333,6 +338,75 @@ router.get(
     });
   }
 );
+
+
+// unit super admin ticket 
+router.get(
+  "/unit-super-admin-ticket",
+  [verifyToken, routeAccessChecker("unitSuperAdminWiseTicketList")],
+  async (req, res) => {
+    let id = req.decoded.userInfo.id;
+    let {
+      key = "",
+      priority = "",
+      status = "",
+      search,
+      offset = 0,
+      limit = 10,
+    } = req.query;
+
+    const unitAccessId = await unitAccessModel.getById(id)
+    const unitIds = []
+    for (let index = 0; index < unitAccessId.length; index++) {
+        unitIds.push(unitAccessId[index].unit_id);  
+    }
+
+let result
+let totalCountResult
+if(search === 'solved'){
+     result = await raiseTicketModel.getUnitSuperAdminTicket(
+      key,
+      priority,
+      status,
+      unitIds,
+      offset,
+      limit
+    );
+     totalCountResult = await raiseTicketModel.getUnitSuperAdminTicketCount(
+      key,
+      priority,
+      status,
+      unitIds
+    );
+
+}else{
+
+     result = await raiseTicketModel.getUnitSuperAdminPendingTicket(
+      key,
+      priority,
+      status,
+      unitIds,
+      offset,
+      limit
+    );
+     totalCountResult = await raiseTicketModel.getUnitSuperAdminPendingTicketCount(
+      key,
+      priority,
+      status,
+      unitIds
+    );
+}
+
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Unit super admin ticket List.",
+      total: totalCountResult.length,
+      data: result,
+    });
+  }
+);
+
 
 router.put(
   "/admin-update-status/:id",
@@ -784,23 +858,6 @@ router.post(
       });
     }
 
-    if (!reqData.unit_id) {
-      return res.status(400).send({
-        success: false,
-        status: 400,
-        message: "Unit should not be empty.",
-      });
-    }
-
-    let unit = await assetUnitModel.getById(reqData.unit_id);
-    if (!unit.length) {
-      return res.status(404).send({
-        success: false,
-        status: 404,
-        message: "This unit not found",
-      });
-    }
-
     if (!reqData.category_id) {
       return res.status(400).send({
         success: false,
@@ -1058,7 +1115,7 @@ router.put(
 
 router.post(
   "/on-behalf-ticket",
-  [verifyToken, routeAccessChecker("onBehalfTicket"), upload.single("attachment")],
+  [verifyToken, routeAccessChecker("onBehalfTicket"),upload.single("attachment"),validateRequest(onBehalfTicketSchema,"body")],
   async (req, res, next) => {
     try {
       if (req.file) {
@@ -1068,7 +1125,6 @@ router.post(
       }
 
       let reqData = {
-        unit_id: parseInt(req.body.unit_id),
         category_id: parseInt(req.body.category_id),
         priority: req.body.priority,
         subject: req.body.subject,
@@ -1077,6 +1133,7 @@ router.post(
         attachment: req.body.attachment,
         user_id : req.body.user_id
       };
+       
       if (req.body.asset_id) {
         reqData.asset_id = parseInt(req.body.asset_id);
       }
@@ -1084,36 +1141,12 @@ router.post(
       const my_id = req.decoded.userInfo.id;
 
       let checkEmployee = await userModel.getDataById(my_id);
+      await commonObject.deleteUploadedFile(req.file?.path);
       if (checkEmployee[0].role_id !== 2) {
         return res.status(400).send({
           success: false,
           status: 400,
           message: "Your are not admin.",
-        });
-      }
-
-      if (!reqData.unit_id) {
-        return res.status(400).send({
-          success: false,
-          status: 400,
-          message: "Unit should not be empty.",
-        });
-      }
-
-      let unit = await assetUnitModel.getById(reqData.unit_id);
-      if (!unit.length) {
-        return res.status(404).send({
-          success: false,
-          status: 404,
-          message: "This unit not found",
-        });
-      }
-
-      if (!reqData.category_id) {
-        return res.status(400).send({
-          success: false,
-          status: 400,
-          message: "Category should not be empty.",
         });
       }
 
@@ -1123,6 +1156,7 @@ router.post(
           my_id
         );
         if (!asset) {
+          await commonObject.deleteUploadedFile(req.file?.path);
           return res.status(404).send({
             success: false,
             status: 404,
@@ -1133,6 +1167,7 @@ router.post(
 
       let category = await ticketCategoryModel.getById(reqData.category_id);
       if (!category.length) {
+        await commonObject.deleteUploadedFile(req.file?.path);
         return res.status(404).send({
           success: false,
           status: 404,
@@ -1140,46 +1175,33 @@ router.post(
         });
       }
 
-      if (!reqData.priority) {
-        return res.status(400).send({
-          success: false,
-          status: 400,
-          message: "Priority should not be empty.",
-        });
-      }
-
-      if (!reqData.subject) {
-        return res.status(400).send({
-          success: false,
-          status: 400,
-          message: "Subject should not be empty.",
-        });
-      }
-      if (!reqData.description) {
-        return res.status(400).send({
-          success: false,
-          status: 400,
-          message: "Description should not be empty.",
-        });
-      }
-
       reqData.ticket_id = common.randomGenerator();
-      if (!reqData.user_id) {
-        return res.status(400).send({
-          success: false,
-          status: 400,
-          message: "Please select a user.",
-        });
-      }
+
 
       let user = await userModel.getById(reqData.user_id);
+      // checked seating location
+      let employeeData = await employeeModel.getById(user[0].profile_id);
+      if(isEmpty(employeeData[0].seating_location)){
+        await commonObject.deleteUploadedFile(req.file?.path);
+       return res.status(400).send({
+          success: false,
+          status: 400,
+          message: `${user.name} seating location has not been updated. Please update ${user.name} current seating location.`,
+        });
+      }
+
+    // get unit building location data 
+    const getLocationInfo = await seatingLocationModel.getByIdViewData(employeeData[0].seating_location)
+
       let data = {
         ticket_id: reqData.ticket_id,
         subject: reqData.subject,
         priority:
           reqData.priority.charAt(0).toUpperCase() +
           reqData.priority.slice(1).toLowerCase(),
-        unit_name: unit[0].title,
+        unit_name: getLocationInfo[0]?.unit_name || '',
+        building_name: getLocationInfo[0]?.building_name || '',
+        seating_location_name: getLocationInfo[0]?.seating_location_name || '',
         created_by: user[0].name,
         created_employee_id: user[0].employee_id,
         ticket_message: reqData.description,
@@ -1202,7 +1224,9 @@ router.post(
               priority:
                 reqData.priority.charAt(0).toUpperCase() +
                 reqData.priority.slice(1).toLowerCase(),
-              unit_name: unit[0].title,
+              unit_name: getLocationInfo[0]?.unit_name || '',
+              building_name: getLocationInfo[0]?.building_name || '',
+              seating_location_name: getLocationInfo[0]?.seating_location_name || '',
               created_by: user[0].name,
               created_employee_id: user[0].employee_id,
               ticket_message: reqData.description,
@@ -1238,7 +1262,9 @@ router.post(
         priority : reqData.priority,
         created_by : getAdminEmail[0].name,
         employee_id : user[0].employee_id,
-        unit_name : unit[0].title,
+        unit_name: getLocationInfo[0]?.unit_name || '',
+        building_name: getLocationInfo[0]?.building_name || '',
+        seating_location_name: getLocationInfo[0]?.seating_location_name || '',
       }
       // send email employee
       await common.sentTicketOnBehalfEmail(
@@ -1266,9 +1292,10 @@ router.post(
       return res.status(201).send({
         success: true,
         status: 201,
-        message: "Raise ticket added Successfully.",
+        message: "On-behalf ticket raise Successfully.",
       });
     } catch (error) {
+      await commonObject.deleteUploadedFile(req.file?.path);
       next(error);
     }
   }
@@ -1310,14 +1337,27 @@ router.put(
       }
   
       let user = await userModel.getById(self_id);
-      let unit = await assetUnitModel.getById(existingDataById[0].unit_id);
+
+      let employeeData = await employeeModel.getById(user[0].profile_id);
+      if(isEmpty(employeeData[0].seating_location)){
+       return res.status(400).send({
+          success: false,
+          status: 400,
+          message: `Your seating location has not been updated. Please update your current seating location.`,
+        });
+      }
+     // get unit building location data 
+     const getLocationInfo = await seatingLocationModel.getByIdViewData(employeeData[0].seating_location)
+     
       let data = {
         ticket_id: existingDataById[0].ticket_id,
         subject: existingDataById[0].subject,
         priority: 
         existingDataById[0].priority.charAt(0).toUpperCase() +
         existingDataById[0].priority.slice(1).toLowerCase(),
-        unit_name: unit[0]?.title || '',
+        unit_name: getLocationInfo[0]?.unit_name || '',
+        building_name: getLocationInfo[0]?.building_name || '',
+        seating_location_name: getLocationInfo[0]?.seating_location_name || '',
         created_by: user[0]?.name ||'',
         created_employee_id: user[0]?.employee_id || '',
         ticket_message: existingDataById[0]?.description || '',
@@ -1328,7 +1368,6 @@ router.put(
       }
 
       let re_create_data = {
-        unit_id : existingDataById[0]?.unit_id || '',
         category_id : existingDataById[0]?.category_id || '', 
         asset_id : existingDataById[0]?.asset_id || null,
         ticket_id : existingDataById[0]?.ticket_id || '',
@@ -1343,6 +1382,7 @@ router.put(
         on_behalf_created_by : existingDataById[0]?.on_behalf_created_by || null,
         is_re_raise : 1,
         re_raise_count :  existingDataById[0]?.re_raise_count + 1 || 0,
+        seating_location : employeeData[0]?.seating_location || '',
         created_by :  existingDataById[0]?.created_by,
         updated_by :  existingDataById[0]?.updated_by,
         solved_by :  existingDataById[0]?.solved_by,
@@ -1360,7 +1400,6 @@ router.put(
         }
 
        
-
         await ticketCommentModel.addNew({
           ticket_id: result.insertId,
           employee_id: self_id,
@@ -1388,7 +1427,9 @@ router.put(
               priority:
                 re_create_data.priority.charAt(0).toUpperCase() +
                 re_create_data.priority.slice(1).toLowerCase(),
-              unit_name: unit[0].title,
+              unit_name: getLocationInfo[0]?.unit_name || '',
+              building_name: getLocationInfo[0]?.building_name || '',
+              seating_location_name: getLocationInfo[0]?.seating_location_name || '',
               created_by: user[0].name,
               created_employee_id: user[0].employee_id,
               ticket_message: re_create_data.description,

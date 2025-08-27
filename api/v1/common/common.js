@@ -7,6 +7,8 @@ const {commentEmployeeToAdmin,commentAdminToEmployee} = require('../email-templa
 const {forgetPasswordSendOtpTemplate,resetPasswordComplete} = require('../email-template/forget-password')
 const { taskForwardEmailTemplate,remainingTaskEmailTemplate} = require('../email-template/task-email')
 const moment = require("moment-timezone");
+const fs = require("fs");
+const path = require("path");
 
 let decodingUsingCrypto = async (text = "") => {
     const key = Buffer.from(
@@ -638,6 +640,15 @@ const convertFormatDate = (inputDate) => {
     return formattedDate;
 }
 
+
+const  deleteUploadedFile = (filePath) => {
+  if (filePath && fs.existsSync(filePath)) {
+    fs.unlink(filePath, (err) => {
+      if (err) console.error("Error deleting uploaded file:", err);
+    });
+  }
+}
+
 module.exports = {
     decodingUsingCrypto,
     hashingUsingCrypto,
@@ -657,5 +668,6 @@ module.exports = {
     checkEmailFormat,
     sentTicketOnBehalfEmail,
     convertFormatDate,
-    compareArrays
+    compareArrays,
+    deleteUploadedFile
 }

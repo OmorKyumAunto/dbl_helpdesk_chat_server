@@ -69,7 +69,10 @@ let getAllListTotalCountUserWise = async (id = 0, key, priority, status) => {
   });
 };
 
+
+
 let getAdminWiseTicket = async (
+  id = 0,
   user_id = 0,
   key,
   priority,
@@ -80,7 +83,7 @@ let getAdminWiseTicket = async (
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
       queries.getAdminWiseTicket(key, priority, status, offset, limit),
-      [user_id],
+      [id,user_id],
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -90,6 +93,7 @@ let getAdminWiseTicket = async (
 };
 
 let getAdminWiseTicketTotalCount = async (
+  id = 0,
   user_id = 0,
   key,
   priority,
@@ -98,7 +102,7 @@ let getAdminWiseTicketTotalCount = async (
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
       queries.getAdminWiseTicketTotalCount(key, priority, status),
-      [user_id],
+      [id,user_id],
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -106,6 +110,121 @@ let getAdminWiseTicketTotalCount = async (
     );
   });
 };
+
+
+let getAdminWiseUpComingTicket = async (
+  id = 0,
+  key,
+  priority,
+  status,
+  offset,
+  limit
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getAdminWiseUpComingTicket(key, priority, status, offset, limit),
+      [id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+let getAdminWiseTicketUpComingTotalCount = async (
+  id = 0,
+  key,
+  priority,
+  status
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getAdminWiseTicketUpComingTotalCount(key, priority, status),
+      [id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+
+let getUnitSuperAdminTicket = async (
+  key,
+  priority,
+  status,
+  unitIds = [],
+  offset,
+  limit
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getUnitSuperAdminTicket(key, priority, status,unitIds, offset, limit),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+let getUnitSuperAdminTicketCount = async (
+  key,
+  priority,
+  status,
+  unitIds = [],
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getUnitSuperAdminTicketCount(key, priority, status,unitIds),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+let getUnitSuperAdminPendingTicket = async (
+  key,
+  priority,
+  status,
+  unitIds = [],
+  offset,
+  limit
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getUnitSuperAdminPendingTicket(key, priority, status,unitIds, offset, limit),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+let getUnitSuperAdminPendingTicketCount = async (
+  key,
+  priority,
+  status,
+  unitIds = [],
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getUnitSuperAdminPendingTicketCount(key, priority, status,unitIds),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
 
 let getAdminWiseTicketById = async (user_id = 0, ticket_id = 0) => {
   return new Promise((resolve, reject) => {
@@ -169,11 +288,11 @@ let getAllLocationDataByUnitId = async (unit_id) => {
   });
 };
 
-let getUnitAndCategoryWiseEmail = async (asset_unit_id, ticket_category_id) => {
+let getUnitAndCategoryWiseEmail = async (seating_location_id, ticket_category_id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
       queries.getUnitAndCategoryWiseEmail(),
-      [asset_unit_id, ticket_category_id],
+      [seating_location_id, ticket_category_id],
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -826,5 +945,11 @@ module.exports = {
   getTicketAdminTotalAvgTime,
   ticketReport,
   addNewTrackingData,
-  superAdminData
+  superAdminData,
+  getUnitSuperAdminTicket,
+  getUnitSuperAdminTicketCount,
+  getAdminWiseTicketUpComingTotalCount,
+  getAdminWiseUpComingTicket,
+  getUnitSuperAdminPendingTicketCount,
+  getUnitSuperAdminPendingTicket
 };

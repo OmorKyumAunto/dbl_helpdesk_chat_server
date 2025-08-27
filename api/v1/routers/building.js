@@ -106,11 +106,12 @@ router.post('/add', [verifyToken, routeAccessChecker("buildingAdd"),validateRequ
 router.put('/update/:id', [verifyToken, routeAccessChecker("buildingUpdate"),validateRequest(idParamsSchema,'params'),validateRequest(buildingUpdateSchema,'body')], async (req, res) => {
 
     let id = req.params.id
+    const self_id = req.decoded.userInfo.id
     let reqData = {
         "name": req.body.name
     }
 
-    reqData.updated_by = req.decoded.userInfo.id;
+    reqData.updated_by = self_id;
 
 
     let existingDataById = await buildingModel.getById(id);
@@ -128,6 +129,16 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("buildingUpdate"),val
     let errorMessage = "";
     let isError = 0; // 1 = yes, 0 = no
     let willWeUpdate = 0; // 1 = yes , 0 = no;
+
+
+    if (existingDataById[0].created_by !== self_id) {
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "You do not have permission to perform any action in this location.",
+
+        });
+    }
 
     // name
     if (existingDataById[0].name !== reqData.name) {
@@ -158,7 +169,7 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("buildingUpdate"),val
 
     if (willWeUpdate == 1) {
 
-        updateData.updated_by = req.decoded.userInfo.id;
+        updateData.updated_by = self_id;
 
         let result = await buildingModel.updateById(id, updateData);
 
@@ -194,8 +205,8 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("buildingUpdate"),val
 router.delete('/delete/:id', [verifyToken, routeAccessChecker("buildingDelete"),validateRequest(idParamsSchema,'params')], async (req, res) => {
 
     let id = req.params.id
-    
-    updated_by = req.decoded.userInfo.id;
+    const self_id = req.decoded.userInfo.id
+    updated_by = self_id;
 
     let existingDataById = await buildingModel.getById(id);
     if (isEmpty(existingDataById)) {
@@ -207,6 +218,15 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("buildingDelete"),
         });
     }
 
+
+    if (existingDataById[0].created_by !== self_id) {
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "You do not have permission to perform any action in this location.",
+
+        });
+    }
 
     let data = {
         status: 'delete',
@@ -237,8 +257,8 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("buildingDelete"),
 router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeBuildingStatus"),validateRequest(idParamsSchema,'params')], async (req, res) => {
 
     let id = req.params.id
-
-    updated_by = req.decoded.userInfo.id;
+    const self_id = req.decoded.userInfo.id;
+    updated_by = self_id;
 
     let existingDataById = await buildingModel.getById(id);
     if (isEmpty(existingDataById)) {
@@ -246,6 +266,15 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeBuilding
             "success": false,
             "status": 404,
             "message": "No data found",
+        });
+    }
+
+    if (existingDataById[0].created_by !== self_id) {
+        return res.status(400).send({
+            "success": false,
+            "status": 400,
+            "message": "You do not have permission to perform any action in this location.",
+
         });
     }
 

@@ -8,16 +8,30 @@ const superAdminModel = require("../models/super-admins");
 const roleModel = require("../models/role");
 const adminModel = require("../models/admins ");
 const employeeModel = require("../models/employee");
+const loginModel = require("../models/login");
 const unitSuperAdminModel = require("../models/unit-super-admin");
+const {current_time} = require("../validation/task/task");
 const { v4: uuidv4 } = require("uuid");
 const commonObject = require("../common/common");
+
+
+// function getClientIp(req) {
+//   return (
+//     req.headers['x-forwarded-for']?.split(',')[0] || // if behind proxy
+//     req.connection?.remoteAddress ||                 // default fallback
+//     req.socket?.remoteAddress ||                     // another fallback
+//     req.connection?.socket?.remoteAddress ||        // older Node versions
+//     'IP not found'
+//   );
+// }
 
 // user login
 router.post("/login", async (req, res) => {
   let loginData = {
     id: req.body.id,
     password: req.body.password,
-
+    platform: req.body.platform,
+    device_token: req.body.device_token,
     // email: req.body.email, // or email
   };
 
@@ -153,7 +167,26 @@ router.post("/login", async (req, res) => {
     delete profileData.time_period;
     delete profileData.identity_id;
     profileData.token = token;
-
+// console.log("data==>",getClientIp())
+ const deviceInfo = {
+    browser: req.useragent.browser,
+    version: req.useragent.version,
+    os: req.useragent.os,
+    platform: req.useragent.platform,
+    source: req.useragent.source, // full user-agent string
+    ip: req.headers["x-forwarded-for"] || 'ip not found',
+  };
+  console.log("device info : ===>",deviceInfo);
+    const login_data = {
+      user_id : userData[0].id,
+      platform : loginData.platform,
+      device_info : deviceInfo,
+      is_active : true,
+      device_token : loginData.device_token,
+      login_token : token,
+      login_at : current_time
+    }
+  console.log("login_data info : ===>", login_data);
 
     return res.status(200).send({
       success: true,

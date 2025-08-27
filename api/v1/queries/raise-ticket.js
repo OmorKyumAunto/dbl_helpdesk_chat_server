@@ -668,28 +668,33 @@ let getAdminTicketTotalInprogress = () => {
 let getTopSolvedTicketList = () => {
   return `
         SELECT 
-            u.id AS id, 
-            u.name AS solved_by_name, 
-                u.employee_id AS employee_id, 
-                uv.email , uv.contact_no ,uv.unit_name,
-            COUNT(rt.id) AS solved_ticket_count
-        FROM 
-            dbl_database.dbl_raise_ticket AS rt
-        LEFT JOIN 
-            dbl_users AS u 
-        ON 
-            u.id = rt.solved_by 
-        LEFT JOIN 
-            users_view AS uv 
-        ON 
-           rt.solved_by = uv.id 
-        WHERE 
-           rt.status = 1 AND rt.ticket_status = 'solved' 
-        GROUP BY 
-            rt.solved_by 
-        ORDER BY 
-            solved_ticket_count DESC 
-        LIMIT 5;
+        u.id AS id, 
+        u.name AS solved_by_name, 
+        u.employee_id AS employee_id, 
+        uv.email, 
+        uv.contact_no, 
+        uv.unit_name,
+        COUNT(rt.id) AS solved_ticket_count
+    FROM 
+        dbl_database.dbl_raise_ticket AS rt
+    LEFT JOIN 
+        dbl_users AS u 
+        ON u.id = rt.solved_by 
+    LEFT JOIN 
+        users_view AS uv 
+        ON rt.solved_by = uv.id 
+    WHERE 
+        rt.status = 1 
+        AND rt.ticket_status = 'solved'
+        AND u.status = 1 
+        AND uv.status = 1
+    GROUP BY 
+        rt.solved_by, 
+        u.id, u.name, u.employee_id, uv.email, uv.contact_no, uv.unit_name
+    ORDER BY 
+        solved_ticket_count DESC 
+    LIMIT 15;
+
         `;
 };
 

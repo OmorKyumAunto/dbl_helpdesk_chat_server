@@ -8,6 +8,7 @@ const employeeModel = require("../models/employee");
 const adminModel = require("../models/admins ");
 const superAdminModel = require("../models/super-admins");
 const zingHrOperationsModel = require("../models/zingHr-operations");
+const ticketModel = require("../models/raise-ticket");
 const {today_date,convertDateFormat,addSixHoursAndFormat,currentDateZingHrFormat} = require('../validation/task/task')
 const commonObject = require("../common/common");
 const bcrypt = require("bcrypt");
@@ -510,4 +511,54 @@ const ZingHrImplement = async (req,res) => {
   }
 };
 
-module.exports = { taskRemainingSchedule,ZingHrImplement }
+
+
+// raise ticket auto archive 
+const ticketArchive = async(req,res) => {
+
+    // get all ticket data
+    const ticketData = await ticketModel.getTicketAllListForArchive()
+
+    if(ticketData.length){
+     console.log("Start Ticket Archive =>")
+        for (let index = 0; index < ticketData.length; index++) {
+            const data = ticketData[index];
+      
+            // store archive data
+        const archiveData = {
+            id : data.id,
+            unit_id : data.unit_id,
+            category_id : data.category_id,
+            asset_id : data.asset_id,
+            ticket_id : data.ticket_id,
+            priority : data.priority,
+            subject : data.subject,
+            cc : data.cc,
+            description : data.description,
+            attachment : data.attachment,
+            status : data.status,
+            ticket_status : data.ticket_status,
+            created_by : data.created_by,
+            created_at : data.created_at,
+            updated_at : data.updated_at,
+            updated_by : data.updated_by,
+            solved_by : data.solved_by,
+            is_on_behalf : data.is_on_behalf,
+            on_behalf_created_by : data.on_behalf_created_by,
+            is_re_raise : data.is_re_raise,
+            re_raise_count : data.re_raise_count,
+            seating_location : data.seating_location,
+        }
+
+         await ticketModel.addNewArchiveData(archiveData)
+
+        }
+     console.log("End Ticket Archive =>")
+    }
+
+
+}
+
+
+
+module.exports = { taskRemainingSchedule,ZingHrImplement,ticketArchive }

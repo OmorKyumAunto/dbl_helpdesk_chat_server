@@ -38,6 +38,20 @@ let getAllList = async (status) => {
   });
 };
 
+
+let getTicketAllListForArchive = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getTicketAllListForArchive(),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
 let getAllListUserWise = async (
   id = 0,
   key,
@@ -438,6 +452,20 @@ let addNew = async (info) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
       queries.addNew(),
+      [info],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+let addNewArchiveData = async (info) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.addNewArchiveData(),
       [info],
       (error, result, fields) => {
         if (error) reject(error);
@@ -951,5 +979,7 @@ module.exports = {
   getAdminWiseTicketUpComingTotalCount,
   getAdminWiseUpComingTicket,
   getUnitSuperAdminPendingTicketCount,
-  getUnitSuperAdminPendingTicket
+  getUnitSuperAdminPendingTicket,
+  getTicketAllListForArchive,
+  addNewArchiveData
 };

@@ -1,6 +1,5 @@
 const cron = require('node-cron');
-
-const {taskRemainingSchedule,ZingHrImplement} = require('../common/api-call')
+const {taskRemainingSchedule,ZingHrImplement,ticketArchive} = require('../common/api-call')
 
 const processSomething = () =>{
     console.log('🔥Running backend at:', new Date().toLocaleString());
@@ -24,7 +23,15 @@ const nodeCorn = ()=>{
 
 }
 
-module.exports = {nodeCorn,nodeCornForZingHrSync}
+ // Schedule to run at 23:59 on 31st December every year
+const nodeCronForAutoTicketingArchive = () => {
+  cron.schedule('59 23 31 12 *', () => {
+    ticketArchive();
+    console.log("Auto Ticket Archive executed on 31st Dec at 11:59 PM");
+  });
+};
+
+module.exports = {nodeCorn,nodeCornForZingHrSync,nodeCronForAutoTicketingArchive}
 
 
 

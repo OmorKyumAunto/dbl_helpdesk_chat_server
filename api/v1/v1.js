@@ -29,6 +29,7 @@ const reportRouter = require("./routers/report");
 const buildingRouter = require("./routers/building");
 const seatingLocationRouter = require("./routers/seating-location");
 const unitWiseSuperAdminRouter = require("./routers/unit-wise-super-admin");
+const pushNotificationRouter = require("./routers/push-notification");
 
 
 
@@ -56,5 +57,6 @@ router.use("/report", reportRouter);
 router.use("/building", buildingRouter);
 router.use("/seating-location", seatingLocationRouter);
 router.use("/unit-super-admin", unitWiseSuperAdminRouter);
+router.use("/notification", pushNotificationRouter);
 
 module.exports = router;

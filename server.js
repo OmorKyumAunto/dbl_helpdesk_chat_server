@@ -1,14 +1,13 @@
 
 const express = require("express");
 const cors = require("cors");
-const { nodeCorn,nodeCornForZingHrSync } = require('./api/v1/common/corn-job');
+const { nodeCorn,nodeCornForZingHrSync,nodeCronForAutoTicketingArchive } = require('./api/v1/common/corn-job');
 const helmet = require('helmet');
-const useragent = require("express-useragent");
 const app = express();
 // middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(useragent.express()); // <-- this is required
+
 // CORS middleware configuration
 app.use(
   cors({
@@ -48,3 +47,4 @@ app.listen(port, async () => {
 
 nodeCorn()
 nodeCornForZingHrSync()
+nodeCronForAutoTicketingArchive()

@@ -1,5 +1,6 @@
 const isEmpty = require("is-empty");
 let table_name = "dbl_raise_ticket";
+let ticket_archive_table = "dbl_raise_ticket_archive";
 let admin_wise_ticket_view = "admin_wise_ticket";
 let up_coming_ticket = "up_coming_ticket_view";
 let super_admin_ticket_view = "super_admin_ticket_view";
@@ -11,6 +12,10 @@ let getList = () => {
 };
 let getAllList = () => {
   return `SELECT id,location, unit_id,status FROM ${table_name} WHERE status != 0 ORDER BY id DESC `;
+};
+
+let getTicketAllListForArchive = () => {
+  return `SELECT * FROM ${table_name} WHERE status = 1 `;
 };
 
 let getAllLocationDataByUnitId = () => {
@@ -584,6 +589,11 @@ let addNew = () => {
   return `INSERT INTO ${table_name} SET ?`;
 };
 
+let addNewArchiveData = () => {
+  return `INSERT INTO ${ticket_archive_table} SET ?`;
+};
+
+
 let addNewTrackingData = () => {
   return `INSERT INTO ${re_raise_table_name} SET ?`;
 };
@@ -1133,5 +1143,7 @@ module.exports = {
   getAdminWiseTicketUpComingTotalCount,
   getAdminWiseUpComingTicket,
   getUnitSuperAdminPendingTicketCount,
-  getUnitSuperAdminPendingTicket
+  getUnitSuperAdminPendingTicket,
+  getTicketAllListForArchive,
+  addNewArchiveData
 };

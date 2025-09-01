@@ -178,7 +178,8 @@ let superAdminPermission = [
   "userUnitBuildingList",
   "buildingSeatingLocationList",
   "unitSuperAdminList",
-  "employeeSeatingLocationUpdate"
+  "employeeSeatingLocationUpdate",
+  "pushTokens"
 ];
 
 let adminPermission = [
@@ -328,7 +329,8 @@ let adminPermission = [
   "onBehalfTicket",
   "selfAssetList",
   "employeeAssignAssetIdWise",
-  "employeeSeatingLocationUpdate"
+  "employeeSeatingLocationUpdate",
+  "pushTokens"
 ];
 
 let employeePermission = [
@@ -449,6 +451,7 @@ let employeePermission = [
   "ticketReraise",
   "employeeAssignAssetIdWise",
   "employeeSeatingLocationUpdate",
+  "pushTokens"
  
 ];
 
@@ -622,7 +625,8 @@ let unitWiseSuperAdminPermission = [
   "unitSuperAdminAssignAdminList",
   "unitSuperAdminList",
   "employeeSeatingLocationUpdate",
-  "unitSuperAdminWiseTicketList"
+  "unitSuperAdminWiseTicketList",
+  "pushTokens"
 ];
 
 let getRouterPermissionList = async (id = 0) => {

@@ -327,13 +327,13 @@ router.post('/search-access/:id', [verifyToken, routeAccessChecker("searchAccess
             message: "User data not found."
         });
         }
-    if(result[0].role_id !== 2 || result[0].role_id !== 4 ){
-        return res.status(404).send({
-            success: false,
-            status: 404,
-            message: "This user is not admin or unit wise super admin."
-        });
-    }
+    // if(result[0].role_id !== 2 || result[0].role_id !== 4 ){
+    //     return res.status(404).send({
+    //         success: false,
+    //         status: 404,
+    //         message: "This user is not admin or unit wise super admin."
+    //     });
+    // }
 
     let deletePreviusId = await unitAccessModel.deletePreviusId(id); 
 

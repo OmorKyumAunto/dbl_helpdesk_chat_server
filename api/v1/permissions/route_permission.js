@@ -330,7 +330,8 @@ let adminPermission = [
   "selfAssetList",
   "employeeAssignAssetIdWise",
   "employeeSeatingLocationUpdate",
-  "pushTokens"
+  "pushTokens",
+  "buildingSeatingLocationList"
 ];
 
 let employeePermission = [
@@ -453,7 +454,8 @@ let employeePermission = [
   "employeeSeatingLocationUpdate",
   "pushTokens",
   "buildingActiveList",
-  "buildingList"
+  "buildingList",
+  "buildingSeatingLocationList"
  
 ];
 

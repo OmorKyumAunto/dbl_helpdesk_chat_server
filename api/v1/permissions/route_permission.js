@@ -451,7 +451,9 @@ let employeePermission = [
   "ticketReraise",
   "employeeAssignAssetIdWise",
   "employeeSeatingLocationUpdate",
-  "pushTokens"
+  "pushTokens",
+  "buildingActiveList",
+  "buildingList"
  
 ];
 

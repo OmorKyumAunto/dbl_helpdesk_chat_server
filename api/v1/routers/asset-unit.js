@@ -6,12 +6,15 @@ const assetModel = require('../models/asset');
 const unitAccessModel = require('../models/unit-access');
 const userModel = require('../models/user');
 const locationModel = require('../models/location');
+const buildingModel = require('../models/building');
 
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const moment = require("moment");
 const unitModel = require('../models/asset-unit');
 require('dotenv').config();
+
+
 
 router.get('/list', [verifyToken, routeAccessChecker("assetUnitList")], async (req, res) => {
 
@@ -23,6 +26,11 @@ router.get('/list', [verifyToken, routeAccessChecker("assetUnitList")], async (r
         let location = await locationModel.getAllLocationDataByUnitId(element);
 
         result[index].location = location
+
+        
+        let building = await buildingModel.getByUnitWiseId(element);
+
+        result[index].building = building
 
     }
 
@@ -45,7 +53,13 @@ router.get('/active-list', [verifyToken, routeAccessChecker("assetUnitActiveList
 
         result[index].location = location
 
+       let building = await buildingModel.getByUnitWiseId(element);
+
+        result[index].building = building
+
     }
+
+
     return res.status(200).send({
         "success": true,
         "status": 200,

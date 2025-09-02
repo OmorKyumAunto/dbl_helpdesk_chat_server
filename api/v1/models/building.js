@@ -60,6 +60,17 @@ let getById = async (id = 0) => {
     });
 }
 
+let getByUnitWiseId = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByUnitWiseId(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+
 let getActiveList = async (limit,offset,unit_id,key) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getActiveList(limit,offset,unit_id,key),(error, result, fields) => {
@@ -172,5 +183,6 @@ module.exports = {
     getListCount,
     getActiveListCount,
     getByName,
-    getDataByUnitId
+    getDataByUnitId,
+    getByUnitWiseId
 }

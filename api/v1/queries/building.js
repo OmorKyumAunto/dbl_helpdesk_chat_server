@@ -173,7 +173,7 @@ let getByIdForDeleted = () => {
 }
 
 let getDataByUnitId = () => {
-    return `select * FROM ${table_name} where  unit_id IN (?) and status = 'active' `;
+    return `select * FROM ${table_name} where unit_id IN (?) and status = 'active' `;
 }
 
 module.exports = {

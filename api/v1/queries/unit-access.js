@@ -31,6 +31,11 @@ let getById = () => {
     return `SELECT * FROM ${table_name} where  user_id = ? `;
 }
 
+let getByUserId = () => {
+    return `SELECT unit_id FROM ${table_name} where  user_id = ? `;
+}
+
+
 let addNew = () => {
     return `INSERT INTO ${table_name} SET ?`;
 }
@@ -185,6 +190,7 @@ module.exports = {
     getDetailsByIdAndWhereIn,
     getOnlyDataList,
     deletePreviusId,
-    getUserWiseetList
+    getUserWiseetList,
+    getByUserId
 
 }

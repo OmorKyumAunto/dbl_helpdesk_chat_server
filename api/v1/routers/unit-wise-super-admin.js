@@ -109,25 +109,17 @@ router.get(
       employee_type
     );
 
-    // Iterate over the employee list
+
     for (let employee of result) {
       if (!isEmpty(employee.licenses)) {
         try {
-          // Try parsing the licenses string to an array
           let licenses = JSON.parse(employee.licenses);
-
-          // Ensure licenses is an array before proceeding
           if (Array.isArray(licenses)) {
-            // Array to store the fetched license details
             let licenseDetails = [];
-
-            // Loop through each license ID, fetch the details, and store them
             for (let licenseId of licenses) {
               let existingData = await licensesModel.getById(licenseId);
-
               if (existingData && existingData.length > 0) {
                 let license = existingData[0];
-
                 licenseDetails.push({
                   id: license.id,
                   title: license.title,
@@ -141,11 +133,30 @@ router.get(
           console.error("Error parsing licenses for employee:", error);
         }
       }
+
+      const getAssignUnit = await unitAccessModel.getByUserId(employee.id);
+
+      let unit_id = getAssignUnit.map((u) => u.unit_id);
+
+      let unitData = [];
+
+      for (let id of unit_id) {
+        const getAssignUnitName = await assetUnitModel.getById(id);
+
+        if (getAssignUnitName && getAssignUnitName.length > 0) {
+          unitData.push(getAssignUnitName[0]); 
+        }
+      }
+
+      employee.units = unitData;
+
+      employee.units = unitData;
     }
+
     return res.status(200).send({
       success: true,
       status: 200,
-      message: "Employee List.",
+      message: "Unit Super Admin List.",
       total: countResult.length,
       data: result,
     });

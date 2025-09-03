@@ -142,7 +142,7 @@ router.post(
           message: "Your seating location has not been updated. Please update your current seating location.",
         });
       }
-     
+   
 
     // get unit building location data 
     const getLocationInfo = await seatingLocationModel.getByIdViewData(employeeData[0].seating_location)
@@ -395,6 +395,8 @@ if(search === 'solved'){
       status,
       unitIds
     );
+
+
 }
 
     return res.status(200).send({

@@ -109,6 +109,7 @@ let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ? AND status IN ('active', 'inactive');`;
 }
 
+
 let getByIdViewData = () => {
     return `SELECT * FROM ${location_building_unit} where  seating_location_id = ? ;`;
 }

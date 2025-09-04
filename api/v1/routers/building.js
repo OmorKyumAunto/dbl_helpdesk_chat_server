@@ -7,6 +7,8 @@ const buildingModel = require('../models/building');
 const unitModel = require('../models/asset-unit');
 const userModel = require('../models/user');
 const unitAccessModel = require('../models/unit-access');
+const assignSeatingLocationModel = require('../models/assign-seating-location');
+const seatingLocationModel = require('../models/seating-location');
 const { buildingCreateSchema,buildingUpdateSchema} = require("../validator/validate-request/building");
 const { idParamsSchema} = require("../validator/validate-request/common-validator");
 const common = require("../common/common");
@@ -309,7 +311,7 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("changeBuilding
 router.get('/user-unit-building/:id', [verifyToken, routeAccessChecker("userUnitBuildingList"),validateRequest(idParamsSchema,'params')], async (req, res) => {
 
     const id = parseInt(req.params.id)
-
+    let data = {}
     const existingUser = await userModel.getById(id)
     if(isEmpty(existingUser)){
         return res.status(404).send({
@@ -326,12 +328,50 @@ router.get('/user-unit-building/:id', [verifyToken, routeAccessChecker("userUnit
 
     const getBuilding = await buildingModel.getDataByUnitId(unitIds);
 
+    data.searchAccess = getBuilding
+
+    // get building
+    const getLocation = await assignSeatingLocationModel.getLocationByUserId(id);
+
+    let location_id = getLocation.map((u) => u.seating_location_id);
+    let locationData = [];
+    let buildingData = [];
+    let buildingIds = new Set();
+
+    for (let id of location_id) {
+    const getLocationInfo = await seatingLocationModel.getById(id);
+
+    if (getLocationInfo && getLocationInfo.length > 0) {
+        locationData.push({
+        seating_location_id: getLocationInfo[0].id,
+        seating_location_name: getLocationInfo[0].name
+        });
+
+        const getBuildingInfo = await buildingModel.getById(getLocationInfo[0].building_id);
+
+        if (getBuildingInfo && getBuildingInfo.length > 0) {
+        const b = getBuildingInfo[0];
+        if (!buildingIds.has(b.id)) {   
+            buildingData.push({
+            building_id: b.id,
+            building_name: b.name
+            });
+            buildingIds.add(b.id); 
+        }
+        }
+    }
+    }
+
+    data.seating_location = locationData;
+    data.complex = buildingData;
+
+
     return res.status(200).send({
         "success": true,
         "status": 200,
         "message": "User Unit wise building List.",
         "count": getBuilding.length,
-        "data": getBuilding
+        "data": data
     });
 });
 

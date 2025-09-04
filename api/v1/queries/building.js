@@ -103,6 +103,11 @@ let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ? AND status IN ('active', 'inactive');`;
 }
 
+
+let getByUserId = () => {
+    return `SELECT * FROM ${table_name} where  id = ? AND status IN ('active', 'inactive');`;
+}
+
 let getByUnitWiseId = () => {
     return `SELECT * FROM ${table_name} where  unit_id = ? AND status = 'active' `;
 }
@@ -192,5 +197,6 @@ module.exports = {
     getActiveListCount,
     getByName,
     getDataByUnitId,
-    getByUnitWiseId
+    getByUnitWiseId,
+    getByUserId
 }

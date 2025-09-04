@@ -61,6 +61,14 @@ let getById = async (id = 0) => {
     });
 }
 
+let getByMultipleId = async (id = []) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByMultipleId(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
 let addNew = async (info) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.addNew(), [info], (error, result, fields) => {
@@ -163,6 +171,7 @@ module.exports = {
     getDetailsByIdAndWhereIn,
     getByTitle,
     getOnlyDataList,
-    unitWiseAdminList
+    unitWiseAdminList,
+    getByMultipleId
 }
 

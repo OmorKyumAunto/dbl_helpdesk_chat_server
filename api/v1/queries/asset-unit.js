@@ -56,6 +56,10 @@ let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ? and status IN ('active', 'inactive') `;
 }
 
+let getByMultipleId = () => {
+    return `SELECT * FROM ${table_name} where id IN (?) and status  IN ('active', 'inactive') `;
+}
+
 let addNew = () => {
     return `INSERT INTO ${table_name} SET ?`;
 }
@@ -209,5 +213,6 @@ module.exports = {
     getDataByWhereCondition,
     getDetailsByIdAndWhereIn,
     getOnlyDataList,
-    unitWiseAdminList
+    unitWiseAdminList,
+    getByMultipleId
 }

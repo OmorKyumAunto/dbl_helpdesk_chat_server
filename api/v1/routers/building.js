@@ -9,6 +9,8 @@ const userModel = require('../models/user');
 const unitAccessModel = require('../models/unit-access');
 const assignSeatingLocationModel = require('../models/assign-seating-location');
 const seatingLocationModel = require('../models/seating-location');
+const assignCategoriesModel = require('../models/assign-category');
+const ticketCategoriesModel = require('../models/ticket-category');
 const { buildingCreateSchema,buildingUpdateSchema} = require("../validator/validate-request/building");
 const { idParamsSchema} = require("../validator/validate-request/common-validator");
 const common = require("../common/common");
@@ -155,8 +157,6 @@ router.put('/update/:id', [verifyToken, routeAccessChecker("buildingUpdate"),val
 
             willWeUpdate = 1;
             updateData.name = reqData.name;
-
-        
 
     }
 
@@ -326,9 +326,10 @@ router.get('/user-unit-building/:id', [verifyToken, routeAccessChecker("userUnit
 
     const unitIds = getUnit.map(u => u.unit_id); 
 
-    const getBuilding = await buildingModel.getDataByUnitId(unitIds);
+   // const getBuilding = await buildingModel.getDataByUnitId(unitIds);
+    const getUnitInfo = await unitModel.getByMultipleId(unitIds);
 
-    data.searchAccess = getBuilding
+    data.searchAccess = getUnitInfo
 
     // get building
     const getLocation = await assignSeatingLocationModel.getLocationByUserId(id);
@@ -366,11 +367,33 @@ router.get('/user-unit-building/:id', [verifyToken, routeAccessChecker("userUnit
     data.complex = buildingData;
 
 
+
+
+    // category
+    const getCategory = await assignCategoriesModel.getByUserId(id);
+    let category_id = getCategory.map((u) => u.category_id);
+    let categoryData = [];
+
+
+    for (let id of category_id) {
+    const category = await ticketCategoriesModel.getById(id);
+
+    if (category && category.length > 0) {
+        categoryData.push({
+        category_id: category[0].id,
+        category_name: category[0].title
+        });
+    }
+    }
+
+    data.seating_location = locationData;
+    data.complex = buildingData;
+    data.categories = categoryData;
+
     return res.status(200).send({
         "success": true,
         "status": 200,
         "message": "User Unit wise building List.",
-        "count": getBuilding.length,
         "data": data
     });
 });

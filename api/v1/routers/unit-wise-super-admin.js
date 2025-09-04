@@ -143,9 +143,12 @@ router.get(
       for (let id of unit_id) {
         const getAssignUnitName = await assetUnitModel.getById(id);
 
-        if (getAssignUnitName && getAssignUnitName.length > 0) {
-          unitData.push(getAssignUnitName[0]); 
-        }
+      if (getAssignUnitName && getAssignUnitName.length > 0) {
+        unitData.push({
+          unit_id: getAssignUnitName[0].id,
+          title: getAssignUnitName[0].title
+        });
+      }
       }
 
       employee.searchAccess = unitData;

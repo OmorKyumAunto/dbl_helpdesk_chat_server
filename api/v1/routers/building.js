@@ -326,9 +326,10 @@ router.get('/user-unit-building/:id', [verifyToken, routeAccessChecker("userUnit
 
     const unitIds = getUnit.map(u => u.unit_id); 
 
-    const getBuilding = await buildingModel.getDataByUnitId(unitIds);
+   // const getBuilding = await buildingModel.getDataByUnitId(unitIds);
+    const getUnitInfo = await unitModel.getByMultipleId(unitIds);
 
-    data.searchAccess = getBuilding
+    data.searchAccess = getUnitInfo
 
     // get building
     const getLocation = await assignSeatingLocationModel.getLocationByUserId(id);
@@ -393,7 +394,6 @@ router.get('/user-unit-building/:id', [verifyToken, routeAccessChecker("userUnit
         "success": true,
         "status": 200,
         "message": "User Unit wise building List.",
-        "count": getBuilding.length,
         "data": data
     });
 });

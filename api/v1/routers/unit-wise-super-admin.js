@@ -58,7 +58,7 @@ router.get(
     // convert it json
     const formatted = result.map(row => ({
       ...row,
-      units: JSON.parse(row.units) ,
+      searchAccess: JSON.parse(row.units) ,
       admin_categories: JSON.parse(row.admin_categories) ,
     }));
 
@@ -148,7 +148,7 @@ router.get(
         }
       }
 
-      employee.units = unitData;
+      employee.searchAccess = unitData;
     }
 
     return res.status(200).send({

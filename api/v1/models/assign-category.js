@@ -67,6 +67,18 @@ let getById = async (id = 0) => {
         });
     });
 }
+
+let getByUserId = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByUserId(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+
 let getByIdAndUser = async (id = 0,user_id=0) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getByIdAndUser(), [id,user_id], (error, result, fields) => {
@@ -178,16 +190,6 @@ let deleteByUserAndCategories = async (userId = 0, categoryIds = []) => {
     });
 }
 
-
-
-let getByUserId = async (userId = 0) => {
-    return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getByUserId(), [userId], (error, result, fields) => {
-            if (error) reject(error)
-            else resolve(result)
-        });
-    });
-}
 
 module.exports = {
     getList,

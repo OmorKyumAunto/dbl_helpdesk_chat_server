@@ -290,6 +290,7 @@ module.exports = {
     getBeforeCategoryAssignList,
     getAfterCategoryAssignList,
     getByUserId,
-    deleteByUserAndCategories
+    deleteByUserAndCategories,
+    getByUserId
 
 }

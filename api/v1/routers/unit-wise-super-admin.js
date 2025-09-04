@@ -149,8 +149,6 @@ router.get(
       }
 
       employee.units = unitData;
-
-      employee.units = unitData;
     }
 
     return res.status(200).send({

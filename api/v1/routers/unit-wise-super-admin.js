@@ -146,7 +146,7 @@ router.get(
       if (getAssignUnitName && getAssignUnitName.length > 0) {
         unitData.push({
           unit_id: getAssignUnitName[0].id,
-          title: getAssignUnitName[0].title
+          unit_name: getAssignUnitName[0].title
         });
       }
       }

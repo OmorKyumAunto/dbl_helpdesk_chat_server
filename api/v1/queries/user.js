@@ -286,7 +286,7 @@ SELECT
     -- Units JSON-like string
     (
       SELECT CONCAT('[', GROUP_CONCAT(
-          CONCAT('{\"unit_id\":', ut.id, ',\"title\":\"', REPLACE(ut.title, '\"', '\\\"'), '\"}')
+          CONCAT('{\"unit_id\":', ut.id, ',\"unit_name\":\"', REPLACE(ut.title, '\"', '\\\"'), '\"}')
       ), ']')
       FROM admin_search_access AS ua2
       JOIN dbl_asset_unit AS ut ON ua2.unit_id = ut.id

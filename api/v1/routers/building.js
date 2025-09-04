@@ -329,7 +329,16 @@ router.get('/user-unit-building/:id', [verifyToken, routeAccessChecker("userUnit
    // const getBuilding = await buildingModel.getDataByUnitId(unitIds);
     const getUnitInfo = await unitModel.getByMultipleId(unitIds);
 
-    data.searchAccess = getUnitInfo
+    const unitIndex = []
+    for (let index = 0; index < getUnitInfo.length; index++) {
+        const element = getUnitInfo[index];
+        unitIndex.push({
+            unit_id : element.id,
+            unit_name : element.title,
+        })
+    }
+
+    data.searchAccess = unitIndex
 
     // get building
     const getLocation = await assignSeatingLocationModel.getLocationByUserId(id);
@@ -365,9 +374,6 @@ router.get('/user-unit-building/:id', [verifyToken, routeAccessChecker("userUnit
 
     data.seating_location = locationData;
     data.complex = buildingData;
-
-
-
 
     // category
     const getCategory = await assignCategoriesModel.getByUserId(id);

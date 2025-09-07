@@ -375,26 +375,26 @@ router.get('/user-unit-building/:id', [verifyToken, routeAccessChecker("userUnit
     data.seating_location = locationData;
     data.complex = buildingData;
 
-    // category
-    const getCategory = await assignCategoriesModel.getByUserId(id);
-    let category_id = getCategory.map((u) => u.category_id);
-    let categoryData = [];
+    // // category
+    // const getCategory = await assignCategoriesModel.getByUserId(id);
+    // let category_id = getCategory.map((u) => u.category_id);
+    // let categoryData = [];
 
 
-    for (let id of category_id) {
-    const category = await ticketCategoriesModel.getById(id);
+    // for (let id of category_id) {
+    // const category = await ticketCategoriesModel.getById(id);
 
-    if (category && category.length > 0) {
-        categoryData.push({
-        category_id: category[0].id,
-        category_name: category[0].title
-        });
-    }
-    }
+    // if (category && category.length > 0) {
+    //     categoryData.push({
+    //     category_id: category[0].id,
+    //     category_name: category[0].title
+    //     });
+    // }
+    // }
 
     data.seating_location = locationData;
     data.complex = buildingData;
-    data.categories = categoryData;
+    //data.categories = categoryData;
 
     return res.status(200).send({
         "success": true,

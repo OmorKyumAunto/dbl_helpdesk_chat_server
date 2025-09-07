@@ -416,4 +416,33 @@ router.get('/unit-wise-admin/:id', [verifyToken, routeAccessChecker("assetUnitWi
 
 
 
+router.get('/unit-wise-building/:id', [verifyToken, routeAccessChecker("unitWiseBuildingList")], async (req, res) => {
+
+    let id = req.params.id
+    
+    let existingDataById = await assetUnitModel.getById(id);
+    if (isEmpty(existingDataById)) {
+        return res.status(404).send({
+            "success": false,
+            "status": 404,
+            "message": "Unit data found",
+
+        });
+    }
+
+   // get unit data
+   const data = await buildingModel.getByUnitWiseId(id)
+
+
+    return res.status(200).send({
+        "success": true,
+        "status": 200,
+        "message": "Unit wise complex list.",
+        "data": data
+    });
+
+});
+
+
+
 module.exports = router;

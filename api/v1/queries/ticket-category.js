@@ -34,6 +34,12 @@ let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ? and status IN ('active', 'deactivate') `;
 }
 
+let getByMultiId = () => {
+    return `SELECT * FROM ${table_name} where  id in (?) and status IN ('active', 'deactivate') `;
+}
+
+
+
 let addNew = () => {
     return `INSERT INTO ${table_name} SET ?`;
 }
@@ -202,6 +208,7 @@ module.exports = {
     getDataByWhereCondition,
     getDetailsByIdAndWhereIn,
     getOnlyDataList,
-    updateByTicketId
+    updateByTicketId,
+    getByMultiId
 
 }

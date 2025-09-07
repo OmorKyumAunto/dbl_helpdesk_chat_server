@@ -329,10 +329,10 @@ router.put('/changeStatus/:id', [verifyToken, routeAccessChecker("ticketCategory
 
 
 router.post('/:id', [verifyToken, routeAccessChecker("assignCategory")], async (req, res) => {
-    console.log("first")
-    const id = req.params.id; // User ID
+
+    const id = parseInt(req.params.id); 
     let reqData = {
-        "category_id": req.body.category_id // Array of category IDs
+        "category_id": req.body.category_id 
     };
 
     let current_date = new Date();

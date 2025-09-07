@@ -72,9 +72,7 @@ router.get("/me", [verifyToken], async (req, res) => {
   if (getAccessData && getAccessData.length > 0) {
     employee.searchAccess = [];
 
-    // Iterate through each access record
     for (let access of getAccessData) {
-      // Fetch the title (unit_name) from the assetUnitModel based on unit_id
       const existingDataById = await assetUnitModel.getById(access.unit_id);
 
       const unit_name =
@@ -82,14 +80,13 @@ router.get("/me", [verifyToken], async (req, res) => {
           ? existingDataById[0].title
           : null;
 
-      // Add the unit_name to the access object and push it into searchAccess
       employee.searchAccess.push({
         ...access,
         unit_name: unit_name,
       });
     }
   } else {
-    employee.searchAccess = []; // Ensure searchAccess is an empty array if no access data
+    employee.searchAccess = []; 
   }
 
   // Return the employee details

@@ -634,7 +634,8 @@ let unitWiseSuperAdminPermission = [
   "employeeSeatingLocationUpdate",
   "unitSuperAdminWiseTicketList",
   "pushTokens",
-  "unitWiseBuildingList"
+  "unitWiseBuildingList",
+  "assignCategory"
 ];
 
 let getRouterPermissionList = async (id = 0) => {

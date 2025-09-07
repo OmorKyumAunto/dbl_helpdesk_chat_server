@@ -50,6 +50,17 @@ let getById = async (id = 0) => {
     });
 }
 
+
+let getByMultiId = async (id = []) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByMultiId(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
 let addNew = async (info) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.addNew(), [info], (error, result, fields) => {
@@ -177,6 +188,7 @@ module.exports = {
     getDetailsByIdAndWhereIn,
     getByTitle,
     getOnlyDataList,
-    updateByTicketId
+    updateByTicketId,
+    getByMultiId
 }
 

@@ -180,7 +180,8 @@ let superAdminPermission = [
   "unitSuperAdminList",
   "employeeSeatingLocationUpdate",
   "pushTokens",
-  "unitWiseBuildingList"
+  "unitWiseBuildingList",
+  "userWiseTicketCategory"
 ];
 
 let adminPermission = [
@@ -635,7 +636,8 @@ let unitWiseSuperAdminPermission = [
   "unitSuperAdminWiseTicketList",
   "pushTokens",
   "unitWiseBuildingList",
-  "assignCategory"
+  "assignCategory",
+  "userWiseTicketCategory"
 ];
 
 let getRouterPermissionList = async (id = 0) => {

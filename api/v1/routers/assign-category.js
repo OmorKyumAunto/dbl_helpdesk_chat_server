@@ -412,6 +412,36 @@ router.post('/:id', [verifyToken, routeAccessChecker("assignCategory")], async (
 
 
 
+router.get('/user-wise-ticket-category/:id', [verifyToken, routeAccessChecker("userWiseTicketCategory")], async (req, res) => {
+
+    let id = parseInt(req.params.id)
+    
+    let userData = await userModel.getById(id);
+    if (isEmpty(userData)) {
+        return res.status(404).send({
+            success: false,
+            status: 404,
+            message: "User data not found."
+        });
+    }
+
+    let categoryArr = []
+    // get userWise category 
+    const getUserWiseCategoryId = await assignCategoryModel.getByUserId(id)
+    for (let index = 0; index < getUserWiseCategoryId.length; index++) {
+        categoryArr.push(getUserWiseCategoryId[index].category_id);
+        
+    }
+
+    const getCategoryInfo = await ticketCategoryModel.getByMultiId(categoryArr)
+    return res.status(200).send({
+        "success": true,
+        "status": 200,
+        "message": "User wise Ticket category.",
+        "data":getCategoryInfo
+    });
+
+});
 
 
 

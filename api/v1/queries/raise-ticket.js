@@ -270,7 +270,7 @@ let getAdminWiseUpComingTicket = (key, priority, status, offset, limit) => {
   }
 
   // Base condition for user_id
-  conditions.push(`user_id = ? AND ticket_solved_employee_user_id IS NULL `);
+  conditions.push(`user_id = ? AND ticket_status = 'unsolved' `);
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
@@ -307,7 +307,7 @@ let getAdminWiseTicketUpComingTotalCount = (key, priority, status) => {
   }
 
   // Base condition for user_id
-  conditions.push(`user_id = ? AND ticket_solved_employee_user_id IS NULL`);
+  conditions.push(`user_id = ? AND  ticket_status = 'unsolved' `);
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 

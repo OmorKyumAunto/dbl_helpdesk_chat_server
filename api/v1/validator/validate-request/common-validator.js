@@ -38,4 +38,17 @@ const buildingIdSchema = z.object({
 
 
 
-module.exports = { idParamsSchema ,buildingIdSchema};
+const bodyArrayIdSchema = z.object({
+  id: z.array(
+    z.number().int().positive("Each ID must be a positive number")
+  )
+  .nonempty("At least one ID is required")
+  .refine((arr) => new Set(arr).size === arr.length, {
+    message: "Duplicate IDs are not allowed",
+  }),
+});
+
+
+
+
+module.exports = { idParamsSchema ,buildingIdSchema,bodyArrayIdSchema};

@@ -432,6 +432,7 @@ router.put(
       user_id,
       id
     );
+  
     if (!existingDataById.length) {
       return res.status(404).send({
         success: false,
@@ -1247,6 +1248,8 @@ router.post(
       reqData.is_on_behalf = 1,
       reqData.on_behalf_created_by = my_id
       reqData.created_by = user[0].id
+      reqData.unit_id = getLocationInfo[0]?.unit_id || ''
+      reqData.seating_location = getLocationInfo[0]?.seating_location_id || ''
 
       let result = await raiseTicketModel.addNew(reqData);
 
@@ -1370,6 +1373,7 @@ router.put(
       }
 
       let re_create_data = {
+        unit_id : existingDataById[0]?.unit_id || '', 
         category_id : existingDataById[0]?.category_id || '', 
         asset_id : existingDataById[0]?.asset_id || null,
         ticket_id : existingDataById[0]?.ticket_id || '',

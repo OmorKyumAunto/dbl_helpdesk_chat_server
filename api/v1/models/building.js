@@ -79,6 +79,15 @@ let getByUnitWiseId = async (id = 0) => {
     });
 }
 
+let getByUnitWiseMultiId = async (id = []) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByUnitWiseMultiId(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 
 
 let getActiveList = async (limit,offset,unit_id,key) => {
@@ -195,5 +204,6 @@ module.exports = {
     getByName,
     getDataByUnitId,
     getByUnitWiseId,
-    getByUserId
+    getByUserId,
+    getByUnitWiseMultiId
 }

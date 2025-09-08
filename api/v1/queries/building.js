@@ -112,6 +112,9 @@ let getByUnitWiseId = () => {
     return `SELECT * FROM ${table_name} where  unit_id = ? AND status = 'active' `;
 }
 
+let getByUnitWiseMultiId = () => {
+    return `SELECT * FROM ${table_name} where  unit_id in (?) AND status = 'active' `;
+}
 
 
 let getByEmployeeId = () => {
@@ -198,5 +201,6 @@ module.exports = {
     getByName,
     getDataByUnitId,
     getByUnitWiseId,
-    getByUserId
+    getByUserId,
+    getByUnitWiseMultiId
 }

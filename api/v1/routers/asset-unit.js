@@ -7,7 +7,8 @@ const unitAccessModel = require('../models/unit-access');
 const userModel = require('../models/user');
 const locationModel = require('../models/location');
 const buildingModel = require('../models/building');
-
+const { bodyArrayIdSchema } = require("../validator/validate-request/common-validator");
+const validateRequest = require("../validator/middleware");
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
 const moment = require("moment");
@@ -416,28 +417,32 @@ router.get('/unit-wise-admin/:id', [verifyToken, routeAccessChecker("assetUnitWi
 
 
 
-router.get('/unit-wise-building/:id', [verifyToken, routeAccessChecker("unitWiseBuildingList")], async (req, res) => {
+router.post('/unit-wise-building', [verifyToken, routeAccessChecker("unitWiseBuildingList"),validateRequest(bodyArrayIdSchema,'body')], async (req, res) => {
 
-    let id = req.params.id
-    
-    let existingDataById = await assetUnitModel.getById(id);
-    if (isEmpty(existingDataById)) {
-        return res.status(404).send({
-            "success": false,
-            "status": 404,
-            "message": "Unit data found",
+    let id = req.body.id
 
-        });
-    }
+    for (let index = 0; index < id.length; index++) {
+        const element = id[index];
+        let existingDataById = await assetUnitModel.getById(element);
+            if (isEmpty(existingDataById)) {
+                return res.status(404).send({
+                    "success": false,
+                    "status": 404,
+                    "message": "Unit data found",
+
+                });
+            }
+   }
+
 
    // get unit data
-   const data = await buildingModel.getByUnitWiseId(id)
-
+   const data = await buildingModel.getByUnitWiseMultiId(id)
 
     return res.status(200).send({
         "success": true,
         "status": 200,
         "message": "Unit wise complex list.",
+        "count": data.length,
         "data": data
     });
 

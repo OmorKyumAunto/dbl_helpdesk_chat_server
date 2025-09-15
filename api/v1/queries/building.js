@@ -17,7 +17,7 @@ let getByName = () => {
     return `SELECT * FROM ${table_name} WHERE  name = ? AND status IN ('active', 'inactive')`;
 }
 
-let getList = (limit, offset, unit_id, status, key) => {
+let getList = (limit, offset,id, unit_id, status, key) => {
     let searchCondition = "b.status != 'delete'";
 
     // Status filter
@@ -27,6 +27,10 @@ let getList = (limit, offset, unit_id, status, key) => {
         searchCondition += " AND b.status = ''";
     }
 
+    if (id) {
+        searchCondition += ` AND b.created_by = ${id}`;
+    }
+    
     if (unit_id) {
         searchCondition += ` AND b.unit_id = ${unit_id}`;
     }
@@ -49,7 +53,7 @@ let getList = (limit, offset, unit_id, status, key) => {
 };
 
 
-let getListCount = (unit_id, status, key) => {
+let getListCount = (id,unit_id, status, key) => {
     let searchCondition = "b.status != 'delete'";
 
     // Status filter
@@ -57,6 +61,10 @@ let getListCount = (unit_id, status, key) => {
         searchCondition += " AND b.status = 'active'";
     } else if (status === '') {
         searchCondition += " AND b.status = ''";
+    }
+
+    if (id) {
+        searchCondition += ` AND b.created_by = ${id}`;
     }
 
     if (unit_id) {

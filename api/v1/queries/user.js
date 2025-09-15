@@ -314,7 +314,7 @@ JOIN dbl_seating_location AS sl
     ON asl.seating_location_id = sl.id
 JOIN dbl_building AS b 
     ON sl.building_id = b.id
-WHERE u.status = 1
+WHERE u.status = 1 AND u.role_id = 2
 GROUP BY u.id
 ORDER BY u.id DESC;
   `;

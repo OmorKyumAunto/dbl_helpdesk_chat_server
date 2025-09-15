@@ -289,6 +289,7 @@ router.get(
       priority = "",
       status = "",
       search,
+      location_id,
       offset = 0,
       limit = 10,
     } = req.query;
@@ -301,6 +302,7 @@ if(search === 'solved'){
       key,
       priority,
       status,
+      location_id,
       offset,
       limit
     );
@@ -310,7 +312,8 @@ if(search === 'solved'){
       user_id = id,
       key,
       priority,
-      status
+      status,
+      location_id
     );
 }else{
       result = await raiseTicketModel.getAdminWiseUpComingTicket(
@@ -318,6 +321,7 @@ if(search === 'solved'){
       key,
       priority,
       status,
+      location_id,
       offset,
       limit
     );
@@ -326,7 +330,8 @@ if(search === 'solved'){
       id,
       key,
       priority,
-      status
+      status,
+      location_id
     );
 }
     return res.status(200).send({
@@ -351,6 +356,7 @@ router.get(
       priority = "",
       status = "",
       search,
+      location_id,
       offset = 0,
       limit = 10,
     } = req.query;
@@ -369,6 +375,7 @@ if(search === 'solved'){
       priority,
       status,
       unitIds,
+      location_id,
       offset,
       limit
     );
@@ -376,7 +383,8 @@ if(search === 'solved'){
       key,
       priority,
       status,
-      unitIds
+      unitIds,
+      location_id
     );
 
 }else{
@@ -386,6 +394,7 @@ if(search === 'solved'){
       priority,
       status,
       unitIds,
+      location_id,
       offset,
       limit
     );
@@ -393,7 +402,8 @@ if(search === 'solved'){
       key,
       priority,
       status,
-      unitIds
+      unitIds,
+      location_id
     );
 
 
@@ -561,6 +571,7 @@ router.get(
       key = "",
       priority = "",
       status = "",
+      location_id,
       offset = 0,
       limit = 10,
     } = req.query;
@@ -569,13 +580,15 @@ router.get(
       key,
       priority,
       status,
+      location_id,
       offset,
       limit
     );
     let totalResult = await raiseTicketModel.getSuperAdminTicketTotalCount(
       key,
       priority,
-      status
+      status,
+      location_id
     );
     return res.status(200).send({
       success: true,
@@ -629,7 +642,7 @@ router.post(
     }
 
     if (user[0].role_id === 3) reqData.employee_id = id;
-    if (user[0].role_id === 2) reqData.admin_id = id;
+    if (user[0].role_id === 2 || user[0].role_id === 4) reqData.admin_id = id;
 
     let result = await ticketCommentModel.addNew(reqData);
 
@@ -674,7 +687,7 @@ router.post(
           employeeToAdminEmailDataSingle
         );
       }
-    } else if (role_id === 2) {
+    } else if (role_id === 2 || role_id === 4) {
       const getTicketWiseEmployeeGetById =
         await ticketCommentModel.getAllTicketWiseAdminSingleData(
           reqData.ticket_id
@@ -774,7 +787,7 @@ router.put(
       });
     }
 
-    if (user[0].role_id == 2) {
+    if (user[0].role_id === 2 || user[0].role_id === 4 ) {
       if (comment[0].admin_id !== id) {
         return res.status(400).send({
           success: false,
@@ -783,7 +796,7 @@ router.put(
         });
       }
     }
-    if (user[0].role_id == 3) {
+    if (user[0].role_id === 3) {
       if (comment[0].employee_id !== id) {
         return res.status(400).send({
           success: false,

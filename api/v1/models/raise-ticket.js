@@ -91,12 +91,13 @@ let getAdminWiseTicket = async (
   key,
   priority,
   status,
+  location_id,
   offset,
   limit
 ) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getAdminWiseTicket(key, priority, status, offset, limit),
+      queries.getAdminWiseTicket(key, priority, status,location_id, offset, limit),
       [id,user_id],
       (error, result, fields) => {
         if (error) reject(error);
@@ -111,11 +112,12 @@ let getAdminWiseTicketTotalCount = async (
   user_id = 0,
   key,
   priority,
-  status
+  status,
+  location_id
 ) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getAdminWiseTicketTotalCount(key, priority, status),
+      queries.getAdminWiseTicketTotalCount(key, priority, status,location_id),
       [id,user_id],
       (error, result, fields) => {
         if (error) reject(error);
@@ -131,12 +133,13 @@ let getAdminWiseUpComingTicket = async (
   key,
   priority,
   status,
+  location_id,
   offset,
   limit
 ) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getAdminWiseUpComingTicket(key, priority, status, offset, limit),
+      queries.getAdminWiseUpComingTicket(key, priority, status, location_id,offset, limit),
       [id],
       (error, result, fields) => {
         if (error) reject(error);
@@ -150,11 +153,12 @@ let getAdminWiseTicketUpComingTotalCount = async (
   id = 0,
   key,
   priority,
-  status
+  status,
+  location_id
 ) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getAdminWiseTicketUpComingTotalCount(key, priority, status),
+      queries.getAdminWiseTicketUpComingTotalCount(key, priority, status,location_id),
       [id],
       (error, result, fields) => {
         if (error) reject(error);
@@ -171,12 +175,13 @@ let getUnitSuperAdminTicket = async (
   priority,
   status,
   unitIds = [],
+  location_id,
   offset,
   limit
 ) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getUnitSuperAdminTicket(key, priority, status,unitIds, offset, limit),
+      queries.getUnitSuperAdminTicket(key, priority, status,unitIds,location_id, offset, limit),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -190,10 +195,11 @@ let getUnitSuperAdminTicketCount = async (
   priority,
   status,
   unitIds = [],
+  location_id,
 ) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getUnitSuperAdminTicketCount(key, priority, status,unitIds),
+      queries.getUnitSuperAdminTicketCount(key, priority, status,unitIds,location_id),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -208,12 +214,13 @@ let getUnitSuperAdminPendingTicket = async (
   priority,
   status,
   unitIds = [],
+  location_id,
   offset,
   limit
 ) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getUnitSuperAdminPendingTicket(key, priority, status,unitIds, offset, limit),
+      queries.getUnitSuperAdminPendingTicket(key, priority, status,unitIds,location_id, offset, limit),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -227,10 +234,11 @@ let getUnitSuperAdminPendingTicketCount = async (
   priority,
   status,
   unitIds = [],
+  location_id
 ) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getUnitSuperAdminPendingTicketCount(key, priority, status,unitIds),
+      queries.getUnitSuperAdminPendingTicketCount(key, priority, status,unitIds,location_id),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -253,10 +261,10 @@ let getAdminWiseTicketById = async (user_id = 0, ticket_id = 0) => {
   });
 };
 
-let getSuperAdminTicket = async (key, priority, status, offset, limit) => {
+let getSuperAdminTicket = async (key, priority, status,location_id, offset, limit) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getSuperAdminTicket(key, priority, status, offset, limit),
+      queries.getSuperAdminTicket(key, priority, status,location_id, offset, limit),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -265,10 +273,10 @@ let getSuperAdminTicket = async (key, priority, status, offset, limit) => {
   });
 };
 
-let getSuperAdminTicketTotalCount = async (key, priority, status) => {
+let getSuperAdminTicketTotalCount = async (key, priority, status,location_id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getSuperAdminTicketTotalCount(key, priority, status),
+      queries.getSuperAdminTicketTotalCount(key, priority, status,location_id),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);

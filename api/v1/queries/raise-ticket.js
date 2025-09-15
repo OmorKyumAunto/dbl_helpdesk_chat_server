@@ -22,7 +22,7 @@ let getAllLocationDataByUnitId = () => {
   return `SELECT id,location,unit_id,status FROM ${table_name} WHERE unit_id = ? and status = 1 ORDER BY id DESC `;
 };
 
-let getUnitSuperAdminTicket = (key, priority, status, unitIds, offset, limit) => {
+let getUnitSuperAdminTicket = (key, priority, status, unitIds,location_id, offset, limit) => {
   let conditions = [];
 
   // Filter by unitIds
@@ -40,7 +40,9 @@ let getUnitSuperAdminTicket = (key, priority, status, unitIds, offset, limit) =>
   if (key) {
     conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
   }
-
+  if (location_id) {
+    conditions.push(`seating_location = '${location_id}'`);
+  }
   // ✅ Add your new condition
   conditions.push(`ticket_solved_employee_user_id IS NOT NULL`);
 
@@ -63,7 +65,7 @@ let getUnitSuperAdminTicket = (key, priority, status, unitIds, offset, limit) =>
 };
 
 
-let getUnitSuperAdminTicketCount = (key, priority, status,unitIds) => {
+let getUnitSuperAdminTicketCount = (key, priority, status,unitIds,location_id) => {
   let conditions = [];
 
   // Filter by unitIds
@@ -81,6 +83,10 @@ let getUnitSuperAdminTicketCount = (key, priority, status,unitIds) => {
   }
   if (key) {
     conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
+  
+  if (location_id) {
+    conditions.push(`seating_location = '${location_id}'`);
   }
 
   // ✅ Add your new condition
@@ -103,7 +109,7 @@ let getUnitSuperAdminTicketCount = (key, priority, status,unitIds) => {
 
 
 
-let getUnitSuperAdminPendingTicket = (key, priority, status, unitIds, offset, limit) => {
+let getUnitSuperAdminPendingTicket = (key, priority, status, unitIds, location_id,offset, limit) => {
   let conditions = [];
 
   // Filter by unitIds
@@ -121,7 +127,9 @@ let getUnitSuperAdminPendingTicket = (key, priority, status, unitIds, offset, li
   if (key) {
     conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
   }
-
+  if (location_id) {
+    conditions.push(`seating_location = '${location_id}'`);
+  }
   // ✅ Add your new condition
   conditions.push(`ticket_solved_employee_user_id IS NULL`);
 
@@ -144,7 +152,7 @@ let getUnitSuperAdminPendingTicket = (key, priority, status, unitIds, offset, li
 };
 
 
-let getUnitSuperAdminPendingTicketCount = (key, priority, status,unitIds) => {
+let getUnitSuperAdminPendingTicketCount = (key, priority, status,unitIds,location_id) => {
   let conditions = [];
 
   // Filter by unitIds
@@ -163,7 +171,9 @@ let getUnitSuperAdminPendingTicketCount = (key, priority, status,unitIds) => {
   if (key) {
     conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
   }
-
+  if (location_id) {
+    conditions.push(`seating_location = '${location_id}'`);
+  }
   // ✅ Add your new condition
   conditions.push(`ticket_solved_employee_user_id IS NULL`);
   // conditions.push(`user_id = ?`);
@@ -186,7 +196,7 @@ let getUnitSuperAdminPendingTicketCount = (key, priority, status,unitIds) => {
 
 
 
-let getAdminWiseTicket = (key, priority, status, offset, limit) => {
+let getAdminWiseTicket = (key, priority, status,location_id,offset, limit) => {
   let conditions = [];
 
   // Add conditions dynamically based on parameters
@@ -199,7 +209,9 @@ let getAdminWiseTicket = (key, priority, status, offset, limit) => {
   if (key) {
     conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
   }
-
+  if (location_id) {
+    conditions.push(`seating_location_id = '${location_id}'`);
+  }
   // Base condition for user_id
   conditions.push(`user_id = ? AND ticket_solved_employee_user_id = ?`);
   const whereClause =
@@ -223,7 +235,7 @@ let getAdminWiseTicket = (key, priority, status, offset, limit) => {
 };
 
 
-let getAdminWiseTicketTotalCount = (key, priority, status) => {
+let getAdminWiseTicketTotalCount = (key, priority, status,location_id) => {
   let conditions = [];
 
   // Add conditions dynamically based on parameters
@@ -235,6 +247,9 @@ let getAdminWiseTicketTotalCount = (key, priority, status) => {
   }
   if (key) {
     conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
+  if (location_id) {
+    conditions.push(`seating_location_id = '${location_id}'`);
   }
 
   // Base condition for user_id
@@ -255,7 +270,7 @@ let getAdminWiseTicketTotalCount = (key, priority, status) => {
 };
 
 
-let getAdminWiseUpComingTicket = (key, priority, status, offset, limit) => {
+let getAdminWiseUpComingTicket = (key, priority, status, location_id,offset, limit) => {
   let conditions = [];
 
   // Add conditions dynamically based on parameters
@@ -267,6 +282,9 @@ let getAdminWiseUpComingTicket = (key, priority, status, offset, limit) => {
   }
   if (key) {
     conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
+  if (location_id) {
+    conditions.push(`seating_location_id = '${location_id}'`);
   }
 
   // Base condition for user_id
@@ -292,7 +310,7 @@ let getAdminWiseUpComingTicket = (key, priority, status, offset, limit) => {
 };
 
 
-let getAdminWiseTicketUpComingTotalCount = (key, priority, status) => {
+let getAdminWiseTicketUpComingTotalCount = (key, priority, status,location_id) => {
   let conditions = [];
 
   // Add conditions dynamically based on parameters
@@ -304,6 +322,9 @@ let getAdminWiseTicketUpComingTotalCount = (key, priority, status) => {
   }
   if (key) {
     conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
+  if (location_id) {
+    conditions.push(`seating_location_id = '${location_id}'`);
   }
 
   // Base condition for user_id
@@ -325,7 +346,7 @@ let getAdminWiseTicketUpComingTotalCount = (key, priority, status) => {
 
 
 
-let getSuperAdminTicket = (key, priority, status, offset, limit) => {
+let getSuperAdminTicket = (key, priority, status,location_id,offset, limit) => {
   let baseQuery = `
     SELECT * FROM ${super_admin_ticket_view}
 `;
@@ -340,6 +361,11 @@ let getSuperAdminTicket = (key, priority, status, offset, limit) => {
   if (key) {
     conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
   }
+
+  if (location_id) {
+    conditions.push(`seating_location = '${location_id}'`);
+  }
+
   if (conditions.length > 0) {
     baseQuery += " WHERE " + conditions.join(" AND ");
   }
@@ -354,7 +380,7 @@ let getSuperAdminTicket = (key, priority, status, offset, limit) => {
   return baseQuery;
 };
 
-let getSuperAdminTicketTotalCount = (key, priority, status) => {
+let getSuperAdminTicketTotalCount = (key, priority, status,location_id) => {
   let baseQuery = `SELECT * FROM ${super_admin_ticket_view}`;
 
   let conditions = [];
@@ -367,6 +393,11 @@ let getSuperAdminTicketTotalCount = (key, priority, status) => {
   if (key) {
     conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
   }
+
+  if (location_id) {
+    conditions.push(`seating_location = '${location_id}'`);
+  }
+
   if (conditions.length > 0) {
     baseQuery += " WHERE " + conditions.join(" AND ");
   }

@@ -71,7 +71,6 @@ router.get('/active-list', [verifyToken, routeAccessChecker("assetUnitActiveList
 });
 
 
-
 router.post('/add', [verifyToken, routeAccessChecker("assetUnitAdd")], async (req, res) => {
 
     let reqData = {
@@ -118,7 +117,6 @@ router.post('/add', [verifyToken, routeAccessChecker("assetUnitAdd")], async (re
     });
 
 });
-
 
 
 router.put('/update/:id', [verifyToken, routeAccessChecker("assetUnitUpdate")], async (req, res) => {
@@ -433,7 +431,6 @@ router.post('/unit-wise-building', [verifyToken, routeAccessChecker("unitWiseBui
                 });
             }
    }
-
 
    // get unit data
    const data = await buildingModel.getByUnitWiseMultiId(id)

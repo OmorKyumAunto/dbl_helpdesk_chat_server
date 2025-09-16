@@ -128,9 +128,9 @@ let getByProfileId = async (id = 0) => {
     });
 }
 
-let getList = async (limit,offset,unit_id,status,key) => {
+let getList = async (limit,offset,id,unit_id,status,key) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getList(limit,offset,unit_id,status,key), (error, result, fields) => {
+      connectionDblystem.query(queries.getList(limit,offset,id,unit_id,status,key), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -138,9 +138,9 @@ let getList = async (limit,offset,unit_id,status,key) => {
   }
 
 
-  let getListCount = async (unit_id,status,key) => {
+  let getListCount = async (id,unit_id,status,key) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getListCount(unit_id,status,key), (error, result, fields) => {
+      connectionDblystem.query(queries.getListCount(id,unit_id,status,key), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });

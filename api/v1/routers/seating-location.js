@@ -19,9 +19,9 @@ require('dotenv').config();
 router.get('/list', [verifyToken, routeAccessChecker("seatingLocationList")], async (req, res) => {
 
     const { limit = 50, offset = 0, unit_id, building_id, status, key } = req.query
-
-    let result = await seatingLocationModel.getList(limit, offset, unit_id, building_id, status, key);
-    let countData = await seatingLocationModel.getListCount(unit_id, building_id, status, key);
+    const id = req.decoded.userInfo.id
+    let result = await seatingLocationModel.getList(limit, offset,id, unit_id, building_id, status, key);
+    let countData = await seatingLocationModel.getListCount(id,unit_id, building_id, status, key);
 
     return res.status(200).send({
         "success": true,

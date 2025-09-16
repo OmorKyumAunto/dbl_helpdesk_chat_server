@@ -1,14 +1,14 @@
 const express = require("express");
 const isEmpty = require("is-empty");
 const router = express.Router();
-const adminModel = require('../models/admins ');
 const userModel = require('../models/user');
 const assetUnitModel = require('../models/asset-unit');
 const verifyToken = require('../middlewares/verifyToken');
 const { routeAccessChecker } = require('../middlewares/routeAccess');
-const moment = require("moment");
 const unitAccessModel = require('../models/unit-access');
 const licensesModel = require("../models/licenses");
+const chooseAdminModel = require('../models/choose-admin');
+const assignSeatingLocationModel = require('../models/assign-seating-location');
 require('dotenv').config();
 
 
@@ -164,5 +164,54 @@ router.get(
   }
 );
 
+// remove unit admin
+router.put(
+  "/remove-unit-admin/:id",
+  [verifyToken, routeAccessChecker("removeUnitAdmin")],
+  async (req, res) => {
 
+    const id = parseInt(req.params.id)
+    const self_id = req.decoded.userInfo.id
+
+    const userInfo = await userModel.getById(id)
+    if(isEmpty(userInfo)){
+      return res.status(404).send({
+      success: false,
+      status: 404,
+      message: "User admin not found."
+    });
+    }
+
+    // this admin under this unit super admin
+    const assignInfo = await chooseAdminModel.superAndAdminWiseData(self_id,id)
+    if(isEmpty(assignInfo)){
+      return res.status(404).send({
+      success: false,
+      status: 404,
+      message: "This admin is not under you."
+    }); 
+    }
+
+
+    // remove unit location access
+    await chooseAdminModel.updateById(assignInfo[0].id,{status : 0})
+
+    const getAssignSeatingLocation = await assignSeatingLocationModel.getLocationByUserId(id)
+    if(getAssignSeatingLocation.length){
+      for (let index = 0; index < getAssignSeatingLocation.length; index++) {
+        const idData = getAssignSeatingLocation[index].id;
+
+       await assignSeatingLocationModel.updateById(idData,{status : 0})
+
+      }
+    }
+
+
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Unit admin remove successful."
+    });
+  }
+);
 module.exports = router;

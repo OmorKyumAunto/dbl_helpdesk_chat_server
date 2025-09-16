@@ -181,7 +181,7 @@ let getUnitSuperAdminTicket = async (
 ) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getUnitSuperAdminTicket(key, priority, status,unitIds,location_id, offset, limit),
+      queries.getUnitSuperAdminTicket(key, priority, status,unitIds,location_id,offset, limit),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -195,7 +195,7 @@ let getUnitSuperAdminTicketCount = async (
   priority,
   status,
   unitIds = [],
-  location_id,
+  location_id
 ) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(

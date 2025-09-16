@@ -44,7 +44,9 @@ let getUnitSuperAdminTicket = (key, priority, status, unitIds,location_id, offse
     conditions.push(`seating_location = '${location_id}'`);
   }
   // ✅ Add your new condition
-  conditions.push(`ticket_solved_employee_user_id IS NOT NULL`);
+   conditions.push(`ticket_status = 'solved'`);
+  //conditions.push(`( (is_re_raise = 0 AND ticket_solved_employee_user_id IS NOT NULL) OR (is_re_raise = 1) )`);
+
 
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
@@ -90,7 +92,7 @@ let getUnitSuperAdminTicketCount = (key, priority, status,unitIds,location_id) =
   }
 
   // ✅ Add your new condition
-  conditions.push(`ticket_solved_employee_user_id IS NOT NULL`);
+    conditions.push(`ticket_status = 'solved'`);
   // conditions.push(`user_id = ?`);
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
@@ -131,7 +133,7 @@ let getUnitSuperAdminPendingTicket = (key, priority, status, unitIds, location_i
     conditions.push(`seating_location = '${location_id}'`);
   }
   // ✅ Add your new condition
-  conditions.push(`ticket_solved_employee_user_id IS NULL`);
+  conditions.push(`ticket_status != 'solved'`);
 
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
@@ -175,7 +177,7 @@ let getUnitSuperAdminPendingTicketCount = (key, priority, status,unitIds,locatio
     conditions.push(`seating_location = '${location_id}'`);
   }
   // ✅ Add your new condition
-  conditions.push(`ticket_solved_employee_user_id IS NULL`);
+   conditions.push(`ticket_status != 'solved'`);
   // conditions.push(`user_id = ?`);
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";

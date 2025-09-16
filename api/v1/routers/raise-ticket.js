@@ -384,7 +384,7 @@ if(search === 'solved'){
       priority,
       status,
       unitIds,
-      location_id
+      location_id,
     );
 
 }else{
@@ -403,7 +403,7 @@ if(search === 'solved'){
       priority,
       status,
       unitIds,
-      location_id
+      location_id,
     );
 
 
@@ -477,6 +477,24 @@ router.put(
         });
       }
 
+    // check re raise validation
+
+    if(checkIsAlreadySolved[0].is_re_raise === 1 && checkIsAlreadySolved[0].solved_by !== admin_id){
+        return res.status(400).send({
+          success: false,
+          status: 400,
+          message: "Action not allowed. This ticket has already been handled by another admin..",
+        });
+    }
+    
+    if (checkIsAlreadySolved[0].ticket_status === "inprogress")
+      if (updatedBy && updatedBy !== adminId) {
+        return res.status(400).send({
+          success: false,
+          status: 400,
+          message: "This ticket is already booked by another admin.",
+        });
+      }
     let errorMessage = "";
     let isError = 0; // 1 = yes, 0 = no
     let willWeUpdate = 0; // 1 = yes , 0 = no;

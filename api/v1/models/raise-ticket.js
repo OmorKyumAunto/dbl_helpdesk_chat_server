@@ -924,6 +924,20 @@ let getSuperAdminTicketReportTotalCount = async (
   });
 };
 
+// unit wise super admin dashboard data
+let getUnitWiseSuperAdminCount = async (unitIds=[]) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getUnitWiseSuperAdminCount(),[unitIds],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
 module.exports = {
   getList,
   getActiveList,
@@ -989,5 +1003,6 @@ module.exports = {
   getUnitSuperAdminPendingTicketCount,
   getUnitSuperAdminPendingTicket,
   getTicketAllListForArchive,
-  addNewArchiveData
+  addNewArchiveData,
+  getUnitWiseSuperAdminCount
 };

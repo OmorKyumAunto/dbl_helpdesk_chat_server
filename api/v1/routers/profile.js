@@ -7,6 +7,8 @@ const moment = require("moment");
 const e = require("express");
 const userModel = require("../models/user");
 const assignModel = require("../models/asset-assign");
+const employeeModel = require("../models/employee");
+const seatingLocationModel = require("../models/seating-location");
 const unitAccessModel = require("../models/unit-access");
 const licensesModel = require("../models/licenses");
 const assetUnitModel = require("../models/asset-unit");
@@ -24,6 +26,19 @@ router.get("/me", [verifyToken], async (req, res) => {
       status: 404,
       message: "Employee data not found.",
     });
+  }
+
+  if(result[0].role_id === 3){
+    const employeeData = await employeeModel.getById(result[0].profile_id)
+    if(employeeData.length){
+      const seatingLocationData = await seatingLocationModel.getByIdViewData(employeeData[0].seating_location)
+      result[0].seating_location = seatingLocationData[0]?.seating_location_id || null
+      result[0].seating_location_name = seatingLocationData[0]?.seating_location_name || null
+      result[0].building_name = seatingLocationData[0]?.building_name || null
+      result[0].building_id = seatingLocationData[0]?.building_id || null
+      result[0].seating_unit_id = seatingLocationData[0]?.unit_id || null
+      result[0].seating_unit_name = seatingLocationData[0]?.unit_name || null
+    }
   }
 
   // Assuming result[0] contains the employee data

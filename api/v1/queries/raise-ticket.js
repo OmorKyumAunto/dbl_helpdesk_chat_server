@@ -44,7 +44,7 @@ let getUnitSuperAdminTicket = (key, priority, status, unitIds,location_id, offse
     conditions.push(`seating_location = '${location_id}'`);
   }
   // ✅ Add your new condition
-  conditions.push(`ticket_solved_employee_user_id IS NOT NULL`);
+   conditions.push(`ticket_status = 'solved'`);
 
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
@@ -90,8 +90,7 @@ let getUnitSuperAdminTicketCount = (key, priority, status,unitIds,location_id) =
   }
 
   // ✅ Add your new condition
-  conditions.push(`ticket_solved_employee_user_id IS NOT NULL`);
-  // conditions.push(`user_id = ?`);
+    conditions.push(`ticket_status = 'solved'`);
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
@@ -131,7 +130,7 @@ let getUnitSuperAdminPendingTicket = (key, priority, status, unitIds, location_i
     conditions.push(`seating_location = '${location_id}'`);
   }
   // ✅ Add your new condition
-  conditions.push(`ticket_solved_employee_user_id IS NULL`);
+  conditions.push(`ticket_status != 'solved'`);
 
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
@@ -175,7 +174,7 @@ let getUnitSuperAdminPendingTicketCount = (key, priority, status,unitIds,locatio
     conditions.push(`seating_location = '${location_id}'`);
   }
   // ✅ Add your new condition
-  conditions.push(`ticket_solved_employee_user_id IS NULL`);
+   conditions.push(`ticket_status != 'solved'`);
   // conditions.push(`user_id = ?`);
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
@@ -669,41 +668,52 @@ let getTicketTotalAvgTime = () => {
         WHEN COUNT(id) > 0 
         THEN TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(SECOND, created_at, updated_at)) / COUNT(id)), '%H:%i:%s')
         ELSE '00:00:00'
-    END AS avg_ticket_solve_time
+    END AS total_avg_time
 FROM ${table_name}
 WHERE ticket_status = 'solved' AND status = 1;
 `;
 };
 
 let getTicketAdminTotalAvgTime = () => {
-  return `SELECT 
-    COUNT(user_id) AS ticket_count,
+  return `
+  
+SELECT 
+    COUNT(id) AS ticket_count,
     CASE 
-        WHEN COUNT(user_id) > 0 
-        THEN TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(SECOND, ticket_created_at, ticket_updated_at)) / COUNT(ticket_updated_at)), '%H:%i:%s')
+        WHEN COUNT(id) > 0 
+        THEN TIME_FORMAT(
+                SEC_TO_TIME(
+                    SUM(TIMESTAMPDIFF(SECOND, created_at, updated_at)) / COUNT(id)
+                ),
+                '%H:%i:%s'
+             )
         ELSE '00:00:00'
-    END AS avg_ticket_solve_time
-FROM ${admin_wise_ticket_view}
-WHERE user_id = ? AND ticket_status = 'solved' AND status = 1;
+    END AS total_avg_time
+FROM ${table_name}
+WHERE solved_by = ? 
+  AND ticket_status = 'solved' 
+  AND status = 1;
+
+
 `;
 };
 
 let ticketAdminCountingData = () => {
-  return `SELECT count(ticket_table_id) as total_ticket FROM ${admin_wise_ticket_view} where user_id = ? `;
+  return `SELECT count(id) as total_ticket FROM ${table_name} where solved_by = ?  AND status = 1`;
 };
 let getAdminTicketTotalSolved = () => {
-  return `SELECT count(ticket_table_id) as total_solved FROM ${admin_wise_ticket_view} where ticket_status = 'solved' and user_id = ? `;
+  return `SELECT count(id) as total_solved FROM ${table_name} where solved_by = ? AND ticket_status = 'solved'  AND status = 1`;
 };
 
 let getAdminTicketTotalUnsolved = () => {
-  return `SELECT count(ticket_table_id) as total_unsolved FROM ${admin_wise_ticket_view} where ticket_status = 'unsolved' and user_id = ? `;
+  return `SELECT count(id) as total_unsolved FROM ${table_name} where solved_by = ? AND ticket_status = 'unsolved'  AND status = 1`;
 };
 
 let getAdminTicketTotalForward = () => {
-  return `SELECT count(ticket_table_id) as total_forward FROM ${admin_wise_ticket_view} where ticket_status = 'forward' and user_id = ?`;
+  return `SELECT count(id) as total_forward FROM ${table_name} where solved_by = ? AND ticket_status = 'forward'  AND status = 1`;
 };
 let getAdminTicketTotalInprogress = () => {
-  return `SELECT count(ticket_table_id) as total_inprogress FROM ${admin_wise_ticket_view} where ticket_status = 'inprogress' and user_id = ?`;
+  return `SELECT count(id) as total_inprogress FROM ${table_name} where updated_by = ? AND ticket_status = 'inprogress'  AND status = 1`;
 };
 
 let getTopSolvedTicketList = () => {
@@ -741,38 +751,67 @@ let getTopSolvedTicketList = () => {
 
 let priorityBaseTicketList = () => {
   return `
-        SELECT 
-            tc.id AS category_id,
-            tc.title AS category_title,
-            COUNT(rt.id) AS ticket_count
-        FROM 
-            dbl_ticket_category AS tc
-        LEFT JOIN 
-            dbl_raise_ticket AS rt 
-        ON 
-            tc.id = rt.category_id
-        WHERE 
-            tc.status = 'active'
-        GROUP BY 
-            tc.id, tc.title
-        ORDER BY 
-            ticket_count DESC;
+    SELECT 
+        tc.id AS category_id,
+        tc.title AS category_title,
+        COUNT(rt.id) AS ticket_count
+    FROM 
+        dbl_ticket_category AS tc
+    LEFT JOIN 
+        dbl_raise_ticket AS rt 
+        ON tc.id = rt.category_id 
+      AND rt.status = 1   
+    WHERE 
+        tc.status = 'active'
+    GROUP BY 
+        tc.id, tc.title
+    ORDER BY 
+        ticket_count DESC;
     `;
 };
+
+let UnitSuperAdminPriorityBaseTicketList = () => {
+  return `
+    SELECT 
+        tc.id AS category_id,
+        tc.title AS category_title,
+        COUNT(rt.id) AS ticket_count
+    FROM 
+        dbl_ticket_category AS tc
+    LEFT JOIN 
+        dbl_raise_ticket AS rt 
+        ON tc.id = rt.category_id 
+      AND rt.status = 1 AND unit_id in (?) 
+    WHERE 
+        tc.status = 'active'
+    GROUP BY 
+        tc.id, tc.title
+    ORDER BY 
+        ticket_count DESC;
+    `;
+};
+
+
 
 let priorityBaseTicketListForAdmin = () => {
   return `
 
-        SELECT 
-            awt.ticket_category_id AS category_id,
-            awt.ticket_category_title AS category_title,
-            COUNT(awt.ticket_category_id) AS ticket_count
-        FROM 
-            admin_wise_ticket AS awt
-        WHERE 
-            user_id = ?
-        GROUP BY 
-            awt.ticket_category_id, awt.ticket_category_title
+    SELECT 
+        tc.id AS category_id,
+        tc.title AS category_title,
+        COUNT(rt.id) AS ticket_count
+    FROM 
+        dbl_ticket_category AS tc
+    LEFT JOIN 
+        dbl_raise_ticket AS rt 
+        ON tc.id = rt.category_id 
+      AND rt.status = 1 AND solved_by = ?
+    WHERE 
+        tc.status = 'active'
+    GROUP BY 
+        tc.id, tc.title
+    ORDER BY 
+        ticket_count DESC;
       
     `;
 };
@@ -1101,15 +1140,40 @@ let getSuperAdminTicketReportTotalCount = (
             OR ticket_created_employee_id LIKE '%${key}%'
         )`);
   }
-  // if (from_date && to_date) {
-  //     conditions.push(`ticket_updated_at BETWEEN '${from_date}' AND '${to_date}'`);
-  // }
-
   if (conditions.length > 0) {
     baseQuery += " WHERE " + conditions.join(" AND ");
   }
 
   return baseQuery;
+};
+
+
+let getUnitWiseSuperAdminCount = () => {
+  return `
+   SELECT 
+    COUNT(id) AS total_ticket,
+    SUM(CASE WHEN ticket_status = 'solved' THEN 1 ELSE 0 END) AS total_solved,
+    SUM(CASE WHEN ticket_status = 'unsolved' THEN 1 ELSE 0 END) AS total_unsolved,
+    SUM(CASE WHEN ticket_status = 'forward' THEN 1 ELSE 0 END) AS total_forward,
+    SUM(CASE WHEN ticket_status = 'inprogress' THEN 1 ELSE 0 END) AS total_inprogress,
+   CASE 
+    WHEN SUM(CASE WHEN ticket_status = 'solved' THEN 1 ELSE 0 END) > 0
+    THEN TIME_FORMAT(
+            SEC_TO_TIME(
+                SUM(CASE WHEN ticket_status = 'solved' 
+                         THEN TIMESTAMPDIFF(SECOND, created_at, updated_at) 
+                         ELSE 0 END
+                ) / 
+                SUM(CASE WHEN ticket_status = 'solved' THEN 1 ELSE 0 END)
+            ),
+            '%H:%i:%s'
+         )
+    ELSE '00:00:00'
+END AS total_avg_time
+FROM ${table_name}
+WHERE unit_id IN (?) 
+  AND status = 1;
+  `;
 };
 
 module.exports = {
@@ -1176,5 +1240,7 @@ module.exports = {
   getUnitSuperAdminPendingTicketCount,
   getUnitSuperAdminPendingTicket,
   getTicketAllListForArchive,
-  addNewArchiveData
+  addNewArchiveData,
+  getUnitWiseSuperAdminCount,
+  UnitSuperAdminPriorityBaseTicketList
 };

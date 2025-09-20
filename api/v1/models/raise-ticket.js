@@ -181,7 +181,7 @@ let getUnitSuperAdminTicket = async (
 ) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.getUnitSuperAdminTicket(key, priority, status,unitIds,location_id, offset, limit),
+      queries.getUnitSuperAdminTicket(key, priority, status,unitIds,location_id,offset, limit),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -195,7 +195,7 @@ let getUnitSuperAdminTicketCount = async (
   priority,
   status,
   unitIds = [],
-  location_id,
+  location_id
 ) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
@@ -684,6 +684,18 @@ let priorityBaseTicketList = async () => {
   });
 };
 
+let UnitSuperAdminPriorityBaseTicketList = async (unit_id=[]) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.UnitSuperAdminPriorityBaseTicketList(),[unit_id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
 let priorityBaseTicketListForAdmin = async (user_id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
@@ -924,6 +936,20 @@ let getSuperAdminTicketReportTotalCount = async (
   });
 };
 
+// unit wise super admin dashboard data
+let getUnitWiseSuperAdminCount = async (unitIds=[]) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getUnitWiseSuperAdminCount(),[unitIds],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
 module.exports = {
   getList,
   getActiveList,
@@ -989,5 +1015,7 @@ module.exports = {
   getUnitSuperAdminPendingTicketCount,
   getUnitSuperAdminPendingTicket,
   getTicketAllListForArchive,
-  addNewArchiveData
+  addNewArchiveData,
+  getUnitWiseSuperAdminCount,
+  UnitSuperAdminPriorityBaseTicketList
 };

@@ -1,22 +1,11 @@
 const express = require("express");
-const isEmpty = require("is-empty");
 const router = express.Router();
-const assetUnitModel = require("../models/asset-unit");
+const unitAccessModel = require("../models/unit-access");
 const raiseTicketModel = require("../models/raise-ticket");
-const assetAssignModel = require("../models/asset-assign");
-const ticketCategoryModel = require("../models/ticket-category");
-const userModel = require("../models/user");
-const ticketCommentModel = require("../models/ticket-comment");
-const ticketForwordModel = require("../models/ticket-forword");
 const verifyToken = require("../middlewares/verifyToken");
 const { routeAccessChecker } = require("../middlewares/routeAccess");
-const moment = require("moment");
-//const multer = require('multer');
-//const upload = multer();
-const common = require("../common/common");
-const { connectionDblystem } = require("../connections/connection");
-
 require("dotenv").config();
+
 
 // ticket dashboard count data
 router.get(
@@ -32,14 +21,32 @@ router.get(
     let total_inprogress;
     let total_avg_time;
 
+    //super admin data
     if (role_id === 1) {
       total_ticket = await raiseTicketModel.getTicketDataCounting();
       total_solved = await raiseTicketModel.getTicketTotalSolved();
       total_unsolved = await raiseTicketModel.getTicketTotalUnsolved();
       total_forward = await raiseTicketModel.getTicketTotalForward();
       total_inprogress = await raiseTicketModel.getTicketTotalInprogress();
-      total_avg_time = await raiseTicketModel.getTicketTotalAvgTime();
-    } else {
+      total_avg_time = await raiseTicketModel.getTicketTotalAvgTime()
+
+    }
+
+    // unit super admin data
+    if (role_id === 4) {
+      const getUnit = await unitAccessModel.getById(id)
+      const unitIds = getUnit.map(u => u.unit_id); 
+      let data = await raiseTicketModel.getUnitWiseSuperAdminCount(unitIds);
+      total_ticket =[{ total_ticket: data[0].total_ticket }]; 
+      total_solved = [{ total_solved: data[0].total_solved }];
+      total_unsolved = [{ total_unsolved: data[0].total_unsolved }];
+      total_forward = [{ total_forward: data[0].total_forward }];
+      total_inprogress = [{ total_inprogress: data[0].total_inprogress }];
+      total_avg_time = [{ total_avg_time: data[0].total_avg_time }];
+    }
+    
+    // admin data
+    if(role_id === 2) {
       total_ticket = await raiseTicketModel.getAdminTicketDataCounting(id);
       total_solved = await raiseTicketModel.getAdminTicketTotalSolved(id);
       total_unsolved = await raiseTicketModel.getAdminTicketTotalUnsolved(id);
@@ -48,19 +55,14 @@ router.get(
         id
       );
       total_avg_time = await raiseTicketModel.getTicketAdminTotalAvgTime(id);
-      // total_avg_time = 0;
     }
-    console.log(
-      "Total time : +++ >>",
-      total_avg_time[0]?.avg_ticket_solve_time
-    );
     const data = {
       total_ticket: total_ticket[0]?.total_ticket || 0,
       total_solve: total_solved[0]?.total_solved || 0,
       total_unsolved: total_unsolved[0]?.total_unsolved || 0,
       total_forward: total_forward[0]?.total_forward || 0,
       total_inprogress: total_inprogress[0]?.total_inprogress || 0,
-      total_avg_time: total_avg_time[0]?.avg_ticket_solve_time || 0,
+      total_avg_time: total_avg_time[0]?.total_avg_time || 0,
     };
 
     return res.status(200).send({
@@ -71,6 +73,7 @@ router.get(
     });
   }
 );
+
 
 router.get(
   "/top-solve-ticket",
@@ -94,7 +97,13 @@ router.get(
     let data;
     if (role_id === 1) {
       data = await raiseTicketModel.priorityBaseTicketList();
-    } else {
+    }
+    if (role_id === 4) {
+      const getUnit = await unitAccessModel.getById(id)
+      const unitIds = getUnit.map(u => u.unit_id); 
+      data = await raiseTicketModel.UnitSuperAdminPriorityBaseTicketList(unitIds);
+    }
+    if(role_id === 2) {
       data = await raiseTicketModel.priorityBaseTicketListForAdmin(id);
     }
     // Calculate total ticket count

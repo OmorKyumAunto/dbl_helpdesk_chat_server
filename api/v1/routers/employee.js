@@ -13,6 +13,7 @@ const assetModel = require("../models/asset");
 const licensesModel = require("../models/licenses");
 const assetAssignModel = require("../models/asset-assign");
 const superModel = require("../models/super-admins");
+const seatingLocationModel = require("../models/seating-location");
 const { routeAccessChecker } = require("../middlewares/routeAccess");
 const {today_date,convertDateFormat,addSixHoursAndFormat,currentDateZingHrFormat} = require('../validation/task/task')
 const multer = require("multer");
@@ -467,6 +468,22 @@ router.get(
       blood_group,
       employee_type
     );
+
+    // add seating location
+    for (let index = 0; index < result.length; index++) {
+      const element = result[index];
+      if(element.role_id === 3){
+        const employeeLocation = await employeeModel.getById(element.profile_id)
+        if(employeeLocation.length){
+          const seatingLocation = await seatingLocationModel.getByIdViewData(employeeLocation[0].seating_location)
+          result[index].seating_location = seatingLocation[0]?.seating_location_id || null
+          result[index].seating_location_name = seatingLocation[0]?.seating_location_name || null
+          result[index].building_id = seatingLocation[0]?.building_id || null
+          result[index].building_name = seatingLocation[0]?.building_name || null
+        }
+      }
+      
+    }
 
     let countResult = await userModel.getTotalEmployeeList(
       key,

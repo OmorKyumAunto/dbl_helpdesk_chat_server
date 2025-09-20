@@ -684,6 +684,18 @@ let priorityBaseTicketList = async () => {
   });
 };
 
+let UnitSuperAdminPriorityBaseTicketList = async (unit_id=[]) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.UnitSuperAdminPriorityBaseTicketList(),[unit_id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
 let priorityBaseTicketListForAdmin = async (user_id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
@@ -1004,5 +1016,6 @@ module.exports = {
   getUnitSuperAdminPendingTicket,
   getTicketAllListForArchive,
   addNewArchiveData,
-  getUnitWiseSuperAdminCount
+  getUnitWiseSuperAdminCount,
+  UnitSuperAdminPriorityBaseTicketList
 };

@@ -668,7 +668,7 @@ let getTicketTotalAvgTime = () => {
         WHEN COUNT(id) > 0 
         THEN TIME_FORMAT(SEC_TO_TIME(SUM(TIMESTAMPDIFF(SECOND, created_at, updated_at)) / COUNT(id)), '%H:%i:%s')
         ELSE '00:00:00'
-    END AS avg_ticket_solve_time
+    END AS total_avg_time
 FROM ${table_name}
 WHERE ticket_status = 'solved' AND status = 1;
 `;
@@ -751,38 +751,67 @@ let getTopSolvedTicketList = () => {
 
 let priorityBaseTicketList = () => {
   return `
-        SELECT 
-            tc.id AS category_id,
-            tc.title AS category_title,
-            COUNT(rt.id) AS ticket_count
-        FROM 
-            dbl_ticket_category AS tc
-        LEFT JOIN 
-            dbl_raise_ticket AS rt 
-        ON 
-            tc.id = rt.category_id
-        WHERE 
-            tc.status = 'active'
-        GROUP BY 
-            tc.id, tc.title
-        ORDER BY 
-            ticket_count DESC;
+    SELECT 
+        tc.id AS category_id,
+        tc.title AS category_title,
+        COUNT(rt.id) AS ticket_count
+    FROM 
+        dbl_ticket_category AS tc
+    LEFT JOIN 
+        dbl_raise_ticket AS rt 
+        ON tc.id = rt.category_id 
+      AND rt.status = 1   
+    WHERE 
+        tc.status = 'active'
+    GROUP BY 
+        tc.id, tc.title
+    ORDER BY 
+        ticket_count DESC;
     `;
 };
+
+let UnitSuperAdminPriorityBaseTicketList = () => {
+  return `
+    SELECT 
+        tc.id AS category_id,
+        tc.title AS category_title,
+        COUNT(rt.id) AS ticket_count
+    FROM 
+        dbl_ticket_category AS tc
+    LEFT JOIN 
+        dbl_raise_ticket AS rt 
+        ON tc.id = rt.category_id 
+      AND rt.status = 1 AND unit_id in (?) 
+    WHERE 
+        tc.status = 'active'
+    GROUP BY 
+        tc.id, tc.title
+    ORDER BY 
+        ticket_count DESC;
+    `;
+};
+
+
 
 let priorityBaseTicketListForAdmin = () => {
   return `
 
-        SELECT 
-            awt.ticket_category_id AS category_id,
-            awt.ticket_category_title AS category_title,
-            COUNT(awt.ticket_category_id) AS ticket_count
-        FROM 
-            admin_wise_ticket AS awt
-        WHERE 
-            user_id = ?
-        GROUP BY 
-            awt.ticket_category_id, awt.ticket_category_title
+    SELECT 
+        tc.id AS category_id,
+        tc.title AS category_title,
+        COUNT(rt.id) AS ticket_count
+    FROM 
+        dbl_ticket_category AS tc
+    LEFT JOIN 
+        dbl_raise_ticket AS rt 
+        ON tc.id = rt.category_id 
+      AND rt.status = 1 AND solved_by = ?
+    WHERE 
+        tc.status = 'active'
+    GROUP BY 
+        tc.id, tc.title
+    ORDER BY 
+        ticket_count DESC;
       
     `;
 };
@@ -1212,5 +1241,6 @@ module.exports = {
   getUnitSuperAdminPendingTicket,
   getTicketAllListForArchive,
   addNewArchiveData,
-  getUnitWiseSuperAdminCount
+  getUnitWiseSuperAdminCount,
+  UnitSuperAdminPriorityBaseTicketList
 };

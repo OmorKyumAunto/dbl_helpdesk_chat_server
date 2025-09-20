@@ -1319,7 +1319,7 @@ router.get(
   [verifyToken, routeAccessChecker("distributedAsset")],
   async (req, res) => {
     let assignData;
-    if (req.decoded.userInfo.role_id === 2) {
+    if (req.decoded.userInfo.role_id === 2 || req.decoded.userInfo.role_id === 4) {
       const assign_unit = await unitAccessModel.getById(
         req.decoded.userInfo.id
       );

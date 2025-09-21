@@ -138,7 +138,12 @@ router.get(
 
     if (role_id === 1) {
       data = await raiseTicketModel.categoryBaseTicketList();
-    } else {
+    }
+    if(role_id === 4){
+      const getUnit = await unitAccessModel.getById(id)
+      const unitIds = getUnit.map(u => u.unit_id); 
+      data = await raiseTicketModel.categoryBaseTicketListUnitSuperAdmin(unitIds);
+    } if(role_id === 2) {
       data = await raiseTicketModel.categoryBaseTicketListAdmin(id);
     }
 
@@ -159,7 +164,13 @@ router.get(
     let data;
     if (role_id === 1) {
       data = await raiseTicketModel.monthWiseTicketCount();
-    } else {
+    }
+    if(role_id === 4) {
+      const getUnit = await unitAccessModel.getById(id)
+      const unitIds = getUnit.map(u => u.unit_id); 
+      data = await raiseTicketModel.monthWiseTicketCountUnitSuperAdmin(unitIds);
+    } 
+    if(role_id === 2) {
       data = await raiseTicketModel.monthWiseTicketCountAdmin(id);
     }
 
@@ -205,9 +216,19 @@ router.get(
         resultTotal = await raiseTicketModel.graphTicketTotalSolveData();
         resultTotalUnsolved =
           await raiseTicketModel.graphTicketTotalUnSolveData();
-      } else {
-        resultAssign = await raiseTicketModel.graphTicketTotalDataAdmin(id);
+      }
 
+      if (role_id === 4) {
+        const getUnit = await unitAccessModel.getById(id)
+        const unitIds = getUnit.map(u => u.unit_id); 
+        resultAssign = await raiseTicketModel.graphTicketTotalDataUnitSuperAdmin(unitIds);
+        resultTotal = await raiseTicketModel.graphTicketTotalSolveDataUnitSuperAdmin(unitIds);
+        resultTotalUnsolved =
+          await raiseTicketModel.graphTicketTotalUnSolveDataAdmin(unitIds);
+      }
+
+      if(role_id === 2) {
+        resultAssign = await raiseTicketModel.graphTicketTotalDataAdmin(id);
         resultTotal = await raiseTicketModel.graphTicketTotalSolveDataAdmin(id);
         resultTotalUnsolved =
           await raiseTicketModel.graphTicketTotalUnSolveDataAdmin(id);

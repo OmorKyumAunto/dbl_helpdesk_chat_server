@@ -781,7 +781,7 @@ let UnitSuperAdminPriorityBaseTicketList = () => {
     LEFT JOIN 
         dbl_raise_ticket AS rt 
         ON tc.id = rt.category_id 
-      AND rt.status = 1 AND unit_id in (?) 
+      AND rt.status = 1 AND unit_id in (?)  
     WHERE 
         tc.status = 'active'
     GROUP BY 
@@ -805,7 +805,7 @@ let priorityBaseTicketListForAdmin = () => {
     LEFT JOIN 
         dbl_raise_ticket AS rt 
         ON tc.id = rt.category_id 
-      AND rt.status = 1 AND solved_by = ?
+      AND rt.status = 1 AND rt.solved_by = ?
     WHERE 
         tc.status = 'active'
     GROUP BY 
@@ -835,10 +835,23 @@ let categoryBaseTicketListAdmin = () => {
             SUM(CASE WHEN priority = 'low' THEN 1 ELSE 0 END) AS priority_low,
             SUM(CASE WHEN priority = 'medium' THEN 1 ELSE 0 END) AS priority_medium,
             SUM(CASE WHEN priority = 'urgent' THEN 1 ELSE 0 END) AS priority_urgent
-        FROM admin_wise_ticket AS awt
-        WHERE user_id = ?;
+        FROM ${table_name} 
+        WHERE solved_by = ? AND status = 1;
     `;
 };
+
+let categoryBaseTicketListUnitSuperAdmin = () => {
+  return `
+        SELECT 
+            SUM(CASE WHEN priority = 'high' THEN 1 ELSE 0 END) AS priority_high,
+            SUM(CASE WHEN priority = 'low' THEN 1 ELSE 0 END) AS priority_low,
+            SUM(CASE WHEN priority = 'medium' THEN 1 ELSE 0 END) AS priority_medium,
+            SUM(CASE WHEN priority = 'urgent' THEN 1 ELSE 0 END) AS priority_urgent
+        FROM ${table_name} 
+        WHERE unit_id in (?) AND status = 1;
+    `;
+};
+
 
 let monthWiseTicketCount = () => {
   return `
@@ -858,13 +871,29 @@ let monthWiseTicketCountAdmin = () => {
     COUNT(CASE WHEN status = 1 AND ticket_status = 'solved' THEN ticket_table_id END) AS total_solved,
     COUNT(CASE WHEN status = 1 AND ticket_status = 'unsolved' THEN ticket_table_id END) AS total_unsolved
     FROM 
-        admin_wise_ticket
+         ${admin_wise_ticket_view}
     WHERE 
         ticket_created_at >= NOW() - INTERVAL 30 DAY
-        AND user_id = ?;
+        AND user_id = ? AND status = 1;
 
     `;
 };
+
+let monthWiseTicketCountUnitSuperAdmin = () => {
+  return `
+        SELECT 
+    COUNT(CASE WHEN status = 1 THEN id END) AS total_ticket,
+    COUNT(CASE WHEN status = 1 AND ticket_status = 'solved' THEN id END) AS total_solved,
+    COUNT(CASE WHEN status = 1 AND ticket_status = 'unsolved' THEN id END) AS total_unsolved
+    FROM 
+        ${table_name}
+    WHERE 
+        created_at >= NOW() - INTERVAL 30 DAY
+        AND unit_id in (?) AND status = 1;
+
+    `;
+};
+
 
 let graphTicketTotalData = () => {
   return `
@@ -889,7 +918,7 @@ let graphTicketTotalDataAdmin = () => {
         MONTH(ticket_created_at) as month,
         COUNT(ticket_table_id) as raiseTickets 
       FROM 
-        admin_wise_ticket 
+        up_coming_ticket_view 
       WHERE 
         status = 1 AND user_id = ? 
         AND ticket_created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
@@ -900,23 +929,78 @@ let graphTicketTotalDataAdmin = () => {
     `;
 };
 
+
+let graphTicketTotalDataUnitSuperAdmin = () => {
+  return `
+      SELECT 
+        MONTH(created_at) as month,
+        COUNT(id) as raiseTickets 
+      FROM 
+        ${table_name} 
+      WHERE 
+        status = 1 AND unit_id in (?) 
+        AND created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+      GROUP BY 
+        MONTH(created_at)
+      ORDER BY 
+        MONTH(created_at) DESC
+    `;
+};
+
+
 let graphTicketTotalSolveDataAdmin = () => {
   return `
       SELECT 
-        MONTH(ticket_created_at) as month,
-        COUNT(ticket_table_id) as solvedTickets 
+        MONTH(created_at) as month,
+        COUNT(id) as solvedTickets 
       FROM 
-        admin_wise_ticket 
+         ${table_name} 
       WHERE 
-        status = 1 AND user_id = ?  AND ticket_status = 'solved'
-        AND ticket_created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+        status = 1 AND solved_by = ?  AND ticket_status = 'solved'
+        AND created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
       GROUP BY 
-        MONTH(ticket_created_at)
+        MONTH(created_at)
       ORDER BY 
-        MONTH(ticket_created_at) DESC
+        MONTH(created_at) DESC
     `;
 };
+
+let graphTicketTotalSolveDataUnitSuperAdmin = () => {
+  return `
+      SELECT 
+        MONTH(created_at) as month,
+        COUNT(id) as solvedTickets 
+      FROM 
+         ${table_name}  
+      WHERE 
+        status = 1 AND unit_id in (?)  AND ticket_status = 'solved'
+        AND created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+      GROUP BY 
+        MONTH(created_at)
+      ORDER BY 
+        MONTH(created_at) DESC
+    `;
+};
+
 let graphTicketTotalUnSolveDataAdmin = () => {
+  return `
+      SELECT 
+        MONTH(created_at) as month,
+        COUNT(id) as unsolvedTickets 
+      FROM 
+         ${table_name}   
+      WHERE 
+        status = 1 AND unit_id in (?)  AND ticket_status = 'unsolved'
+        AND created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+      GROUP BY 
+        MONTH(created_at)
+      ORDER BY 
+        MONTH(created_at) DESC
+    `;
+};
+
+
+let graphTicketTotalUnSolveDataUnitSuperAdmin = () => {
   return `
       SELECT 
         MONTH(ticket_created_at) as month,
@@ -1242,5 +1326,10 @@ module.exports = {
   getTicketAllListForArchive,
   addNewArchiveData,
   getUnitWiseSuperAdminCount,
-  UnitSuperAdminPriorityBaseTicketList
+  UnitSuperAdminPriorityBaseTicketList,
+  categoryBaseTicketListUnitSuperAdmin,
+  monthWiseTicketCountUnitSuperAdmin,
+  graphTicketTotalDataUnitSuperAdmin,
+  graphTicketTotalSolveDataUnitSuperAdmin,
+  graphTicketTotalUnSolveDataUnitSuperAdmin
 };

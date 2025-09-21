@@ -112,33 +112,7 @@ let getTotalList = (key, unit, type,location,status,from_date,to_date) => {
   return `SELECT * FROM ${table_name} WHERE  ${searchCondition} ORDER BY id desc `;
 }
 
-// let assetReport = (key, unit, type,location,status) => {
-//   let searchCondition = 'status != 0 ';
 
-//   if (key) {
-//     searchCondition += `AND (LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) LIKE LOWER('%${key}%') OR UPPER(serial_number) LIKE UPPER('%${key}%') OR UPPER(po_number) LIKE UPPER('%${key}%')) `;
-//   }
-//   if (unit) {
-//     searchCondition += `AND unit_id = '${unit}' `;
-//   }
-//   if (location) {
-//     searchCondition += `AND location LIKE '%${location}%' `;
-//   }
-
-//   if (type) {
-//     searchCondition += `AND lower(remarks) LIKE lower('%${type}%') `;
-//   }
-//   if (status) {
-//     searchCondition += `AND status = '${status}' `;
-//   }
-
-//   return `SELECT a.id,a.name,a.category,a.purchase_date, a.serial_number,
-//   a.po_number,a.price,a.unit_id,au.title as unit_name,a.model,a.specification,a.asset_no,a.location as location_id,l.title as location_name
-//    FROM ${table_name} as a
-//   left join dbl_asset_unit as au on au.id = a.unit_id
-//   left join location as l l.id = a.location
-//   WHERE  ${searchCondition} ORDER BY id desc `;
-// }
 let assetReport = (unit,start_date,end_date,category,remarks,key,start_purchase_date,end_purchase_date) => {
   let searchCondition = 'a.status != 0';
 
@@ -470,22 +444,6 @@ let getListOfDashboardGraph = () => {
   };
   
 
-  // let getListOfDashboardGraphAdmin = () => {
-  //   return `
-  //     SELECT 
-  //       MONTH(assign_date) as month,
-  //       COUNT(id) as total_assign_asset 
-  //     FROM 
-  //       dbl_asset_assign 
-  //     WHERE 
-  //       status = 1 AND user_id = ?
-  //       AND assign_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
-  //     GROUP BY 
-  //       MONTH(assign_date)
-  //     ORDER BY 
-  //       MONTH(assign_date) DESC
-  //   `;
-  // };
   let getListOfDashboardGraphAdmin = () => {
     return `
       SELECT 

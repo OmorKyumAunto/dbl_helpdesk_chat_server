@@ -954,7 +954,7 @@ let graphTicketTotalSolveDataAdmin = () => {
         MONTH(created_at) as month,
         COUNT(id) as solvedTickets 
       FROM 
-         ${table_name} 
+         ${table_name}  
       WHERE 
         status = 1 AND solved_by = ?  AND ticket_status = 'solved'
         AND created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
@@ -985,17 +985,17 @@ let graphTicketTotalSolveDataUnitSuperAdmin = () => {
 let graphTicketTotalUnSolveDataAdmin = () => {
   return `
       SELECT 
-        MONTH(created_at) as month,
-        COUNT(id) as unsolvedTickets 
+        MONTH(ticket_created_at) as month,
+        COUNT(ticket_table_id) as unsolvedTickets 
       FROM 
-         ${table_name}   
+         up_coming_ticket_view   
       WHERE 
-        status = 1 AND unit_id in (?)  AND ticket_status = 'unsolved'
-        AND created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+        status = 1 AND user_id = ?  AND ticket_status = 'unsolved'
+        AND ticket_created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
       GROUP BY 
-        MONTH(created_at)
+        MONTH(ticket_created_at)
       ORDER BY 
-        MONTH(created_at) DESC
+        MONTH(ticket_created_at) DESC
     `;
 };
 

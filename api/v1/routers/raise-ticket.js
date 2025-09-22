@@ -8,7 +8,7 @@ const unitAccessModel = require("../models/unit-access");
 const ticketCategoryModel = require("../models/ticket-category");
 const userModel = require("../models/user");
 const ticketCommentModel = require("../models/ticket-comment");
-const ticketForwordModel = require("../models/ticket-forword");
+const ticketForwardModel = require("../models/ticket-forword");
 const seatingLocationModel = require("../models/seating-location");
 const employeeModel = require("../models/employee");
 const verifyToken = require("../middlewares/verifyToken");
@@ -19,7 +19,7 @@ const commonObject = require("../common/common");
 const common = require("../common/common");
 const { upload, multerErrorHandler } = require("../common/upload-image");
 const validateRequest = require("../validator/middleware");
-const { reRaiseTicketCommentSchema ,onBehalfTicketSchema,raiseTicketSchema} = require("../validator/validate-request/raise-ticket");
+const { reRaiseTicketCommentSchema ,onBehalfTicketSchema,raiseTicketSchema,forwardTicketSchema} = require("../validator/validate-request/raise-ticket");
 require("dotenv").config();
 
 
@@ -847,21 +847,155 @@ router.put(
   }
 );
 
+// router.post(
+//   "/ticket-forword/:id",
+//   [verifyToken, routeAccessChecker("ticketForwarded")],
+//   async (req, res) => {
+//     let table_id = parseInt(req.params.id);
+//     let user_id = req.decoded.userInfo.id;
+
+//     let reqData = {
+//       unit_id: req.body.unit_id,
+//       category_id: req.body.category_id,
+//       subject: req.body.subject,
+//       remarks: req.body.remarks,
+//     };
+
+//     const id = req.decoded.userInfo.id;
+
+//     if (!table_id) {
+//       return res.status(400).send({
+//         success: false,
+//         status: 400,
+//         message: "Ticket id should not be empty.",
+//       });
+//     }
+
+//     let ticket = await raiseTicketModel.getById(table_id);
+//     if (!ticket.length) {
+//       return res.status(404).send({
+//         success: false,
+//         status: 404,
+//         message: "This ticket  not found.",
+//       });
+//     }
+
+//     let adminTicket = await raiseTicketModel.getAdminWiseTicketById(
+//       id,
+//       table_id
+//     );
+//     if (!adminTicket.length) {
+//       return res.status(404).send({
+//         success: false,
+//         status: 404,
+//         message: "This ticket not under you.",
+//       });
+//     }
+
+//     if (!reqData.category_id) {
+//       return res.status(400).send({
+//         success: false,
+//         status: 400,
+//         message: "Category should not be empty.",
+//       });
+//     }
+
+//     let category = await ticketCategoryModel.getById(reqData.category_id);
+//     if (!category.length) {
+//       return res.status(404).send({
+//         success: false,
+//         status: 404,
+//         message: "This category not found",
+//       });
+//     }
+
+//     let existsAdmin = await raiseTicketModel.existsUnitHasAssign(
+//       reqData.unit_id
+//     );
+//     let existsCategoryAdmin = await raiseTicketModel.existsCategoryHasAssign(
+//       reqData.category_id
+//     );
+//     if (!existsAdmin.length) {
+//       return res.status(404).send({
+//         success: false,
+//         status: 404,
+//         message: "This Unit and category under not has any admin.",
+//       });
+//     }
+
+//     if (!existsCategoryAdmin.length) {
+//       return res.status(404).send({
+//         success: false,
+//         status: 404,
+//         message: "This Unit and category under not has any admin.",
+//       });
+//     }
+
+//     let user = await userModel.getById(id);
+
+//     let forword_data = {
+//       ticket_id: table_id,
+//       unit_id: reqData.unit_id,
+//       category_id: reqData.category_id,
+//       remarks: reqData.remarks,
+//       details: `The ticket has been forwarded by ${user[0].name} to the Unit: ${unit[0].title} and Category: ${category[0].title}.`,
+//       created_by: id,
+//     };
+
+//     if (!reqData.subject) {
+//       reqData.subject = ticket[0]?.subject;
+//     }
+
+//     let ticket_data = {
+//       unit_id: reqData.unit_id,
+//       category_id: reqData.category_id,
+//       subject: reqData.subject,
+//       ticket_status: "forward",
+//       updated_by: user_id,
+//     };
+
+//     // try to apply transaction this api
+
+//     let result = await ticketForwardModel.addNew(forword_data);
+//     let update_ticket = await raiseTicketModel.updateById(
+//       table_id,
+//       ticket_data
+//     );
+
+//     if (result.affectedRows == undefined || result.affectedRows < 1) {
+//       return res.status(500).send({
+//         success: false,
+//         status: 500,
+//         message: "Something Wrong in system database.",
+//       });
+//     }
+
+//     return res.status(201).send({
+//       success: true,
+//       status: 201,
+//       message: "Ticket Successfully Forwarded.",
+//     });
+//   }
+// );
+
+
+
+
+
 router.post(
-  "/ticket-forword/:id",
-  [verifyToken, routeAccessChecker("ticketForworded")],
+  "/ticket-forward/:id",
+  [verifyToken, routeAccessChecker("ticketForwarded"),validateRequest(forwardTicketSchema,'body')],
   async (req, res) => {
     let table_id = parseInt(req.params.id);
     let user_id = req.decoded.userInfo.id;
+    const id = req.decoded.userInfo.id;
+
 
     let reqData = {
-      unit_id: req.body.unit_id,
+      seating_location: req.body.seating_location,
       category_id: req.body.category_id,
-      subject: req.body.subject,
       remarks: req.body.remarks,
     };
-
-    const id = req.decoded.userInfo.id;
 
     if (!table_id) {
       return res.status(400).send({
@@ -876,7 +1010,7 @@ router.post(
       return res.status(404).send({
         success: false,
         status: 404,
-        message: "This ticket  not found.",
+        message: "This ticket not found.",
       });
     }
 
@@ -892,13 +1026,16 @@ router.post(
       });
     }
 
-    if (!reqData.category_id) {
-      return res.status(400).send({
+    let seating_location = await seatingLocationModel.getById(reqData.seating_location);
+    if (!seating_location.length) {
+      return res.status(404).send({
         success: false,
-        status: 400,
-        message: "Category should not be empty.",
+        status: 404,
+        message: "This location not found.",
       });
     }
+
+    let locationDetails = await seatingLocationModel.getByIdViewData(reqData.seating_location);
 
     let category = await ticketCategoryModel.getById(reqData.category_id);
     if (!category.length) {
@@ -909,36 +1046,39 @@ router.post(
       });
     }
 
-    let existsAdmin = await raiseTicketModel.existsUnitHasAssign(
-      reqData.unit_id
-    );
-    let existsCategoryAdmin = await raiseTicketModel.existsCategoryHasAssign(
-      reqData.category_id
-    );
-    if (!existsAdmin.length) {
-      return res.status(404).send({
-        success: false,
-        status: 404,
-        message: "This Unit and category under not has any admin.",
-      });
-    }
+    // let existsAdmin = await raiseTicketModel.existsUnitHasAssign(
+    //   reqData.unit_id
+    // );
 
-    if (!existsCategoryAdmin.length) {
-      return res.status(404).send({
-        success: false,
-        status: 404,
-        message: "This Unit and category under not has any admin.",
-      });
-    }
+    // if (!existsAdmin.length) {
+    //   return res.status(404).send({
+    //     success: false,
+    //     status: 404,
+    //     message: "This Unit and category under not has any admin.",
+    //   });
+    // }
+
+
+    // let existsCategoryAdmin = await raiseTicketModel.existsCategoryHasAssign(
+    //   reqData.category_id
+    // );
+
+    // if (!existsCategoryAdmin.length) {
+    //   return res.status(404).send({
+    //     success: false,
+    //     status: 404,
+    //     message: "This Unit and category under not has any admin.",
+    //   });
+    // }
 
     let user = await userModel.getById(id);
 
-    let forword_data = {
+    let forward_data = {
       ticket_id: table_id,
-      unit_id: reqData.unit_id,
+      unit_id: locationDetails[0].unit_id,
       category_id: reqData.category_id,
       remarks: reqData.remarks,
-      details: `The ticket has been forwarded by ${user[0].name} to the Unit: ${unit[0].title} and Category: ${category[0].title}.`,
+      details: `The ticket has been forwarded by ${user[0].name} to the Unit: ${locationDetails[0].unit_name} Building :${locationDetails[0].building_name} Seating location and Category: ${category[0].title}.`,
       created_by: id,
     };
 
@@ -947,28 +1087,34 @@ router.post(
     }
 
     let ticket_data = {
-      unit_id: reqData.unit_id,
+      unit_id: locationDetails[0].unit_id,
+      seating_location: locationDetails[0].seating_location_id,
       category_id: reqData.category_id,
-      subject: reqData.subject,
       ticket_status: "forward",
       updated_by: user_id,
     };
 
     // try to apply transaction this api
-
-    let result = await ticketForwordModel.addNew(forword_data);
-    let update_ticket = await raiseTicketModel.updateById(
+    // let result = await ticketForwardModel.addNew(forward_data);
+    // let update_ticket = await raiseTicketModel.updateById(
+    //   table_id,
+    //   ticket_data
+    // );
+    await Promise.all([
+      await ticketForwardModel.addNew(forward_data),
+      await raiseTicketModel.updateById(
       table_id,
       ticket_data
-    );
+    )
+    ])
 
-    if (result.affectedRows == undefined || result.affectedRows < 1) {
-      return res.status(500).send({
-        success: false,
-        status: 500,
-        message: "Something Wrong in system database.",
-      });
-    }
+    // if (result.affectedRows == undefined || result.affectedRows < 1) {
+    //   return res.status(500).send({
+    //     success: false,
+    //     status: 500,
+    //     message: "Something Wrong in system database.",
+    //   });
+    // }
 
     return res.status(201).send({
       success: true,
@@ -977,18 +1123,17 @@ router.post(
     });
   }
 );
-
 router.get(
   "/ticket-forword-list",
-  [verifyToken, routeAccessChecker("ticketForwordedList")],
+  [verifyToken, routeAccessChecker("ticketForwardedList")],
   async (req, res) => {
     let { offset = 0, limit = 10 } = req.query;
 
-    let result = await ticketForwordModel.getList(offset, limit);
+    let result = await ticketForwardModel.getList(offset, limit);
     return res.status(200).send({
       success: true,
       status: 200,
-      message: "Forword ticket list.",
+      message: "Forward ticket list.",
       count: result.length,
       data: result,
     });

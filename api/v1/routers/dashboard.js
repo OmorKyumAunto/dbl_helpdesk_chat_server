@@ -229,27 +229,27 @@ router.get(
   }
 );
 
-router.get("/admin-unit-wise-accessories", [verifyToken], async (req, res) => {
-  let {id,role_id} = req.decoded.userInfo;
-  let admin_data
+// router.get("/admin-unit-wise-accessories", [verifyToken], async (req, res) => {
+//   let {id,role_id} = req.decoded.userInfo;
+//   let admin_data
 
-  if(role_id === 2){
-   admin_data = await assetModel.adminWiseAccessoriesData(id);
-  }
+//   if(role_id === 2){
+//    admin_data = await assetModel.adminWiseAccessoriesData(id);
+//   }
 
-  if(role_id === 4){
-    const getUnit = await unitAccessModel.getById(id)
-    const unitIds = getUnit.map(u => u.unit_id); 
-    admin_data = await assetModel.unitSuperAdminWiseAccessoriesData(unitIds);
-  }
+//   if(role_id === 4){
+//     const getUnit = await unitAccessModel.getById(id)
+//     const unitIds = getUnit.map(u => u.unit_id); 
+//     admin_data = await assetModel.unitSuperAdminWiseAccessoriesData(unitIds);
+//   }
 
 
-  return res.status(200).send({
-    success: false,
-    status: 200,
-    message: "Admin unit wise accessories count.",
-    data: admin_data[0],
-  });
-});
+//   return res.status(200).send({
+//     success: false,
+//     status: 200,
+//     message: "Admin unit wise accessories count.",
+//     data: admin_data[0],
+//   });
+// });
 
 module.exports = router;

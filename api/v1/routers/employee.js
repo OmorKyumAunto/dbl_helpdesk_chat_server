@@ -480,6 +480,8 @@ router.get(
           result[index].seating_location_name = seatingLocation[0]?.seating_location_name || null
           result[index].building_id = seatingLocation[0]?.building_id || null
           result[index].building_name = seatingLocation[0]?.building_name || null
+          result[index].seating_unit_name = seatingLocation[0]?.unit_id || null
+          result[index].seating_unit_id = seatingLocation[0]?.unit_name || null
         }
       }
       

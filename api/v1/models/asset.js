@@ -316,6 +316,15 @@ let getListOfDashboard = async () => {
     });
   };
   
+  let getListOfDashboardGraphUnitSuperAdmin = async (unitIds = []) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getListOfDashboardGraphUnitSuperAdmin(),[unitIds],(error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  };
+
 
   let getListOfDashboardGraph2 = async () => {
     return new Promise((resolve, reject) => {
@@ -336,7 +345,15 @@ let getListOfDashboard = async () => {
   };
   
 
-
+  let getListOfDashboardGraph2UnitSuperAdmin = async (unitIds=[]) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.getListOfDashboardGraph2UnitSuperAdmin(),[unitIds], (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  };
+  
 
 let getByArtistId = async (id = 0) => {
     return new Promise((resolve, reject) => {
@@ -541,6 +558,17 @@ let adminWiseAccessoriesData = async (user_id) => {
   });
 }
 
+// unit super admin wise accessories data
+let unitSuperAdminWiseAccessoriesData = async (unitIds=[]) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(queries.unitSuperAdminWiseAccessoriesData(),[unitIds], (error, result, fields) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+  });
+}
+
+
 module.exports = {
    addNew,
    getByExistsEmployee,
@@ -581,6 +609,9 @@ module.exports = {
    getListOfDashboardGraph2Admin,
    getByIdActiveData,
    assetReport,
-   distributedAssetReport
+   distributedAssetReport,
+   getListOfDashboardGraphUnitSuperAdmin,
+   getListOfDashboardGraph2UnitSuperAdmin,
+   unitSuperAdminWiseAccessoriesData
    
 }

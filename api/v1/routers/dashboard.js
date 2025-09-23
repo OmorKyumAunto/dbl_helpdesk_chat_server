@@ -1,15 +1,11 @@
 const express = require("express");
-const isEmpty = require("is-empty");
 const router = express.Router();
-const { check, validationResult } = require("express-validator");
-const moment = require("moment");
-const e = require("express");
 const employeeModel = require("../models/employee");
 const assetModel = require("../models/asset");
 const assignModel = require("../models/asset-assign");
 const verifyToken = require("../middlewares/verifyToken");
 const { routeAccessChecker } = require("../middlewares/routeAccess");
-const { distributedAssetList } = require("../queries/asset");
+const unitAccessModel = require("../models/unit-access");
 
 // list
 router.get(
@@ -48,10 +44,18 @@ router.get(
       if (role_id === 1) {
         resultAssign = await assetModel.getListOfDashboardGraph();
         resultTotal = await assetModel.getListOfDashboardGraph2();
-      } else {
+      }
+      if (role_id === 4) {
+        const getUnit = await unitAccessModel.getById(id)
+        const unitIds = getUnit.map(u => u.unit_id); 
+        resultAssign = await assetModel.getListOfDashboardGraphUnitSuperAdmin(unitIds);
+        resultTotal = await assetModel.getListOfDashboardGraph2UnitSuperAdmin(unitIds);
+      } 
+      if (role_id === 2) {
         resultAssign = await assetModel.getListOfDashboardGraphAdmin(id);
         resultTotal = await assetModel.getListOfDashboardGraph2Admin(id);
-      }
+      } 
+
 
       // Month names mapping
       const monthNames = [
@@ -137,7 +141,7 @@ router.get("/accessories-count", async (req, res) => {
   return res.status(200).send({
     success: false,
     status: 200,
-    message: "Dashboard Accssories Count data.",
+    message: "Dashboard Accessories Count data.",
     data: result,
   });
 });
@@ -225,17 +229,27 @@ router.get(
   }
 );
 
-router.get("/admin-unit-wise-accessories", [verifyToken], async (req, res) => {
-  let id = req.decoded.userInfo.id;
+// router.get("/admin-unit-wise-accessories", [verifyToken], async (req, res) => {
+//   let {id,role_id} = req.decoded.userInfo;
+//   let admin_data
 
-  let admin_data = await assetModel.adminWiseAccessoriesData(id);
+//   if(role_id === 2){
+//    admin_data = await assetModel.adminWiseAccessoriesData(id);
+//   }
 
-  return res.status(200).send({
-    success: false,
-    status: 200,
-    message: "Admin unit wise accessories count.",
-    data: admin_data[0],
-  });
-});
+//   if(role_id === 4){
+//     const getUnit = await unitAccessModel.getById(id)
+//     const unitIds = getUnit.map(u => u.unit_id); 
+//     admin_data = await assetModel.unitSuperAdminWiseAccessoriesData(unitIds);
+//   }
+
+
+//   return res.status(200).send({
+//     success: false,
+//     status: 200,
+//     message: "Admin unit wise accessories count.",
+//     data: admin_data[0],
+//   });
+// });
 
 module.exports = router;

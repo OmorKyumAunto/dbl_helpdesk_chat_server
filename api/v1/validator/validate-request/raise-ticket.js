@@ -96,4 +96,12 @@ const raiseTicketSchema = z.object({
 });
 
 
-module.exports = { reRaiseTicketCommentSchema,onBehalfTicketSchema,raiseTicketSchema };
+
+const forwardTicketSchema = z.object({
+  seating_location: z.number(),
+  category_id: z.number(),
+  remarks : z.string().optional(),
+});
+
+
+module.exports = { reRaiseTicketCommentSchema,onBehalfTicketSchema,raiseTicketSchema,forwardTicketSchema };

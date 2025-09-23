@@ -734,6 +734,21 @@ let categoryBaseTicketListAdmin = async (user_id) => {
   });
 };
 
+
+let categoryBaseTicketListUnitSuperAdmin = async (unitIds=[]) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.categoryBaseTicketListUnitSuperAdmin(),
+      [unitIds],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
 let monthWiseTicketCount = async () => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
@@ -758,6 +773,21 @@ let monthWiseTicketCountAdmin = async (user_id) => {
     );
   });
 };
+
+
+let monthWiseTicketCountUnitSuperAdmin = async (unitIds) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.monthWiseTicketCountUnitSuperAdmin(),
+      [unitIds],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
 
 let graphTicketTotalData = async () => {
   return new Promise((resolve, reject) => {
@@ -784,6 +814,19 @@ let graphTicketTotalDataAdmin = async (user_id) => {
   });
 };
 
+let graphTicketTotalDataUnitSuperAdmin = async (unitIds=[]) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.graphTicketTotalDataUnitSuperAdmin(),
+      [unitIds],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
 let graphTicketTotalSolveDataAdmin = async (user_id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
@@ -797,6 +840,21 @@ let graphTicketTotalSolveDataAdmin = async (user_id) => {
   });
 };
 
+
+let graphTicketTotalSolveDataUnitSuperAdmin = async (unitIds=[]) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.graphTicketTotalSolveDataUnitSuperAdmin(),
+      [unitIds],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
 let graphTicketTotalUnSolveDataAdmin = async (user_id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
@@ -809,6 +867,21 @@ let graphTicketTotalUnSolveDataAdmin = async (user_id) => {
     );
   });
 };
+
+
+let graphTicketTotalUnSolveDataUnitSuperAdmin = async (unitIds=[]) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.graphTicketTotalUnSolveDataUnitSuperAdmin(),
+      [unitIds],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
 
 let graphTicketTotalSolveData = async () => {
   return new Promise((resolve, reject) => {
@@ -1017,5 +1090,10 @@ module.exports = {
   getTicketAllListForArchive,
   addNewArchiveData,
   getUnitWiseSuperAdminCount,
-  UnitSuperAdminPriorityBaseTicketList
+  UnitSuperAdminPriorityBaseTicketList,
+  categoryBaseTicketListUnitSuperAdmin,
+  monthWiseTicketCountUnitSuperAdmin,
+  graphTicketTotalDataUnitSuperAdmin,
+  graphTicketTotalSolveDataUnitSuperAdmin,
+  graphTicketTotalUnSolveDataUnitSuperAdmin
 };

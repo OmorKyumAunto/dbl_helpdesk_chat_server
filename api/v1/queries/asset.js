@@ -415,6 +415,10 @@ const updateById = () => {
 let getListOfDashboard = () => {
   return `SELECT count(id) as total_asset FROM dbl_asset WHERE status = 1`; 
 };
+
+let getAdminWiseListOfDashboard = () => {
+  return `SELECT count(id) as total_asset FROM dbl_asset WHERE unit_id in (?) AND status = 1`; 
+};
   
 let getListOfDashboard2 = () => {
     return `SELECT count(id) as total_employee FROM dbl_users WHERE status = 1`; 
@@ -424,7 +428,9 @@ let getListOfDashboard3 = () => {
     return `SELECT count(id) as total_assign_asset FROM dbl_asset WHERE status = 1 and is_assign = 1`; 
 };
 
-
+let adminWiseGetListOfDashboard = () => {
+    return `SELECT count(id) as total_assign_asset FROM dbl_asset WHERE unit_id in (?) AND status = 1 AND is_assign = 1`; 
+};
 
 let getListOfDashboardGraph = () => {
     return `
@@ -689,6 +695,22 @@ WHERE
 }
 
 
+let superAdminWiseAccessoriesData = () => {
+  return `SELECT 
+    COUNT(id) AS total_count,
+    SUM(CASE WHEN category = 'Laptop' THEN 1 ELSE 0 END) AS laptop_count,
+    SUM(CASE WHEN category = 'Monitor' THEN 1 ELSE 0 END) AS monitor_count,
+    SUM(CASE WHEN category = 'Desktop' THEN 1 ELSE 0 END) AS desktop_count,
+    SUM(CASE WHEN category = 'Printer' THEN 1 ELSE 0 END) AS printer_count,
+    SUM(CASE WHEN category = 'Accessories' THEN 1 ELSE 0 END) AS accessories_count
+FROM 
+    dbl_asset  
+
+WHERE 
+     status = 1 `;
+}
+
+
 module.exports = {
     addNew,
     getByEmployee,
@@ -730,6 +752,9 @@ module.exports = {
     distributedAssetReport,
     getListOfDashboardGraphUnitSuperAdmin,
     getListOfDashboardGraph2UnitSuperAdmin,
-    unitSuperAdminWiseAccessoriesData
+    unitSuperAdminWiseAccessoriesData,
+    superAdminWiseAccessoriesData,
+    getAdminWiseListOfDashboard,
+    adminWiseGetListOfDashboard
     
 }

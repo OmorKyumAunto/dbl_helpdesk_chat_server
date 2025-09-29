@@ -18,26 +18,34 @@ router.get(
     let asset
     let employee
     let assign_asset
+    let result
     if(role_id === 1){
      asset = await assetModel.getListOfDashboard();
      employee = await assetModel.getListOfDashboard2();
      assign_asset = await assetModel.getListOfDashboard3();
-    }
 
-    if(role_id === 2 || role_id === 4){
+      result = {
+      total_asset: asset[0]?.total_asset || 0,
+      total_employee: employee[0]?.total_employee || 0,
+      total_assign_asset: assign_asset[0]?.total_assign_asset || 0,
+    }
+  }
+
+    if(role_id === 4){
       const getUnit = await unitAccessModel.getById(id)
       const unitIds = getUnit.map(u => u.unit_id); 
       asset = await assetModel.getAdminWiseListOfDashboard(unitIds);
       employee = await assetModel.getListOfDashboard2();
       assign_asset = await assetModel.adminWiseGetListOfDashboard(unitIds);
+      
+      result = {
+      total_asset: asset[0]?.total_asset || 0,
+      total_employee: employee[0]?.total_employee || 0,
+      total_assign_asset: assign_asset[0]?.total_assign_asset || 0,
+    }
     }
 
 
-    let result = {
-      total_asset: asset[0].total_asset,
-      total_employee: employee[0].total_employee,
-      total_assign_asset: assign_asset[0].total_assign_asset,
-    };
 
     return res.status(200).send({
       success: false,

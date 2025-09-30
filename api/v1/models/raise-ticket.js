@@ -1023,6 +1023,36 @@ let getUnitWiseSuperAdminCount = async (unitIds=[]) => {
 };
 
 
+
+let mobileDashboardDataCountEmployee = async (id = 0,user_id = 0) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.mobileDashboardDataCountEmployee(),
+      [id,user_id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+
+let mobileDashboardDataCountAdmin = async (id = 0,user_id = 0) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.mobileDashboardDataCountAdmin(),
+      [id,user_id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
 module.exports = {
   getList,
   getActiveList,
@@ -1095,5 +1125,7 @@ module.exports = {
   monthWiseTicketCountUnitSuperAdmin,
   graphTicketTotalDataUnitSuperAdmin,
   graphTicketTotalSolveDataUnitSuperAdmin,
-  graphTicketTotalUnSolveDataUnitSuperAdmin
+  graphTicketTotalUnSolveDataUnitSuperAdmin,
+  mobileDashboardDataCountEmployee,
+  mobileDashboardDataCountAdmin
 };

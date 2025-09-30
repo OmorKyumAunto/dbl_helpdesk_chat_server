@@ -6,6 +6,7 @@ const assignModel = require("../models/asset-assign");
 const verifyToken = require("../middlewares/verifyToken");
 const { routeAccessChecker } = require("../middlewares/routeAccess");
 const unitAccessModel = require("../models/unit-access");
+const ticketModel = require("../models/raise-ticket");
 
 // list
 router.get(
@@ -281,4 +282,37 @@ router.get("/admin-unit-wise-accessories", [verifyToken], async (req, res) => {
   });
 });
 
+
+
+router.get(
+  "/mobile-count-data",
+  [verifyToken, routeAccessChecker("mobileDashboardCountData")],
+  async (req, res) => {
+    let { id, role_id } = req.decoded.userInfo;
+    let data;
+
+    if (role_id === 3) {
+      data = await ticketModel.mobileDashboardDataCountEmployee(id, id);
+    } else if (role_id === 2) {
+      data = await ticketModel.mobileDashboardDataCountAdmin(id, id);
+    } else {
+      data = [
+        {
+          total_ticket: null,
+          total_user: null,
+          total_asset: null,
+        },
+      ];
+    }
+
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Mobile dashboard data count.",
+      data: data[0],
+    });
+  }
+);
+
 module.exports = router;
+

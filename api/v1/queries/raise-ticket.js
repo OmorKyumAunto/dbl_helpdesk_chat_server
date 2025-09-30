@@ -1260,6 +1260,26 @@ WHERE unit_id IN (?)
   `;
 };
 
+
+let mobileDashboardDataCountEmployee = () => {
+  return `
+    SELECT
+      (SELECT COUNT(id) FROM dbl_raise_ticket WHERE created_by = ? AND status = 1) AS total_ticket,
+      (SELECT COUNT(id) FROM dbl_users WHERE status = 1) AS total_user,
+      (SELECT COUNT(id) FROM dbl_asset_assign WHERE user_id = ? AND status = 1) AS total_asset
+  `;
+};
+
+let mobileDashboardDataCountAdmin = () => {
+  return `
+    SELECT
+      (SELECT COUNT(id) FROM dbl_raise_ticket WHERE solved_by = ? AND status = 1) AS total_ticket,
+      (SELECT COUNT(id) FROM dbl_users WHERE status = 1) AS total_user,
+      (SELECT COUNT(id) FROM dbl_asset_assign WHERE user_id = ? AND status = 1) AS total_asset
+  `;
+};
+
+
 module.exports = {
   getList,
   getActiveList,
@@ -1331,5 +1351,7 @@ module.exports = {
   monthWiseTicketCountUnitSuperAdmin,
   graphTicketTotalDataUnitSuperAdmin,
   graphTicketTotalSolveDataUnitSuperAdmin,
-  graphTicketTotalUnSolveDataUnitSuperAdmin
+  graphTicketTotalUnSolveDataUnitSuperAdmin,
+  mobileDashboardDataCountEmployee,
+  mobileDashboardDataCountAdmin
 };

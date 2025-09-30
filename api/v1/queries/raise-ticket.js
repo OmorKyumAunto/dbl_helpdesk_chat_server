@@ -1132,7 +1132,7 @@ let ticketReport = (
   let baseQuery = `
     SELECT ticket_table_id, ticket_id, ticket_status ,subject, priority, ticket_category_title, asset_serial_number,
     ticket_created_employee_name, ticket_created_employee_id,
-    ticket_solved_employee_name, ticket_solved_employee_id, asset_unit_title, ticket_updated_at, asset_unit_id,ticket_created_at,is_overdue
+    ticket_solved_employee_name, ticket_solved_employee_id, asset_unit_title, ticket_updated_at, asset_unit_id,ticket_created_at,is_overdue,seating_unit_name,complex_name,seating_location_name
     FROM super_admin_ticket_view
     `;
 
@@ -1260,6 +1260,26 @@ WHERE unit_id IN (?)
   `;
 };
 
+
+let mobileDashboardDataCountEmployee = () => {
+  return `
+    SELECT
+      (SELECT COUNT(id) FROM dbl_raise_ticket WHERE created_by = ? AND status = 1) AS total_ticket,
+      (SELECT COUNT(id) FROM dbl_users WHERE status = 1) AS total_user,
+      (SELECT COUNT(id) FROM dbl_asset_assign WHERE user_id = ? AND status = 1) AS total_asset
+  `;
+};
+
+let mobileDashboardDataCountAdmin = () => {
+  return `
+    SELECT
+      (SELECT COUNT(id) FROM dbl_raise_ticket WHERE solved_by = ? AND status = 1) AS total_ticket,
+      (SELECT COUNT(id) FROM dbl_users WHERE status = 1) AS total_user,
+      (SELECT COUNT(id) FROM dbl_asset_assign WHERE user_id = ? AND status = 1) AS total_asset
+  `;
+};
+
+
 module.exports = {
   getList,
   getActiveList,
@@ -1331,5 +1351,7 @@ module.exports = {
   monthWiseTicketCountUnitSuperAdmin,
   graphTicketTotalDataUnitSuperAdmin,
   graphTicketTotalSolveDataUnitSuperAdmin,
-  graphTicketTotalUnSolveDataUnitSuperAdmin
+  graphTicketTotalUnSolveDataUnitSuperAdmin,
+  mobileDashboardDataCountEmployee,
+  mobileDashboardDataCountAdmin
 };

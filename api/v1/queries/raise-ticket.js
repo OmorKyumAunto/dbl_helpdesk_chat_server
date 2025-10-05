@@ -212,7 +212,7 @@ let getAdminWiseTicket = (key, priority, status,location_id,offset, limit) => {
     conditions.push(`seating_location_id = '${location_id}'`);
   }
   // Base condition for user_id
-  conditions.push(`user_id = ? AND ticket_solved_employee_user_id = ?`);
+  conditions.push(`user_id = ? AND ticket_solved_employee_user_id = ? AND ticket_status='solved'`);
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
@@ -252,7 +252,7 @@ let getAdminWiseTicketTotalCount = (key, priority, status,location_id) => {
   }
 
   // Base condition for user_id
-  conditions.push(`user_id = ? AND ticket_solved_employee_user_id = ?`);
+  conditions.push(`user_id = ? AND ticket_solved_employee_user_id = ? AND ticket_status='solved'`);
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 

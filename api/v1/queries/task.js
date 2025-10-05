@@ -695,6 +695,113 @@ let taskScheduleList = () => {
 
 
 
+// let combineReport = (start_date, end_date, user_id) => {
+//   let searchCondition = "1 = 1";
+
+//   if (start_date && end_date) {
+//     searchCondition += ` AND cr.created_at BETWEEN '${start_date} 00:00:00' AND '${end_date} 23:59:59'`;
+//   }
+
+//   if (user_id) {
+//     searchCondition += ` AND cr.user_id = '${user_id}'`;
+//   }
+
+//   return `
+//   SELECT 
+//       -- SLA-adjusted avg
+//       TIME_FORMAT(
+//           SEC_TO_TIME(AVG(CASE 
+//               WHEN derived.source = 'ticket' AND derived.is_overdue = 1 AND derived.ticket_sla_time IS NOT NULL
+//                   THEN derived.ticket_sla_time
+//               WHEN derived.source = 'task' AND derived.is_overdue = 1 AND derived.task_sla_time IS NOT NULL
+//                   THEN derived.task_sla_time
+//               ELSE derived.actual_time
+//           END)),
+//           '%H:%i:%s'
+//       ) AS combine_avg_sla_time,
+
+//       -- Raw averages
+//       TIME_FORMAT(
+//           SEC_TO_TIME(AVG(CASE WHEN derived.source = 'ticket' THEN derived.actual_time END)),
+//           '%H:%i:%s'
+//       ) AS total_avg_ticket,
+
+//       TIME_FORMAT(
+//           SEC_TO_TIME(AVG(CASE WHEN derived.source = 'task' THEN derived.actual_time END)),
+//           '%H:%i:%s'
+//       ) AS total_avg_task,
+
+//       TIME_FORMAT(
+//           SEC_TO_TIME(AVG(derived.actual_time)),
+//           '%H:%i:%s'
+//       ) AS total_avg_ticket_task,
+
+//       -- Total counts
+//       COUNT(CASE WHEN derived.source = 'ticket' THEN 1 END) AS total_ticket,
+//       COUNT(CASE WHEN derived.source = 'task' THEN 1 END) AS total_task,
+//       COUNT(*) AS total_ticket_task,
+
+//       -- Total days worked and 8-hour normalized fields
+//       COUNT(DISTINCT DATE(derived.created_at)) AS total_days,
+//       SEC_TO_TIME(SUM(derived.actual_time)) AS total_actual_time,
+//       SEC_TO_TIME(COUNT(DISTINCT DATE(derived.created_at)) * 8 * 3600) AS expected_work_time_8h_per_day,
+//       SEC_TO_TIME(FLOOR(SUM(derived.actual_time) / NULLIF(COUNT(DISTINCT DATE(derived.created_at)) * 8,0))) AS avg_work_hours_per_day
+
+//   FROM (
+//       SELECT 
+//           cr.id,
+//           cr.user_id,
+//           cr.source,
+//           cr.is_overdue,
+//           cr.created_at,
+//           TIMESTAMPDIFF(SECOND, cr.created_at, cr.updated_at) AS actual_time,
+
+//           -- Ticket SLA
+//           CASE 
+//               WHEN rt.id IS NOT NULL AND slc.id IS NOT NULL THEN
+//                   CASE slc.resolve_time_unit
+//                       WHEN 'minutes' THEN (slc.resolve_time_value + slc.response_time_value) * 60
+//                       WHEN 'hours'   THEN (slc.resolve_time_value + slc.response_time_value) * 3600
+//                       WHEN 'day'     THEN (slc.resolve_time_value + slc.response_time_value) * 8 * 3600
+//                   END
+//           END AS ticket_sla_time,
+
+//           -- Task SLA
+//           CASE 
+//               WHEN t.id IS NOT NULL AND tc.id IS NOT NULL THEN
+//                   CASE LOWER(tc.format)
+//                       WHEN 'minutes' THEN tc.set_time * 60
+//                       WHEN 'hours'   THEN tc.set_time * 3600
+//                       WHEN 'day'     THEN tc.set_time * 8 * 3600
+//                   END
+//           END AS task_sla_time
+
+//       FROM ${combine_report_view_table} cr
+
+//       -- Ticket joins
+//       LEFT JOIN dbl_raise_ticket rt 
+//             ON cr.ticket_id = rt.ticket_id 
+//             AND cr.source = 'ticket'
+//             AND rt.status = 1
+//       LEFT JOIN dbl_sla_configuration slc
+//             ON rt.priority = slc.priority
+
+//       -- Task joins
+//       LEFT JOIN dbl_tasks t 
+//             ON cr.ticket_id = t.id 
+//             AND cr.source = 'task'
+//             AND t.status = 1
+//       LEFT JOIN dbl_task_categories tc 
+//             ON t.task_categories_id = tc.id
+//             AND tc.status = 1
+
+//       WHERE ${searchCondition}
+//   ) AS derived;
+//   `;
+// };
+
+
+
 let combineReport = (start_date, end_date, user_id) => {
   let searchCondition = "1 = 1";
 
@@ -745,7 +852,21 @@ let combineReport = (start_date, end_date, user_id) => {
       COUNT(DISTINCT DATE(derived.created_at)) AS total_days,
       SEC_TO_TIME(SUM(derived.actual_time)) AS total_actual_time,
       SEC_TO_TIME(COUNT(DISTINCT DATE(derived.created_at)) * 8 * 3600) AS expected_work_time_8h_per_day,
-      SEC_TO_TIME(FLOOR(SUM(derived.actual_time) / NULLIF(COUNT(DISTINCT DATE(derived.created_at)) * 8,0))) AS avg_work_hours_per_day
+      SEC_TO_TIME(FLOOR(SUM(derived.actual_time) / NULLIF(COUNT(DISTINCT DATE(derived.created_at)) * 8,0))) AS avg_work_hours_per_day,
+
+      -- SLA-based avg work hours per day (date-wise, no 8h normalization)
+      SEC_TO_TIME(
+          FLOOR(
+              SUM(
+                  CASE 
+                      WHEN derived.resolve_time_unit = 'minutes' THEN derived.resolve_time_value * 60
+                      WHEN derived.resolve_time_unit = 'hours'   THEN derived.resolve_time_value * 3600
+                      WHEN derived.resolve_time_unit = 'day'     THEN derived.resolve_time_value * 8 * 3600
+                      WHEN derived.resolve_time_unit = 'month'   THEN derived.resolve_time_value * 30 * 8 * 3600
+                  END
+              ) / NULLIF(COUNT(DISTINCT DATE(derived.created_at)), 0)
+          )
+      ) AS avg_work_hours_per_day_sla_wise
 
   FROM (
       SELECT 
@@ -755,6 +876,8 @@ let combineReport = (start_date, end_date, user_id) => {
           cr.is_overdue,
           cr.created_at,
           TIMESTAMPDIFF(SECOND, cr.created_at, cr.updated_at) AS actual_time,
+          cr.resolve_time_value,
+          cr.resolve_time_unit,
 
           -- Ticket SLA
           CASE 
@@ -799,8 +922,6 @@ let combineReport = (start_date, end_date, user_id) => {
   ) AS derived;
   `;
 };
-
-
 
 
 

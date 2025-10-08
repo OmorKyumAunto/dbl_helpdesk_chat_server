@@ -182,6 +182,8 @@ let superAdminPermission = [
   "pushTokens",
   "unitWiseBuildingList",
   "userWiseTicketCategory",
+  "modifiedEmployeeSeatingLocation",
+  "uploadUnitList"
 
 ];
 
@@ -336,7 +338,8 @@ let adminPermission = [
   "pushTokens",
   "buildingSeatingLocationList",
   "unitWiseBuildingList",
-  "mobileDashboardCountData"
+  "mobileDashboardCountData",
+  "modifiedEmployeeSeatingLocation"
 ];
 
 let employeePermission = [
@@ -642,7 +645,9 @@ let unitWiseSuperAdminPermission = [
   "assignCategory",
   "userWiseTicketCategory",
   "removeUnitAdmin",
-  "mobileDashboardCountData"
+  "mobileDashboardCountData",
+  "modifiedEmployeeSeatingLocation",
+  "uploadUnitList"
 ];
 
 let getRouterPermissionList = async (id = 0) => {

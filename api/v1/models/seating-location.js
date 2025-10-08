@@ -41,9 +41,9 @@ let getByTitle = async (building_id = 0,name = "") => {
 }
 
 
-let getByName = async (name = "") => {
+let getByName = async (seating_location_name = "",building_name = "",unit_name = "") => {
     return new Promise((resolve, reject) => {
-        connectionDblystem.query(queries.getByName(), [name], (error, result, fields) => {
+        connectionDblystem.query(queries.getByName(), [seating_location_name,building_name,unit_name], (error, result, fields) => {
             if (error) reject(error)
             else resolve(result)
         });

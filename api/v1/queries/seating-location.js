@@ -16,7 +16,7 @@ let getByTitle = () => {
 }
 
 let getByName = () => {
-    return `SELECT * FROM ${table_name} WHERE  name = ? AND status IN ('active', 'inactive')`;
+    return `SELECT * FROM ${location_building_unit} WHERE  seating_location_name = ? AND building_name = ? AND unit_name = ? `;
 }
 
 let getList = (limit, offset,id,unit_id, building_id, status, key) => {

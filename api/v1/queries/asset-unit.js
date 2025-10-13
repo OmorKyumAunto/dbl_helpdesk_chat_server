@@ -57,7 +57,7 @@ let getById = () => {
 }
 
 let getByMultipleId = () => {
-    return `SELECT * FROM ${table_name} where id IN (?) and status  IN ('active', 'inactive') `;
+    return `SELECT * FROM ${table_name} where id IN (?) and status  IN ('active', 'inactive')`;
 }
 
 let addNew = () => {

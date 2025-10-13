@@ -293,47 +293,97 @@ router.get(
       offset = 0,
       limit = 10,
     } = req.query;
-let totalCountResult
-let result
-if(search === 'solved'){
+  let totalCountResult
+  let result
+
+  if(search === 'solved'){
+    console.log("solved");
+      result = await raiseTicketModel.getAdminWiseTicket(
+        id,
+        user_id = id,
+        key,
+        priority,
+        status,
+        location_id,
+        offset,
+        limit
+      );
+
+      totalCountResult = await raiseTicketModel.getAdminWiseTicketTotalCount(
+        id,
+        user_id = id,
+        key,
+        priority,
+        status,
+        location_id
+      );
+  }
+  if(search === undefined || search === "undefined" || search === null){
+  console.log("undefined");
+
     result = await raiseTicketModel.getAdminWiseTicket(
-      id,
-      user_id = id,
-      key,
-      priority,
-      status,
-      location_id,
-      offset,
-      limit
+        id,
+        user_id = id,
+        key,
+        priority,
+        status,
+        location_id,
+        offset,
+        limit
     );
 
-     totalCountResult = await raiseTicketModel.getAdminWiseTicketTotalCount(
-      id,
-      user_id = id,
-      key,
-      priority,
-      status,
-      location_id
-    );
-}else{
+      totalCountResult = await raiseTicketModel.getAdminWiseTicketTotalCount(
+        id,
+        user_id = id,
+        key,
+        priority,
+        status,
+        location_id
+      );
+
+
+    if(result.length === 0){
       result = await raiseTicketModel.getAdminWiseUpComingTicket(
-      id,
-      key,
-      priority,
-      status,
-      location_id,
-      offset,
-      limit
-    );
+        id,
+        key,
+        priority,
+        status,
+        location_id,
+        offset,
+        limit
+      );
 
-    totalCountResult = await raiseTicketModel.getAdminWiseTicketUpComingTotalCount(
-      id,
-      key,
-      priority,
-      status,
-      location_id
-    );
-}
+      totalCountResult = await raiseTicketModel.getAdminWiseTicketUpComingTotalCount(
+        id,
+        key,
+        priority,
+        status,
+        location_id
+      );
+    }
+  }
+  if(search === 'pending'){
+
+    console.log("pending");
+        result = await raiseTicketModel.getAdminWiseUpComingTicket(
+        id,
+        key,
+        priority,
+        status,
+        location_id,
+        offset,
+        limit
+      );
+
+      totalCountResult = await raiseTicketModel.getAdminWiseTicketUpComingTotalCount(
+        id,
+        key,
+        priority,
+        status,
+        location_id
+      );
+  }
+
     return res.status(200).send({
       success: true,
       status: 200,

@@ -324,6 +324,14 @@ router.get('/user-unit-building/:id', [verifyToken, routeAccessChecker("userUnit
     }
 
     const getUnit = await unitAccessModel.getById(id)
+    if(isEmpty(getUnit)){
+        return res.status(404).send({
+        "success": true,
+        "status": 404,
+        "message": "Assign Unit not found.Please Assign Unit first.",
+
+    }); 
+    }
 
     const unitIds = getUnit.map(u => u.unit_id); 
 

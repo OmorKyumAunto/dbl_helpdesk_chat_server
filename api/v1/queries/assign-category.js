@@ -1,6 +1,5 @@
 const isEmpty = require("is-empty");
 let table_name = "dbl_user_category_access";
-let user_unit_category_view = "user_unit_category";
 
 let getList = (status) => {
     let searchCondition = "status != 'delete'"; 
@@ -33,9 +32,6 @@ let getBeforeCategoryAssignList = () => {
         u.id, u.employee_id;`;
 }
 
-// let getAfterCategoryAssignList = () => {
-//     return `SELECT *, uc.*  FROM ${user_unit_category_view} as ucv left join dbl_user_category_access as uc on ucv.user_id = uc.user_id`;
-// }
 let getAfterCategoryAssignList = (offset, limit, key) => {
     let searchCondition = '';
     
@@ -258,22 +254,11 @@ let getDetailsByIdAndWhereIn = () => {
 }
 
 let getByUserId = () => {
-    // return `SELECT id,name,status FROM ${table_name} where  id IN (?) and status = 1`;
     return `SELECT category_id FROM ${table_name} WHERE user_id = ?`
 }
 let deleteByUserAndCategories = () => {
-    // return `SELECT id,name,status FROM ${table_name} where  id IN (?) and status = 1`;
     return `DELETE FROM ${table_name} WHERE user_id = ? AND category_id IN (?)`;
 }
-
-// async getByUserId(userId) {
-//     return db.query('SELECT category_id FROM assign_categories WHERE user_id = ?', [userId]);
-// }
-
-// async deleteByUserAndCategories(userId, categoryIds) {
-//     return db.query('DELETE FROM assign_categories WHERE user_id = ? AND category_id IN (?)', [userId, categoryIds]);
-// }
-
 
 
 module.exports = {

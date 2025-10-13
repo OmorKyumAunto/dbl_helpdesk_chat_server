@@ -103,6 +103,10 @@ let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ? AND status IN ('active', 'inactive');`;
 }
 
+let getByCreatedById = () => {
+    return `SELECT * FROM ${table_name} where  created_by = ? AND status = 1;`;
+}
+
 let superAndAdminWiseData = () => {
     return `SELECT * FROM ${table_name} where  unit_wise_super_admin = ? AND admin_id = ? AND status = 1`;
 }
@@ -191,5 +195,6 @@ module.exports = {
     getByName,
     getDataByUnitId,
     getByAdminId,
-    superAndAdminWiseData
+    superAndAdminWiseData,
+    getByCreatedById
 }

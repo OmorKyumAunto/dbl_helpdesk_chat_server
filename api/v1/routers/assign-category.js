@@ -414,7 +414,8 @@ router.post('/:id', [verifyToken, routeAccessChecker("assignCategory")], async (
 
 router.get('/user-wise-ticket-category/:id', [verifyToken, routeAccessChecker("userWiseTicketCategory")], async (req, res) => {
 
-    let id = parseInt(req.params.id)
+   try {
+     let id = parseInt(req.params.id)
     
     let userData = await userModel.getById(id);
     if (isEmpty(userData)) {
@@ -428,18 +429,26 @@ router.get('/user-wise-ticket-category/:id', [verifyToken, routeAccessChecker("u
     let categoryArr = []
     // get userWise category 
     const getUserWiseCategoryId = await assignCategoryModel.getByUserId(id)
+   let getCategoryInfo = []
+    if(getUserWiseCategoryId.length){
+
     for (let index = 0; index < getUserWiseCategoryId.length; index++) {
         categoryArr.push(getUserWiseCategoryId[index].category_id);
         
     }
 
-    const getCategoryInfo = await ticketCategoryModel.getByMultiId(categoryArr)
+     getCategoryInfo = await ticketCategoryModel.getByMultiId(categoryArr)
+    }
+    
     return res.status(200).send({
         "success": true,
         "status": 200,
         "message": "User wise Ticket category.",
-        "data":getCategoryInfo
+        "data":getCategoryInfo 
     });
+   } catch (error) {
+    console.log("Error",error)
+   }
 
 });
 

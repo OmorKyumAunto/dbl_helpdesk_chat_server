@@ -60,6 +60,15 @@ let getById = async (id = 0) => {
     });
 }
 
+let getByCreatedById = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByCreatedById(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 let superAndAdminWiseData = async (super_admin = 0, admin_id=0) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.superAndAdminWiseData(), [super_admin,admin_id], (error, result, fields) => {
@@ -182,5 +191,6 @@ module.exports = {
     getByName,
     getDataByUnitId,
     getByAdminId,
-    superAndAdminWiseData
+    superAndAdminWiseData,
+    getByCreatedById
 }

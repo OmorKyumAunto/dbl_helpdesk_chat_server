@@ -206,12 +206,12 @@ router.put(
       }
     }
 
-
     return res.status(200).send({
       success: true,
       status: 200,
       message: "Unit admin remove successful."
     });
   }
+  
 );
 module.exports = router;

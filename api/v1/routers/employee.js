@@ -14,6 +14,7 @@ const licensesModel = require("../models/licenses");
 const assetAssignModel = require("../models/asset-assign");
 const superModel = require("../models/super-admins");
 const seatingLocationModel = require("../models/seating-location");
+const chooseAdminModel = require("../models/choose-admin");
 const { routeAccessChecker } = require("../middlewares/routeAccess");
 const {today_date,convertDateFormat,addSixHoursAndFormat,currentDateZingHrFormat} = require('../validation/task/task')
 const multer = require("multer");
@@ -1219,6 +1220,19 @@ router.post(
       });
     }
 
+
+
+    let getGetUnderAssignAdmin = await chooseAdminModel.getByCreatedById(id);
+
+    if (getGetUnderAssignAdmin.length) {
+      return res.status(400).send({
+        success: false,
+        status: 400,
+        message: "This unit super admin under has admin.",
+      });
+    }
+
+    
     // check its unit wise super admin admin
     if (employeeData[0].role_id !== 4) {
       return res.status(400).send({
@@ -1279,7 +1293,7 @@ router.post(
 // assign to employee demoted
 router.post(
   "/assign-admin-demoted/:id",
-  [verifyToken, routeAccessChecker("assignAdmin")],
+  [verifyToken, routeAccessChecker("assignAdminDemoted")],
   async (req, res) => {
     let id = req.params.id;
 

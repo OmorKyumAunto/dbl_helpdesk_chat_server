@@ -190,6 +190,14 @@ let deleteByUserAndCategories = async (userId = 0, categoryIds = []) => {
     });
 }
 
+let deleteUserWiseId = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.deleteUserWiseId(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
 
 module.exports = {
     getList,
@@ -205,6 +213,7 @@ module.exports = {
     getBeforeCategoryAssignList,
     getAfterCategoryAssignList,
     deleteByUserAndCategories,
-    getByUserId
+    getByUserId,
+    deleteUserWiseId
 }
 

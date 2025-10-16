@@ -177,6 +177,15 @@ let getByIdForDeleted = async (id = 0) => {
 }
 
 
+let deleteByCreatedById = async (id = 0, data = {}) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.deleteByCreatedById(), [data, id], (error, result, fields) => {
+            if (error) reject(error);
+            else resolve(result);
+        });
+    });
+}
+
 
 module.exports = {
     getUserByEmail,
@@ -196,5 +205,6 @@ module.exports = {
     getByName,
     getLocationByUserId,
     getIdByUserAndLocationId,
-    userWiseLocation
+    userWiseLocation,
+    deleteByCreatedById
 }

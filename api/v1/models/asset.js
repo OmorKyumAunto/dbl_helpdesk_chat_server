@@ -135,6 +135,15 @@ let assetReport = async (unit,start_date,end_date,category,remarks,key,start_pur
 });
 }
 
+let assetCategoryCount = async (unit,start_date,end_date,category,remarks,key,start_purchase_date,end_purchase_date) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(queries.assetCategoryCount(unit,start_date,end_date,category,remarks,key,start_purchase_date,end_purchase_date), (error, result, fields) => {
+      if (error) reject(error)
+      else resolve(result);
+    });
+});
+}
+
   let distributedAssetList = async (offset, limit, key, unit ,type,employee_type,location,from_date,to_date) => {
     return new Promise((resolve, reject) => {
       connectionDblystem.query(queries.distributedAssetList(offset, limit, key, unit,type,employee_type,location,from_date,to_date), (error, result, fields) => {
@@ -159,6 +168,16 @@ let assetReport = async (unit,start_date,end_date,category,remarks,key,start_pur
   let adminDistributedAssetList = async (offset, limit, key, unit ,type,employee_type,location,user_id) => {
     return new Promise((resolve, reject) => {
       connectionDblystem.query(queries.adminDistributedAssetList(offset, limit, key, unit,type,employee_type,location,user_id), (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+  }
+
+
+let adminDistributedCategoryData = async (unit,start_date,end_date,category,employee_type,key) => {
+    return new Promise((resolve, reject) => {
+      connectionDblystem.query(queries.adminDistributedCategoryData(unit,start_date,end_date,category,employee_type,key), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -594,6 +613,17 @@ let superAdminWiseAccessoriesData = async () => {
   });
 }
 
+// assign unit update
+let assignUnitUserWiseDelete = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.assignUnitUserWiseDelete(), [id], (error, result, fields) => {
+            if (error) reject(error);
+            else resolve(result);
+        });
+    });
+}
+
+
 module.exports = {
    addNew,
    getByExistsEmployee,
@@ -640,6 +670,8 @@ module.exports = {
    unitSuperAdminWiseAccessoriesData,
    superAdminWiseAccessoriesData,
    getAdminWiseListOfDashboard,
-   adminWiseGetListOfDashboard
-   
+   adminWiseGetListOfDashboard,
+   assignUnitUserWiseDelete,
+   assetCategoryCount,
+   adminDistributedCategoryData
 }

@@ -203,6 +203,12 @@ const updateById = () => {
 let getByIdForDeleted = () => {
     return `delete FROM ${table_name} where  id = ? and status = 1 `;
 }
+
+
+const deleteByCreatedById = () => {
+    return `UPDATE ${table_name} SET ? WHERE created_by = ?`;
+}
+
 module.exports = {
     getUserByEmail,
     addNew,
@@ -220,5 +226,6 @@ module.exports = {
     getByName,
     getLocationByUserId,
     getIdByUserAndLocationId,
-    userWiseLocation
+    userWiseLocation,
+    deleteByCreatedById
 }

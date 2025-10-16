@@ -1142,7 +1142,7 @@ let ticketReport = (
     conditions.push(`asset_unit_id = '${unit}'`);
   }
   if (user_id) {
-    conditions.push(`solved_employee_user_id = '${user_id}'`);
+    conditions.push(`ticket_solved_employee_user_id = '${user_id}'`);
   }
   if (status) {
     conditions.push(`ticket_status = '${status}'`);

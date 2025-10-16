@@ -140,7 +140,6 @@ let assetReport = (unit,start_date,end_date,category,remarks,key,start_purchase_
     searchCondition += ` AND (LOWER(a.name) LIKE LOWER('%${key}%') OR LOWER(a.category) LIKE LOWER('%${key}%') OR a.serial_number LIKE '%${key}%' OR a.po_number LIKE '%${key}%' OR LOWER(a.model) LIKE LOWER('%${key}%'))`; 
   }
 
-
   return `
     SELECT a.id, a.name, a.category, a.purchase_date, a.serial_number,
            a.po_number, a.price, a.unit_id, au.title as unit_name, a.model,
@@ -154,9 +153,85 @@ let assetReport = (unit,start_date,end_date,category,remarks,key,start_purchase_
     LEFT JOIN dbl_asset_unit AS au ON au.id = a.unit_id
     LEFT JOIN location AS l ON l.id = a.location
     LEFT JOIN users_view AS u ON u.id = a.created_by
-    WHERE ${searchCondition}
+    WHERE ${searchCondition} AND a.status = 1
     ORDER BY a.id DESC
+
+
   `;
+};
+
+let assetCategoryCount = (
+  unit,
+  start_date,
+  end_date,
+  category,
+  remarks,
+  key,
+  start_purchase_date,
+  end_purchase_date
+) => {
+  let searchCondition = "a.status != 0";
+
+  if (start_date && end_date) {
+    searchCondition += ` AND DATE(a.created_at) BETWEEN '${start_date}' AND '${end_date}'`;
+  }
+
+  if (start_purchase_date && end_purchase_date) {
+    searchCondition += ` AND DATE(a.purchase_date) BETWEEN '${start_purchase_date}' AND '${end_purchase_date}'`;
+  }
+
+  if (unit) {
+    searchCondition += ` AND a.unit_id = '${unit}'`;
+  }
+
+  if (category) {
+    searchCondition += ` AND LOWER(a.category) LIKE LOWER('%${category}%')`;
+  }
+
+  if (remarks) {
+    searchCondition += ` AND a.remarks = '${remarks}'`;
+  }
+
+  if (key) {
+    searchCondition += ` AND (LOWER(a.name) LIKE LOWER('%${key}%') 
+                          OR LOWER(a.category) LIKE LOWER('%${key}%') 
+                          OR a.serial_number LIKE '%${key}%' 
+                          OR a.po_number LIKE '%${key}%' 
+                          OR LOWER(a.model) LIKE LOWER('%${key}%'))`;
+  }
+
+  return `
+    SELECT 
+      SUM(CASE WHEN category = 'Laptop' THEN 1 ELSE 0 END) AS total_laptop,
+      SUM(CASE WHEN category = 'Desktop' THEN 1 ELSE 0 END) AS total_desktop,
+      SUM(CASE WHEN category = 'Monitor' THEN 1 ELSE 0 END) AS total_monitor,
+      SUM(CASE WHEN category = 'Accessories' THEN 1 ELSE 0 END) AS accessories_count,
+      SUM(CASE WHEN category = 'TV' THEN 1 ELSE 0 END) AS tv_count,
+      SUM(CASE WHEN category = 'Ipad/Tab' THEN 1 ELSE 0 END) AS tab_count,
+      SUM(CASE WHEN category = 'Projector' THEN 1 ELSE 0 END) AS projector_count,
+      SUM(CASE WHEN category = 'Attendence Machine' THEN 1 ELSE 0 END) AS attendance_machine_count,
+      SUM(CASE WHEN category = 'Speaker' THEN 1 ELSE 0 END) AS speaker_count,
+      SUM(CASE WHEN category = 'Scanner' THEN 1 ELSE 0 END) AS scanner_count,
+      SUM(CASE WHEN category = 'Camera' THEN 1 ELSE 0 END) AS camera_count,
+      SUM(CASE WHEN category = 'NVR/DVR' THEN 1 ELSE 0 END) AS nvr_drv_count,
+      SUM(CASE WHEN category = 'Online/Industrial UPS' THEN 1 ELSE 0 END) AS ups_count,
+      SUM(CASE WHEN category = 'Conference System' THEN 1 ELSE 0 END) AS conference_system_count,
+      SUM(CASE WHEN category = 'Firewall' THEN 1 ELSE 0 END) AS firewall_count,
+      SUM(CASE WHEN category = 'Core Router' THEN 1 ELSE 0 END) AS core_router_count,
+      SUM(CASE WHEN category = 'Access Point' THEN 1 ELSE 0 END) AS access_point_count,
+      SUM(CASE WHEN category = 'Server' THEN 1 ELSE 0 END) AS server_count,
+      SUM(CASE WHEN category = 'Network Rack' THEN 1 ELSE 0 END) AS network_rack_count,
+      SUM(CASE WHEN category = '24 Port Switch Managable' THEN 1 ELSE 0 END) AS 24_port_switch_count,
+      SUM(CASE WHEN category = '48 Port Switch Managable' THEN 1 ELSE 0 END) AS 48_port_switch_count,
+      SUM(CASE WHEN category = 'Non Managable Switch' THEN 1 ELSE 0 END) AS non_managable_switch_count
+      FROM ${table_name} AS a
+      WHERE ${searchCondition} AND a.status = 1;
+  `;
+};
+
+module.exports = {
+  assetReport,
+  assetCategoryCount
 };
 
 
@@ -248,7 +323,7 @@ let distributedAssetReport = (unit, start_date, end_date, category, employee_typ
            asset_unit_name, assign_date, location_name, user_name,
            user_id_no, designation, department,assign_by_name,assign_by_employee_id,assign_by_department,assign_by_designation,assign_by_contact_no
     FROM ${table_view}
-    ${whereClause}
+    ${whereClause} AND status = 1
   `;
 };
 
@@ -295,6 +370,144 @@ let adminDistributedAssetList = (offset, limit, key, unit, type, employee_type,l
 };
 
 
+
+
+// let adminDistributedCategoryData = (unit, start_date, end_date, category, employee_type,key) => {
+//   let searchCondition = [];
+
+//   if (start_date && end_date) {
+//     searchCondition.push(`DATE(assign_date) BETWEEN '${start_date}' AND '${end_date}'`);
+//   }
+
+//   if (unit) {
+//     searchCondition.push(`asset_unit_id = '${unit}'`);
+//   }
+
+//   if (category) {
+//     searchCondition.push(`category = '${category}'`);
+//   }
+
+//   if (key) {
+//     searchCondition.push(`(
+//       LOWER(asset_name) LIKE LOWER('%${key}%') OR 
+//       serial_number LIKE '%${key}%' OR 
+//       po_number LIKE '%${key}%' OR 
+//       LOWER(model) LIKE LOWER('%${key}%') OR 
+//       LOWER(user_name) LIKE LOWER('%${key}%') OR 
+//       user_id_no LIKE '%${key}%'
+//     )`);
+//   }
+//   if (employee_type) {
+//     if (employee_type === "management") {
+//       searchCondition.push(`(user_id_no) LIKE '1510%'`);
+//     } else if (employee_type === "non-management") {
+//       searchCondition.push(`(user_id_no) NOT LIKE '1510%'`);
+//     }
+//   }
+//   let whereClause = searchCondition.length ? `WHERE ${searchCondition.join(' AND ')}` : '';
+
+
+//   return `
+//     -- 🔹 Query 1: Category summary counts
+//     SELECT 
+//       SUM(CASE WHEN category = 'Laptop' THEN 1 ELSE 0 END) AS total_laptop,
+//       SUM(CASE WHEN category = 'Desktop' THEN 1 ELSE 0 END) AS total_desktop,
+//       SUM(CASE WHEN category = 'Monitor' THEN 1 ELSE 0 END) AS total_monitor,
+//       SUM(CASE WHEN category = 'Accessories' THEN 1 ELSE 0 END) AS accessories_count,
+//       SUM(CASE WHEN category = 'TV' THEN 1 ELSE 0 END) AS tv_count,
+//       SUM(CASE WHEN category = 'Ipad/Tab' THEN 1 ELSE 0 END) AS tab_count,
+//       SUM(CASE WHEN category = 'Projector' THEN 1 ELSE 0 END) AS projector_count,
+//       SUM(CASE WHEN category = 'Attendence Machine' THEN 1 ELSE 0 END) AS attendance_machine_count,
+//       SUM(CASE WHEN category = 'Speaker' THEN 1 ELSE 0 END) AS speaker_count,
+//       SUM(CASE WHEN category = 'Scanner' THEN 1 ELSE 0 END) AS scanner_count,
+//       SUM(CASE WHEN category = 'Camera' THEN 1 ELSE 0 END) AS camera_count,
+//       SUM(CASE WHEN category = 'NVR/DVR' THEN 1 ELSE 0 END) AS nvr_dvr_count,
+//       SUM(CASE WHEN category = 'Online/Industrial UPS' THEN 1 ELSE 0 END) AS ups_count,
+//       SUM(CASE WHEN category = 'Conference System' THEN 1 ELSE 0 END) AS conference_system_count,
+//       SUM(CASE WHEN category = 'Firewall' THEN 1 ELSE 0 END) AS firewall_count,
+//       SUM(CASE WHEN category = 'Core Router' THEN 1 ELSE 0 END) AS core_router_count,
+//       SUM(CASE WHEN category = 'Access Point' THEN 1 ELSE 0 END) AS access_point_count,
+//       SUM(CASE WHEN category = 'Server' THEN 1 ELSE 0 END) AS server_count,
+//       SUM(CASE WHEN category = 'Network Rack' THEN 1 ELSE 0 END) AS network_rack_count,
+//       SUM(CASE WHEN category = '24 Port Switch Managable' THEN 1 ELSE 0 END) AS port_24_switch_count,
+//       SUM(CASE WHEN category = '48 Port Switch Managable' THEN 1 ELSE 0 END) AS port_48_switch_count,
+//       SUM(CASE WHEN category = 'Non Managable Switch' THEN 1 ELSE 0 END) AS non_managable_switch_count
+//     FROM ${table_name} AS a
+//     ${whereClause} AND a.status = 1;
+
+//   `;
+// };
+
+let adminDistributedCategoryData = (unit, start_date, end_date, category, employee_type, key) => {
+  let searchCondition = [];
+
+  // 🔹 Date filter
+  if (start_date && end_date) {
+    searchCondition.push(`DATE(assign_date) BETWEEN '${start_date}' AND '${end_date}'`);
+  }
+
+  // 🔹 Unit filter
+  if (unit) {
+    searchCondition.push(`asset_unit_id = '${unit}'`);
+  }
+
+  // 🔹 Category filter
+  if (category) {
+    searchCondition.push(`category = '${category}'`);
+  }
+
+  // 🔹 Keyword search
+  if (key) {
+    searchCondition.push(`(
+      LOWER(asset_name) LIKE LOWER('%${key}%') OR 
+      serial_number LIKE '%${key}%' OR 
+      po_number LIKE '%${key}%' OR 
+      LOWER(model) LIKE LOWER('%${key}%') OR 
+      LOWER(user_name) LIKE LOWER('%${key}%') OR 
+      user_id_no LIKE '%${key}%'
+    )`);
+  }
+
+  // 🔹 Employee type filter
+  if (employee_type) {
+    if (employee_type === "management") {
+      searchCondition.push(`(user_id_no) LIKE '1510%'`);
+    } else if (employee_type === "non-management") {
+      searchCondition.push(`(user_id_no) NOT LIKE '1510%'`);
+    }
+  }
+
+  let whereClause = searchCondition.length ? `WHERE ${searchCondition.join(" AND ")}` : "";
+
+  // ✅ Final query (only counting data)
+  return `
+    SELECT 
+      SUM(CASE WHEN category = 'Laptop' THEN 1 ELSE 0 END) AS total_laptop,
+      SUM(CASE WHEN category = 'Desktop' THEN 1 ELSE 0 END) AS total_desktop,
+      SUM(CASE WHEN category = 'Monitor' THEN 1 ELSE 0 END) AS total_monitor,
+      SUM(CASE WHEN category = 'Accessories' THEN 1 ELSE 0 END) AS accessories_count,
+      SUM(CASE WHEN category = 'TV' THEN 1 ELSE 0 END) AS tv_count,
+      SUM(CASE WHEN category = 'Ipad/Tab' THEN 1 ELSE 0 END) AS tab_count,
+      SUM(CASE WHEN category = 'Projector' THEN 1 ELSE 0 END) AS projector_count,
+      SUM(CASE WHEN category = 'Attendence Machine' THEN 1 ELSE 0 END) AS attendance_machine_count,
+      SUM(CASE WHEN category = 'Speaker' THEN 1 ELSE 0 END) AS speaker_count,
+      SUM(CASE WHEN category = 'Scanner' THEN 1 ELSE 0 END) AS scanner_count,
+      SUM(CASE WHEN category = 'Camera' THEN 1 ELSE 0 END) AS camera_count,
+      SUM(CASE WHEN category = 'NVR/DVR' THEN 1 ELSE 0 END) AS nvr_dvr_count,
+      SUM(CASE WHEN category = 'Online/Industrial UPS' THEN 1 ELSE 0 END) AS ups_count,
+      SUM(CASE WHEN category = 'Conference System' THEN 1 ELSE 0 END) AS conference_system_count,
+      SUM(CASE WHEN category = 'Firewall' THEN 1 ELSE 0 END) AS firewall_count,
+      SUM(CASE WHEN category = 'Core Router' THEN 1 ELSE 0 END) AS core_router_count,
+      SUM(CASE WHEN category = 'Access Point' THEN 1 ELSE 0 END) AS access_point_count,
+      SUM(CASE WHEN category = 'Server' THEN 1 ELSE 0 END) AS server_count,
+      SUM(CASE WHEN category = 'Network Rack' THEN 1 ELSE 0 END) AS network_rack_count,
+      SUM(CASE WHEN category = '24 Port Switch Managable' THEN 1 ELSE 0 END) AS port_24_switch_count,
+      SUM(CASE WHEN category = '48 Port Switch Managable' THEN 1 ELSE 0 END) AS port_48_switch_count,
+      SUM(CASE WHEN category = 'Non Managable Switch' THEN 1 ELSE 0 END) AS non_managable_switch_count
+    FROM ${table_view}
+    ${whereClause} AND status = 1;
+  `;
+};
 
 
 let distributedTotalAssetList = (key, unit,type,employee_type,location,from_date,to_date) => {
@@ -701,13 +914,17 @@ let superAdminWiseAccessoriesData = () => {
     SUM(CASE WHEN category = 'Laptop' THEN 1 ELSE 0 END) AS laptop_count,
     SUM(CASE WHEN category = 'Monitor' THEN 1 ELSE 0 END) AS monitor_count,
     SUM(CASE WHEN category = 'Desktop' THEN 1 ELSE 0 END) AS desktop_count,
-    SUM(CASE WHEN category = 'Printer' THEN 1 ELSE 0 END) AS printer_count,
-    SUM(CASE WHEN category = 'Accessories' THEN 1 ELSE 0 END) AS accessories_count
+    SUM(CASE WHEN category = 'Printer' THEN 1 ELSE 0 END) AS printer_count
 FROM 
     dbl_asset  
 
 WHERE 
      status = 1 `;
+}
+
+
+const assignUnitUserWiseDelete = () => {
+    return `DELETE  from admin_search_access  WHERE user_id = ?`;
 }
 
 
@@ -755,6 +972,8 @@ module.exports = {
     unitSuperAdminWiseAccessoriesData,
     superAdminWiseAccessoriesData,
     getAdminWiseListOfDashboard,
-    adminWiseGetListOfDashboard
-    
+    adminWiseGetListOfDashboard,
+    assignUnitUserWiseDelete,
+    assetCategoryCount,
+    adminDistributedCategoryData
 }

@@ -1512,16 +1512,15 @@ router.get(
 const multer = require("multer");
 const xlsx = require("xlsx");
 const path = require("path");
-const { get } = require("http");
-const { ADDRGETNETWORKPARAMS } = require("dns");
+
 
 // Configure Multer for file upload
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/asset/"); // Set the destination folder
+    cb(null, "uploads/asset/"); 
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Generate a unique filename
+    cb(null, Date.now() + path.extname(file.originalname));
   },
 });
 
@@ -1649,9 +1648,9 @@ router.post(
             element.location.toLowerCase() ===
               reqData.location_name.toLowerCase()
           ) {
-            reqData.location = element.id; // Assign the matched id to unit_id
+            reqData.location = element.id; 
             locationMatch = true;
-            break; // Exit the loop once a match is found
+            break; 
           }
         }
 
@@ -1697,7 +1696,7 @@ router.post(
 // list
 router.get(
   "/admin-unit-assign-list",
-  [verifyToken, routeAccessChecker("adminAssinUnitAsset")],
+  [verifyToken, routeAccessChecker("adminAssignUnitAsset")],
   async (req, res) => {
     let reqData = {
       limit: req.query.limit || 100,
@@ -1735,14 +1734,13 @@ router.get(
     for (let index = 0; index < filteredResult.length; index++) {
       const element = filteredResult[index].unit_id;
 
-      let getUnitname = await unitModel.getById(element);
-      if (getUnitname.length) {
-        filteredResult[index].unit_name = getUnitname[0].title;
+      let getUnitName = await unitModel.getById(element);
+      if (getUnitName.length) {
+        filteredResult[index].unit_name = getUnitName[0].title;
       } else {
         filteredResult[index].unit_name = "";
       }
 
-      let current_date = new Date();
       let purchaseDate = new Date(filteredResult[index].purchase_date);
       let currentTime = new Date();
 
@@ -1761,7 +1759,7 @@ router.get(
 
     let unitDefine;
     let count = 0;
-    if (req.decoded.userInfo.role_id === 2) {
+    if (req.decoded.userInfo.role_id === 2 || req.decoded.userInfo.role_id === 4) {
       if (getUnitAssignList.length > 1 && isEmpty(unit)) {
         unitDefine = getUnitAssignList[0].unit_id;
         totalCount = await assetModel.getTotalList(

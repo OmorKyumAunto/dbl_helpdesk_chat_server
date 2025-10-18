@@ -636,10 +636,12 @@ const  checkEmailFormat = (email) => {
 }
 
 const convertFormatDate = (inputDate) => {
-    const formattedDate = moment(inputDate, 'DD MMM YYYY').format('YYYY-MM-DD');
-    return formattedDate;
-}
+  if (!inputDate) return null; 
+  const m = moment(inputDate);
+  if (!m.isValid()) return null; 
 
+  return m.format('YYYY-MM-DD'); 
+};
 
 const  deleteUploadedFile = (filePath) => {
   if (filePath && fs.existsSync(filePath)) {

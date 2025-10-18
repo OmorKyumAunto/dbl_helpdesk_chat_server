@@ -174,6 +174,17 @@ let getDataByUnitId = async (unit_ids = []) => {
 }
 
 
+let getByCreatedByIdForDeleted = async (id = 0,data={}) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByCreatedByIdForDeleted(), [data,id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
+
+
 module.exports = {
     getUserByEmail,
     addNew,
@@ -192,5 +203,6 @@ module.exports = {
     getDataByUnitId,
     getByAdminId,
     superAndAdminWiseData,
-    getByCreatedById
+    getByCreatedById,
+    getByCreatedByIdForDeleted
 }

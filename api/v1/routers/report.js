@@ -77,6 +77,8 @@ router.get(
      }
 
       let result = await assetModel.assetReport(unit,start_date,end_date,category,remarks,key,start_purchase_date,end_purchase_date);
+
+      let getCategoryData = await assetModel.assetCategoryCount(unit,start_date,end_date,category,remarks,key,start_purchase_date,end_purchase_date);
  
       query_data.total_count = result.length || 0
 
@@ -87,7 +89,8 @@ router.get(
         message: "Asset Report List.",
         count: result.length,
         data: result,
-        query_data : query_data
+        query_data : query_data,
+        category_data : getCategoryData
       });
     }
 );
@@ -154,6 +157,8 @@ router.get(
       let result = await assetModel.distributedAssetReport(unit,start_date,end_date,category,employee_type,key);
  
       query_data.total_count = result.length || 0
+      
+      let getCategoryData = await assetModel.adminDistributedCategoryData(unit,start_date,end_date,category,employee_type,key);
 
       return res.status(200).send({
         success: true,
@@ -161,7 +166,8 @@ router.get(
         message: "Asset Report List.",
         count: result.length,
         data: result,
-        query_data : query_data
+        query_data : query_data,
+        category_data : getCategoryData
       });
     }
 );

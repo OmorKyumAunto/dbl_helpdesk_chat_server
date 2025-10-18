@@ -2,9 +2,7 @@ const express = require("express");
 const isEmpty = require("is-empty");
 const router = express.Router();
 const verifyToken = require("../middlewares/verifyToken");
-const { check, validationResult } = require("express-validator");
 const moment = require("moment");
-const e = require("express");
 const assetModel = require("../models/asset");
 const assetAssignModel = require("../models/asset-assign");
 const employeeModel = require("../models/employee");
@@ -20,6 +18,8 @@ const { routeAccessChecker } = require("../middlewares/routeAccess");
 const commonObject = require("../common/common");
 const licensesModel = require("../models/licenses");
 const unitAccessModel = require("../models/unit-access");
+
+
 router.post(
   "/add",
   [verifyToken, routeAccessChecker("addAsset")],
@@ -1320,12 +1320,9 @@ router.get(
   async (req, res) => {
     let assignData;
     if (req.decoded.userInfo.role_id === 2 || req.decoded.userInfo.role_id === 4) {
-      const assign_unit = await unitAccessModel.getById(
-        req.decoded.userInfo.id
-      );
-      if (assign_unit) {
-        assignData = assign_unit[0].unit_id;
-      }
+        const getUnit = await unitAccessModel.getById(req.decoded.userInfo.id)
+        const unitIds = getUnit.map(u => u.unit_id); 
+        assignData = unitIds;
     }
     let reqData = {
       limit: req.query.limit || 50,
@@ -1512,16 +1509,15 @@ router.get(
 const multer = require("multer");
 const xlsx = require("xlsx");
 const path = require("path");
-const { get } = require("http");
-const { ADDRGETNETWORKPARAMS } = require("dns");
+
 
 // Configure Multer for file upload
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/asset/"); // Set the destination folder
+    cb(null, "uploads/asset/"); 
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Generate a unique filename
+    cb(null, Date.now() + path.extname(file.originalname));
   },
 });
 
@@ -1649,9 +1645,9 @@ router.post(
             element.location.toLowerCase() ===
               reqData.location_name.toLowerCase()
           ) {
-            reqData.location = element.id; // Assign the matched id to unit_id
+            reqData.location = element.id; 
             locationMatch = true;
-            break; // Exit the loop once a match is found
+            break; 
           }
         }
 
@@ -1697,25 +1693,32 @@ router.post(
 // list
 router.get(
   "/admin-unit-assign-list",
-  [verifyToken, routeAccessChecker("adminAssinUnitAsset")],
+  [verifyToken, routeAccessChecker("adminAssignUnitAsset")],
   async (req, res) => {
+    let user_id = req.decoded.userInfo.id;
+
     let reqData = {
-      limit: req.query.limit || 100,
+      limit: req.query.limit || 5000,
       offset: req.query.offset || 0,
       key: req.query.key,
-      unit: req.query.unit,
+      unit: req.query.unit
+    ? Array.isArray(req.query.unit)
+      ? req.query.unit.map(Number)
+      : req.query.unit.split(',').map(Number)
+    : [],
       location: req.query.location,
       type: req.query.type,
       status: req.query.status,
     };
-    let user_id = req.decoded.userInfo.id;
-    let { offset, limit, key, unit, type, location, status } = reqData;
 
+    let { offset, limit, key, unit, type, location, status } = reqData;
+    const getUnit = await unitAccessModel.getById(user_id)
+    const unitIds = getUnit.map(u => u.unit_id); 
     let result = await assetModel.getList(
       offset,
       limit,
       key,
-      unit,
+      !isEmpty(unit) ? unit : unitIds,
       type,
       location,
       status
@@ -1735,14 +1738,13 @@ router.get(
     for (let index = 0; index < filteredResult.length; index++) {
       const element = filteredResult[index].unit_id;
 
-      let getUnitname = await unitModel.getById(element);
-      if (getUnitname.length) {
-        filteredResult[index].unit_name = getUnitname[0].title;
+      let getUnitName = await unitModel.getById(element);
+      if (getUnitName.length) {
+        filteredResult[index].unit_name = getUnitName[0].title;
       } else {
         filteredResult[index].unit_name = "";
       }
 
-      let current_date = new Date();
       let purchaseDate = new Date(filteredResult[index].purchase_date);
       let currentTime = new Date();
 
@@ -1761,9 +1763,9 @@ router.get(
 
     let unitDefine;
     let count = 0;
-    if (req.decoded.userInfo.role_id === 2) {
+    if (req.decoded.userInfo.role_id === 2 || req.decoded.userInfo.role_id === 4) {
       if (getUnitAssignList.length > 1 && isEmpty(unit)) {
-        unitDefine = getUnitAssignList[0].unit_id;
+        unitDefine = unitIds;
         totalCount = await assetModel.getTotalList(
           key,
           unitDefine,
@@ -1778,7 +1780,6 @@ router.get(
         count = 0;
       }
     }
-
     return res.status(200).send({
       success: true,
       status: 200,

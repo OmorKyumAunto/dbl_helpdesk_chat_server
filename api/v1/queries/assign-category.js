@@ -260,6 +260,9 @@ let deleteByUserAndCategories = () => {
     return `DELETE FROM ${table_name} WHERE user_id = ? AND category_id IN (?)`;
 }
 
+let deleteUserWiseId = () => {
+    return `DELETE FROM ${table_name} WHERE user_id = ? `;
+}
 
 module.exports = {
     getList,
@@ -276,6 +279,7 @@ module.exports = {
     getAfterCategoryAssignList,
     getByUserId,
     deleteByUserAndCategories,
-    getByUserId
+    getByUserId,
+    deleteUserWiseId
 
 }

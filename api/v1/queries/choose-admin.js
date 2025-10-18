@@ -179,6 +179,11 @@ let getDataByUnitId = () => {
     return `select * FROM ${table_name} where  unit_id IN (?) and status = 'active' `;
 }
 
+
+let getByCreatedByIdForDeleted = () => {
+    return `UPDATE ${table_name} SET ? WHERE unit_wise_super_admin = ?`;
+}
+
 module.exports = {
     getUserByEmail,
     addNew,
@@ -196,5 +201,6 @@ module.exports = {
     getDataByUnitId,
     getByAdminId,
     superAndAdminWiseData,
-    getByCreatedById
+    getByCreatedById,
+    getByCreatedByIdForDeleted
 }

@@ -12,9 +12,11 @@ const superAdminModel = require("../models/super-admins");
 const assetModel = require("../models/asset");
 const licensesModel = require("../models/licenses");
 const assetAssignModel = require("../models/asset-assign");
+const assignCategoryModel = require("../models/assign-category");
 const superModel = require("../models/super-admins");
 const seatingLocationModel = require("../models/seating-location");
 const chooseAdminModel = require("../models/choose-admin");
+const assignSeatingLocationModel = require("../models/assign-seating-location");
 const { routeAccessChecker } = require("../middlewares/routeAccess");
 const {today_date,convertDateFormat,addSixHoursAndFormat,currentDateZingHrFormat} = require('../validation/task/task')
 const multer = require("multer");
@@ -1158,6 +1160,8 @@ router.post(
     }
 
     let getData = await adminModel.getById(employeeData[0].profile_id);
+
+
     let data = {
       employee_id: employeeData[0]?.employee_id || null,
       name: employeeData[0]?.name || null,
@@ -1276,7 +1280,11 @@ router.post(
 
     await Promise.all([
       unitSuperAdminModel.getByIdForDeleted(employeeData[0].profile_id),
-      userModel.updateById(userData, id)
+      userModel.updateById(userData, id),
+      assetModel.assignUnitUserWiseDelete(id),
+      assignCategoryModel.deleteUserWiseId(id),
+      assignSeatingLocationModel.deleteByCreatedById(id,{status:0}),
+      chooseAdminModel.getByCreatedByIdForDeleted(id,{status:0}),
     ]);
 
     return res.status(200).send({
@@ -1324,21 +1332,21 @@ router.post(
     let data = {
       employee_id: employeeData[0].employee_id,
       name: employeeData[0].name,
-      department: getData[0].department,
-      designation: getData[0].designation,
-      email: getData[0].email,
-      contact_no: getData[0].contact_no,
-      joining_date: getData[0].joining_date,
-      unit_name: getData[0].unit_name,
-      licenses: employeeData[0].licenses,
-      blood_group: getData[0].blood_group,
-      business_type: getData[0].business_type,
-      line_of_business: getData[0].line_of_business,
-      grade: getData[0].grade,
-      location : getData[0].location,
+      department: getData[0]?.department || null,
+      designation: getData[0]?.designation || null,
+      email: getData[0]?.email || null,
+      contact_no: getData[0]?.contact_no || null,
+      joining_date: getData[0]?.joining_date ||null,
+      unit_name: getData[0]?.unit_name || null,
+      licenses: employeeData[0]?.licenses || null,
+      blood_group: getData[0]?.blood_group || null,
+      business_type: getData[0]?.business_type || null,
+      line_of_business: getData[0]?.line_of_business || null,
+      grade: getData[0]?.grade || null,
+      location : getData[0]?.location || null,
       date_of_birth : getData[0]?.date_of_birth || null ,
-      line_manager_name : getData[0].line_manager_name,
-      line_manager_id : getData[0].line_manager_id,
+      line_manager_name : getData[0]?.line_manager_name || null,
+      line_manager_id : getData[0]?.line_manager_id || null,
     };
 
     let result = await employeeModel.addNew(data);

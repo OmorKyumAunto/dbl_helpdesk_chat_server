@@ -423,52 +423,6 @@ let getDetailsByIdAndWhereIn = () => {
 };
 
 
-// let taskDashboardCountData = () => {
-//   return `
-//     SELECT 
-//       (SELECT COUNT(id) FROM ${table_name} WHERE status = 1) AS total_task_count,
-//       (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'incomplete' AND status = 1) AS total_task_incomplete,
-//       (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'complete' AND status = 1) AS total_task_complete,
-//       (SELECT COUNT(id) FROM ${table_name} WHERE task_status = 'inprogress' AND status = 1) AS total_task_inprogress,
-//       (SELECT 
-//           AVG(TIMESTAMPDIFF(SECOND, 
-//               STR_TO_DATE(CONCAT(task_start_date, ' ', task_start_time), '%Y-%m-%d %H:%i:%s'), 
-//               task_end_time
-//           )) 
-//        FROM ${table_name} 
-//        WHERE task_status = 'complete' AND status = 1
-//       ) AS avg_task_completion_time_seconds,
-
-//       (SELECT COUNT(t.id)
-//        FROM ${table_name} AS t
-//       JOIN dbl_task_categories AS tc ON tc.id = t.task_categories_id
-//        WHERE t.task_status = 'complete' 
-//          AND t.status = 1 
-//          AND tc.status = 1 
-// AND (
-//     (tc.format = 'hours' 
-//         AND TIMESTAMPDIFF(HOUR, 
-//             STR_TO_DATE(CONCAT(t.task_start_date, ' ', t.task_start_time), '%Y-%m-%d %H:%i:%s'), 
-//             STR_TO_DATE(CONCAT(t.task_end_date, ' ', t.task_end_time), '%Y-%m-%d %H:%i:%s')
-//         ) > tc.set_time
-//     ) 
-//     OR 
-//     (tc.format = 'day' 
-//         AND TIMESTAMPDIFF(DAY, t.task_start_date, t.task_end_date) > tc.set_time
-//     ) 
-//     OR 
-//     (tc.format = 'minutes' 
-//         AND TIMESTAMPDIFF(MINUTE, 
-//             STR_TO_DATE(CONCAT(t.task_start_date, ' ', t.task_start_time), '%Y-%m-%d %H:%i:%s'), 
-//             STR_TO_DATE(CONCAT(t.task_end_date, ' ', t.task_end_time), '%Y-%m-%d %H:%i:%s')
-//         ) > tc.set_time
-//     )
-//  )
-//       ) AS total_overdue_tasks;
-
-      
-//   `;
-// };
 
 let taskDashboardCountData = () => {
   return `
@@ -817,6 +771,32 @@ let combineReport = (start_date, end_date, user_id) => {
 };
 
 
+let combineReportSlaMaintainCount = (start_date, end_date, user_id) => {
+  let searchCondition = "1=1";  
+  
+  if (user_id) {
+    searchCondition += ` AND user_id = '${user_id}' `;
+  }
+
+  if (start_date && end_date) {
+    searchCondition += ` 
+      AND created_at >= '${start_date} 00:00:00' 
+      AND updated_at <= '${end_date} 23:59:59' 
+    `;
+  }
+
+  return `
+    SELECT 
+      SUM(CASE WHEN source = 'ticket' AND is_overdue = 0 THEN 1 ELSE 0 END) AS in_time_ticket,
+      SUM(CASE WHEN source = 'ticket' AND is_overdue = 1 THEN 1 ELSE 0 END) AS overdue_ticket,
+      SUM(CASE WHEN source = 'task' AND is_overdue = 0 THEN 1 ELSE 0 END) AS in_time_task,
+      SUM(CASE WHEN source = 'task' AND is_overdue = 1 THEN 1 ELSE 0 END) AS overdue_task
+    FROM combine_report_view
+    WHERE ${searchCondition};
+  `;
+};
+
+
 
 module.exports = {
   getList,
@@ -847,5 +827,6 @@ module.exports = {
   adminCategoryWiseTaskCount,
   taskScheduleList,
   getTaskReport,
-  combineReport
+  combineReport,
+  combineReportSlaMaintainCount
 };

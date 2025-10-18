@@ -460,7 +460,8 @@ router.get(
    }
 
   let result = await taskModel.combineReport(start_date,end_date,user_id);
-
+  let slaMaintain = await taskModel.combineReportSlaMaintainCount(start_date,end_date,user_id);
+  result[0].sla_tracking = slaMaintain[0]
   query_data.total_count = result.length || 0
   return res.status(200).send({
     success: true,

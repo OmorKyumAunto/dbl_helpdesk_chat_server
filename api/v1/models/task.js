@@ -468,6 +468,22 @@ let combineReport = async (start_date,end_date,user_id) => {
   });
 };
 
+
+
+// combine report sla maintain report count
+let combineReportSlaMaintainCount = async (start_date,end_date,user_id) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.combineReportSlaMaintainCount(start_date,end_date,user_id),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
 module.exports = {
   getList,
   getActiveList,
@@ -497,5 +513,6 @@ module.exports = {
   adminCategoryWiseTaskCount,
   taskScheduleList,
   getTaskReport,
-  combineReport
+  combineReport,
+  combineReportSlaMaintainCount
 };

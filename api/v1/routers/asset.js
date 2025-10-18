@@ -2,9 +2,7 @@ const express = require("express");
 const isEmpty = require("is-empty");
 const router = express.Router();
 const verifyToken = require("../middlewares/verifyToken");
-const { check, validationResult } = require("express-validator");
 const moment = require("moment");
-const e = require("express");
 const assetModel = require("../models/asset");
 const assetAssignModel = require("../models/asset-assign");
 const employeeModel = require("../models/employee");
@@ -20,6 +18,8 @@ const { routeAccessChecker } = require("../middlewares/routeAccess");
 const commonObject = require("../common/common");
 const licensesModel = require("../models/licenses");
 const unitAccessModel = require("../models/unit-access");
+
+
 router.post(
   "/add",
   [verifyToken, routeAccessChecker("addAsset")],
@@ -1320,12 +1320,9 @@ router.get(
   async (req, res) => {
     let assignData;
     if (req.decoded.userInfo.role_id === 2 || req.decoded.userInfo.role_id === 4) {
-      const assign_unit = await unitAccessModel.getById(
-        req.decoded.userInfo.id
-      );
-      if (assign_unit) {
-        assignData = assign_unit[0].unit_id;
-      }
+        const getUnit = await unitAccessModel.getById(req.decoded.userInfo.id)
+        const unitIds = getUnit.map(u => u.unit_id); 
+        assignData = unitIds;
     }
     let reqData = {
       limit: req.query.limit || 50,
@@ -1698,23 +1695,30 @@ router.get(
   "/admin-unit-assign-list",
   [verifyToken, routeAccessChecker("adminAssignUnitAsset")],
   async (req, res) => {
+    let user_id = req.decoded.userInfo.id;
+
     let reqData = {
-      limit: req.query.limit || 100,
+      limit: req.query.limit || 5000,
       offset: req.query.offset || 0,
       key: req.query.key,
-      unit: req.query.unit,
+      unit: req.query.unit
+    ? Array.isArray(req.query.unit)
+      ? req.query.unit.map(Number)
+      : req.query.unit.split(',').map(Number)
+    : [],
       location: req.query.location,
       type: req.query.type,
       status: req.query.status,
     };
-    let user_id = req.decoded.userInfo.id;
-    let { offset, limit, key, unit, type, location, status } = reqData;
 
+    let { offset, limit, key, unit, type, location, status } = reqData;
+    const getUnit = await unitAccessModel.getById(user_id)
+    const unitIds = getUnit.map(u => u.unit_id); 
     let result = await assetModel.getList(
       offset,
       limit,
       key,
-      unit,
+      !isEmpty(unit) ? unit : unitIds,
       type,
       location,
       status
@@ -1761,7 +1765,7 @@ router.get(
     let count = 0;
     if (req.decoded.userInfo.role_id === 2 || req.decoded.userInfo.role_id === 4) {
       if (getUnitAssignList.length > 1 && isEmpty(unit)) {
-        unitDefine = getUnitAssignList[0].unit_id;
+        unitDefine = unitIds;
         totalCount = await assetModel.getTotalList(
           key,
           unitDefine,
@@ -1776,7 +1780,6 @@ router.get(
         count = 0;
       }
     }
-
     return res.status(200).send({
       success: true,
       status: 200,

@@ -8,6 +8,7 @@ const moment = require("moment");
 const employeeModel = require("../models/employee");
 const userModel = require("../models/user");
 const adminModel = require("../models/admins ");
+const unitAccessModel = require("../models/unit-access");
 const superAdminModel = require("../models/super-admins");
 const assetModel = require("../models/asset");
 const licensesModel = require("../models/licenses");
@@ -1158,6 +1159,17 @@ router.post(
         message: "This user is not admin.",
       });
     }
+
+    // check if this super admin has under 
+    let checkAssignUnit = await unitAccessModel.getByUserId(id);
+    if (isEmpty(checkAssignUnit)) {
+      return res.status(404).send({
+        success: false,
+        status: 404,
+        message: "Please Unit assign first then promote to admin.",
+      });
+    }
+
 
     let getData = await adminModel.getById(employeeData[0].profile_id);
 

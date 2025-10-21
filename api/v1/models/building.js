@@ -186,6 +186,15 @@ let getDataByUnitId = async (unit_ids = []) => {
 }
 
 
+let getSuperAdminWiseList = async (id) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getSuperAdminWiseList(),[id],(error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 module.exports = {
     getUserByEmail,
     addNew,
@@ -205,5 +214,6 @@ module.exports = {
     getDataByUnitId,
     getByUnitWiseId,
     getByUserId,
-    getByUnitWiseMultiId
+    getByUnitWiseMultiId,
+    getSuperAdminWiseList
 }

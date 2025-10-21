@@ -297,7 +297,6 @@ router.get(
   let result
 
   if(search === 'solved'){
-    console.log("solved");
       result = await raiseTicketModel.getAdminWiseTicket(
         id,
         user_id = id,
@@ -319,8 +318,6 @@ router.get(
       );
   }
   if(search === undefined || search === "undefined" || search === null){
-  console.log("undefined");
-
     result = await raiseTicketModel.getAdminWiseTicket(
         id,
         user_id = id,
@@ -488,8 +485,7 @@ router.put(
       "YYYY-MM-DD HH:mm:ss"
     );
 
-    let existingDataById = await raiseTicketModel.adminWiseTicketDetails(
-      user_id,
+    let existingDataById = await raiseTicketModel.getById(
       id
     );
   
@@ -897,140 +893,6 @@ router.put(
   }
 );
 
-// router.post(
-//   "/ticket-forword/:id",
-//   [verifyToken, routeAccessChecker("ticketForwarded")],
-//   async (req, res) => {
-//     let table_id = parseInt(req.params.id);
-//     let user_id = req.decoded.userInfo.id;
-
-//     let reqData = {
-//       unit_id: req.body.unit_id,
-//       category_id: req.body.category_id,
-//       subject: req.body.subject,
-//       remarks: req.body.remarks,
-//     };
-
-//     const id = req.decoded.userInfo.id;
-
-//     if (!table_id) {
-//       return res.status(400).send({
-//         success: false,
-//         status: 400,
-//         message: "Ticket id should not be empty.",
-//       });
-//     }
-
-//     let ticket = await raiseTicketModel.getById(table_id);
-//     if (!ticket.length) {
-//       return res.status(404).send({
-//         success: false,
-//         status: 404,
-//         message: "This ticket  not found.",
-//       });
-//     }
-
-//     let adminTicket = await raiseTicketModel.getAdminWiseTicketById(
-//       id,
-//       table_id
-//     );
-//     if (!adminTicket.length) {
-//       return res.status(404).send({
-//         success: false,
-//         status: 404,
-//         message: "This ticket not under you.",
-//       });
-//     }
-
-//     if (!reqData.category_id) {
-//       return res.status(400).send({
-//         success: false,
-//         status: 400,
-//         message: "Category should not be empty.",
-//       });
-//     }
-
-//     let category = await ticketCategoryModel.getById(reqData.category_id);
-//     if (!category.length) {
-//       return res.status(404).send({
-//         success: false,
-//         status: 404,
-//         message: "This category not found",
-//       });
-//     }
-
-//     let existsAdmin = await raiseTicketModel.existsUnitHasAssign(
-//       reqData.unit_id
-//     );
-//     let existsCategoryAdmin = await raiseTicketModel.existsCategoryHasAssign(
-//       reqData.category_id
-//     );
-//     if (!existsAdmin.length) {
-//       return res.status(404).send({
-//         success: false,
-//         status: 404,
-//         message: "This Unit and category under not has any admin.",
-//       });
-//     }
-
-//     if (!existsCategoryAdmin.length) {
-//       return res.status(404).send({
-//         success: false,
-//         status: 404,
-//         message: "This Unit and category under not has any admin.",
-//       });
-//     }
-
-//     let user = await userModel.getById(id);
-
-//     let forword_data = {
-//       ticket_id: table_id,
-//       unit_id: reqData.unit_id,
-//       category_id: reqData.category_id,
-//       remarks: reqData.remarks,
-//       details: `The ticket has been forwarded by ${user[0].name} to the Unit: ${unit[0].title} and Category: ${category[0].title}.`,
-//       created_by: id,
-//     };
-
-//     if (!reqData.subject) {
-//       reqData.subject = ticket[0]?.subject;
-//     }
-
-//     let ticket_data = {
-//       unit_id: reqData.unit_id,
-//       category_id: reqData.category_id,
-//       subject: reqData.subject,
-//       ticket_status: "forward",
-//       updated_by: user_id,
-//     };
-
-//     // try to apply transaction this api
-
-//     let result = await ticketForwardModel.addNew(forword_data);
-//     let update_ticket = await raiseTicketModel.updateById(
-//       table_id,
-//       ticket_data
-//     );
-
-//     if (result.affectedRows == undefined || result.affectedRows < 1) {
-//       return res.status(500).send({
-//         success: false,
-//         status: 500,
-//         message: "Something Wrong in system database.",
-//       });
-//     }
-
-//     return res.status(201).send({
-//       success: true,
-//       status: 201,
-//       message: "Ticket Successfully Forwarded.",
-//     });
-//   }
-// );
-
-
-
-
 
 router.post(
   "/ticket-forward/:id",
@@ -1096,30 +958,6 @@ router.post(
       });
     }
 
-    // let existsAdmin = await raiseTicketModel.existsUnitHasAssign(
-    //   reqData.unit_id
-    // );
-
-    // if (!existsAdmin.length) {
-    //   return res.status(404).send({
-    //     success: false,
-    //     status: 404,
-    //     message: "This Unit and category under not has any admin.",
-    //   });
-    // }
-
-
-    // let existsCategoryAdmin = await raiseTicketModel.existsCategoryHasAssign(
-    //   reqData.category_id
-    // );
-
-    // if (!existsCategoryAdmin.length) {
-    //   return res.status(404).send({
-    //     success: false,
-    //     status: 404,
-    //     message: "This Unit and category under not has any admin.",
-    //   });
-    // }
 
     let user = await userModel.getById(id);
 
@@ -1144,12 +982,6 @@ router.post(
       updated_by: user_id,
     };
 
-    // try to apply transaction this api
-    // let result = await ticketForwardModel.addNew(forward_data);
-    // let update_ticket = await raiseTicketModel.updateById(
-    //   table_id,
-    //   ticket_data
-    // );
     await Promise.all([
       await ticketForwardModel.addNew(forward_data),
       await raiseTicketModel.updateById(
@@ -1158,13 +990,6 @@ router.post(
     )
     ])
 
-    // if (result.affectedRows == undefined || result.affectedRows < 1) {
-    //   return res.status(500).send({
-    //     success: false,
-    //     status: 500,
-    //     message: "Something Wrong in system database.",
-    //   });
-    // }
 
     return res.status(201).send({
       success: true,

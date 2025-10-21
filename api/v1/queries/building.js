@@ -192,6 +192,12 @@ let getDataByUnitId = () => {
     return `select * FROM ${table_name} where unit_id IN (?) and status = 'active' `;
 }
 
+let getSuperAdminWiseList = () => {
+    return `select * FROM ${table_name} where created_by = ? and status = 'active' `;
+}
+
+
+
 module.exports = {
     getUserByEmail,
     addNew,
@@ -210,5 +216,6 @@ module.exports = {
     getDataByUnitId,
     getByUnitWiseId,
     getByUserId,
-    getByUnitWiseMultiId
+    getByUnitWiseMultiId,
+    getSuperAdminWiseList
 }

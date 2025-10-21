@@ -31,6 +31,7 @@ const seatingLocationRouter = require("./routers/seating-location");
 const unitWiseSuperAdminRouter = require("./routers/unit-wise-super-admin");
 const pushNotificationRouter = require("./routers/push-notification");
 const uploadFileRouter = require("./routers/upload-file");
+const mobileRouter = require("./routers/mobile");
 
 
 
@@ -60,5 +61,6 @@ router.use("/seating-location", seatingLocationRouter);
 router.use("/unit-super-admin", unitWiseSuperAdminRouter);
 router.use("/notification", pushNotificationRouter);
 router.use("/upload-file", uploadFileRouter);
+router.use("/mobile", mobileRouter);
 
 module.exports = router;

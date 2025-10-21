@@ -303,20 +303,20 @@ SELECT
       WHERE ca.user_id = u.id
     ) AS admin_categories
 
-FROM ${table_view} AS u
-JOIN dbl_choose_admin AS ca 
-    ON ca.admin_id = u.id 
-    AND ca.status = 1 
-    AND ca.unit_wise_super_admin = ?
-JOIN dbl_assign_seating_location AS asl 
-    ON asl.user_id = ca.admin_id
-JOIN dbl_seating_location AS sl 
-    ON asl.seating_location_id = sl.id
-JOIN dbl_building AS b 
-    ON sl.building_id = b.id
-WHERE u.status = 1 AND u.role_id = 2
-GROUP BY u.id
-ORDER BY u.id DESC;
+    FROM ${table_view} AS u
+    JOIN dbl_choose_admin AS ca 
+        ON ca.admin_id = u.id 
+        AND ca.status = 1 
+        AND ca.unit_wise_super_admin = ?
+    JOIN dbl_assign_seating_location AS asl 
+        ON asl.user_id = ca.admin_id  AND asl.status = 1
+    JOIN dbl_seating_location AS sl 
+        ON asl.seating_location_id = sl.id
+    JOIN dbl_building AS b 
+        ON sl.building_id = b.id
+    WHERE u.status = 1 AND u.role_id = 2
+    GROUP BY u.id
+    ORDER BY u.id DESC;
   `;
 };
 

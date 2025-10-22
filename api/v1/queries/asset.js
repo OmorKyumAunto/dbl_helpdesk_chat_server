@@ -145,7 +145,7 @@ let assetReport = (unit,start_date,end_date,category,remarks,key,start_purchase_
   return `
     SELECT a.id, a.name, a.category, a.purchase_date, a.serial_number,
            a.po_number, a.price, a.unit_id, au.title as unit_name, a.model,
-           a.specification, a.asset_no, a.remarks, a.location as location_id,
+           a.specification, a.asset_no, a.remarks, a.location as location_id,a.status,
            l.location as location_name, u.name as asset_created_name, 
            u.employee_id as asset_created_employee_id, 
            u.department as asset_created_department,
@@ -329,7 +329,7 @@ let distributedAssetReport = (unit, start_date, end_date, category, employee_typ
            asset_unit_name, assign_date, location_name, user_name,
            user_id_no, designation, department,assign_by_name,assign_by_employee_id,assign_by_department,assign_by_designation,assign_by_contact_no
     FROM ${table_view}
-    ${whereClause} AND status = 1
+    ${whereClause}
   `;
 };
 
@@ -445,7 +445,7 @@ let adminDistributedCategoryData = (unit, start_date, end_date, category, employ
       SUM(CASE WHEN category = '48 Port Switch Managable' THEN 1 ELSE 0 END) AS port_48_switch_count,
       SUM(CASE WHEN category = 'Non Managable Switch' THEN 1 ELSE 0 END) AS non_managable_switch_count
     FROM ${table_view}
-    ${whereClause} AND status = 1;
+    ${whereClause};
   `;
 };
 

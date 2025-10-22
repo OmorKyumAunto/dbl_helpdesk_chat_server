@@ -80,7 +80,6 @@ let getByExistsEmployee = async(employee_id = "") => {
 
 
 let getList = async (offset, limit, key,unit,type, location,status,from_date,to_date ) => {
-  console.log("UNit",unit);
     return new Promise((resolve, reject) => {
       connectionDblystem.query(queries.getList(offset, limit, key,unit,type,location,status,from_date,to_date ), (error, result, fields) => {
         if (error) reject(error);

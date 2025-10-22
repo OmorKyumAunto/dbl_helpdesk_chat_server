@@ -1764,9 +1764,8 @@ router.get(
     let unitDefine;
     let count = 0;
     if (req.decoded.userInfo.role_id === 2 || req.decoded.userInfo.role_id === 4) {
-      if (getUnitAssignList.length > 1 && isEmpty(unit)) {
+      if (getUnitAssignList.length > 0 && isEmpty(unit)) {
         unitDefine = unitIds;
-        console.log("unitDefine ==>",unitDefine);
         totalCount = await assetModel.getTotalList(
           key,
           unitDefine,

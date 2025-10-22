@@ -27,7 +27,7 @@ let getList = (offset, limit, key, unit, type, location, status,from_date,to_dat
       searchCondition += `AND (LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) LIKE LOWER('%${key}%') OR UPPER(serial_number) LIKE UPPER('%${key}%') OR UPPER(po_number) LIKE UPPER('%${key}%')) `;
   }
 if (unit && unit.length > 0) {
-  const units = unit.join(',');  // "4,21,20,19,22"
+  const units = unit.join(','); 
   searchCondition += `AND unit_id IN (${units}) `;
 }
   if (location) {

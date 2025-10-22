@@ -10,7 +10,8 @@ const employeeModel = require("../models/employee");
 const userModel = require("../models/user");
 const seatingLocationModel = require("../models/seating-location");
 const validateRequest = require("../validator/middleware");
-const { sendAnnouncementSchema} = require("../validator/validate-request/announcement");
+const { sendAnnouncementSchema } = require("../validator/validate-request/announcement");
+const { idParamsSchema } = require("../validator/validate-request/common-validator");
 require('dotenv').config();
 
 
@@ -137,7 +138,7 @@ router.get('/mobile-announcement-list', [verifyToken, routeAccessChecker("getAnn
 
 
 
-router.delete('/delete/:id', [verifyToken, routeAccessChecker("mobileAnnouncementDelete")], async (req, res) => {
+router.delete('/delete/:id', [verifyToken, routeAccessChecker("mobileAnnouncementDelete"),validateRequest(idParamsSchema,'params')], async (req, res) => {
 
     let id = req.params.id
     const self_id = req.decoded.userInfo.id;

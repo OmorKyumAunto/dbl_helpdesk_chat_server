@@ -294,8 +294,18 @@ router.get(
     if (role_id === 3) {
       data = await ticketModel.mobileDashboardDataCountEmployee(id, id);
     } else if (role_id === 2) {
-      data = await ticketModel.mobileDashboardDataCountAdmin(id, id);
-    } else {
+      const getUnit = await unitAccessModel.getById(id);
+      const unitIds = getUnit.map(u => u.unit_id);
+      data = await ticketModel.mobileDashboardDataCountAdmin(id, unitIds);
+
+    } else if (role_id === 1) {
+      data = await ticketModel.mobileDashboardDataCountSuperAdmin();
+    } else if (role_id === 4) {
+      const getUnit = await unitAccessModel.getById(id);
+      const unitIds = getUnit.map(u => u.unit_id);
+      data = await ticketModel.mobileDashboardDataCountUnitSuperAdmin(unitIds);
+    }
+     else {
       data = [
         {
           total_ticket: null,

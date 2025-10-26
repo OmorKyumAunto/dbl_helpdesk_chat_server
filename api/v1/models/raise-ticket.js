@@ -1039,11 +1039,39 @@ let mobileDashboardDataCountEmployee = async (id = 0,user_id = 0) => {
 
 
 
-let mobileDashboardDataCountAdmin = async (id = 0,user_id = 0) => {
+let mobileDashboardDataCountAdmin = async ( user_id = 0, unitIds = []) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
       queries.mobileDashboardDataCountAdmin(),
-      [id,user_id],
+      [user_id, unitIds], // ✅ match 3 placeholders
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+
+let mobileDashboardDataCountSuperAdmin = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.mobileDashboardDataCountSuperAdmin(),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+let mobileDashboardDataCountUnitSuperAdmin = async (unitIds = []) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.mobileDashboardDataCountUnitSuperAdmin(),
+      [unitIds, unitIds],
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -1127,5 +1155,7 @@ module.exports = {
   graphTicketTotalSolveDataUnitSuperAdmin,
   graphTicketTotalUnSolveDataUnitSuperAdmin,
   mobileDashboardDataCountEmployee,
-  mobileDashboardDataCountAdmin
+  mobileDashboardDataCountAdmin,
+  mobileDashboardDataCountSuperAdmin,
+  mobileDashboardDataCountUnitSuperAdmin
 };

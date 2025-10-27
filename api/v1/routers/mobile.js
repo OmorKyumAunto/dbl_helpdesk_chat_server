@@ -129,7 +129,7 @@ router.get('/mobile-announcement', [verifyToken, routeAccessChecker("getAnnounce
      const employeeInfo = await employeeModel.getById(userInfo[0].profile_id)
      const unitInfo = await seatingLocationModel.getByIdViewData(employeeInfo[0].seating_location)
      result = await announcementModel.getListMobileForEmployee(offset,limit,unitInfo[0]?.unit_id || null);
-     countData = await announcementModel.getListMobileForAdminCount(unitInfo[0]?.user_id || null);     
+     countData = await announcementModel.getListMobileForAdminCount(unitInfo[0]?.unit_id || null);     
     }
 
  

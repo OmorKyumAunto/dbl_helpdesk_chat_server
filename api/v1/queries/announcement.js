@@ -11,7 +11,25 @@ let addNew = () => {
 
 
 let getListMobileForSuperAdmin = (offset, limit) => {
-    return `SELECT id,title,description,announcement_date,break_time,unit_id,priority FROM ${table_name} WHERE status = 1 ORDER BY id desc LIMIT ${limit} OFFSET ${offset}`;
+return `
+SELECT 
+  a.id,
+  a.title,
+  a.description,
+  a.announcement_date,
+  a.break_time,
+  a.unit_id,
+  a.priority,
+  u.title AS unit_name,
+  us.name as created_by_name,
+  us.employee_id as created_by_employee_id
+FROM ${table_name} AS a
+LEFT JOIN dbl_asset_unit AS u ON u.id = a.unit_id
+LEFT JOIN dbl_users AS us ON us.id = a.created_by
+WHERE a.status = 1
+ORDER BY a.id DESC
+LIMIT ${limit} OFFSET ${offset}
+`;
 }
 
 let getListMobileForSuperAdminCount = () => {

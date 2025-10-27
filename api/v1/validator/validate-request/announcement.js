@@ -3,9 +3,11 @@ const moment = require("moment");
 
 // announcement send schema
 const sendAnnouncementSchema = z.object({
-  unit_id: z.number().refine((val) => val > 0, {
-    message: "Unit ID must be a positive number",
-  }).optional(),
+  unit_id: z.array(
+    z.number().refine((val) => val > 0, {
+      message: "Each Unit ID must be a positive number",
+    })
+  ).optional(),
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string().min(1, { message: "Description is required" }),
  announcement_date: z

@@ -15,53 +15,92 @@ const { idParamsSchema } = require("../validator/validate-request/common-validat
 require('dotenv').config();
 
 
-router.post('/send-announcement', [verifyToken, routeAccessChecker("sendAnnouncement"),validateRequest(sendAnnouncementSchema,'body')], async (req, res) => {
+router.post(
+  '/send-announcement',
+  [
+    verifyToken,
+    routeAccessChecker("sendAnnouncement"),
+    validateRequest(sendAnnouncementSchema, 'body')
+  ],
+  async (req, res) => {
 
-    let reqData = {
-        "unit_id": req.body.unit_id,
-        "title": req.body.title,
-        "description": req.body.description,
-        "announcement_date": req.body.announcement_date,
-        "break_time": req.body.break_time,
-        "priority": req.body.priority
+    try {
+      const self_id = req.decoded.userInfo.id;
+
+      let reqData = {
+        title: req.body.title,
+        description: req.body.description,
+        announcement_date: req.body.announcement_date,
+        break_time: req.body.break_time,
+        priority: req.body.priority,
+        created_by: self_id,
+        updated_by: self_id
+      };
+
+      const unitIds = req.body.unit_id;
+
+      if (unitIds && Array.isArray(unitIds) && unitIds.length > 0) {
+
+        for (const unit of unitIds) {
+          const unitCheck = await assetUnitModel.getById(unit);
+
+          if (!unitCheck.length) {
+            return res.status(404).send({
+              success: false,
+              status: 404,
+              message: `Unit ID ${unit} not found`
+            });
+          }
+
+          const insertData = {
+            ...reqData,
+            unit_id: unit
+          };
+
+          const result = await announcementModel.addNew(insertData);
+
+          if (!result?.affectedRows) {
+            return res.status(500).send({
+              success: false,
+              status: 500,
+              message: "Database error during announcement insert."
+            });
+          }
+        }
+
+      } else {
+        reqData.unit_id = null;
+        const result = await announcementModel.addNew(reqData);
+
+        if (!result?.affectedRows) {
+          return res.status(500).send({
+            success: false,
+            status: 500,
+           "message": "Something Wrong in system database."
+          });
+        }
+      }
+
+      return res.status(201).send({
+        success: true,
+        status: 201,
+        message: "Announcement successfully sent."
+      });
+
+    } catch (error) {
+      console.error("Error sending announcement:", error);
+
+      return res.status(500).send({
+        success: false,
+        status: 500,
+        message: "Internal Server Error",
+        error: error?.message
+      });
     }
 
-    const self_id = req.decoded.userInfo.id;
-    reqData.created_by = self_id
-    reqData.updated_by = self_id
-
-
-    if(reqData.unit_id){
-    let unit = await assetUnitModel.getById(reqData.unit_id);
-    if (!unit.length) {
-        return res.status(404).send({
-            "success": false,
-            "status": 404,
-            "message": "This unit not found",
-
-        });
-    }
-    }else{
-        reqData.unit_id = null
-    }
-
-    let result = await announcementModel.addNew(reqData);
-
-    if (result.affectedRows == undefined || result.affectedRows < 1) {
-        return res.status(500).send({
-            "success": false,
-            "status": 500,
-            "message": "Something Wrong in system database."
-        });
-    }
-
-    return res.status(201).send({
-        "success": true,
-        "status": 201,
-        "message": "Announcement successfully send."
-    });
-
-});
+  }
+);
+;
 
 
 
@@ -89,8 +128,7 @@ router.get('/mobile-announcement', [verifyToken, routeAccessChecker("getAnnounce
      const userInfo = await userModel.getById(id)
      const employeeInfo = await employeeModel.getById(userInfo[0].profile_id)
      const unitInfo = await seatingLocationModel.getByIdViewData(employeeInfo[0].seating_location)
-
-     result = await announcementModel.getListMobileForEmployee(offset,limit,unitInfo[0]?.user_id || null);
+     result = await announcementModel.getListMobileForEmployee(offset,limit,unitInfo[0]?.unit_id || null);
      countData = await announcementModel.getListMobileForAdminCount(unitInfo[0]?.user_id || null);     
     }
 

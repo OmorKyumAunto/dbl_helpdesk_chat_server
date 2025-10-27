@@ -98,7 +98,7 @@ const raiseTicketSchema = z.object({
 
 
 const forwardTicketSchema = z.object({
-  seating_location: z.number(),
+  admin_id : z.number(),
   category_id: z.number(),
   remarks : z.string().optional(),
 });

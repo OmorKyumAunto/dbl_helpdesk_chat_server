@@ -231,7 +231,7 @@ router.get(
         resultAssign = await raiseTicketModel.graphTicketTotalDataAdmin(id);
         resultTotal = await raiseTicketModel.graphTicketTotalSolveDataAdmin(id);
         resultTotalUnsolved =
-          await raiseTicketModel.graphTicketTotalUnSolveDataAdmin(id);
+        await raiseTicketModel.graphTicketTotalUnSolveDataAdmin(id);
       }
 
       // Month names mapping

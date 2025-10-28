@@ -50,6 +50,15 @@ let getById = async (id = 0) => {
     });
 }
 
+let deleteByTicketId = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.deleteByTicketId(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 let addNew = async (info) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.addNew(), [info], (error, result, fields) => {
@@ -151,6 +160,7 @@ module.exports = {
     updateById,
     getDetailsByIdAndWhereIn,
     getByTitle,
-    getOnlyDataList
+    getOnlyDataList,
+    deleteByTicketId
 }
 

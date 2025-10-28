@@ -384,6 +384,98 @@ router.get(
 
 
 // combine report
+// router.get(
+//   "/combine-report",
+//   [verifyToken, routeAccessChecker("combineReport"),validateRequest(combineReport,'query')],
+//   async (req, res) => {
+   
+//     let id = req.decoded.userInfo.id;
+
+//     const reqData = {
+//       start_date : req.query.start_date,
+//       end_date : req.query.end_date,
+//       unit : parseInt(req.query.unit), 
+//       user_id : parseInt(req.query.user_id), 
+//   }
+//   const {start_date,end_date,unit,user_id} = reqData
+    
+//   const query_data = {
+//     start_date: start_date || null,
+//     end_date: end_date || null,
+//     unit : unit || null,
+//     user_id : user_id || null
+//   }
+
+//   if(unit){
+//     let existingDataByUnitId = await assetUnitModel.getById(unit);
+//     if (!existingDataByUnitId.length) {
+//         return res.status(404).send({
+//             "success": false,
+//             "status": 404,
+//             "message": "Unit not found",
+
+//         });
+//     }
+//     query_data.unit_name = existingDataByUnitId[0].title
+//    }
+
+//   if(user_id){
+//     let existingDataByUserId = await userModel.getById(user_id);
+//     if (!existingDataByUserId.length) {
+//         return res.status(404).send({
+//             "success": false,
+//             "status": 404,
+//             "message": "User not found",
+
+//         });
+//     }
+
+//     let existingUnitDataByUserId = await userModel.getUnitByUserId(user_id);
+
+//     query_data.employee_name = existingDataByUserId[0].name
+//     query_data.employee_id = existingDataByUserId[0].employee_id
+//     query_data.designation = existingDataByUserId[0].designation
+//     query_data.department = existingDataByUserId[0].department
+//     query_data.admin_assign_unit_name = existingUnitDataByUserId[0]?.asset_unit_titles || ""
+
+//     let existingPayrollUnitDataByUserId = await adminModel.getByEmployeeId(existingDataByUserId[0].employee_id);
+//     query_data.admin_unit_name = existingPayrollUnitDataByUserId[0]?.unit_name || ""
+//    }
+
+//    // report generate user info
+//    if(id){
+//     let existingDataById = await userModel.getById(id);
+//     if (!existingDataById.length) {
+//         return res.status(404).send({
+//             "success": false,
+//             "status": 404,
+//             "message": "User not found",
+
+//         });
+//     }
+//     query_data.report_generate_employee_name = existingDataById[0].name
+//     query_data.report_generate_employee_id = existingDataById[0].employee_id
+//     query_data.report_generate_department = existingDataById[0].department
+//     query_data.report_generate_designation = existingDataById[0].designation
+//    }
+
+//   let result = await taskModel.combineReport(start_date,end_date,user_id);
+//   let slaMaintain = await taskModel.combineReportSlaMaintainCount(start_date,end_date,user_id);
+//   result[0].sla_tracking = slaMaintain[0]
+//   query_data.total_count = result.length || 0
+//   return res.status(200).send({
+//     success: true,
+//     status: 200,
+//     message: "Combine report.",
+//     total: result.length,
+//     data: result[0],
+//     query_data : query_data
+//   });
+//   }
+// );
+
+
+
 router.get(
   "/combine-report",
   [verifyToken, routeAccessChecker("combineReport"),validateRequest(combineReport,'query')],
@@ -473,7 +565,6 @@ router.get(
   });
   }
 );
-
 
 
 module.exports = router;

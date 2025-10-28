@@ -224,7 +224,7 @@ router.get(
         resultAssign = await raiseTicketModel.graphTicketTotalDataUnitSuperAdmin(unitIds);
         resultTotal = await raiseTicketModel.graphTicketTotalSolveDataUnitSuperAdmin(unitIds);
         resultTotalUnsolved =
-          await raiseTicketModel.graphTicketTotalUnSolveDataAdmin(unitIds);
+          await raiseTicketModel.graphTicketTotalUnSolveDataUnitSuperAdmin(unitIds);
       }
 
       if(role_id === 2) {

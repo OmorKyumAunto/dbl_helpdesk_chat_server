@@ -35,12 +35,18 @@ let getByTitle = () => {
 }
 
 let getById = () => {
-    return `SELECT * FROM ${table_name} where  id = ? and status IN ('active', 'deactivate') `;
+    return `SELECT * FROM ${table_name} where  ticket_id = ? `;
 }
 
 let addNew = () => {
     return `INSERT INTO ${table_name} SET ?`;
 }
+
+let deleteByTicketId = () => {
+    return `delete from ${table_name} where ticket_id = ?`;
+}
+
+
 
 let updateById = (data) => {
     let keys = Object.keys(data);
@@ -190,6 +196,7 @@ module.exports = {
     updateById,
     getDataByWhereCondition,
     getDetailsByIdAndWhereIn,
-    getOnlyDataList
+    getOnlyDataList,
+    deleteByTicketId
 
 }

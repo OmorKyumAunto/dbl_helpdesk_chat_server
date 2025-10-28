@@ -854,7 +854,7 @@ let graphTicketTotalSolveDataUnitSuperAdmin = async (unitIds=[]) => {
   });
 };
 
-
+//
 let graphTicketTotalUnSolveDataAdmin = async (user_id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
@@ -867,6 +867,8 @@ let graphTicketTotalUnSolveDataAdmin = async (user_id) => {
     );
   });
 };
+
+
 
 
 let graphTicketTotalUnSolveDataUnitSuperAdmin = async (unitIds=[]) => {

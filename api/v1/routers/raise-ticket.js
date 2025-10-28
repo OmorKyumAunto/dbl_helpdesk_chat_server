@@ -992,6 +992,10 @@ router.post(
       updated_by: user_id,
     };
 
+    const getForwardData = await ticketForwardModel.getById(ticket[0].id)
+    if(getForwardData.length){
+       await ticketForwardModel.deleteByTicketId(ticket[0].id)
+    }
     await Promise.all([
       await ticketForwardModel.addNew(forward_data),
       await raiseTicketModel.updateById(

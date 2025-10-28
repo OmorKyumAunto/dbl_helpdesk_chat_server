@@ -192,13 +192,13 @@ router.delete('/delete/:id', [verifyToken, routeAccessChecker("mobileAnnouncemen
     }
 
 
-    if (existingDataById[0].created_by !== self_id) {
-        return res.status(400).send({
-            "success": false,
-            "status": 400,
-            "message": "You do not have permission to delete this announcement.",
-        });
-    }
+    // if (existingDataById[0].created_by !== self_id) {
+    //     return res.status(400).send({
+    //         "success": false,
+    //         "status": 400,
+    //         "message": "You do not have permission to delete this announcement.",
+    //     });
+    // }
 
 
     let data = {

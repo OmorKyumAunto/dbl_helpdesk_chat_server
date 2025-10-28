@@ -642,10 +642,11 @@ let getAdminWiseTicketById = () => {
 };
 
 // ticket dashboard counting data
-
 let ticketCountingData = () => {
   return `SELECT count(id) as total_ticket FROM ${table_name} where status = 1 `;
 };
+
+
 let getTicketTotalSolved = () => {
   return `SELECT count(id) as total_solved FROM ${table_name} where ticket_status = 'solved' and status = 1 `;
 };

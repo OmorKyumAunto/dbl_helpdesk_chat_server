@@ -359,7 +359,6 @@ let taskSuperAdminDashboardPercentageData = async () => {
 
 // task percentage data  admin
 let taskAdminDashboardPercentageData = async (user_id = 0) => {
-  console.log("first",user_id)
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
       queries.taskAdminDashboardPercentageData(),[user_id],

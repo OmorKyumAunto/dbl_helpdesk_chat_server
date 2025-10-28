@@ -551,21 +551,88 @@ router.get(
     query_data.report_generate_designation = existingDataById[0].designation
    }
 
-  let result = await taskModel.combineReport(start_date,end_date,user_id);
-  let slaMaintain = await taskModel.combineReportSlaMaintainCount(start_date,end_date,user_id);
-  result[0].sla_tracking = slaMaintain[0]
-  query_data.total_count = result.length || 0
+  let count = await taskModel.combineReportTicketTaskCount(start_date,end_date,user_id);
+  let avg_ticket = await taskModel.combineReportTicketTimeCalculate(start_date,end_date,user_id);
+  let avg_task = await taskModel.combineReportTaskTimeCalculate(start_date,end_date,user_id);
+  let day_work = await taskModel.combineReportTaskTimeDayWise(start_date,end_date,user_id);
+
+
+// here is the calculation 8 hour wise work
+  const total_work_day = day_work.length
+  const total_working_hour = count[0].total_ticket_task_time_sum 
+  const totalHours = convertToHours(total_working_hour);
+  const final_working_hour = totalHours / total_work_day
+  const formattedTime = hoursToHMS(final_working_hour);
+
+
+ // here is the calculate sla wise timing
+  const get_ticket_total_sla_time = avg_ticket[0].total_ticket_sla_time_sum
+  const get_task_total_sla_time = avg_task[0].total_task_sla_time_sum
+  const combinedTime = sumTimes(get_ticket_total_sla_time, get_task_total_sla_time);
+  const totalSLAHours = hhmmssToHours(combinedTime);
+  const final_sla_working_hour = totalSLAHours / total_work_day
+  const formattedSlaTime = hoursToHMS(final_sla_working_hour);
+
+
+  const data = {
+    ticket_task_count : count[0],
+    ticket_time_calculation : avg_ticket[0],
+    task_time_calculation : avg_task[0],
+    per_day_wise_work : formattedTime,  
+    per_day_wise_sla : formattedSlaTime,  
+    total_working_day : total_work_day,
+    total_sla_sum : combinedTime,
+    total_work_sum : total_working_hour,
+
+  }
+  query_data.total_count = count.length || 0
   return res.status(200).send({
     success: true,
     status: 200,
     message: "Combine report.",
-    total: result.length,
-    data: result[0],
+    data: data,
     query_data : query_data
   });
   }
 );
 
+
+
+function hoursToHMS(hoursDecimal) {
+  const hours = Math.floor(hoursDecimal);
+  const minutes = Math.floor((hoursDecimal - hours) * 60);
+  const seconds = Math.floor(((hoursDecimal - hours) * 60 - minutes) * 60);
+  return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function convertToHours(timeStr) {
+    const [hours, minutes, seconds] = timeStr.split(':').map(Number);
+    return hours + minutes / 60 + seconds / 3600;
+}
+
+
+
+function sumTimes(time1, time2) {
+  // Split the time strings into hours, minutes, seconds
+  const [h1, m1, s1] = time1.split(':').map(Number);
+  const [h2, m2, s2] = time2.split(':').map(Number);
+
+  // Convert everything to seconds
+  const totalSeconds = (h1 * 3600 + m1 * 60 + s1) + (h2 * 3600 + m2 * 60 + s2);
+
+  // Convert back to HH:MM:SS
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${hours}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+}
+
+
+function hhmmssToHours(time) {
+  const [h, m, s] = time.split(':').map(Number);
+  return h + m / 60 + s / 3600;
+}
 
 module.exports = router;
 

@@ -771,7 +771,34 @@ let combineReport = (start_date, end_date, user_id) => {
 };
 
 
-let combineReportSlaMaintainCount = (start_date, end_date, user_id) => {
+// let combineReportSlaMaintainCount = (start_date, end_date, user_id) => {
+//   let searchCondition = "1=1";  
+  
+//   if (user_id) {
+//     searchCondition += ` AND user_id = '${user_id}' `;
+//   }
+
+//   if (start_date && end_date) {
+//     searchCondition += ` 
+//       AND created_at >= '${start_date} 00:00:00' 
+//       AND updated_at <= '${end_date} 23:59:59' 
+//     `;
+//   }
+
+//   return `
+//     SELECT 
+//       SUM(CASE WHEN source = 'ticket' AND is_overdue = 0 THEN 1 ELSE 0 END) AS in_time_ticket,
+//       SUM(CASE WHEN source = 'ticket' AND is_overdue = 1 THEN 1 ELSE 0 END) AS overdue_ticket,
+//       SUM(CASE WHEN source = 'task' AND is_overdue = 0 THEN 1 ELSE 0 END) AS in_time_task,
+//       SUM(CASE WHEN source = 'task' AND is_overdue = 1 THEN 1 ELSE 0 END) AS overdue_task
+//     FROM combine_report_view
+//     WHERE ${searchCondition};
+//   `;
+// };
+
+
+
+let combineReportTicketTaskCount = (start_date, end_date, user_id) => {
   let searchCondition = "1=1";  
   
   if (user_id) {
@@ -786,16 +813,198 @@ let combineReportSlaMaintainCount = (start_date, end_date, user_id) => {
   }
 
   return `
-    SELECT 
+    SELECT
+      -- Total Counts
+      SUM(CASE WHEN source = 'ticket' THEN 1 ELSE 0 END) AS total_ticket,
+      SUM(CASE WHEN source = 'task' THEN 1 ELSE 0 END) AS total_task,
+      COUNT(*) AS total_ticket_task,
+
+      -- Overdue Counts
+      SUM(CASE WHEN source = 'ticket' AND is_overdue = 1 THEN 1 ELSE 0 END) AS ticket_overdue_count,
+      SUM(CASE WHEN source = 'task' AND is_overdue = 1 THEN 1 ELSE 0 END) AS task_overdue_count,
+      SUM(CASE WHEN is_overdue = 1 THEN 1 ELSE 0 END) AS total_ticket_task_overdue_count,
+
+      -- In-Time Counts
       SUM(CASE WHEN source = 'ticket' AND is_overdue = 0 THEN 1 ELSE 0 END) AS in_time_ticket,
-      SUM(CASE WHEN source = 'ticket' AND is_overdue = 1 THEN 1 ELSE 0 END) AS overdue_ticket,
       SUM(CASE WHEN source = 'task' AND is_overdue = 0 THEN 1 ELSE 0 END) AS in_time_task,
-      SUM(CASE WHEN source = 'task' AND is_overdue = 1 THEN 1 ELSE 0 END) AS overdue_task
-    FROM combine_report_view
-    WHERE ${searchCondition};
+
+      -- Total Ticket Time Sum
+      CONCAT(
+        FLOOR(SUM(CASE WHEN source = 'ticket' THEN TIMESTAMPDIFF(SECOND, created_at, updated_at) END) / 3600), ':',
+        LPAD(FLOOR((SUM(CASE WHEN source = 'ticket' THEN TIMESTAMPDIFF(SECOND, created_at, updated_at) END) % 3600) / 60), 2, '0'), ':',
+        LPAD(SUM(CASE WHEN source = 'ticket' THEN TIMESTAMPDIFF(SECOND, created_at, updated_at) END) % 60, 2, '0')
+      ) AS total_ticket_time_sum,
+
+      -- Total Task Time Sum
+      CONCAT(
+        FLOOR(SUM(CASE WHEN source = 'task' THEN TIMESTAMPDIFF(SECOND, created_at, updated_at) END) / 3600), ':',
+        LPAD(FLOOR((SUM(CASE WHEN source = 'task' THEN TIMESTAMPDIFF(SECOND, created_at, updated_at) END) % 3600) / 60), 2, '0'), ':',
+        LPAD(SUM(CASE WHEN source = 'task' THEN TIMESTAMPDIFF(SECOND, created_at, updated_at) END) % 60, 2, '0')
+      ) AS total_task_time_sum,
+
+      -- Combined Total Time (Ticket + Task)
+      CONCAT(
+        FLOOR(SUM(TIMESTAMPDIFF(SECOND, created_at, updated_at)) / 3600), ':',
+        LPAD(FLOOR((SUM(TIMESTAMPDIFF(SECOND, created_at, updated_at)) % 3600) / 60), 2, '0'), ':',
+        LPAD(SUM(TIMESTAMPDIFF(SECOND, created_at, updated_at)) % 60, 2, '0')
+      ) AS total_ticket_task_time_sum,
+
+      -- Avg Ticket Time (HH:MM:SS)
+      SEC_TO_TIME(AVG(CASE WHEN source = 'ticket' THEN TIMESTAMPDIFF(SECOND, created_at, updated_at) END)) AS avg_ticket_time,
+
+      -- Avg Task Time (HH:MM:SS)
+      SEC_TO_TIME(AVG(CASE WHEN source = 'task' THEN TIMESTAMPDIFF(SECOND, created_at, updated_at) END)) AS avg_task_time,
+
+      -- Combined Avg (HH:MM:SS)
+      SEC_TO_TIME(AVG(TIMESTAMPDIFF(SECOND, created_at, updated_at))) AS avg_ticket_task_time
+
+    FROM dbl_database.combine_report_view
+    WHERE ${searchCondition} AND source IN ('ticket', 'task');
   `;
 };
 
+
+
+let combineReportTicketTimeCalculate = (start_date, end_date, user_id) => {
+  let searchCondition = "1=1";  
+  
+  if (user_id) {
+    searchCondition += ` AND r.solved_by = '${user_id}' `;
+  }
+
+  if (start_date && end_date) {
+    searchCondition += ` 
+      AND r.created_at >= '${start_date} 00:00:00' 
+      AND r.updated_at <= '${end_date} 23:59:59' 
+    `;
+  }
+
+  return `
+    SELECT
+      COUNT(*) AS total_ticket,
+
+      -- Total SLA time (HH:MM:SS)
+      SEC_TO_TIME(SUM(
+          CASE 
+              WHEN s.resolve_time_unit = 'minutes' THEN s.resolve_time_value * 60
+              WHEN s.resolve_time_unit = 'hours'   THEN s.resolve_time_value * 3600
+              WHEN s.resolve_time_unit = 'days'    THEN s.resolve_time_value * 86400
+              ELSE 0
+          END
+      )) AS total_ticket_sla_time_sum,
+
+      -- Average SLA time per ticket (HH:MM:SS)
+      SEC_TO_TIME(
+          SUM(
+              CASE 
+                  WHEN s.resolve_time_unit = 'minutes' THEN s.resolve_time_value * 60
+                  WHEN s.resolve_time_unit = 'hours'   THEN s.resolve_time_value * 3600
+                  WHEN s.resolve_time_unit = 'days'    THEN s.resolve_time_value * 86400
+                  ELSE 0
+              END
+          ) / COUNT(*)
+      ) AS total_ticket_sla_time_avg
+
+    FROM dbl_database.dbl_raise_ticket AS r
+    JOIN dbl_database.dbl_sla_configuration AS s
+        ON r.priority = s.priority
+    WHERE ${searchCondition}
+      AND r.status = 1
+      AND r.ticket_status = 'solved';
+  `;
+};
+
+
+let combineReportTaskTimeCalculate = (start_date, end_date, user_id) => {
+  let searchCondition = "1=1";  
+  
+  if (user_id) {
+    searchCondition += ` AND t.user_id = '${user_id}' `;
+  }
+
+if (start_date && end_date) {
+  searchCondition += `
+    AND t.task_start_date BETWEEN '${start_date}' AND '${end_date}'
+  `;
+}
+
+  return `
+    SELECT
+      COUNT(*) AS total_task,
+
+      -- Total SLA time (HH:MM:SS)
+      SEC_TO_TIME(SUM(
+          CASE 
+              WHEN tc.format = 'minutes' THEN tc.set_time * 60
+              WHEN tc.format = 'hours'   THEN tc.set_time * 3600
+              WHEN tc.format = 'days'    THEN tc.set_time * 86400
+              ELSE 0
+          END
+      )) AS total_task_sla_time_sum,
+
+      -- Average SLA time per task (HH:MM:SS)
+      SEC_TO_TIME(
+          SUM(
+              CASE 
+                  WHEN tc.format = 'minutes' THEN tc.set_time * 60
+                  WHEN tc.format = 'hours'   THEN tc.set_time * 3600
+                  WHEN tc.format = 'days'    THEN tc.set_time * 86400
+                  ELSE 0
+              END
+          ) / COUNT(*)
+      ) AS total_task_sla_time_avg
+
+    FROM dbl_database.dbl_tasks AS t
+    JOIN dbl_database.dbl_task_categories AS tc
+        ON t.task_categories_id = tc.id
+    WHERE ${searchCondition}
+      AND t.status = 1
+      AND t.task_status = 'complete';
+  `;
+};
+
+
+
+
+let combineReportTaskTimeDayWise = (start_date, end_date, user_id) => {
+  let searchCondition = "1=1";  
+
+  if (user_id) {
+    searchCondition += ` AND user_id = '${user_id}' `;
+  }
+
+  if (start_date && end_date) {
+    searchCondition += ` 
+      AND created_at >= '${start_date} 00:00:00' 
+      AND updated_at <= '${end_date} 23:59:59' 
+    `;
+  }
+
+  return `
+    SELECT 
+      c.*,
+      d.record_count,
+      t.total_records
+    FROM combine_report_view AS c
+    JOIN (
+      SELECT 
+        DATE(created_at) AS created_date, 
+        MIN(created_at) AS min_created_at,
+        COUNT(*) AS record_count
+      FROM combine_report_view
+      WHERE ${searchCondition}
+      GROUP BY DATE(created_at)
+    ) AS d 
+      ON DATE(c.created_at) = d.created_date
+      AND c.created_at = d.min_created_at
+    CROSS JOIN (
+      SELECT COUNT(*) AS total_records
+      FROM combine_report_view
+      WHERE ${searchCondition}
+    ) AS t
+    ORDER BY c.created_at ASC;
+  `;
+};
 
 
 module.exports = {
@@ -828,5 +1037,9 @@ module.exports = {
   taskScheduleList,
   getTaskReport,
   combineReport,
-  combineReportSlaMaintainCount
+  // combineReportSlaMaintainCount,
+  combineReportTicketTaskCount,
+  combineReportTicketTimeCalculate,
+  combineReportTaskTimeCalculate,
+  combineReportTaskTimeDayWise
 };

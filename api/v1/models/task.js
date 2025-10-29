@@ -469,11 +469,62 @@ let combineReport = async (start_date,end_date,user_id) => {
 
 
 
-// combine report sla maintain report count
-let combineReportSlaMaintainCount = async (start_date,end_date,user_id) => {
+// // combine report sla maintain report count
+// let combineReportSlaMaintainCount = async (start_date,end_date,user_id) => {
+//   return new Promise((resolve, reject) => {
+//     connectionDblystem.query(
+//       queries.combineReportSlaMaintainCount(start_date,end_date,user_id),
+//       (error, result, fields) => {
+//         if (error) reject(error);
+//         else resolve(result);
+//       }
+//     );
+//   });
+// };
+
+
+
+let combineReportTicketTaskCount = async (start_date,end_date,user_id) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
-      queries.combineReportSlaMaintainCount(start_date,end_date,user_id),
+      queries.combineReportTicketTaskCount(start_date,end_date,user_id),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+let combineReportTicketTimeCalculate = async (start_date,end_date,user_id) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.combineReportTicketTimeCalculate(start_date,end_date,user_id),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+let combineReportTaskTimeCalculate = async (start_date,end_date,user_id) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.combineReportTaskTimeCalculate(start_date,end_date,user_id),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+let combineReportTaskTimeDayWise = async (start_date,end_date,user_id) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.combineReportTaskTimeDayWise(start_date,end_date,user_id),
       (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
@@ -513,5 +564,9 @@ module.exports = {
   taskScheduleList,
   getTaskReport,
   combineReport,
-  combineReportSlaMaintainCount
+  // combineReportSlaMaintainCount,
+  combineReportTicketTaskCount,
+  combineReportTicketTimeCalculate,
+  combineReportTaskTimeCalculate,
+  combineReportTaskTimeDayWise
 };

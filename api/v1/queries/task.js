@@ -771,33 +771,6 @@ let combineReport = (start_date, end_date, user_id) => {
 };
 
 
-// let combineReportSlaMaintainCount = (start_date, end_date, user_id) => {
-//   let searchCondition = "1=1";  
-  
-//   if (user_id) {
-//     searchCondition += ` AND user_id = '${user_id}' `;
-//   }
-
-//   if (start_date && end_date) {
-//     searchCondition += ` 
-//       AND created_at >= '${start_date} 00:00:00' 
-//       AND updated_at <= '${end_date} 23:59:59' 
-//     `;
-//   }
-
-//   return `
-//     SELECT 
-//       SUM(CASE WHEN source = 'ticket' AND is_overdue = 0 THEN 1 ELSE 0 END) AS in_time_ticket,
-//       SUM(CASE WHEN source = 'ticket' AND is_overdue = 1 THEN 1 ELSE 0 END) AS overdue_ticket,
-//       SUM(CASE WHEN source = 'task' AND is_overdue = 0 THEN 1 ELSE 0 END) AS in_time_task,
-//       SUM(CASE WHEN source = 'task' AND is_overdue = 1 THEN 1 ELSE 0 END) AS overdue_task
-//     FROM combine_report_view
-//     WHERE ${searchCondition};
-//   `;
-// };
-
-
-
 let combineReportTicketTaskCount = (start_date, end_date, user_id) => {
   let searchCondition = "1=1";  
   

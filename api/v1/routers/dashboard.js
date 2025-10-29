@@ -32,7 +32,7 @@ router.get(
     }
   }
 
-    if(role_id === 4){
+    if(role_id === 4 || role_id === 2){
       const getUnit = await unitAccessModel.getById(id)
       const unitIds = getUnit.map(u => u.unit_id); 
       asset = await assetModel.getAdminWiseListOfDashboard(unitIds);

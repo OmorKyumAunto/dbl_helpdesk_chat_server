@@ -566,8 +566,8 @@ router.get(
 
 
  // here is the calculate sla wise timing
-  const get_ticket_total_sla_time = avg_ticket[0].total_ticket_sla_time_sum
-  const get_task_total_sla_time = avg_task[0].total_task_sla_time_sum
+  const get_ticket_total_sla_time = avg_ticket[0]?.total_ticket_sla_time_sum || '00:00:00'
+  const get_task_total_sla_time = avg_task[0]?.total_task_sla_time_sum || '00:00:00'
   const combinedTime = sumTimes(get_ticket_total_sla_time, get_task_total_sla_time);
   const totalSLAHours = hhmmssToHours(combinedTime);
   const final_sla_working_hour = totalSLAHours / total_work_day

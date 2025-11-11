@@ -10,6 +10,7 @@ const userModel = require("../models/user");
 const ticketCommentModel = require("../models/ticket-comment");
 const ticketForwardModel = require("../models/ticket-forword");
 const seatingLocationModel = require("../models/seating-location");
+const assignSeatingLocationModel = require("../models/assign-seating-location");
 const employeeModel = require("../models/employee");
 const verifyToken = require("../middlewares/verifyToken");
 const { routeAccessChecker } = require("../middlewares/routeAccess");
@@ -1260,6 +1261,17 @@ router.post(
           message: `${user.name} seating location has not been updated. Please update ${user.name} current seating location.`,
         });
       }
+
+
+   // check this admin had location access wise ticket
+    const getAssignLocation = await assignSeatingLocationModel.getById(my_id,employeeData[0].seating_location)
+    if(isEmpty(getAssignLocation)){
+      return res.status(404).send({
+            success: false,
+            status: 404,
+            message: 'You don’t have permission to raise a ticket for this user due to a location mismatch',
+      });
+    }
 
     // get unit building location data 
     const getLocationInfo = await seatingLocationModel.getByIdViewData(employeeData[0].seating_location)

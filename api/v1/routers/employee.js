@@ -277,6 +277,14 @@ router.post(
       });
     }
 
+    if (reqData.employee_id.length < 6) {
+    return res.status(400).send({
+      success: false,
+      status: 400,
+      message: "Employee ID must be minimum 6 characters.",
+    });
+}
+
     // check name
     if (isEmpty(reqData.name)) {
       return res.status(400).send({
@@ -372,13 +380,6 @@ router.post(
     } else {
       reqData.licenses = null;
     }
-    // if(!Array.isArray(reqData.licenses)){
-    //   return res.status(400).send({
-    //     "success": false,
-    //     "status": 400,
-    //     "message":"Licenses cannot be array."
-    //   });
-    // }
 
     // check duplicate
     let checkDuplicate = await employeeModel.getByExistsEmployee(
@@ -1410,10 +1411,6 @@ router.get(
 
     let result = await userModel.getDataByAssetId(id);
 
-    // for (let index = 0; index < array.length; index++) {
-    //   const element = array[index];
-
-    // }
     return res.status(200).send({
       success: true,
       status: 200,

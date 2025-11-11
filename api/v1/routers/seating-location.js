@@ -6,6 +6,8 @@ const { routeAccessChecker } = require('../middlewares/routeAccess');
 const buildingModel = require('../models/building');
 const userModel = require('../models/user');
 const employeeModel = require('../models/employee');
+const adminModel = require('../models/admins ');
+const unitSuperAdminModel = require('../models/unit-super-admin');
 const seatingLocationModel = require('../models/seating-location');
 const assignSeatingLocationModel = require('../models/assign-seating-location');
 const chooseAdminModel = require('../models/choose-admin');
@@ -490,7 +492,7 @@ router.post('/building-wise-location', [verifyToken, routeAccessChecker("buildin
 router.put('/employee-seating-location/:id', [verifyToken, routeAccessChecker("employeeSeatingLocationUpdate"), validateRequest(idParamsSchema, 'params'), validateRequest(employeeSeatingLocationUpdateSchema, 'body')], async (req, res) => {
 
     let id = req.params.id
-    const self_id = req.decoded.userInfo.id
+    const {self_id = id,role_id} = req.decoded.userInfo
 
     let reqData = {
         "seating_location": req.body.seating_location
@@ -513,9 +515,9 @@ router.put('/employee-seating-location/:id', [verifyToken, routeAccessChecker("e
         return res.status(404).send({
             "success": false,
             "status": 404,
-            "message": "Seating location data found.",
+            "message": "Seating location data not found.",
 
-        });
+      });
     }
 
     const employeeData = {
@@ -523,10 +525,24 @@ router.put('/employee-seating-location/:id', [verifyToken, routeAccessChecker("e
         updated_by : self_id
     }
 
+    if(role_id === 2){
     await Promise.all([
+        userModel.updateById({updated_by:self_id},id),
+        await adminModel.updateById(existingByUserId[0].profile_id,employeeData)
+    ])
+    }
+    if(role_id === 3){
+        await Promise.all([
         userModel.updateById({updated_by:self_id},id),
         await employeeModel.updateById(existingByUserId[0].profile_id,employeeData)
     ])
+    }
+    if(role_id === 4){
+    await Promise.all([
+        userModel.updateById({updated_by:self_id},id),
+        await unitSuperAdminModel.updateById(existingByUserId[0].profile_id,employeeData)
+    ])  
+    }
 
 
     return res.status(200).send({

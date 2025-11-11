@@ -15,34 +15,51 @@ let getByEmployee = () => {
 }
 
 
-let getList = (offset, limit, key, unit, type, location, status,from_date,to_date ) => {
+let getList = (offset, limit, key, unit, type, location, status, from_date, to_date) => {
   let searchCondition = 'status != 0 ';
 
-  
   if (from_date && to_date) {
     searchCondition += ` AND DATE(created_at) BETWEEN '${from_date}' AND '${to_date}'`;
   }
 
   if (key) {
-      searchCondition += `AND (LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) LIKE LOWER('%${key}%') OR UPPER(serial_number) LIKE UPPER('%${key}%') OR UPPER(po_number) LIKE UPPER('%${key}%')) `;
+    searchCondition += ` AND (
+      LOWER(category) LIKE LOWER('%${key}%') OR 
+      LOWER(model) LIKE LOWER('%${key}%') OR 
+      UPPER(serial_number) LIKE UPPER('%${key}%') OR 
+      UPPER(po_number) LIKE UPPER('%${key}%')
+    ) `;
   }
-if (unit && unit.length > 0) {
-  const units = unit.join(','); 
-  searchCondition += `AND unit_id IN (${units}) `;
-}
+
+  // ✅ Fixed unit filter
+  if (unit && Array.isArray(unit) && unit.length > 0) {
+    const units = unit.join(',');
+    searchCondition += ` AND unit_id IN (${units}) `;
+  } else if (unit && typeof unit === 'string' && unit.trim() !== '') {
+    searchCondition += ` AND unit_id IN (${unit}) `;
+  }
+
   if (location) {
-    searchCondition += `AND location LIKE '%${location}%' `;
+    searchCondition += ` AND location LIKE '%${location}%' `;
   }
+
   if (type) {
-    searchCondition += `AND lower(remarks) LIKE lower('%${type}%') `;
+    searchCondition += ` AND LOWER(remarks) LIKE LOWER('%${type}%') `;
   }
+
   if (status) {
-    searchCondition += `AND status = '${status}' `;
+    searchCondition += ` AND status = '${status}' `;
   }
 
-  return `SELECT * FROM ${table_name} WHERE ${searchCondition} AND status = 1 ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+  return `
+    SELECT * 
+    FROM ${table_name} 
+    WHERE ${searchCondition} 
+    AND status = 1 
+    ORDER BY id DESC 
+    LIMIT ${limit} OFFSET ${offset};
+  `;
 };
-
 
 
 let adminUnitWisetotalAssetCount = () => {
@@ -96,9 +113,11 @@ let getTotalList = (key, unit, type,location,status,from_date,to_date) => {
   if (key) {
     searchCondition += `AND (LOWER(category) LIKE LOWER('%${key}%') OR LOWER(model) LIKE LOWER('%${key}%') OR UPPER(serial_number) LIKE UPPER('%${key}%') OR UPPER(po_number) LIKE UPPER('%${key}%')) `;
   }
-  if (unit && unit.length > 0) {
-    const units = unit.join(','); 
-    searchCondition += `AND unit_id IN (${units}) `;
+  if (unit && Array.isArray(unit) && unit.length > 0) {
+    const units = unit.join(',');
+    searchCondition += ` AND unit_id IN (${units}) `;
+  } else if (unit && typeof unit === 'string' && unit.trim() !== '') {
+    searchCondition += ` AND unit_id IN (${unit}) `;
   }
   if (location) {
     searchCondition += `AND location LIKE '%${location}%' `;
@@ -238,7 +257,7 @@ module.exports = {
 
 
 
-let distributedAssetList = (offset, limit, key, unit, type, employee_type, location,from_date,to_date) => {
+let distributedAssetList = (offset, limit, key, unit, type, employee_type, location, from_date, to_date) => {
   let searchCondition = [];
 
   if (from_date && to_date) {
@@ -247,16 +266,16 @@ let distributedAssetList = (offset, limit, key, unit, type, employee_type, locat
     );
   }
 
-  // if (unit) {
-  //   searchCondition.push(`asset_unit_id = '${unit}'`);
-  // }
-    if (unit && unit.length > 0) {
-    const units = unit.join(','); 
+  // Unit filter
+  if (unit && Array.isArray(unit) && unit.length > 0) {
+    const units = unit.join(',');
     searchCondition.push(`asset_unit_id IN (${units})`);
+  } else if (unit && typeof unit === 'string' && unit.trim() !== '') {
+    searchCondition.push(`asset_unit_id IN (${unit})`);
   }
 
   if (location) {
-    searchCondition.push(`location_id LIKE ('%${location}%')`);
+    searchCondition.push(`location_id LIKE '%${location}%'`);
   }
 
   if (type) {
@@ -284,6 +303,7 @@ let distributedAssetList = (offset, limit, key, unit, type, employee_type, locat
 
   return `SELECT * FROM ${table_view} ${whereClause} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
 };
+
 
 
 let distributedAssetReport = (unit, start_date, end_date, category, employee_type,key) => {
@@ -450,7 +470,7 @@ let adminDistributedCategoryData = (unit, start_date, end_date, category, employ
 };
 
 
-let distributedTotalAssetList = (key, unit,type,employee_type,location,from_date,to_date) => {
+let distributedTotalAssetList = (key,unit,type,employee_type,location,from_date,to_date) => {
   let searchCondition = [];
 
   if (from_date && to_date) {
@@ -467,10 +487,14 @@ let distributedTotalAssetList = (key, unit,type,employee_type,location,from_date
     searchCondition.push(`UPPER(category) LIKE UPPER('%${type}%')`);
   }
 
-    if (unit && unit.length > 0) {
-    const units = unit.join(','); 
-    searchCondition.push(`asset_unit_id IN (${units}) `);
+  // Unit filter
+  if (unit && Array.isArray(unit) && unit.length > 0) {
+    const units = unit.join(',');
+    searchCondition.push(`asset_unit_id IN (${units})`);
+  } else if (unit && typeof unit === 'string' && unit.trim() !== '') {
+    searchCondition.push(`asset_unit_id IN (${unit})`);
   }
+
   if (location) {
     searchCondition.push(`UPPER(location_id) LIKE ('%${location}%')`);
   }

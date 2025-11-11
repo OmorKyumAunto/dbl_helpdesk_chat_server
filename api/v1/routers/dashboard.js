@@ -296,14 +296,14 @@ router.get(
     } else if (role_id === 2) {
       const getUnit = await unitAccessModel.getById(id);
       const unitIds = getUnit.map(u => u.unit_id);
-      data = await ticketModel.mobileDashboardDataCountAdmin(id, unitIds);
+      data = await ticketModel.mobileDashboardDataCountAdmin(id, unitIds,id,id);
 
     } else if (role_id === 1) {
-      data = await ticketModel.mobileDashboardDataCountSuperAdmin();
+      data = await ticketModel.mobileDashboardDataCountSuperAdmin(id);
     } else if (role_id === 4) {
       const getUnit = await unitAccessModel.getById(id);
       const unitIds = getUnit.map(u => u.unit_id);
-      data = await ticketModel.mobileDashboardDataCountUnitSuperAdmin(unitIds);
+      data = await ticketModel.mobileDashboardDataCountUnitSuperAdmin(unitIds,id);
     }
      else {
       data = [
@@ -311,6 +311,8 @@ router.get(
           total_ticket: null,
           total_user: null,
           total_asset: null,
+          total_task : null,
+          total_my_asset : null
         },
       ];
     }

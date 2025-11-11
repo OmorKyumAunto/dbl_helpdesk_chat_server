@@ -1277,7 +1277,9 @@ let mobileDashboardDataCountAdmin = () => {
     SELECT
       (SELECT COUNT(id) FROM dbl_raise_ticket WHERE solved_by = ? AND status = 1) AS total_ticket,
       (SELECT COUNT(id) FROM dbl_users WHERE status = 1) AS total_user,
-      (SELECT COUNT(id) FROM dbl_asset WHERE unit_id IN (?) AND status = 1) AS total_asset
+      (SELECT COUNT(id) FROM dbl_asset WHERE unit_id IN (?) AND status = 1) AS total_asset,
+      (SELECT COUNT(id) FROM dbl_tasks WHERE user_id = ? AND status = 1) AS total_task,
+      (SELECT COUNT(id) FROM dbl_asset_assign WHERE user_id = ? AND status = 1) AS total_my_asset
     FROM dual;
   `;
 };
@@ -1288,7 +1290,8 @@ let mobileDashboardDataCountSuperAdmin = () => {
     SELECT
       (SELECT COUNT(id) FROM dbl_raise_ticket WHERE status = 1) AS total_ticket,
       (SELECT COUNT(id) FROM dbl_users WHERE status = 1) AS total_user,
-      (SELECT COUNT(id) FROM dbl_asset_assign WHERE status = 1) AS total_asset
+      (SELECT COUNT(id) FROM dbl_asset_assign WHERE status = 1) AS total_asset,
+      (SELECT COUNT(id) FROM dbl_asset_assign WHERE user_id = ? AND status = 1) AS total_my_asset
   `;
 };
 
@@ -1298,7 +1301,8 @@ let mobileDashboardDataCountUnitSuperAdmin = () => {
 SELECT
   (SELECT COUNT(id) FROM dbl_raise_ticket WHERE unit_id IN (?) AND status = 1) AS total_ticket,
   (SELECT COUNT(id) FROM dbl_users WHERE status = 1) AS total_user,
-  (SELECT COUNT(id) FROM dbl_asset WHERE unit_id IN (?) AND status = 1) AS total_asset
+  (SELECT COUNT(id) FROM dbl_asset WHERE unit_id IN (?) AND status = 1) AS total_asset,
+   (SELECT COUNT(id) FROM dbl_asset_assign WHERE user_id = ? AND status = 1) AS total_my_asset
 FROM dual;
   `;
 };

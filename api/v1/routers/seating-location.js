@@ -525,19 +525,19 @@ router.put('/employee-seating-location/:id', [verifyToken, routeAccessChecker("e
         updated_by : self_id
     }
 
-    if(role_id === 2){
+    if(existingByUserId[0].role_id === 2){
     await Promise.all([
         userModel.updateById({updated_by:self_id},id),
         await adminModel.updateById(existingByUserId[0].profile_id,employeeData)
     ])
     }
-    if(role_id === 3){
+    if(existingByUserId[0].role_id === 3){
         await Promise.all([
         userModel.updateById({updated_by:self_id},id),
         await employeeModel.updateById(existingByUserId[0].profile_id,employeeData)
     ])
     }
-    if(role_id === 4){
+    if(existingByUserId[0].role_id === 4){
     await Promise.all([
         userModel.updateById({updated_by:self_id},id),
         await unitSuperAdminModel.updateById(existingByUserId[0].profile_id,employeeData)

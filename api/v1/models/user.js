@@ -269,3 +269,13 @@ module.exports = {
     getUnitSuperAdminList,
     getTotalUnitSuperAdminList
 }
+
+
+
+
+        // "seating_location": 5,
+        // "seating_location_name": "1st floor (IT & Lifestyle)",
+        // "building_name": "Digital Building",
+        // "building_id": 2,
+        // "seating_unit_id": 4,
+        // "seating_unit_name": "Corporate Office",

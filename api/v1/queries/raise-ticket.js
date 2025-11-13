@@ -449,7 +449,6 @@ let getAllListUserWise = (
         auv.name AS action_by_name,
         auv.designation AS action_by_designation,
         auv.department AS action_by_department,
-        auv.name AS action_by_name,
         auv.email AS action_by_email,
         auv.contact_no AS action_by_contact_no,
         auv.unit_name AS action_by_unit_name,
@@ -462,10 +461,11 @@ let getAllListUserWise = (
         slac.response_time_unit AS response_time_unit,
         slac.resolve_time_value AS resolve_time_value,
         slac.resolve_time_unit AS resolve_time_unit,
-        onBu.name As on_behalf_created_name,
-        onBu.employee_id As on_behalf_created_employee_id
-        
-
+        onBu.name AS on_behalf_created_name,
+        onBu.employee_id AS on_behalf_created_employee_id,
+        lv.seating_location_name AS seating_location_name,
+        lv.building_name AS complex_name,
+        lv.unit_name AS seating_unit_name
     FROM 
         dbl_raise_ticket AS rt
     JOIN 
@@ -480,15 +480,17 @@ let getAllListUserWise = (
         users_view AS auv ON auv.id = rt.updated_by
     LEFT JOIN 
         dbl_ticket_forward AS tf ON tf.ticket_id = rt.id
-    LEFT JOIN dbl_sla_configuration as slac ON slac.priority = rt.priority
-    LEFT JOIN users_view as onBu ON onBu.id = rt.on_behalf_created_by
-
-
+    LEFT JOIN 
+        dbl_sla_configuration AS slac ON slac.priority = rt.priority
+    LEFT JOIN 
+        users_view AS onBu ON onBu.id = rt.on_behalf_created_by
+    LEFT JOIN 
+        location_building_unit_view AS lv ON lv.seating_location_id = rt.seating_location
     ${whereClause}
     ORDER BY 
         rt.id DESC
     ${paginationClause};
-`;
+  `;
 };
 
 let getAllListTotalCountUserWise = (

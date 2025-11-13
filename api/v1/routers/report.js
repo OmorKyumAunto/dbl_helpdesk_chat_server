@@ -489,6 +489,7 @@ router.get(
       unit : parseInt(req.query.unit), 
       user_id : parseInt(req.query.user_id), 
   }
+
   const {start_date,end_date,unit,user_id} = reqData
     
   const query_data = {
@@ -551,27 +552,28 @@ router.get(
     query_data.report_generate_designation = existingDataById[0].designation
    }
 
-  let count = await taskModel.combineReportTicketTaskCount(start_date,end_date,user_id);
-  let avg_ticket = await taskModel.combineReportTicketTimeCalculate(start_date,end_date,user_id);
-  let avg_task = await taskModel.combineReportTaskTimeCalculate(start_date,end_date,user_id);
-  let day_work = await taskModel.combineReportTaskTimeDayWise(start_date,end_date,user_id);
+let count = await taskModel.combineReportTicketTaskCount(start_date,end_date,user_id) || [];
+let avg_ticket = await taskModel.combineReportTicketTimeCalculate(start_date,end_date,user_id) || [{total_ticket_sla_time_sum:'00:00:00'}];
+let avg_task = await taskModel.combineReportTaskTimeCalculate(start_date,end_date,user_id) || [{total_task_sla_time_sum:'00:00:00'}];
+let day_work = await taskModel.combineReportTaskTimeDayWise(start_date,end_date,user_id) || [];
 
+const total_work_day = day_work.length || 1; 
 
-// here is the calculation 8 hour wise work
-  const total_work_day = day_work.length
-  const total_working_hour = count[0].total_ticket_task_time_sum 
-  const totalHours = convertToHours(total_working_hour);
+  const total_working_hour = count[0]?.total_ticket_task_time_sum ||'00:00:00'
+  console.log("total_working_hour",total_working_hour);
+const totalHours = convertToHours(total_working_hour || '00:00:00');
   const final_working_hour = totalHours / total_work_day
-  const formattedTime = hoursToHMS(final_working_hour);
+const formattedTime = hoursToHMS(total_work_day > 0 ? totalHours / total_work_day : 0);
+
 
 
  // here is the calculate sla wise timing
   const get_ticket_total_sla_time = avg_ticket[0]?.total_ticket_sla_time_sum || '00:00:00'
   const get_task_total_sla_time = avg_task[0]?.total_task_sla_time_sum || '00:00:00'
   const combinedTime = sumTimes(get_ticket_total_sla_time, get_task_total_sla_time);
-  const totalSLAHours = hhmmssToHours(combinedTime);
-  const final_sla_working_hour = totalSLAHours / total_work_day
-  const formattedSlaTime = hoursToHMS(final_sla_working_hour);
+  const totalSLAHours = hhmmssToHours(sumTimes(get_ticket_total_sla_time, get_task_total_sla_time));
+
+  const formattedSlaTime = hoursToHMS(total_work_day > 0 ? totalSLAHours / total_work_day : 0);
 
 
   const data = {
@@ -606,6 +608,7 @@ function hoursToHMS(hoursDecimal) {
 }
 
 function convertToHours(timeStr) {
+  console.log("object",timeStr);
     const [hours, minutes, seconds] = timeStr.split(':').map(Number);
     return hours + minutes / 60 + seconds / 3600;
 }

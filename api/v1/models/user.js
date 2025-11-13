@@ -231,7 +231,7 @@ let getAdminList = async (id=0) => {
         seating_locations: row.seating_locations
           ? row.seating_locations.split(",").map(loc => {
               const [id, name] = loc.split(":");
-              return { id: Number(id), name: name.trim() };
+              return { id: Number(id), name: name };
             })
           : []
       }));

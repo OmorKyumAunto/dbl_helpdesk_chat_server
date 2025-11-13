@@ -12,6 +12,8 @@ const ticketForwardModel = require("../models/ticket-forword");
 const seatingLocationModel = require("../models/seating-location");
 const assignSeatingLocationModel = require("../models/assign-seating-location");
 const employeeModel = require("../models/employee");
+const adminModel = require("../models/admins ");
+const unitSUperAdminModel = require("../models/unit-super-admin");
 const verifyToken = require("../middlewares/verifyToken");
 const { routeAccessChecker } = require("../middlewares/routeAccess");
 const moment = require("moment");
@@ -21,6 +23,7 @@ const common = require("../common/common");
 const { upload, multerErrorHandler } = require("../common/upload-image");
 const validateRequest = require("../validator/middleware");
 const { reRaiseTicketCommentSchema ,onBehalfTicketSchema,raiseTicketSchema,forwardTicketSchema} = require("../validator/validate-request/raise-ticket");
+const { superAdminData } = require("../queries/raise-ticket");
 require("dotenv").config();
 
 
@@ -361,8 +364,6 @@ router.get(
     }
   }
   if(search === 'pending'){
-
-    console.log("pending");
         result = await raiseTicketModel.getAdminWiseUpComingTicket(
         id,
         key,
@@ -1251,16 +1252,44 @@ router.post(
 
 
       let user = await userModel.getById(reqData.user_id);
-      // checked seating location
-      let employeeData = await employeeModel.getById(user[0].profile_id);
+      let employeeData
+      if(user[0].role_id === 3){
+     // checked seating location
+       employeeData = await employeeModel.getById(user[0].profile_id);
       if(isEmpty(employeeData[0].seating_location)){
         await commonObject.deleteUploadedFile(req.file?.path);
        return res.status(400).send({
           success: false,
           status: 400,
-          message: `${user.name} seating location has not been updated. Please update ${user.name} current seating location.`,
+          message: `${user[0].name} seating location has not been updated. Please update ${user[0].name} current seating location.`,
         });
       }
+      }
+      if(user[0].role_id === 2){
+     // checked seating location
+       employeeData = await adminModel.getById(user[0].profile_id);
+      if(isEmpty(employeeData[0].seating_location)){
+        await commonObject.deleteUploadedFile(req.file?.path);
+       return res.status(400).send({
+          success: false,
+          status: 400,
+          message: `${user[0].name} seating location has not been updated. Please update ${user[0].name} current seating location.`,
+        });
+      }
+      }
+    if(user[0].role_id === 4){
+     // checked seating location
+       employeeData = await unitSUperAdminModel.getById(user[0].profile_id);
+      if(isEmpty(employeeData[0].seating_location)){
+        await commonObject.deleteUploadedFile(req.file?.path);
+       return res.status(400).send({
+          success: false,
+          status: 400,
+          message: `${user[0].name} seating location has not been updated. Please update ${user[0].name} current seating location.`,
+        });
+      }
+      }
+ 
 
 
    // check this admin had location access wise ticket

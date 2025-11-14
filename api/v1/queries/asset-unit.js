@@ -23,7 +23,8 @@ let unitWiseAdminList = () => {
             JSON_OBJECT(
                 'user_id', ua.id,
                 'name', ua.name,
-                'employee_id', ua.employee_id
+                'employee_id', ua.employee_id,
+                 'role_id', ua.role_id
             )
         ), 
     ']') AS user_list

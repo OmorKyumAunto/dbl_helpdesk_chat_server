@@ -785,6 +785,7 @@ router.put(
       email: req.body.email,
       contact_no: req.body.contact_no,
       joining_date: req.body.joining_date,
+      date_of_birth : req.body.date_of_birth,
       unit_name: req.body.unit_name,
       licenses: req.body.licenses,
       blood_group: req.body.blood_group,
@@ -880,7 +881,27 @@ router.put(
       willWeUpdate = 1;
       updateData.joining_date = reqData.joining_date;
     }
+    if (existingDataById[0].date_of_birth != reqData.date_of_birth) {
+      current_time = moment();
+      if (!moment(reqData.date_of_birth, "YYYY-MM-DD", true).isValid()) {
+        return res.status(400).send({
+          success: false,
+          status: 400,
+          message: "Invalid date.",
+        });
+      } else if (
+        current_time.isBefore(moment(reqData.date_of_birth, "YYYY-MM-DD"))
+      ) {
+        return res.status(400).send({
+          success: false,
+          status: 400,
+          message: "Invalid date.",
+        });
+      }
 
+      willWeUpdate = 1;
+      updateData.date_of_birth = reqData.date_of_birth;
+    }
     // check unit_name
     if (existingDataById[0].unit_name != reqData.unit_name) {
       willWeUpdate = 1;

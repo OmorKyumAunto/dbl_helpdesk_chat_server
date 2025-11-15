@@ -70,6 +70,14 @@ const assetReport = z
 // ticket report
 const ticketReport = z
 .object({
+limit: z
+    .string()  // query param theke string ashe, pore parseInt korte paren
+    .transform((val) => parseInt(val) || 50) // default 50
+    .optional(),
+  offset: z
+    .string()
+    .transform((val) => parseInt(val) || 0) // default 0
+    .optional(),
   key: z.string().optional(),
   start_date : dateFormat().optional(),
   end_date : dateFormat().optional(),

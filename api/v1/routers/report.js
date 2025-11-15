@@ -293,98 +293,87 @@ router.get(
 // ticket report
 router.get(
   "/ticket-report-list",
-  [verifyToken, routeAccessChecker("ticketReport"),validateRequest(ticketReport,'query')],
+  [verifyToken, routeAccessChecker("ticketReport"), validateRequest(ticketReport, 'query')],
   async (req, res) => {
-   
-    let id = req.decoded.userInfo.id;
+    try {
+      let id = req.decoded.userInfo.id;
+      const reqData = {
+        limit:  req.query?.limit,
+        offset:  req.query?.offset,
+        key: req.query.key,
+        start_date: req.query.start_date,
+        end_date: req.query.end_date,
+        category: req.query.category,
+        priority: req.query.priority,
+        unit: req.query.unit ? parseInt(req.query.unit) : null,
+        status: req.query.status,
+        user_id: req.query.user_id,
+        overdue: req.query.overdue
+      };
 
-    const reqData = {
-      offset : req.query.offset,
-      limit : req.query.limit,
-      key : req.query.key,
-      start_date : req.query.start_date,
-      end_date : req.query.end_date,
-      category : req.query.category,
-      priority : req.query.priority,
-      unit : parseInt(req.query.unit),
-      status : req.query.status,
-      user_id : req.query.user_id,
-      overdue : req.query.overdue   
-  }
+      const {limit, offset,key, start_date, end_date, category, priority, unit, status, user_id, overdue } = reqData;
 
-  const {offset,limit,key,start_date,end_date,category,priority,unit,status,user_id,overdue} = reqData
-    
-  const query_data = {
-    offset : offset,
-    limit : limit,
-    key : key || null,
-    start_date: start_date || null,
-    end_date: end_date || null,
-    category : category || null,
-    priority : priority || null,
-    unit : unit || null,
-    status : status || null,
-    user_id : user_id || null,
-    overdue : overdue || null,
-  }
+      const query_data = {
+        offset,
+        limit,
+        key: key || null,
+        start_date: start_date || null,
+        end_date: end_date || null,
+        category: category || null,
+        priority: priority || null,
+        unit: unit || null,
+        status: status || null,
+        user_id: user_id || null,
+        overdue: overdue || null
+      };
 
-  if(unit){
-    let existingDataByUnitId = await assetUnitModel.getById(unit);
-    if (!existingDataByUnitId.length) {
-        return res.status(404).send({
-            "success": false,
-            "status": 404,
-            "message": "Unit not found",
 
-        });
+      // Fetch unit info
+      if (unit) {
+        const unitData = await assetUnitModel.getById(unit);
+        if (!unitData.length) return res.status(404).send({ success: false, status: 404, message: "Unit not found" });
+        query_data.unit_name = unitData[0].title;
+      }
+
+      // Fetch user info
+      if (user_id) {
+        const userData = await userModel.getById(user_id);
+        if (!userData.length) return res.status(404).send({ success: false, status: 404, message: "User not found" });
+        query_data.employee_name = userData[0].name;
+        query_data.employee_id = userData[0].employee_id;
+      }
+
+      // Fetch report generator info
+      if (id) {
+        const reportUser = await userModel.getById(id);
+        if (!reportUser.length) return res.status(404).send({ success: false, status: 404, message: "User not found" });
+        query_data.report_generate_employee_name = reportUser[0].name;
+        query_data.report_generate_employee_id = reportUser[0].employee_id;
+        query_data.report_generate_department = reportUser[0].department;
+        query_data.report_generate_designation = reportUser[0].designation;
+      }
+
+      // Fetch tickets
+      const result = await raiseTicketModel.ticketReportList(limit, offset, key, start_date, end_date, category, priority, unit, status, user_id, overdue);
+
+      query_data.total_count = result.length || 0;
+
+      return res.status(200).send({
+        success: true,
+        status: 200,
+        message: "Ticket report.",
+        total: result.length,
+        data: result,
+        query_data
+      });
+
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send({ success: false, status: 500, message: "Internal Server Error" });
     }
-    query_data.unit_name = existingDataByUnitId[0].title
-   }
-
-  if(user_id){
-    let existingDataByUserId = await userModel.getById(user_id);
-    if (!existingDataByUserId.length) {
-        return res.status(404).send({
-            "success": false,
-            "status": 404,
-            "message": "User not found",
-
-        });
-    }
-    query_data.employee_name = existingDataByUserId[0].name
-    query_data.employee_id = existingDataByUserId[0].employee_id
-   }
-
-   // report generate user info
-   if(id){
-    let existingDataById = await userModel.getById(id);
-    if (!existingDataById.length) {
-        return res.status(404).send({
-            "success": false,
-            "status": 404,
-            "message": "User not found",
-
-        });
-    }
-    query_data.report_generate_employee_name = existingDataById[0].name
-    query_data.report_generate_employee_id = existingDataById[0].employee_id
-    query_data.report_generate_department = existingDataById[0].department
-    query_data.report_generate_designation = existingDataById[0].designation
-   }
-
-  let result = await raiseTicketModel.ticketReportList(offset,limit,key,start_date,end_date,category,priority,unit,status,user_id,overdue);
-
-  query_data.total_count = result.length || 0
-  return res.status(200).send({
-    success: true,
-    status: 200,
-    message: "Ticket report.",
-    total: result.length,
-    data: result,
-    query_data : query_data
-  });
   }
 );
+
 
 
 

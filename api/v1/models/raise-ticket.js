@@ -968,12 +968,12 @@ let getSuperAdminTicketReport = async (
 };
 
 let ticketReportList = async (
- offset,limit, key,start_date,end_date,category,priority,unit,status,user_id,overdue
+  limit,offset, key,start_date,end_date,category,priority,unit,status,user_id,overdue
 ) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
       queries.ticketReportList(
-        offset,limit,key,start_date,end_date,category,priority,unit,status,user_id,overdue
+        limit,offset,key,start_date,end_date,category,priority,unit,status,user_id,overdue
       ),
       (error, result, fields) => {
         if (error) reject(error);
@@ -982,6 +982,8 @@ let ticketReportList = async (
     );
   });
 };
+
+
 
 
 let ticketReport = async (

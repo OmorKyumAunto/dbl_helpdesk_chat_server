@@ -1130,60 +1130,48 @@ let getSuperAdminTicketReport = (
 
 
 let ticketReportList = (
- offset,limit, key,start_date,end_date,category,priority,unit,status,user_id,overdue
+  offset, limit, key, start_date, end_date, category, priority, unit, status, user_id, overdue
 ) => {
   let baseQuery = `
-    SELECT ticket_table_id, ticket_id, ticket_status ,subject, priority, ticket_category_title, asset_serial_number,
-    ticket_created_employee_name, ticket_created_employee_id,
-    ticket_solved_employee_name, ticket_solved_employee_id, asset_unit_title, ticket_updated_at, asset_unit_id,ticket_created_at,is_overdue,seating_unit_name,complex_name,seating_location_name
+    SELECT ticket_table_id, ticket_id, ticket_status, subject, priority, ticket_category_title, asset_serial_number,
+      ticket_created_employee_name, ticket_created_employee_id,
+      ticket_solved_employee_name, ticket_solved_employee_id, asset_unit_title, ticket_updated_at, asset_unit_id,
+      ticket_created_at, is_overdue, seating_unit_name, complex_name, seating_location_name
     FROM super_admin_ticket_view
-    `;
+  `;
 
   let conditions = [];
 
-  if (unit) {
-    conditions.push(`asset_unit_id = '${unit}'`);
-  }
-  if (user_id) {
-    conditions.push(`ticket_solved_employee_user_id = '${user_id}'`);
-  }
-  if (status) {
-    conditions.push(`ticket_status = '${status}'`);
-  }
-  if (priority) {
-    conditions.push(`priority = '${priority}'`);
-  }
-  if (category) {
-    conditions.push(`ticket_category_id = '${category}'`);
-  }
-  if (overdue) {
-    conditions.push(`is_overdue = '${overdue}'`);
-  }
-  if (start_date && end_date) {
-    conditions.push(
-      `ticket_created_at BETWEEN '${start_date}' AND '${end_date}'`
-    );
-  }
+  if (unit) conditions.push(`asset_unit_id = '${unit}'`);
+  if (user_id) conditions.push(`ticket_solved_employee_user_id = '${user_id}'`);
+  if (status) conditions.push(`ticket_status = '${status}'`);
+  if (priority) conditions.push(`priority = '${priority}'`);
+  if (category) conditions.push(`ticket_category_id = '${category}'`);
+  if (overdue) conditions.push(`is_overdue = '${overdue}'`);
+  if (start_date && end_date) conditions.push(`ticket_created_at BETWEEN '${start_date}' AND '${end_date}'`);
   if (key) {
     conditions.push(`(
-            subject LIKE '%${key}%' 
-            OR ticket_id LIKE '%${key}%' 
-            OR ticket_solved_employee_name LIKE '%${key}%' 
-            OR ticket_created_employee_name LIKE '%${key}%' 
-            OR ticket_solved_employee_id LIKE '%${key}%' 
-            OR ticket_created_employee_id LIKE '%${key}%'
-        )`);
+      subject LIKE '%${key}%' 
+      OR ticket_id LIKE '%${key}%' 
+      OR ticket_solved_employee_name LIKE '%${key}%' 
+      OR ticket_created_employee_name LIKE '%${key}%' 
+      OR ticket_solved_employee_id LIKE '%${key}%' 
+      OR ticket_created_employee_id LIKE '%${key}%'
+    )`);
   }
 
-
   if (conditions.length > 0) {
+    baseQuery += " WHERE " + conditions.join(" AND ");
+  }
+
+  // Pagination: LIMIT / OFFSET should always be added last
   if (limit) {
     baseQuery += ` LIMIT ${limit}`;
     if (offset) {
       baseQuery += ` OFFSET ${offset}`;
     }
   }
-  }
+
   return baseQuery;
 };
 

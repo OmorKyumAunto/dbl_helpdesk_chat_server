@@ -299,8 +299,8 @@ router.get(
     let id = req.decoded.userInfo.id;
 
     const reqData = {
-      offset : req.query.offset,
-      limit : req.query.limit,
+      offset : req.query.offset || 0,
+      limit : req.query.limit || 50,
       key : req.query.key,
       start_date : req.query.start_date,
       end_date : req.query.end_date,

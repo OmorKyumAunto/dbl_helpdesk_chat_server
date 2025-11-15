@@ -356,13 +356,16 @@ router.get(
       // Fetch tickets
       const result = await raiseTicketModel.ticketReportList(limit, offset, key, start_date, end_date, category, priority, unit, status, user_id, overdue);
 
+      const totalCount = await raiseTicketModel.ticketReportListCount(key, start_date, end_date, category, priority, unit, status, user_id, overdue);
+      
+
       query_data.total_count = result.length || 0;
 
       return res.status(200).send({
         success: true,
         status: 200,
         message: "Ticket report.",
-        total: result.length,
+        total: totalCount.length,
         data: result,
         query_data
       });

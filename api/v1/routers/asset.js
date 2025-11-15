@@ -814,12 +814,10 @@ router.put(
       });
     }
 
-    let data = {
-      status: existingById[0].status == 1 ? 2 : 1,
-    };
+   let status = existingById[0].status === 1 ? 2 : 1
 
     // get id wise data form db
-    let result = await assetModel.updateById(id, data);
+    let result = await assetModel.updateById(id, {status : status});
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
       return res.status(500).send({
@@ -1509,6 +1507,7 @@ router.get(
 const multer = require("multer");
 const xlsx = require("xlsx");
 const path = require("path");
+const { ChildProcess } = require("child_process");
 
 
 // Configure Multer for file upload

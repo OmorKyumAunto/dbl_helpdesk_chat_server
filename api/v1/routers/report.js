@@ -552,18 +552,18 @@ router.get(
     query_data.report_generate_designation = existingDataById[0].designation
    }
 
-let count = await taskModel.combineReportTicketTaskCount(start_date,end_date,user_id) || [];
-let avg_ticket = await taskModel.combineReportTicketTimeCalculate(start_date,end_date,user_id) || [{total_ticket_sla_time_sum:'00:00:00'}];
-let avg_task = await taskModel.combineReportTaskTimeCalculate(start_date,end_date,user_id) || [{total_task_sla_time_sum:'00:00:00'}];
-let day_work = await taskModel.combineReportTaskTimeDayWise(start_date,end_date,user_id) || [];
+  let count = await taskModel.combineReportTicketTaskCount(start_date,end_date,user_id) || [];
 
-const total_work_day = day_work.length || 1; 
+  let avg_ticket = await taskModel.combineReportTicketTimeCalculate(start_date,end_date,user_id) || [{total_ticket_sla_time_sum:'00:00:00'}];
+  let avg_task = await taskModel.combineReportTaskTimeCalculate(start_date,end_date,user_id) || [{total_task_sla_time_sum:'00:00:00'}];
+  let day_work = await taskModel.combineReportTaskTimeDayWise(start_date,end_date,user_id) || [];
+
+  const total_work_day = day_work.length || 1; 
 
   const total_working_hour = count[0]?.total_ticket_task_time_sum ||'00:00:00'
-  console.log("total_working_hour",total_working_hour);
-const totalHours = convertToHours(total_working_hour || '00:00:00');
+  const totalHours = convertToHours(total_working_hour || '00:00:00');
   const final_working_hour = totalHours / total_work_day
-const formattedTime = hoursToHMS(total_work_day > 0 ? totalHours / total_work_day : 0);
+  const formattedTime = hoursToHMS(total_work_day > 0 ? totalHours / total_work_day : 0);
 
 
 

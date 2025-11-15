@@ -817,7 +817,7 @@ router.put(
    let status = existingById[0].status === 1 ? 2 : 1
 
     // get id wise data form db
-    let result = await assetModel.updateById(id, {status : status});
+    let result = await assetModel.updateById({status : status},id);
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
       return res.status(500).send({

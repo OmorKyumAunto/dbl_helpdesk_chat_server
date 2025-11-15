@@ -13,7 +13,6 @@ router.get(
   [verifyToken, routeAccessChecker("TicketDashboardCountData")],
   async (req, res) => {
     const { id, role_id } = req.decoded.userInfo;
-
     let total_ticket;
     let total_solved;
     let total_unsolved;

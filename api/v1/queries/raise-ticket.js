@@ -709,7 +709,7 @@ let getAdminTicketTotalSolved = () => {
 };
 
 let getAdminTicketTotalUnsolved = () => {
-  return `SELECT count(id) as total_unsolved FROM ${table_name} where solved_by = ? AND ticket_status = 'unsolved'  AND status = 1`;
+  return `SELECT count(ticket_table_id) as total_unsolved FROM ${up_coming_ticket} where user_id = ? AND ticket_status = 'unsolved'  AND status = 1`;
 };
 
 let getAdminTicketTotalForward = () => {

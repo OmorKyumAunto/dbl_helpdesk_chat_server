@@ -300,7 +300,7 @@ router.get(
 
     const reqData = {
       offset : req.query.offset || 0,
-      limit : req.query.limit || 50,
+      limit : req.query.limit || 5,
       key : req.query.key,
       start_date : req.query.start_date,
       end_date : req.query.end_date,

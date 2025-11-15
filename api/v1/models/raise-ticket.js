@@ -967,8 +967,25 @@ let getSuperAdminTicketReport = async (
   });
 };
 
+let ticketReportList = async (
+ offset,limit, key,start_date,end_date,category,priority,unit,status,user_id,overdue
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.ticketReport(
+        offset,limit,key,start_date,end_date,category,priority,unit,status,user_id,overdue
+      ),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
 let ticketReport = async (
-  key,start_date,end_date,category,priority,unit,status,user_id,overdue
+ key,start_date,end_date,category,priority,unit,status,user_id,overdue
 ) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
@@ -982,7 +999,6 @@ let ticketReport = async (
     );
   });
 };
-
 let getSuperAdminTicketReportTotalCount = async (
   key,
   priority,
@@ -1159,5 +1175,6 @@ module.exports = {
   mobileDashboardDataCountEmployee,
   mobileDashboardDataCountAdmin,
   mobileDashboardDataCountSuperAdmin,
-  mobileDashboardDataCountUnitSuperAdmin
+  mobileDashboardDataCountUnitSuperAdmin,
+  ticketReportList
 };

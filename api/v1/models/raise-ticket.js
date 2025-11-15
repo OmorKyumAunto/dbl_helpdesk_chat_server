@@ -983,6 +983,21 @@ let ticketReportList = async (
   });
 };
 
+let ticketReportListCount = async (
+ key,start_date,end_date,category,priority,unit,status,user_id,overdue
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.ticketReportListCount(
+      key,start_date,end_date,category,priority,unit,status,user_id,overdue
+      ),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
 
 
 
@@ -1178,5 +1193,6 @@ module.exports = {
   mobileDashboardDataCountAdmin,
   mobileDashboardDataCountSuperAdmin,
   mobileDashboardDataCountUnitSuperAdmin,
-  ticketReportList
+  ticketReportList,
+  ticketReportListCount
 };

@@ -299,8 +299,8 @@ router.get(
     let id = req.decoded.userInfo.id;
 
     const reqData = {
-      offset : req.query.offset,
-      limit : req.query.limit,
+      offset : req.query.offset || 0,
+      limit : req.query.limit || 50,
       key : req.query.key,
       start_date : req.query.start_date,
       end_date : req.query.end_date,
@@ -315,8 +315,8 @@ router.get(
   const {offset,limit,key,start_date,end_date,category,priority,unit,status,user_id,overdue} = reqData
     
   const query_data = {
-    offset : 0,
-    limit : 50,
+    offset : offset,
+    limit : limit,
     key : key || null,
     start_date: start_date || null,
     end_date: end_date || null,

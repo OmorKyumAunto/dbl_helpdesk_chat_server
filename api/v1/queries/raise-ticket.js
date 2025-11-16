@@ -1178,10 +1178,10 @@ let ticketReportList = (
   limit = 50, offset = 0, key, start_date, end_date, category, priority, unit, status, user_id, overdue
 ) => {
   let baseQuery = `
-    SELECT ticket_table_id, ticket_id, ticket_status, subject, priority, ticket_category_title, asset_serial_number,
+    SELECT ticket_table_id, ticket_id, ticket_status, subject, priority, ticket_category_title, 
            ticket_created_employee_name, ticket_created_employee_id,
            ticket_solved_employee_name, ticket_solved_employee_id, asset_unit_title,
-           ticket_updated_at, asset_unit_id, ticket_created_at, is_overdue, seating_unit_name,
+           ticket_updated_at, asset_unit_id, ticket_created_at, seating_unit_name,
            complex_name, seating_location_name
     FROM super_admin_ticket_view
   `;
@@ -1220,11 +1220,7 @@ let ticketReportListCount = (
  key, start_date, end_date, category, priority, unit, status, user_id, overdue
 ) => {
   let baseQuery = `
-    SELECT ticket_table_id, ticket_id, ticket_status, subject, priority, ticket_category_title, asset_serial_number,
-           ticket_created_employee_name, ticket_created_employee_id,
-           ticket_solved_employee_name, ticket_solved_employee_id, asset_unit_title,
-           ticket_updated_at, asset_unit_id, ticket_created_at, is_overdue, seating_unit_name,
-           complex_name, seating_location_name
+    SELECT ticket_table_id
     FROM super_admin_ticket_view
   `;
 

@@ -1131,7 +1131,7 @@ let getSuperAdminTicketReport = (
 
 
 let ticketReportList = (
-  limit = 50, offset = 0, key, start_date, end_date, category, priority, unit, status, user_id, overdue
+  limit = 50, offset = 0, key, start_date, end_date, category, priority, unit, status, user_id,
 ) => {
   let baseQuery = `
     SELECT ticket_table_id, ticket_id, ticket_status, subject, priority, ticket_category_title, 
@@ -1171,6 +1171,61 @@ let ticketReportList = (
   return baseQuery;
 };
 
+
+
+let ticketAdminReportList = (
+  limit = 50, offset = 0, key, start_date, end_date, category,
+  priority, unit, status, user_id, unitIds
+) => {
+  let baseQuery = `
+    SELECT ticket_table_id, ticket_id, ticket_status, subject, priority, ticket_category_title, 
+           ticket_created_employee_name, ticket_created_employee_id,
+           ticket_solved_employee_name, ticket_solved_employee_id, asset_unit_title,
+           ticket_updated_at, asset_unit_id, ticket_created_at, seating_unit_name,
+           complex_name, seating_location_name
+    FROM super_admin_ticket_view
+  `;
+
+  let conditions = [];
+  // ⭐ Add unitIds array condition: asset_unit_id IN (...)
+  if (unitIds && Array.isArray(unitIds) && unitIds.length > 0) {
+    const idList = unitIds.map(id => `'${id}'`).join(","); 
+    conditions.push(`asset_unit_id IN (${idList})`);
+  }
+
+  if (unit) conditions.push(`asset_unit_id = '${unit}'`);
+  if (user_id) conditions.push(`ticket_solved_employee_user_id = '${user_id}'`);
+  if (status) conditions.push(`ticket_status = '${status}'`);
+  if (priority) conditions.push(`priority = '${priority}'`);
+  if (category) conditions.push(`ticket_category_id = '${category}'`);
+
+  if (start_date && end_date) {
+    conditions.push(`ticket_created_at BETWEEN '${start_date}' AND '${end_date}'`);
+  }
+
+  if (key) {
+    conditions.push(`(
+      subject LIKE '%${key}%' 
+      OR ticket_id LIKE '%${key}%' 
+      OR ticket_solved_employee_name LIKE '%${key}%' 
+      OR ticket_created_employee_name LIKE '%${key}%' 
+      OR ticket_solved_employee_id LIKE '%${key}%' 
+      OR ticket_created_employee_id LIKE '%${key}%'
+    )`);
+  }
+
+
+  if (conditions.length > 0) {
+    baseQuery += " WHERE " + conditions.join(" AND ");
+  }
+
+  baseQuery += ` LIMIT ${limit} OFFSET ${offset}`;
+
+  return baseQuery;
+};
+
+
+
 let ticketReportListCount = (
  key, start_date, end_date, category, priority, unit, status, user_id, overdue
 ) => {
@@ -1206,9 +1261,47 @@ let ticketReportListCount = (
   return baseQuery;
 };
 
+let ticketAdminReportListCount = (
+ key, start_date, end_date, category, priority, unit, status, user_id, unitIds
+) => {
+  let baseQuery = `
+    SELECT ticket_table_id
+    FROM super_admin_ticket_view
+  `;
+
+  let conditions = [];
+  // ⭐ Add unitIds array condition: asset_unit_id IN (...)
+  if (unitIds && Array.isArray(unitIds) && unitIds.length > 0) {
+    const idList = unitIds.map(id => `'${id}'`).join(","); 
+    conditions.push(`asset_unit_id IN (${idList})`);
+  }
+
+  if (unit) conditions.push(`asset_unit_id = '${unit}'`);
+  if (user_id) conditions.push(`ticket_solved_employee_user_id = '${user_id}'`);
+  if (status) conditions.push(`ticket_status = '${status}'`);
+  if (priority) conditions.push(`priority = '${priority}'`);
+  if (category) conditions.push(`ticket_category_id = '${category}'`);
+  if (start_date && end_date) conditions.push(`ticket_created_at BETWEEN '${start_date}' AND '${end_date}'`);
+  if (key) {
+    conditions.push(`(
+      subject LIKE '%${key}%' 
+      OR ticket_id LIKE '%${key}%' 
+      OR ticket_solved_employee_name LIKE '%${key}%' 
+      OR ticket_created_employee_name LIKE '%${key}%' 
+      OR ticket_solved_employee_id LIKE '%${key}%' 
+      OR ticket_created_employee_id LIKE '%${key}%'
+    )`);
+  }
+
+  if (conditions.length > 0) {
+    baseQuery += " WHERE " + conditions.join(" AND ");
+  }
+
+  return baseQuery;
+};
 
 let ticketReport = (
- key,start_date,end_date,category,priority,unit,status,user_id,overdue
+ key,start_date,end_date,category,priority,unit,status,user_id
 ) => {
   let baseQuery = `
     SELECT ticket_table_id, ticket_id, ticket_status ,subject, priority, ticket_category_title, asset_serial_number,
@@ -1256,6 +1349,60 @@ if (conditions.length > 0) { baseQuery += " WHERE " + conditions.join(" AND "); 
   return baseQuery;
 };
 
+
+
+let ticketAdminReport = (
+ key,start_date,end_date,category,priority,unit,status,user_id,unitIds
+) => {
+  let baseQuery = `
+    SELECT ticket_table_id, ticket_id, ticket_status ,subject, priority, ticket_category_title, asset_serial_number,
+    ticket_created_employee_name, ticket_created_employee_id,
+    ticket_solved_employee_name, ticket_solved_employee_id, asset_unit_title, ticket_updated_at, asset_unit_id,ticket_created_at,seating_unit_name,complex_name,seating_location_name
+    FROM super_admin_ticket_view
+    `;
+
+  let conditions = [];
+  // ⭐ Add unitIds array condition: asset_unit_id IN (...)
+  if (unitIds && Array.isArray(unitIds) && unitIds.length > 0) {
+    const idList = unitIds.map(id => `'${id}'`).join(","); 
+    conditions.push(`asset_unit_id IN (${idList})`);
+  }
+  if (unit) {
+    conditions.push(`asset_unit_id = '${unit}'`);
+  }
+  if (user_id) {
+    conditions.push(`ticket_solved_employee_user_id = '${user_id}'`);
+  }
+  if (status) {
+    conditions.push(`ticket_status = '${status}'`);
+  }
+  if (priority) {
+    conditions.push(`priority = '${priority}'`);
+  }
+  if (category) {
+    conditions.push(`ticket_category_id = '${category}'`);
+  }
+
+  if (start_date && end_date) {
+    conditions.push(
+      `ticket_created_at BETWEEN '${start_date}' AND '${end_date}'`
+    );
+  }
+  if (key) {
+    conditions.push(`(
+            subject LIKE '%${key}%' 
+            OR ticket_id LIKE '%${key}%' 
+            OR ticket_solved_employee_name LIKE '%${key}%' 
+            OR ticket_created_employee_name LIKE '%${key}%' 
+            OR ticket_solved_employee_id LIKE '%${key}%' 
+            OR ticket_created_employee_id LIKE '%${key}%'
+        )`);
+  }
+
+
+if (conditions.length > 0) { baseQuery += " WHERE " + conditions.join(" AND "); }
+  return baseQuery;
+};
 
 let getSuperAdminTicketReportTotalCount = (
   key,
@@ -1462,5 +1609,8 @@ module.exports = {
   mobileDashboardDataCountSuperAdmin,
   mobileDashboardDataCountUnitSuperAdmin,
   ticketReportList,
-  ticketReportListCount
+  ticketReportListCount,
+  ticketAdminReportList,
+  ticketAdminReportListCount,
+  ticketAdminReport
 };

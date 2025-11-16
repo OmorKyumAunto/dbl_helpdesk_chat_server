@@ -55,7 +55,7 @@ let getList = (offset, limit, key, unit, type, location, status, from_date, to_d
     SELECT * 
     FROM ${table_name} 
     WHERE ${searchCondition} 
-    AND status = 1 
+    AND status != 0
     ORDER BY id DESC 
     LIMIT ${limit} OFFSET ${offset};
   `;

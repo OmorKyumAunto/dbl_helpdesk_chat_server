@@ -753,19 +753,13 @@ router.delete(
         message: "This asset already assign.Please move to stock first.",
       });
     }
-    let current_date = new Date();
-    let current_time = moment(current_date, "YYYY-MM-DD HH:mm:ss").format(
-      "YYYY-MM-DD HH:mm:ss"
-    );
 
     let data = {
-      status: 0, // status = 1 (active) and status = 0 (delete)
+      status: 0,
     };
 
     // get id wise data form db
-    let result = await assetModel.updateById(id, data);
-    // let deleteAssignStock = await assetAssignModel.deleteAssetById(id);
-    // let deleteAssignStockHistory = await assetHistoryModel.deleteAssetById(id);
+    let result = await assetModel.updateById(data,id);
 
     if (result.affectedRows == undefined || result.affectedRows < 1) {
       return res.status(500).send({

@@ -12,7 +12,7 @@ const taskCategoryModel = require("../models/task-categories");
 const raiseTicketModel = require("../models/raise-ticket");
 const adminModel = require("../models/admins ");
 require('dotenv').config();
-
+const unitAccessModel = require("../models/unit-access");
 
 // asset report
 router.get(
@@ -290,13 +290,13 @@ router.get(
 
 
 
-// ticket report
+// ticket report list
 router.get(
   "/ticket-report-list",
   [verifyToken, routeAccessChecker("ticketReport"), validateRequest(ticketReport, 'query')],
   async (req, res) => {
     try {
-      let id = req.decoded.userInfo.id;
+      let {id,role_id} = req.decoded.userInfo;
       const reqData = {
         limit:  req.query?.limit,
         offset:  req.query?.offset,
@@ -353,11 +353,25 @@ router.get(
         query_data.report_generate_designation = reportUser[0].designation;
       }
 
+      let result
+      let totalCount
+      if(role_id === 1){
       // Fetch tickets
-      const result = await raiseTicketModel.ticketReportList(limit, offset, key, start_date, end_date, category, priority, unit, status, user_id, overdue);
+       result = await raiseTicketModel.ticketReportList(limit, offset, key, start_date, end_date, category, priority, unit, status, user_id);
 
-      const totalCount = await raiseTicketModel.ticketReportListCount(key, start_date, end_date, category, priority, unit, status, user_id, overdue);
-      
+       totalCount = await raiseTicketModel.ticketReportListCount(key, start_date, end_date, category, priority, unit, status, user_id);
+      }
+
+      if(role_id === 4 || role_id === 2){
+
+      const getUnit = await unitAccessModel.getById(id)
+      const unitIds = getUnit.map(u => u.unit_id); 
+
+      // Fetch tickets
+       result = await raiseTicketModel.ticketAdminReportList(limit, offset, key, start_date, end_date, category, priority, unit, status, user_id,unitIds);
+
+       totalCount = await raiseTicketModel.ticketAdminReportListCount(key, start_date, end_date, category, priority, unit, status, user_id,unitIds);
+      }
 
       query_data.total_count = result.length || 0;
 
@@ -385,7 +399,7 @@ router.get(
   [verifyToken, routeAccessChecker("ticketReport"),validateRequest(ticketReport,'query')],
   async (req, res) => {
    
-    let id = req.decoded.userInfo.id;
+    let {id,role_id} = req.decoded.userInfo;
 
     const reqData = {
       key : req.query.key,
@@ -457,7 +471,20 @@ router.get(
     query_data.report_generate_designation = existingDataById[0].designation
    }
 
-  let result = await raiseTicketModel.ticketReport(key,start_date,end_date,category,priority,unit,status,user_id,overdue);
+  let result 
+
+  if(role_id === 1){
+   result = await raiseTicketModel.ticketReport(key,start_date,end_date,category,priority,unit,status,user_id)
+  }
+   if(role_id === 4 || role_id === 2){
+
+      const getUnit = await unitAccessModel.getById(id)
+      const unitIds = getUnit.map(u => u.unit_id); 
+
+      // Fetch tickets
+       result = await raiseTicketModel.ticketAdminReport(key,start_date,end_date,category,priority,unit,status,user_id,unitIds);
+  }
+
 
   query_data.total_count = result.length || 0
   return res.status(200).send({

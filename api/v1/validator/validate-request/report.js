@@ -63,7 +63,6 @@ const assetReport = z
       unit_id : z.string().optional().refine(value => value === undefined || value > 0, {
         message: 'Unit id must be a positive number.',
       }),
-      overdue : z.string().optional(),
     });
 
 
@@ -72,11 +71,11 @@ const ticketReport = z
 .object({
 limit: z
     .string()  // query param theke string ashe, pore parseInt korte paren
-    .transform((val) => parseInt(val) || 50) // default 50
+    .transform((val) => parseInt(val)) // default 50
     .optional(),
   offset: z
     .string()
-    .transform((val) => parseInt(val) || 0) // default 0
+    .transform((val) => parseInt(val)) // default 0
     .optional(),
   key: z.string().optional(),
   start_date : dateFormat().optional(),
@@ -86,7 +85,6 @@ limit: z
   unit : z.string().optional(),
   status : z.enum(['solved', 'unsolved', 'forward','inprogress']).optional(),
   user_id : z.string().optional(),
-  overdue : z.string().optional(),
 });
 
 

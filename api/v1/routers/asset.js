@@ -1091,10 +1091,10 @@ router.put(
           assign_date: reqData.assign_date,
         };
 
-        let result = await assetModel.updateById(id, {
+        let result = await assetModel.updateById({
           is_assign: 1,
           remarks: "assigned",
-        });
+        },id);
         let result2 = await assetAssignModel.addNew(updateEmployeeData);
 
         if (result2.affectedRows == undefined || result2.affectedRows < 1) {
@@ -1115,10 +1115,10 @@ router.put(
         data
       );
 
-      let result = await assetModel.updateById(id, {
+      let result = await assetModel.updateById( {
         remarks: "in_stock",
         is_assign: 0,
-      });
+      },id);
 
       if (result.affectedRows == undefined || result.affectedRows < 1) {
         return res.status(500).send({
@@ -1130,7 +1130,7 @@ router.put(
     }
 
     if (willWeUpdate == 1) {
-      let result = await assetModel.updateById(id, updateData);
+      let result = await assetModel.updateById(updateData,id);
 
       if (result.affectedRows == undefined || result.affectedRows < 1) {
         return res.status(500).send({

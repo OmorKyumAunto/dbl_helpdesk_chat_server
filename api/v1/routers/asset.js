@@ -1218,10 +1218,10 @@ router.put(
       created_by: req.decoded.userInfo.id,
     };
 
-    let updateRemarks = await assetModel.updateById(id, {
+    let updateRemarks = await assetModel.updateById({
       is_assign: 1,
       remarks: "assigned",
-    });
+    },id);
 
     //let getUserIdByEmployeeId = await userModel.getByEmployeeId(reqData.employee_id)
 

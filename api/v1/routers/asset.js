@@ -974,10 +974,11 @@ router.put(
 
     if (reqData.assign_update === 1) {
       // get asset assign data
-      let assetAssignData = await assetAssignModel.getById(id);
+      let assetAssignData = await assetAssignModel.getByData(id);
 
       if (assetAssignData.length) {
         if (assetAssignData[0].user_id !== reqData.user_id) {
+
           // employee validation
           if (isEmpty(reqData.user_id)) {
             return res.status(400).send({
@@ -1013,7 +1014,7 @@ router.put(
             asset_id: id,
             status: 0,
           };
-console.log("updateEmployeeDataCreate",updateEmployeeDataCreate);
+
           Promise.all([
             await assetAssignModel.updateById(id,updateEmployeeData),
             await assetAssignModel.addNew(updateEmployeeDataCreate)
@@ -1022,8 +1023,7 @@ console.log("updateEmployeeDataCreate",updateEmployeeDataCreate);
 
           // let createNew = 
 
-          // get history id
-          let assetHistoryData = await assetHistoryModel.getByAssetId(id);
+   
 
           let userData = await userModel.getById(reqData.user_id);
 
@@ -1038,11 +1038,15 @@ console.log("updateEmployeeDataCreate",updateEmployeeDataCreate);
             history: `This asset assign To ${userData[0].name} and employee id: ${userData[0].employee_id}`,
             asset_assign_date: reqData.assign_date,
           };
-
-          let historyUpdate = await assetHistoryModel.updateById(
+         // get history id
+          let assetHistoryData = await assetHistoryModel.getByAssetId(id);
+          if(assetHistoryData.length){
+             await assetHistoryModel.updateById(
             id,
             assetHistoryUpdate
           );
+          }
+          await assetModel.updateById({is_assign : 1,remarks:'assigned'},id)
           let historyCreate = await assetHistoryModel.addNew(
             assetHistoryCreate
           );

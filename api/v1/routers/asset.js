@@ -977,7 +977,7 @@ router.put(
       let assetAssignData = await assetAssignModel.getById(id);
 
       if (assetAssignData.length) {
-        if (assetAssignData[0].user_id != reqData.user_id) {
+        if (assetAssignData[0].user_id !== reqData.user_id) {
           // employee validation
           if (isEmpty(reqData.user_id)) {
             return res.status(400).send({
@@ -1013,15 +1013,14 @@ router.put(
             asset_id: id,
             status: 0,
           };
+console.log("updateEmployeeDataCreate",updateEmployeeDataCreate);
+          Promise.all([
+            await assetAssignModel.updateById(id,updateEmployeeData),
+            await assetAssignModel.addNew(updateEmployeeDataCreate)
+          ])
+          // let result2 = 
 
-          let result2 = await assetAssignModel.updateById(
-            id,
-            updateEmployeeData
-          );
-
-          let createNew = await assetAssignModel.addNew(
-            updateEmployeeDataCreate
-          );
+          // let createNew = 
 
           // get history id
           let assetHistoryData = await assetHistoryModel.getByAssetId(id);
@@ -1087,7 +1086,7 @@ router.put(
 
         let updateEmployeeData = {
           asset_id: id,
-          user_id: reqData.employee_id,
+          user_id: reqData.user_id,
           assign_date: reqData.assign_date,
         };
 
@@ -1109,11 +1108,15 @@ router.put(
       let data = {
         status: 0,
       };
-      let updateAssignDataStatus = await assetAssignModel.updateById(id, data);
-      let updateAssignDataHistoryStatus = await assetHistoryModel.updateById(
-        id,
-        data
-      );
+      // let updateAssignDataStatus = await assetAssignModel.updateById(id, data);
+      // let updateAssignDataHistoryStatus = await assetHistoryModel.updateById(
+      //   id,
+      //   data
+      // );
+      Promise.all([
+        await assetAssignModel.updateById(id, data),
+        await assetHistoryModel.updateById(id,data)
+      ])
 
       let result = await assetModel.updateById( {
         remarks: "in_stock",
@@ -1173,7 +1176,7 @@ router.put(
     );
 
     // get id wise data form db
-    let result = await assetModel.getById(id);
+    let result = await assetModel.getByActiveId(id);
 
     // check this id already existing in database or not
     if (isEmpty(result)) {

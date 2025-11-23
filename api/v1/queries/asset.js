@@ -564,6 +564,11 @@ let getById = () => {
     return `SELECT * FROM ${table_name} where  id = ? and status != 0 `;
 }
 
+let getByActiveId = () => {
+    return `SELECT * FROM ${table_name} where  id = ? and status = 1`;
+}
+
+
 let getByIdActiveData = () => {
   return `SELECT * FROM ${table_name} where  id = ? and status != 0 `;
 }
@@ -941,5 +946,6 @@ module.exports = {
     adminWiseGetListOfDashboard,
     assignUnitUserWiseDelete,
     assetCategoryCount,
-    adminDistributedCategoryData
+    adminDistributedCategoryData,
+    getByActiveId
 }

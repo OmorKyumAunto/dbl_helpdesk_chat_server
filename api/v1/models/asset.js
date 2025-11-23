@@ -222,6 +222,15 @@ let getById = async (id = 0) => {
     });
 }
 
+let getByActiveId = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByActiveId(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 let getByIdActiveData = async (id = 0) => {
   return new Promise((resolve, reject) => {
       connectionDblystem.query(queries.getByIdActiveData(), [id], (error, result, fields) => {
@@ -673,5 +682,7 @@ module.exports = {
    adminWiseGetListOfDashboard,
    assignUnitUserWiseDelete,
    assetCategoryCount,
-   adminDistributedCategoryData
+   adminDistributedCategoryData,
+   getByActiveId
+   
 }

@@ -25,8 +25,13 @@ let getList = (offset, limit, key) => {
 
 
 let getById = () => {
-    return `SELECT * FROM ${table_name} where  asset_id = ? and status = 1 `;
+    return `SELECT * FROM ${table_name} where  asset_id = ? and status = 1  `;
 }
+
+let getByData = () => {
+    return `SELECT * FROM ${table_name} where  asset_id = ? `;
+}
+
 
 let getByIdUserWise = () => {
     return `SELECT * FROM ${table_name} where  asset_id = ? and user_id = ? and status = 1 `;
@@ -72,6 +77,7 @@ module.exports = {
     totalAssignAssetCount,
     employeeAssignCount,
     getByAssignUser,
-    getByIdUserWise
+    getByIdUserWise,
+    getByData
 
 }

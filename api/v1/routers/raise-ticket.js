@@ -1214,8 +1214,8 @@ router.post(
       const my_id = req.decoded.userInfo.id;
 
       let checkEmployee = await userModel.getDataById(my_id);
-      await commonObject.deleteUploadedFile(req.file?.path);
       if (checkEmployee[0].role_id !== 2) {
+        await commonObject.deleteUploadedFile(req.file?.path);
         return res.status(400).send({
           success: false,
           status: 400,

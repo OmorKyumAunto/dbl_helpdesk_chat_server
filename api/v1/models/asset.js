@@ -79,9 +79,9 @@ let getByExistsEmployee = async(employee_id = "") => {
 
 
 
-let getList = async (offset, limit, key,unit=[],type, location,status,from_date,to_date ) => {
+let getList = async (offset, limit,from_date,to_date, key,unit=[],type, location,status) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getList(offset, limit, key,unit,type,location,status,from_date,to_date ), (error, result, fields) => {
+      connectionDblystem.query(queries.getList(offset, limit,from_date,to_date,key,unit,type,location,status,from_date,to_date), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -117,15 +117,14 @@ let employeeWiseAssigntotalAssetCount = async (user_id) => {
   }
 
 
-let getTotalList = async (key, unit, type,location,status,from_date,to_date) => {
+let getTotalList = async (from_date,to_date,key,unit, type,location,status) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getTotalList(key, unit, type,location,status,from_date,to_date), (error, result, fields) => {
+      connectionDblystem.query(queries.getTotalList(from_date,to_date,key,unit, type,location,status), (error, result, fields) => {
         if (error) reject(error)
         else resolve(result);
       });
   });
 }
-  
 let assetReport = async (unit,start_date,end_date,category,remarks,key,start_purchase_date,end_purchase_date) => {
   return new Promise((resolve, reject) => {
     connectionDblystem.query(queries.assetReport(unit,start_date,end_date,category,remarks,key,start_purchase_date,end_purchase_date), (error, result, fields) => {

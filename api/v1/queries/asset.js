@@ -15,7 +15,7 @@ let getByEmployee = () => {
 }
 
 
-let getList = (offset, limit, key, unit, type, location, status, from_date, to_date) => {
+let getList = (offset, limit,from_date, to_date, key, unit, type, location, status) => {
   let searchCondition = 'status != 0 ';
 
   if (from_date && to_date) {
@@ -104,7 +104,7 @@ let employeeWiseAssigntotalAssetCount = () => {
 
 
 
-let getTotalList = (key, unit, type,location,status,from_date,to_date) => {
+let getTotalList = (from_date,to_date,key, unit, type,location,status) => {
   let searchCondition = 'status != 0 ';
   
   if (from_date && to_date) {
@@ -132,6 +132,8 @@ let getTotalList = (key, unit, type,location,status,from_date,to_date) => {
 
   return `SELECT * FROM ${table_name} WHERE  ${searchCondition}`;
 }
+
+
 
 
 let assetReport = (unit,start_date,end_date,category,remarks,key,start_purchase_date,end_purchase_date) => {

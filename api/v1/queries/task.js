@@ -194,7 +194,9 @@ let assignToMeList = (offset, limit, key, category ,starred,start_date,end_date,
   assign_from_name,
   assign_from_employee_id,
   assign_from_unit_name,
-  sub_list_details
+  sub_list_details,
+  user_name as assign_to_name,
+  user_employee_id as assign_to_employee_id
 
   FROM ${task_view_table}
    WHERE ${searchCondition} 

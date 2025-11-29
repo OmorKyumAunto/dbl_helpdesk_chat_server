@@ -1700,6 +1700,8 @@ router.get(
     let reqData = {
       limit: req.query.limit || 5000,
       offset: req.query.offset || 0,
+      from_date : req.query.from_date,
+      to_date : req.query.to_date,
       key: req.query.key,
       unit: req.query.unit
     ? Array.isArray(req.query.unit)
@@ -1708,15 +1710,17 @@ router.get(
     : [],
       location: req.query.location,
       type: req.query.type,
-      status: req.query.status,
+      status: parseInt(req.query.status),
     };
 
-    let { offset, limit, key, unit, type, location, status } = reqData;
+    let { offset, limit,from_date,to_date, key, unit, type, location, status } = reqData;
     const getUnit = await unitAccessModel.getById(user_id)
     const unitIds = getUnit.map(u => u.unit_id); 
     let result = await assetModel.getList(
       offset,
       limit,
+      from_date,
+      to_date,
       key,
       !isEmpty(unit) ? unit : unitIds,
       type,
@@ -1761,20 +1765,24 @@ router.get(
       }
     }
 
+
     let unitDefine;
     let count = 0;
     if (req.decoded.userInfo.role_id === 2 || req.decoded.userInfo.role_id === 4) {
       if (getUnitAssignList.length > 0 && isEmpty(unit)) {
         unitDefine = unitIds;
         totalCount = await assetModel.getTotalList(
+          from_date,
+          to_date,
           key,
           unitDefine,
           type,
+          location,
           status
         );
         count = totalCount.length;
       } else if (!isEmpty(unit)) {
-        totalCount = await assetModel.getTotalList(key, unit, type);
+        totalCount = await assetModel.getTotalList(from_date,to_date,key, unit, type, location,status);
         count = totalCount.length;
       } else {
         count = 0;

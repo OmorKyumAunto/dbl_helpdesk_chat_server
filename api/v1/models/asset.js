@@ -81,7 +81,7 @@ let getByExistsEmployee = async(employee_id = "") => {
 
 let getList = async (offset, limit,from_date,to_date, key,unit=[],type, location,status) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getList(offset, limit,from_date,to_date,key,unit,type,location,status,from_date,to_date), (error, result, fields) => {
+      connectionDblystem.query(queries.getList(offset, limit,from_date,to_date,key,unit,type,location,status), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -117,7 +117,7 @@ let employeeWiseAssigntotalAssetCount = async (user_id) => {
   }
 
 
-let getTotalList = async (from_date,to_date,key,unit, type,location,status) => {
+let getTotalList = async (from_date,to_date,key,unit=[],type,location,status) => {
     return new Promise((resolve, reject) => {
       connectionDblystem.query(queries.getTotalList(from_date,to_date,key,unit, type,location,status), (error, result, fields) => {
         if (error) reject(error)

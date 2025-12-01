@@ -517,18 +517,18 @@ router.get(
       to_date : req.query.to_date,
     };
 
-    let { offset, limit, key, unit, type, location, status,from_date,to_date } = reqData;
+    let { offset, limit,from_date,to_date, key, unit, type, location, status} = reqData;
 
     let result = await assetModel.getList(
       offset,
       limit,
+      from_date,
+      to_date,
       key,
       unit,
       type,
       location,
-      status,
-      from_date,
-      to_date 
+      status
     );
 
     for (let index = 0; index < result.length; index++) {
@@ -562,13 +562,13 @@ router.get(
       }
     }
     let totalCount = await assetModel.getTotalList(
+      from_date,
+      to_date,
       key,
       unit,
       type,
       location,
-      status,
-      from_date,
-      to_date 
+      status
     );
 
     return res.status(200).send({
@@ -932,14 +932,6 @@ router.put(
       updateData.unit_id = reqData.unit_id;
     }
     if (existingDataById[0].location != reqData.location) {
-      // const checkUnitWiseLocation = await locationModel.getById(reqData.location)
-      // if(isEmpty(checkUnitWiseLocation)){
-      //   return res.status(404).send({
-      //       "success": false,
-      //       "status": 404,
-      //       "message":"This location is not under this unit."
-      // });
-      // }
       willWeUpdate = 1;
       updateData.location = reqData.location;
     }
@@ -1019,11 +1011,6 @@ router.put(
             await assetAssignModel.updateById(id,updateEmployeeData),
             await assetAssignModel.addNew(updateEmployeeDataCreate)
           ])
-          // let result2 = 
-
-          // let createNew = 
-
-   
 
           let userData = await userModel.getById(reqData.user_id);
 
@@ -1261,7 +1248,22 @@ router.put(
       history: `This asset assign To ${userData[0].name} and employee id: ${userData[0].employee_id}`,
       asset_assign_date: reqData.assign_date,
     };
+    let getAssign = await assetAssignModel.getById(id);
+    if(getAssign.length){
+             await assetAssignModel.updateById(
+            id,
+            {status:0}
+          );
+    }  
     let result2 = await assetAssignModel.addNew(assignEmployeeData);
+     // get history id
+    let assetHistoryData = await assetHistoryModel.getByAssetId(id);
+    if(assetHistoryData.length){
+             await assetHistoryModel.updateById(
+            id,
+            {status:0}
+          );
+    }
     let createAssetHistory = await assetHistoryModel.addNew(assetHistory);
 
     // get employee email data

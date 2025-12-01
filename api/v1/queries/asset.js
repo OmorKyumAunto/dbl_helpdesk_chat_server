@@ -104,7 +104,7 @@ let employeeWiseAssigntotalAssetCount = () => {
 
 
 
-let getTotalList = (from_date,to_date,key, unit, type,location,status) => {
+let getTotalList = (from_date,to_date,key,unit,type,location,status) => {
   let searchCondition = 'status != 0 ';
   
   if (from_date && to_date) {

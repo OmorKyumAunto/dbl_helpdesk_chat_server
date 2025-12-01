@@ -556,7 +556,7 @@ router.get(
         let timeDiff = warrantyEndDate - currentTime;
         let daysLeft = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
 
-        result[index].warranty = `Remaining warranty ${daysLeft} days.`;
+        result[index].warranty = `result[0].warranty = Remaining ${daysLeft} Day${daysLeft !== 1 ? 's' : ''}`;
       } else {
         result[index].warranty = "Warranty expired";
       }

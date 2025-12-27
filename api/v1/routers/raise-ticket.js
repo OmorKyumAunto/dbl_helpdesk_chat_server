@@ -1585,4 +1585,165 @@ router.put(
   }
 );
 
+
+
+// admin wise get archive ticket list
+router.get(
+  "/admin-archive-ticket",
+  [verifyToken, routeAccessChecker("adminWiseArchiveTicketList")],
+  async (req, res) => {
+    let id = req.decoded.userInfo.id;
+    let {
+      key = "",
+      priority = "",
+      status = "",
+      search,
+      location_id,
+      offset = 0,
+      limit = 10,
+    } = req.query;
+  let totalCountResult
+  let result
+
+  if(search === undefined || search === "undefined" || search === null){
+    result = await raiseTicketModel.getAdminWiseArchiveTicket(
+        id,
+        user_id = id,
+        key,
+        priority,
+        status,
+        location_id,
+        offset,
+        limit
+    );
+
+      totalCountResult = await raiseTicketModel.getAdminWiseArchiveTicketTotalCount(
+        id,
+        user_id = id,
+        key,
+        priority,
+        status,
+        location_id
+      );
+
+
+    if(result.length === 0){
+      result = await raiseTicketModel.getAdminWiseUpComingTicket(
+        id,
+        key,
+        priority,
+        status,
+        location_id,
+        offset,
+        limit
+      );
+
+      totalCountResult = await raiseTicketModel.getAdminWiseTicketUpComingTotalCount(
+        id,
+        key,
+        priority,
+        status,
+        location_id
+      );
+    }
+  }
+
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Admin wise archive ticket List.",
+      total: totalCountResult.length,
+      data: result,
+    });
+  }
+);
+
+// employee archive list
+router.get(
+  "/user-wise-archive-ticket",
+  [verifyToken, routeAccessChecker("userWiseArchiveTicket")],
+  async (req, res) => {
+    let id = req.decoded.userInfo.id;
+    let {
+      key = "",
+      priority = "",
+      status = "",
+      offset = 0,
+      limit = 10,
+    } = req.query;
+    let result = await raiseTicketModel.getAllListUserWiseArchive(
+      id,
+      key,
+      priority,
+      status,
+      offset,
+      limit
+    );
+    let totalResult = await raiseTicketModel.getAllListTotalCountUserWiseArchive(
+      id,
+      key,
+      priority,
+      status
+    );
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "User wise ticket List.",
+      total: totalResult.length,
+      data: result,
+    });
+  }
+);
+
+// unit super admin archive ticket 
+router.get(
+  "/unit-super-admin-archive-ticket",
+  [verifyToken, routeAccessChecker("unitSuperAdminWiseArchiveTicketList")],
+  async (req, res) => {
+    let id = req.decoded.userInfo.id;
+    let {
+      key = "",
+      priority = "",
+      status = "",
+      location_id,
+      offset = 0,
+      limit = 10,
+    } = req.query;
+
+    const unitAccessId = await unitAccessModel.getById(id)
+    const unitIds = []
+    for (let index = 0; index < unitAccessId.length; index++) {
+        unitIds.push(unitAccessId[index].unit_id);  
+    }
+
+let result
+let totalCountResult
+     result = await raiseTicketModel.getUnitSuperAdminArchiveTicket(
+      key,
+      priority,
+      status,
+      unitIds,
+      location_id,
+      offset,
+      limit
+    );
+     totalCountResult = await raiseTicketModel.getUnitSuperAdminArchiveTicketCount(
+      key,
+      priority,
+      status,
+      unitIds,
+      location_id,
+    );
+
+
+    return res.status(200).send({
+      success: true,
+      status: 200,
+      message: "Unit super admin ticket List.",
+      total: totalCountResult.length,
+      data: result,
+    });
+  }
+);
+
 module.exports = router;

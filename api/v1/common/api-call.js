@@ -523,40 +523,92 @@ const ticketArchive = async(req,res) => {
      console.log("Start Ticket Archive =>")
         for (let index = 0; index < ticketData.length; index++) {
             const data = ticketData[index];
-      
+      console.log("data ==>",data);
         // store archive data
-        const archiveData = {
-            id : data.id,
-            unit_id : data.unit_id,
-            category_id : data.category_id,
-            asset_id : data?.asset_id || null,
-            ticket_id : data.ticket_id,
-            priority : data.priority,
-            subject : data.subject,
-            cc : data?.cc || null,
-            description : data.description,
-            attachment : data?.attachment || null,
-            status : data.status,
-            ticket_status : data.ticket_status,
-            created_by : data.created_by,
-            created_at : data.created_at,
-            updated_at : data.updated_at,
-            updated_by : data.updated_by || null,
-            solved_by : data.solved_by || null,
-            is_on_behalf : data.is_on_behalf || null,
-            on_behalf_created_by : data.on_behalf_created_by || null,
-            is_re_raise : data.is_re_raise || null,
-            re_raise_count : data.re_raise_count || null,
-            seating_location : data.seating_location || null,
-        }
+        // const archiveData = {
+        //     id : data.id,
+        //     unit_id : data.unit_id,
+        //     category_id : data.category_id,
+        //     asset_id : data?.asset_id || null,
+        //     ticket_id : data.ticket_id,
+        //     priority : data.priority,
+        //     subject : data.subject,
+        //     cc : data?.cc || null,
+        //     description : data.description,
+        //     attachment : data?.attachment || null,
+        //     status : data.status,
+        //     ticket_status : data.ticket_status,
+        //     created_by : data.created_by,
+        //     created_at : data.created_at,
+        //     updated_at : data.updated_at,
+        //     updated_by : data.updated_by || null,
+        //     solved_by : data.solved_by || null,
+        //     is_on_behalf : data.is_on_behalf || null,
+        //     on_behalf_created_by : data.on_behalf_created_by || null,
+        //     is_re_raise : data.is_re_raise || null,
+        //     re_raise_count : data.re_raise_count || null,
+        //     seating_location : data.seating_location || null,
+        // }
+        const sanitizeEnum = (value, allowedValues, defaultValue) => {
+  if (!value) return defaultValue;
+  return allowedValues.includes(value) ? value : defaultValue;
+};
 
+const archiveData = {
+  id : data.id,
+  unit_id: data.unit_id,
+  category_id: data.category_id,
+  asset_id: data?.asset_id ?? null,
+  ticket_id: data.ticket_id ?? null,
+
+  priority: sanitizeEnum(
+    data.priority,
+    ['high', 'low', 'medium'],
+    'low'
+  ),
+
+  subject: data.subject,
+  cc: data?.cc ?? null,
+  description: data.description,
+  attachment: data?.attachment ?? null,
+
+  status: data.status ?? 1,
+
+  ticket_status: sanitizeEnum(
+    data.ticket_status,
+    ['solved', 'unsolved', 'forward', 'inprocess'],
+    'unsolved'
+  ),
+
+  created_by: data.created_by,
+  created_at: data.created_at,
+  updated_at: data.updated_at,
+  updated_by: data?.updated_by ?? null,
+  solved_by: data?.solved_by ?? null,
+
+  is_on_behalf: data?.is_on_behalf ?? 0,
+  on_behalf_created_by: data?.on_behalf_created_by ?? null,
+
+  is_re_raise: data?.is_re_raise ?? 0,
+  re_raise_count: data?.re_raise_count ?? 0,
+
+  seating_location: data?.seating_location ?? null,
+};
+console.log("data save ==>",archiveData);
          await ticketModel.addNewArchiveData(archiveData)
 
         }
-     console.log("End Ticket Archive =>")
+      console.log("End Ticket Archive =>")
     }
+    const ticketDataCount = await ticketModel.getTicketAllListCount()
+    const archiveTicketDataCount = await ticketModel.getTicketAllListForArchiveData()
 
-
+    if(ticketDataCount.length === archiveTicketDataCount.length){
+           console.log("delete start =>")
+        await ticketModel.ticketTableFormat() 
+        console.log("delete done =>")
+    }
+   console.log("Ticker archiving successfully complete")
 }
 
 

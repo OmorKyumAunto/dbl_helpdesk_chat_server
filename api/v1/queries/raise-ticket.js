@@ -5,6 +5,9 @@ let admin_wise_ticket_view = "admin_wise_ticket";
 let up_coming_ticket = "up_coming_ticket_view";
 let super_admin_ticket_view = "super_admin_ticket_view";
 let re_raise_table_name = "dbl_ticket_re_raise_tracking"
+let archive_table = "dbl_raise_ticket_archive"
+let admin_wise_ticket_archive = "admin_wise_ticket_archive"
+let super_admin_archive_ticket_view = "super_admin_archive_ticket_view"
 
 
 let getList = () => {
@@ -15,7 +18,18 @@ let getAllList = () => {
 };
 
 let getTicketAllListForArchive = () => {
-  return `SELECT * FROM ${table_name} WHERE status = 1 `;
+  return `SELECT * FROM ${table_name}`;
+};
+
+let getTicketAllListForArchiveData = () => {
+  return `SELECT count(id) FROM ${archive_table}`;
+};
+let getTicketAllListCount = () => {
+  return `SELECT count(id) FROM ${table_name}`;
+};
+
+let ticketTableFormat = () => {
+  return `DELETE FROM dbl_raise_ticket`;
 };
 
 let getAllLocationDataByUnitId = () => {
@@ -268,7 +282,78 @@ let getAdminWiseTicketTotalCount = (key, priority, status,location_id) => {
   return query;
 };
 
+let getAdminWiseArchiveTicket = (key, priority, status,location_id,offset, limit) => {
+  let conditions = [];
 
+  // Add conditions dynamically based on parameters
+  if (priority) {
+    conditions.push(`priority = '${priority}'`);
+  }
+  if (status) {
+    conditions.push(`ticket_status = '${status}'`);
+  }
+  if (key) {
+    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
+  if (location_id) {
+    conditions.push(`seating_location_id = '${location_id}'`);
+  }
+  // Base condition for user_id
+  conditions.push(`user_id = ? AND ticket_solved_employee_user_id = ? AND ticket_status='solved'`);
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  // Pagination clause
+  const paginationClause = `LIMIT ${limit} OFFSET ${offset}`;
+
+  // Build query parts conditionally
+  let query = `
+        SELECT 
+            * 
+        FROM 
+            ${admin_wise_ticket_archive} 
+        ${whereClause}
+    `;
+
+  query += ` ${paginationClause}`;
+
+  return query;
+};
+
+
+let getAdminWiseArchiveTicketTotalCount = (key, priority, status,location_id) => {
+  let conditions = [];
+
+  // Add conditions dynamically based on parameters
+  if (priority) {
+    conditions.push(`priority = '${priority}'`);
+  }
+  if (status) {
+    conditions.push(`ticket_status = '${status}'`);
+  }
+  if (key) {
+    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
+  if (location_id) {
+    conditions.push(`seating_location_id = '${location_id}'`);
+  }
+
+  // Base condition for user_id
+  conditions.push(`user_id = ? AND ticket_solved_employee_user_id = ? AND ticket_status='solved'`);
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  // Build query parts conditionally
+  let query = `
+        SELECT 
+            * 
+        FROM 
+            ${admin_wise_ticket_archive} 
+        ${whereClause}
+    `;
+
+  return query;
+};
 let getAdminWiseUpComingTicket = (key, priority, status, location_id,offset, limit) => {
   let conditions = [];
 
@@ -1532,6 +1617,230 @@ FROM dual;
 };
 
 
+let getAllListUserWiseArchive = (
+  id,
+  key = "",
+  priority = "",
+  status = "",
+  offset,
+  limit
+) => {
+  let conditions = [`rt.created_by = ${id}`, `rt.status = 1`];
+
+  if (priority) {
+    conditions.push(`rt.priority = '${priority}'`);
+  }
+  if (status) {
+    conditions.push(`rt.ticket_status = '${status}'`);
+  }
+  if (key) {
+    conditions.push(
+      `(rt.subject LIKE '%${key}%' OR rt.ticket_id LIKE '%${key}%')`
+    );
+  }
+
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  // Append LIMIT and OFFSET for pagination
+  const paginationClause = `LIMIT ${limit} OFFSET ${offset}`;
+
+  return `
+    SELECT 
+        rt.*,  
+        au.title AS unit_name, 
+        tc.title AS category_name,
+        ass.name AS asset_name,
+        ass.category AS asset_category,
+        ass.serial_number AS serial_number,
+        u.name AS ticket_solved_employee_name,
+        u.employee_id AS ticket_solved_employee_id,
+        u.unit_name AS ticket_solved_unit_name,
+        u.contact_no AS ticket_solved_contact_no,
+        u.email AS ticket_solved_email,
+        u.department AS ticket_solved_department,
+        u.designation AS ticket_solved_designation,
+        auv.name AS action_by_name,
+        auv.designation AS action_by_designation,
+        auv.department AS action_by_department,
+        auv.email AS action_by_email,
+        auv.contact_no AS action_by_contact_no,
+        auv.unit_name AS action_by_unit_name,
+        auv.employee_id AS action_by_employee_id,
+        tf.details AS forward_details,
+        tf.remarks AS forward_remarks,
+        tf.created_at AS forward_date,
+        slac.priority AS sla_priority,
+        slac.response_time_value AS response_time_value,
+        slac.response_time_unit AS response_time_unit,
+        slac.resolve_time_value AS resolve_time_value,
+        slac.resolve_time_unit AS resolve_time_unit,
+        onBu.name AS on_behalf_created_name,
+        onBu.employee_id AS on_behalf_created_employee_id,
+        lv.seating_location_name AS seating_location_name,
+        lv.building_name AS complex_name,
+        lv.unit_name AS seating_unit_name
+    FROM 
+        dbl_raise_ticket_archive AS rt
+    JOIN 
+        dbl_asset_unit AS au ON au.id = rt.unit_id 
+    JOIN 
+        dbl_ticket_category AS tc ON tc.id = rt.category_id 
+    LEFT JOIN 
+        dbl_asset AS ass ON ass.id = rt.asset_id
+    LEFT JOIN 
+        users_view AS u ON u.id = rt.solved_by
+    LEFT JOIN 
+        users_view AS auv ON auv.id = rt.updated_by
+    LEFT JOIN 
+        dbl_ticket_forward AS tf ON tf.ticket_id = rt.id
+    LEFT JOIN 
+        dbl_sla_configuration AS slac ON slac.priority = rt.priority
+    LEFT JOIN 
+        users_view AS onBu ON onBu.id = rt.on_behalf_created_by
+    LEFT JOIN 
+        location_building_unit_view AS lv ON lv.seating_location_id = rt.seating_location
+    ${whereClause}
+    ORDER BY 
+        rt.id DESC
+    ${paginationClause};
+  `;
+};
+
+let getAllListTotalCountUserWiseArchive = (
+  id,
+  key = "",
+  priority = "",
+  status = ""
+) => {
+  let conditions = [`rt.created_by = ${id}`, `rt.status = 1`];
+
+  if (priority) {
+    conditions.push(`rt.priority = '${priority}'`);
+  }
+  if (status) {
+    conditions.push(`rt.ticket_status = '${status}'`);
+  }
+  if (key) {
+    conditions.push(
+      `(rt.subject LIKE '%${key}%' OR rt.ticket_id LIKE '%${key}%')`
+    );
+  }
+
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  return `
+        SELECT 
+            rt.*,  
+            au.title AS unit_name, 
+            tc.title AS category_name,
+            ass.name AS asset_name,
+            ass.category AS asset_category,
+            ass.serial_number AS serial_number
+        FROM 
+            dbl_raise_ticket_archive AS rt
+        JOIN 
+            dbl_asset_unit AS au ON au.id = rt.unit_id 
+        JOIN 
+            dbl_ticket_category AS tc ON tc.id = rt.category_id 
+        LEFT JOIN 
+            dbl_asset AS ass ON ass.id = rt.asset_id
+        ${whereClause}
+        ORDER BY 
+            rt.created_at DESC
+    `;
+};
+
+
+
+let getUnitSuperAdminArchiveTicket = (key, priority, status, unitIds,location_id, offset, limit) => {
+  let conditions = [];
+
+  // Filter by unitIds
+  if (unitIds && unitIds.length > 0) {
+    const unitIdList = unitIds.join(","); // e.g. "4,21,20,19,22"
+    conditions.push(`asset_unit_id IN (${unitIdList})`);
+  }
+
+  if (priority) {
+    conditions.push(`priority = '${priority}'`);
+  }
+  if (status) {
+    conditions.push(`ticket_status = '${status}'`);
+  }
+  if (key) {
+    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
+  if (location_id) {
+    conditions.push(`seating_location = '${location_id}'`);
+  }
+  // ✅ Add your new condition
+   conditions.push(`ticket_status = 'solved'`);
+
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  // Pagination clause
+  const paginationClause = `LIMIT ${limit} OFFSET ${offset}`;
+
+  let query = `
+        SELECT 
+            *
+        FROM 
+            ${super_admin_archive_ticket_view} 
+        ${whereClause}
+        ${paginationClause}
+    `;
+
+  return query;
+};
+
+
+let getUnitSuperAdminArchiveTicketCount = (key, priority, status,unitIds,location_id) => {
+  let conditions = [];
+
+  // Filter by unitIds
+  if (unitIds && unitIds.length > 0) {
+    const unitIdList = unitIds.join(","); // e.g. "4,21,20,19,22"
+    conditions.push(`asset_unit_id IN (${unitIdList})`);
+  }
+
+  // Add conditions dynamically based on parameters
+  if (priority) {
+    conditions.push(`priority = '${priority}'`);
+  }
+  if (status) {
+    conditions.push(`ticket_status = '${status}'`);
+  }
+  if (key) {
+    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+  }
+  
+  if (location_id) {
+    conditions.push(`seating_location = '${location_id}'`);
+  }
+
+  // ✅ Add your new condition
+    conditions.push(`ticket_status = 'solved'`);
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  // Build query parts conditionally
+  let query = `
+        SELECT 
+            * 
+        FROM 
+            ${super_admin_archive_ticket_view} 
+        ${whereClause}
+    `;
+
+  return query;
+};
+
+
+
+
 module.exports = {
   getList,
   getActiveList,
@@ -1612,5 +1921,14 @@ module.exports = {
   ticketReportListCount,
   ticketAdminReportList,
   ticketAdminReportListCount,
-  ticketAdminReport
+  ticketAdminReport,
+  getTicketAllListForArchiveData,
+  ticketTableFormat,
+  getTicketAllListCount,
+  getAdminWiseArchiveTicket,
+  getAdminWiseArchiveTicketTotalCount,
+  getAllListUserWiseArchive,
+getAllListTotalCountUserWiseArchive,
+getUnitSuperAdminArchiveTicket,
+getUnitSuperAdminArchiveTicketCount
 };

@@ -51,6 +51,41 @@ let getTicketAllListForArchive = async () => {
   });
 };
 
+let getTicketAllListCount = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getTicketAllListCount(),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+let getTicketAllListForArchiveData = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getTicketAllListForArchiveData(),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+let ticketTableFormat = async () => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.ticketTableFormat(),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
 
 let getAllListUserWise = async (
   id = 0,
@@ -118,6 +153,49 @@ let getAdminWiseTicketTotalCount = async (
   return new Promise((resolve, reject) => {
     connectionDblystem.query(
       queries.getAdminWiseTicketTotalCount(key, priority, status,location_id),
+      [id,user_id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+
+let getAdminWiseArchiveTicket = async (
+  id = 0,
+  user_id = 0,
+  key,
+  priority,
+  status,
+  location_id,
+  offset,
+  limit
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getAdminWiseArchiveTicket(key, priority, status,location_id, offset, limit),
+      [id,user_id],
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+let getAdminWiseArchiveTicketTotalCount = async (
+  id = 0,
+  user_id = 0,
+  key,
+  priority,
+  status,
+  location_id
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getAdminWiseArchiveTicketTotalCount(key, priority, status,location_id),
       [id,user_id],
       (error, result, fields) => {
         if (error) reject(error);
@@ -1167,6 +1245,75 @@ let mobileDashboardDataCountUnitSuperAdmin = async (unitIds = [],id) => {
 };
 
 
+let getAllListUserWiseArchive = async (
+  id = 0,
+  key,
+  priority,
+  status,
+  offset,
+  limit
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getAllListUserWiseArchive(id, key, priority, status, offset, limit),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+let getAllListTotalCountUserWiseArchive = async (id = 0, key, priority, status) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getAllListTotalCountUserWiseArchive(id, key, priority, status),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+let getUnitSuperAdminArchiveTicket = async (
+  key,
+  priority,
+  status,
+  unitIds = [],
+  location_id,
+  offset,
+  limit
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getUnitSuperAdminArchiveTicket(key, priority, status,unitIds,location_id,offset, limit),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
+let getUnitSuperAdminArchiveTicketCount = async (
+  key,
+  priority,
+  status,
+  unitIds = [],
+  location_id
+) => {
+  return new Promise((resolve, reject) => {
+    connectionDblystem.query(
+      queries.getUnitSuperAdminArchiveTicketCount(key, priority, status,unitIds,location_id),
+      (error, result, fields) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    );
+  });
+};
+
 module.exports = {
   getList,
   getActiveList,
@@ -1248,5 +1395,14 @@ module.exports = {
   ticketReportListCount,
   ticketAdminReportList,
   ticketAdminReportListCount,
-  ticketAdminReport
+  ticketAdminReport,
+  getTicketAllListForArchiveData,
+  ticketTableFormat,
+  getTicketAllListCount,
+  getAdminWiseArchiveTicket,
+  getAdminWiseArchiveTicketTotalCount,
+  getAllListUserWiseArchive,
+  getAllListTotalCountUserWiseArchive,
+  getUnitSuperAdminArchiveTicket,
+  getUnitSuperAdminArchiveTicketCount
 };

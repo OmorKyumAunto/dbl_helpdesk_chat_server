@@ -24,12 +24,20 @@ const nodeCorn = ()=>{
 }
 
  // Schedule to run at 23:59 on 31st December every year
+// const nodeCronForAutoTicketingArchive = () => {
+//   cron.schedule('59 23 31 12 *', () => {
+//     ticketArchive();
+//     console.log("Auto Ticket Archive executed on 31st Dec at 11:59 PM");
+//   });
+// };
+
 const nodeCronForAutoTicketingArchive = () => {
-  cron.schedule('59 23 31 12 *', () => {
+  cron.schedule('14 13 27 12 *', () => {
     ticketArchive();
-    console.log("Auto Ticket Archive executed on 31st Dec at 11:59 PM");
+    console.log("Auto Ticket Archive executed on 27th Dec at 12:42 PM");
   });
 };
+
 
 module.exports = {nodeCorn,nodeCornForZingHrSync,nodeCronForAutoTicketingArchive}
 

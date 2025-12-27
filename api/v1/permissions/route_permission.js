@@ -188,7 +188,8 @@ let superAdminPermission = [
   "sendAnnouncement",
   "getAnnouncement",
   "getAnnouncementListWeb",
-  "mobileAnnouncementDelete"
+  "mobileAnnouncementDelete",
+  "unitSuperAdminWiseArchiveTicketList"
 
 ];
 
@@ -343,7 +344,8 @@ let adminPermission = [
   "unitWiseBuildingList",
   "mobileDashboardCountData",
   "modifiedEmployeeSeatingLocation",
-  "getAnnouncement"
+  "getAnnouncement",
+  "adminWiseArchiveTicketList"
 
 ];
 
@@ -469,7 +471,8 @@ let employeePermission = [
   "buildingSeatingLocationList",
   "unitWiseBuildingList",
   "mobileDashboardCountData",
-  "getAnnouncement"
+  "getAnnouncement",
+  "userWiseArchiveTicket"
  
 ];
 
@@ -656,7 +659,9 @@ let unitWiseSuperAdminPermission = [
   "sendAnnouncement",
   "getAnnouncement",
   "getAnnouncementListWeb",
-  "mobileAnnouncementDelete"
+  "mobileAnnouncementDelete",
+  "adminWiseArchiveTicketList",
+  "unitSuperAdminWiseArchiveTicketList"
 ];
 
 let getRouterPermissionList = async (id = 0) => {

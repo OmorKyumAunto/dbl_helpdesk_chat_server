@@ -293,7 +293,12 @@ let getAdminWiseArchiveTicket = (key, priority, status,location_id,offset, limit
     conditions.push(`ticket_status = '${status}'`);
   }
   if (key) {
-    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+    conditions.push(`(
+      subject LIKE '%${key}%'
+      OR ticket_id LIKE '%${key}%'
+      OR ticket_created_employee_name LIKE '%${key}%'
+      OR ticket_created_employee_id LIKE '%${key}%'
+    )`);
   }
   if (location_id) {
     conditions.push(`seating_location_id = '${location_id}'`);
@@ -332,7 +337,12 @@ let getAdminWiseArchiveTicketTotalCount = (key, priority, status,location_id) =>
     conditions.push(`ticket_status = '${status}'`);
   }
   if (key) {
-    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+    conditions.push(`(
+      subject LIKE '%${key}%'
+      OR ticket_id LIKE '%${key}%'
+      OR ticket_created_employee_name LIKE '%${key}%'
+      OR ticket_created_employee_id LIKE '%${key}%'
+    )`);
   }
   if (location_id) {
     conditions.push(`seating_location_id = '${location_id}'`);
@@ -1770,7 +1780,12 @@ let getUnitSuperAdminArchiveTicket = (key, priority, status, unitIds,location_id
     conditions.push(`ticket_status = '${status}'`);
   }
   if (key) {
-    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+    conditions.push(`(
+      subject LIKE '%${key}%'
+      OR ticket_id LIKE '%${key}%'
+      OR ticket_created_employee_name LIKE '%${key}%'
+      OR ticket_created_employee_id LIKE '%${key}%'
+    )`);
   }
   if (location_id) {
     conditions.push(`seating_location = '${location_id}'`);
@@ -1814,7 +1829,12 @@ let getUnitSuperAdminArchiveTicketCount = (key, priority, status,unitIds,locatio
     conditions.push(`ticket_status = '${status}'`);
   }
   if (key) {
-    conditions.push(`(subject LIKE '%${key}%' OR ticket_id LIKE '%${key}%')`);
+    conditions.push(`(
+      subject LIKE '%${key}%'
+      OR ticket_id LIKE '%${key}%'
+      OR ticket_created_employee_name LIKE '%${key}%'
+      OR ticket_created_employee_id LIKE '%${key}%'
+    )`);
   }
   
   if (location_id) {

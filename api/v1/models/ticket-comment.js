@@ -128,6 +128,15 @@ let getById = async (id = 0) => {
     });
 }
 
+let getByArchiveId = async (id = 0) => {
+    return new Promise((resolve, reject) => {
+        connectionDblystem.query(queries.getByArchiveId(), [id], (error, result, fields) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    });
+}
+
 let getByTableId = async (id = 0) => {
     return new Promise((resolve, reject) => {
         connectionDblystem.query(queries.getByTableId(), [id], (error, result, fields) => {
@@ -234,6 +243,7 @@ module.exports = {
     getByTableId,
     getAllTicketWiseAdmin,
     getAllTicketWiseAdminSingleData,
-    updateByTicketId
+    updateByTicketId,
+    getByArchiveId
 }
 

@@ -1625,27 +1625,6 @@ router.get(
         status,
         location_id
       );
-
-
-    if(result.length === 0){
-      result = await raiseTicketModel.getAdminWiseUpComingTicket(
-        id,
-        key,
-        priority,
-        status,
-        location_id,
-        offset,
-        limit
-      );
-
-      totalCountResult = await raiseTicketModel.getAdminWiseTicketUpComingTotalCount(
-        id,
-        key,
-        priority,
-        status,
-        location_id
-      );
-    }
   }
 
     return res.status(200).send({
@@ -1745,5 +1724,6 @@ let totalCountResult
     });
   }
 );
+
 
 module.exports = router;

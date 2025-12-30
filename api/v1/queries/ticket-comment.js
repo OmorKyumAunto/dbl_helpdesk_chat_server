@@ -150,6 +150,10 @@ let getById = () => {
     return `SELECT * FROM ${table_name} where  ticket_id = ? `;
 }
 
+let getByArchiveId = () => {
+    return `SELECT * FROM ${table_name} where  ticket_id = ? `;
+}
+
 let getByTableId = () => {
     return `SELECT * FROM ${table_name} where id = ? `;
 }
@@ -207,6 +211,7 @@ module.exports = {
     getByTableId,
     getAllTicketWiseAdmin,
     getAllTicketWiseAdminSingleData,
-    updateByTicketId
+    updateByTicketId,
+    getByArchiveId
 
 }

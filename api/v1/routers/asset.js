@@ -443,9 +443,9 @@ router.post(
         );
 
         // update status
-        let assetRemarksUpdate = await assetModel.updateById(asset[0].id, {
+        let assetRemarksUpdate = await assetModel.updateById({
           remarks: "assigned",
-        });
+        },asset[0].id);
 
         if (alreadyAssignedHistory.length) {
           let updateStatus = await assetAssignModel.updateById(

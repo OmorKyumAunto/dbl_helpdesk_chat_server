@@ -966,22 +966,29 @@ router.put(
     if (willWeUpdate == 1) {
       let result;
       let updateUser;
-      if (existingDataById[0].role_id == 1) {
+      if (existingDataById[0].role_id === 1) {
         result = await superModel.updateById(
           existingDataById[0].profile_id,
           updateData
         );
 
         updateUser = await userModel.updateByEmployeeUser(id, userUpdateData);
-      } else if (existingDataById[0].role_id == 2) {
+      } else if (existingDataById[0].role_id === 2) {
         result = await adminModel.updateById(
           existingDataById[0].profile_id,
           updateData
         );
 
         updateUser = await userModel.updateByEmployeeUser(id, userUpdateData);
-      } else if (existingDataById[0].role_id == 3) {
+      } else if (existingDataById[0].role_id === 3) {
         result = await employeeModel.updateById(
+          existingDataById[0].profile_id,
+          updateData
+        );
+
+        updateUser = await userModel.updateByEmployeeUser(id, userUpdateData);
+      }else if (existingDataById[0].role_id === 4) {
+        result = await unitSuperAdminModel.updateById(
           existingDataById[0].profile_id,
           updateData
         );

@@ -121,9 +121,9 @@ let updateById = async (data = {},id = 0) => {
 }
 
 
-let getEmployeeList = async (offset, limit, key,unit_name,status,blood_group,employee_type) => {
+let getEmployeeList = async (offset, limit, key,unit_name,department,status,blood_group,employee_type) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getEmployeeList(offset, limit, key,unit_name,status,blood_group,employee_type), (error, result, fields) => {
+      connectionDblystem.query(queries.getEmployeeList(offset, limit, key,unit_name,department,status,blood_group,employee_type), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });
@@ -141,9 +141,9 @@ let getUnitSuperAdminList = async (offset, limit, key,unit_name,status,blood_gro
   }
 
 
-  let getTotalEmployeeList = async (key, unit,status,blood_group,employee_type) => {
+  let getTotalEmployeeList = async (key, unit,department,status,blood_group,employee_type) => {
     return new Promise((resolve, reject) => {
-      connectionDblystem.query(queries.getTotalEmployeeList(key, unit,status,blood_group,employee_type), (error, result, fields) => {
+      connectionDblystem.query(queries.getTotalEmployeeList(key, unit,department,status,blood_group,employee_type), (error, result, fields) => {
         if (error) reject(error);
         else resolve(result);
       });

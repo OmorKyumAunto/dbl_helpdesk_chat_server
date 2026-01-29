@@ -455,13 +455,14 @@ router.get(
       offset: req.query.offset || 0,
       key: req.query.key,
       unit_name: req.query.unit_name,
+      department: req.query.department,
       status: req.query.status,
       blood_group: req.query.blood_group
         ? req.query.blood_group.replace(/ /g, "+")
         : null,
       employee_type: req.query.employee_type,
     };
-    let { offset, limit, key, unit_name, status, blood_group, employee_type } =
+    let { offset, limit, key, unit_name,department, status, blood_group, employee_type } =
       reqData;
 
     let result = await userModel.getEmployeeList(
@@ -469,6 +470,7 @@ router.get(
       limit,
       key,
       unit_name,
+      department,
       status,
       blood_group,
       employee_type
@@ -522,6 +524,7 @@ router.get(
     let countResult = await userModel.getTotalEmployeeList(
       key,
       unit_name,
+      department,
       status,
       blood_group,
       employee_type

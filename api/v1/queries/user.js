@@ -61,12 +61,16 @@ let getByEmployeeId = () => {
 
 
 //get employee list
-let getEmployeeList = (offset, limit, key, unit_name,status,blood_group,employee_type) => {
+let getEmployeeList = (offset, limit, key, unit_name,department,status,blood_group,employee_type) => {
    
     let searchCondition = '';
     if (unit_name) {
         searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit_name}%') `;
     }
+    if (department) {
+        searchCondition += `AND department = '${department}' `;
+    }
+
     if (status) {
         searchCondition += `AND (status) LIKE ('%${status}%') `;
     }
@@ -133,10 +137,13 @@ let getUnitSuperAdminList = (offset, limit, key, unit_name,status,blood_group,em
 
 
 
-let getTotalEmployeeList = (key, unit_name,status,blood_group,employee_type) => {
+let getTotalEmployeeList = (key,unit_name,department,status,blood_group,employee_type) => {
     let searchCondition = '';
     if (unit_name) {
         searchCondition += `AND UPPER(unit_name) LIKE UPPER('%${unit_name}%') `;
+    }
+    if (department) {
+        searchCondition += `AND department = '${department}' `;
     }
     if (status) {
         searchCondition += `AND (status) LIKE ('%${status}%') `;
@@ -155,8 +162,13 @@ let getTotalEmployeeList = (key, unit_name,status,blood_group,employee_type) => 
     }
    
     if (key) {
-        searchCondition += ` AND (LOWER(employee_id) LIKE LOWER('%${key}%') OR LOWER(name) LIKE LOWER('%${key}%'))`;
-    }
+        searchCondition += ` AND (
+          LOWER(employee_id) LIKE LOWER('%${key}%') 
+          OR LOWER(name) LIKE LOWER('%${key}%') 
+          OR email LIKE '%${key}%' 
+          OR LOWER(department) LIKE LOWER('%${key}%') 
+        )`;
+      }
 
 
     return `SELECT * FROM ${table_view} WHERE  status = 1 ${searchCondition} ORDER BY id desc`;

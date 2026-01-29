@@ -193,11 +193,7 @@ router.post(
         ticket_message: reqData.description,
       };
 
-      let getUnitAndCategoryMatchEmail =
-        await raiseTicketModel.getUnitAndCategoryWiseEmail(
-          getLocationInfo[0].seating_location_id,
-          reqData.category_id
-        );
+
 
       let ccData = null;
 
@@ -236,30 +232,39 @@ router.post(
 
       let result = await raiseTicketModel.addNew(reqData);
 
-      //await common.sentTicketEmail('omorkyumaunto16@gmail.com','Raise Create',data)
-      if (getUnitAndCategoryMatchEmail.length) {
-        // Create a Set to store unique emails
-        const uniqueEmails = new Set(
-          getUnitAndCategoryMatchEmail.map((item) => item.email)
+     try {
+      const emails =
+        await raiseTicketModel.getUnitAndCategoryWiseEmail(
+          getLocationInfo[0].seating_location_id,
+          reqData.category_id
         );
 
-        // Iterate over unique emails
+      if (emails?.length) {
+        const uniqueEmails = [...new Set(emails.map(e => e.email))];
+
         for (const admin_email of uniqueEmails) {
           await common.sentTicketEmail(
             admin_email,
             "Ticket Notification",
-            data
+            data  
           );
         }
       }
+    } catch (err) {
+      console.error("Admin email failed:", err.message);
+    }
 
-      if (reqData.cc) {
+      if (reqData.cc && ccData) {
+      try {
         await common.sentTicketCcEmail(
           ccData.supervisor_email,
           "Ticket Notification",
           ccData
         );
+      } catch (err) {
+        console.error("CC email failed:", err.message);
       }
+    }
 
       if (result.affectedRows == undefined || result.affectedRows < 1) {
         return res.status(500).send({

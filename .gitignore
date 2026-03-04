@@ -2,3 +2,4 @@ node_modules/
 .env
 uploads
 ticket
+api/v1/config/firebase-service-account.json
